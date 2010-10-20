@@ -1,0 +1,6 @@
+*~
+*.o
+autom4te.cache/*
+config.status
+.libs
+stamp-h1

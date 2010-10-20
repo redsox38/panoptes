@@ -30,6 +30,21 @@ abstract class hostEntry
   }
 
   /**
+   * Get/Set id
+   *
+   * @param val optional id to set
+   * @throws none
+   * @return var current id 
+   */
+  public function id($val = null) {
+    if (!(is_null($val))) {
+      $this->id = $val;
+    }
+
+    return($this->id);
+  }
+
+  /**
    * Get/Set db srcaddr
    *
    * @param val optional address to set srcaddr to

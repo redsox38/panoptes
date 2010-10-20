@@ -181,6 +181,7 @@ function xhdrGroupAdd(attr_name, device_id) {
     dojo.xhrGet(xhrGrpArgs);
     
     dijit.byId(attr_name).destroy();
+    
     document.body.removeChild(document.getElementById("add_to_device_group_win")
 );
 }
@@ -203,6 +204,7 @@ function addToGroup() {
 	    label: 'Cancel',
 	    onClick: function() {
 		dijit.byId("group_to_add").destroy();
+
 		document.body.removeChild(document.getElementById("add_to_device_group_win"));
 	    }
 	});
@@ -214,17 +216,40 @@ function addToGroup() {
 	    }
 	});
 
-    // create new div and prompt the user for a group to add the
-    // device to  
-    var dv = document.createElement("div");
-    dv.id = "add_to_device_group_win";
-    dv.innerHTML = "";
-    
-    dv.appendChild(cb.domNode);
-    dv.appendChild(rst.domNode);
-    dv.appendChild(sub.domNode);
+    // create new div 
+    // with transparent background 
+    // defined in css
 
-    document.body.appendChild(dv);    
+    var dv1 = document.createElement("div");
+    dv1.id = "add_to_device_group_win";
+    dv1.innerHTML = "";
+    
+    // create white background div 
+    // to hold form elements
+    var dv2 = document.createElement("div");
+    dv2.id = "add_to_device_group_win_bg";
+    dv2.style.backgroundColor = "white";
+    dv2.style.color = "black";
+    dv2.style.border = "solid";
+    dv2.style.marginTop = "50px";
+    dv2.style.marginBottom = "50px";
+    dv2.style.marginLeft = "250px";
+    dv2.style.marginRight = "250px";
+    dv2.style.align = "center";
+    dv2.zIndex = 51;
+
+    dv2.appendChild(cb.domNode);
+    dv2.appendChild(rst.domNode);
+    dv2.appendChild(sub.domNode);
+
+    // make the div big enough to display
+    dv2.appendChild(document.createElement("br"));
+    dv2.appendChild(document.createElement("br"));
+    dv2.appendChild(document.createElement("br"));
+    dv2.appendChild(document.createElement("br"));
+    dv1.appendChild(dv2);
+
+    document.body.appendChild(dv1);    
 }
 
 dojo.addOnLoad(function(){

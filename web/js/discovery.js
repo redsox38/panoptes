@@ -9,7 +9,7 @@ function createAutoDiscoveryGrid(){
 	    //sync: 'true',
 	    content: {
 		action: 'populateAutoDiscoveryForm',
-		data: '{}'
+		data: '{ }'
 	    },
 	    load: function(data) {
 		if (data && !data.error) {
