@@ -231,7 +231,7 @@ function addToGroup() {
     dv2.style.backgroundColor = "white";
     dv2.style.color = "black";
     dv2.style.border = "solid";
-    dv2.style.marginTop = "50px";
+    dv2.style.marginTop = "75px";
     dv2.style.marginBottom = "50px";
     dv2.style.marginLeft = "250px";
     dv2.style.marginRight = "250px";

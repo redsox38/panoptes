@@ -67,7 +67,7 @@ if ($req->isXmlHttpRequest()) {
 </head>
 <body class="claro">
     <div id="master_layout" dojoType="dijit.layout.BorderContainer" style="width: 100%; height: 100%;">
-        <div id="left_nav" region="leading" dojoType="dijit.layout.AccordionContainer" style="width: 15%;">
+        <div id="left_nav" region="leading" dojoType="dijit.layout.AccordionContainer" style="width: 15%;" splitter="true">
             <div id="tools" title="Tools" dojoType="dijit.layout.AccordionPane">
                 Tools
             </div>
