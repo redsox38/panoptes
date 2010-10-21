@@ -24,10 +24,10 @@ AC_CHECK_HEADERS([arpa/inet.h netinet/in.h stdlib.h string.h sys/socket.h pcap.h
 # Checks for library functions.
 AC_CHECK_FUNCS([inet_ntoa strcspn strdup])
 
-AC_CHECK_LIB([pcap], [pcap_open_live])
-AC_CHECK_LIB([xml2], [xmlReadFile])
+AC_CHECK_LIB([pcap], [pcap_open_live], ,AC_MSG_ERROR(Cannot find libpcap))
+AC_CHECK_LIB([xml2], [xmlReadFile], , AC_MSG_ERROR(Cannot find libxml2))
 AC_CHECK_LIB([pthread], [pthread_create])
-AC_CHECK_LIB([mysqlclient], [mysql_init])
+AC_CHECK_LIB([mysqlclient_r], [mysql_init], , AC_MSG_ERROR(Cannot find libmysqlclient))
 
 dnl Checks for typedefs, structures, and compiler characteristics.
 AC_C_CONST

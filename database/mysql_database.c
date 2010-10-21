@@ -6,7 +6,7 @@
 #undef PACKAGE_VERSION
 #undef PACKAGE_TARNAME
 #undef PACKAGE_BUGREPORT
-#ifdef HAVE_LIBMYSQLCLIENT
+#ifdef HAVE_LIBMYSQLCLIENT_R
 #include "../utils/configuration.h"
 #include "mysql_database.h"
 #include <my_global.h>
@@ -98,7 +98,7 @@ int _database_open(int initialize)
 	  free(pass);
 	return(-1);
       } else {
-	if (mysql_query(mysql, "CREATE TABLE port_monitors (id bigint NOT NULL AUTO_INCREMENT, device_id bigint NOT NULL, port smallint(5) unsigned NOT NULL, proto varchar(5) NOT NULL, PRIMARY KEY (id), UNIQUE INDEX idx (device_id,port,proto), INDEX device_id (device_id), INDEX port (port), FOREIGN KEY (device_id) REFERENCES devices(id) ON UPDATE CASCADE ON DELETE CASCADE) ENGINE=INNODB")) {
+	if (mysql_query(mysql, "CREATE TABLE port_monitors (id bigint NOT NULL AUTO_INCREMENT, device_id bigint NOT NULL, port smallint(5) unsigned NOT NULL, proto varchar(5) NOT NULL, check_interval smallint NOT NULL DEFAULT 15, last_check DATETIME DEFAULT NULL, next_check DATETIME DEFAULT NULL, status ENUM('ok','warn','error') DEFAULT NULL, PRIMARY KEY (id), UNIQUE INDEX idx (device_id,port,proto), INDEX device_id (device_id), INDEX port (port), FOREIGN KEY (device_id) REFERENCES devices(id) ON UPDATE CASCADE ON DELETE CASCADE) ENGINE=INNODB")) {
 	  mysql_close(mysql);
 	  
 	  free(db);

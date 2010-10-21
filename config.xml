@@ -3,6 +3,5 @@
     <lib database="/home/tmerritt/panoptes/database/.libs/libmysqldisc.so"/>
     <db name="panoptes" user="db_username" password="db_password" host="localhost"/>
     <rrd directory="/usr/local/panoptes/rrd"/>
-    <repository directory="/usr/local/panoptes"/>
     <autodiscoveryform displayentries="10"/>
 </config>
