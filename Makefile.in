@@ -56,10 +56,13 @@ am_panoptes_discover_OBJECTS = discover_core.$(OBJEXT) \
 	packet.$(OBJEXT) database.$(OBJEXT)
 panoptes_discover_OBJECTS = $(am_panoptes_discover_OBJECTS)
 panoptes_discover_LDADD = $(LDADD)
-am_panoptes_monitor_OBJECTS = monitor_core.$(OBJEXT) \
-	database.$(OBJEXT)
+am_panoptes_monitor_OBJECTS = panoptes_monitor-monitor_core.$(OBJEXT) \
+	panoptes_monitor-database.$(OBJEXT)
 panoptes_monitor_OBJECTS = $(am_panoptes_monitor_OBJECTS)
 panoptes_monitor_LDADD = $(LDADD)
+panoptes_monitor_LINK = $(LIBTOOL) --tag=CC $(AM_LIBTOOLFLAGS) \
+	$(LIBTOOLFLAGS) --mode=link $(CCLD) $(AM_CFLAGS) $(CFLAGS) \
+	$(panoptes_monitor_LDFLAGS) $(LDFLAGS) -o $@
 DEFAULT_INCLUDES = -I.@am__isrc@
 depcomp =
 am__depfiles_maybe =
@@ -242,6 +245,8 @@ panoptes_discover_SOURCES = discover_core.c  packet.c database.c
 panoptes_monitor_SOURCES = monitor_core.c database.c
 SUBDIRS = database utils
 AUTOMAKE_OPTIONS = no-dependencies
+panoptes_monitor_LDFLAGS = @LDFLAGS@ 
+panoptes_monitor_CPPFLAGS = @CPPFLAGS@ -D_REENTRANT
 EXTRA_DIST = web
 all: config.h
 	$(MAKE) $(AM_MAKEFLAGS) all-recursive
@@ -347,7 +352,7 @@ panoptes_discover$(EXEEXT): $(panoptes_discover_OBJECTS) $(panoptes_discover_DEP
 	$(LINK) $(panoptes_discover_OBJECTS) $(panoptes_discover_LDADD) $(LIBS)
 panoptes_monitor$(EXEEXT): $(panoptes_monitor_OBJECTS) $(panoptes_monitor_DEPENDENCIES) 
 	@rm -f panoptes_monitor$(EXEEXT)
-	$(LINK) $(panoptes_monitor_OBJECTS) $(panoptes_monitor_LDADD) $(LIBS)
+	$(panoptes_monitor_LINK) $(panoptes_monitor_OBJECTS) $(panoptes_monitor_LDADD) $(LIBS)
 
 mostlyclean-compile:
 	-rm -f *.$(OBJEXT)
@@ -363,6 +368,18 @@ distclean-compile:
 
 .c.lo:
 	$(LTCOMPILE) -c -o $@ $<
+
+panoptes_monitor-monitor_core.o: monitor_core.c
+	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(panoptes_monitor_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o panoptes_monitor-monitor_core.o `test -f 'monitor_core.c' || echo '$(srcdir)/'`monitor_core.c
+
+panoptes_monitor-monitor_core.obj: monitor_core.c
+	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(panoptes_monitor_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o panoptes_monitor-monitor_core.obj `if test -f 'monitor_core.c'; then $(CYGPATH_W) 'monitor_core.c'; else $(CYGPATH_W) '$(srcdir)/monitor_core.c'; fi`
+
+panoptes_monitor-database.o: database.c
+	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(panoptes_monitor_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o panoptes_monitor-database.o `test -f 'database.c' || echo '$(srcdir)/'`database.c
+
+panoptes_monitor-database.obj: database.c
+	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(panoptes_monitor_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o panoptes_monitor-database.obj `if test -f 'database.c'; then $(CYGPATH_W) 'database.c'; else $(CYGPATH_W) '$(srcdir)/database.c'; fi`
 
 mostlyclean-libtool:
 	-rm -f *.lo

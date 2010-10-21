@@ -3,6 +3,8 @@
 #include <getopt.h>
 #include <signal.h>
 #include <stdlib.h>
+#include <pthread.h>
+#include <stdio.h>
 
 /* array of command line options */
 static struct option long_options[] = {
@@ -11,6 +13,7 @@ static struct option long_options[] = {
 };
 
 char *configfile = NULL;
+pthread_t *threads;
 
 /* local termination handler for this file */
 void core_term_handler()
@@ -41,7 +44,8 @@ void usage()
 int main(int argc, char *argv[]) {
   extern char        *optarg;
   extern int         optind, optopt, opterr;
-  int                c, option_index;
+  int                i, c, option_index, num_threads;
+  char               *p = NULL;
 
   /* process command line */
 
@@ -79,4 +83,23 @@ int main(int argc, char *argv[]) {
   }
 
   /* start monitoring ... */
+  /* initialize monitor threads */ 
+  p = get_config_value("monitor.threads");
+  (void *)sscanf(p, "%d", &num_threads);
+  free(p);
+
+  if ((threads = (pthread_t *)malloc(sizeof(pthreads_t *) * num_threads)) 
+      == NULL) {
+    perror("malloc");
+    exit(-1);
+  }
+
+  for (i = 0; i < num_threads; i++) {
+    if ((rc = pthread_create(&(threads[i]), NULL, 
+			     monitor_thread, (void *))) != 0) {
+      perror("pthread_create");
+      exit(-1);
+    }
+  }
+
 }
