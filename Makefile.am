@@ -10,4 +10,5 @@ SUBDIRS = database utils
 AUTOMAKE_OPTIONS = no-dependencies
 panoptes_monitor_LDFLAGS = @LDFLAGS@ 
 panoptes_monitor_CPPFLAGS = @CPPFLAGS@ -D_REENTRANT
+panoptes_discover_CPPFLAGS = @CPPFLAGS@ -D_REENTRANT
 EXTRA_DIST = web

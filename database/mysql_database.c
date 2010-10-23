@@ -12,7 +12,14 @@
 #include <my_global.h>
 #include <mysql.h>
 #include <pwd.h>
+#include <string.h>
 #include "monitor_core.h"
+
+#ifdef _REENTRANT
+#include <pthread.h>
+
+pthread_mutex_t sql_mutex;
+#endif
 
 MYSQL *mysql = NULL;
 
@@ -27,7 +34,7 @@ void _term_handler()
 int _database_open(int initialize)
 {
   char          *db, *host, *pass, *user, *loader;
-  char          qry[256];
+  char          qry[MAX_MYSQL_DISC_QRY_LEN];
   struct passwd *pw;
 
   /* make sure we have the necessary config values */
@@ -63,7 +70,8 @@ int _database_open(int initialize)
     return(-1);
   }
 
-  if (mysql_real_connect(mysql, host, user, pass, db, 0, NULL, 0) == NULL) {
+  /* connect allowing multi statements for stored procedure calls */
+  if (mysql_real_connect(mysql, host, user, pass, db, 0, NULL, CLIENT_MULTI_STATEMENTS) == NULL) {
     fprintf(stderr, "MySQL: %s\n", mysql_error(mysql));
 
     free(db);
@@ -76,7 +84,7 @@ int _database_open(int initialize)
 
   if (initialize) {
     loader = get_config_value("db.sqlinit");
-    snprintf(qry, 256, "SOURCE %s", loader);
+    snprintf(qry, MAX_MYSQL_DISC_QRY_LEN, "SOURCE %s", loader);
     mysql_query(mysql, qry);
     free(loader);
   }
@@ -99,6 +107,60 @@ void _add_discovered_connection(char *src, int src_port, char *dst,
 
 void _get_next_monitor_entry(monitor_entry_t *m)
 {
+  MYSQL_RES   *result;
+  MYSQL_ROW   row;
+  MYSQL_FIELD *fields;
+  int         i, j, rc, num_fields;
+
+#ifdef _REENTRANT
+  pthread_mutex_lock(&sql_mutex);
+#endif
+
+  rc = mysql_query(mysql, "CALL get_next_monitor_entry()");
+
+  if (rc == 0) {
+    result = mysql_store_result(mysql);
+  } else {
+    /* an error occurred */
+    printf("Error: %s\n", mysql_error(mysql));
+  }
+
+#ifdef _REENTRANT
+  pthread_mutex_unlock(&sql_mutex);
+#endif
+
+  if (rc == 0) {
+    /* function only returns one row */
+    if (result != NULL) {
+      row = mysql_fetch_row(result); 
+      fields = mysql_fetch_fields(result);
+
+      /* fill in monitor entry */
+      num_fields = mysql_num_fields(result);
+      j = 0;
+
+      m->attrs = (char **)malloc(sizeof(char *) * (num_fields - 1));
+      m->vals  = (char **)malloc(sizeof(char *) * (num_fields - 1));
+
+      for (i = 0; i < num_fields; i++) {
+	if (!strcmp(fields[i].name, "id")) {
+	  m->id = strdup((char *)row[i]);
+	} else if (!strcmp(fields[i].name, "table_name")) {
+	  m->table_name = strdup((char *)row[i]);
+	} else {
+	  m->attrs[j] = strdup(fields[i].name);
+	  m->vals[j] = strdup((char *)row[i]);	       
+	  j++;
+	}
+      }
+
+      /* terminate attr and val lists */
+      m->attrs[j] = NULL;
+      m->vals[j] = NULL;
+
+      mysql_free_result(result);
+    }
+  }
 }
 
 #endif

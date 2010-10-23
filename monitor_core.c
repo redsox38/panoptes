@@ -17,7 +17,6 @@ static struct option long_options[] = {
 
 char            *configfile = NULL;
 pthread_t       *threads, shutdown_thr;
-pthread_mutex_t mysql_mutex;
 
 /* display help message */
 void usage() 

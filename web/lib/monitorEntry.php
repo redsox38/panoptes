@@ -87,7 +87,7 @@ class monitorEntry extends hostEntry
     
     $res = mysql_query("INSERT INTO port_monitors VALUES(0, '" .
 		       $this->device_id . "', " . $this->sport() . ", '" .
-		       $this->proto() . "')", $this->db);
+		       $this->proto() . "', 15, NOW(), NOW(), 'warn')", $this->db);
 
     if ($res === false) {
       throw new Exception(mysql_error());

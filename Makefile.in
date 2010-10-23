@@ -52,8 +52,10 @@ CONFIG_CLEAN_FILES =
 CONFIG_CLEAN_VPATH_FILES =
 am__installdirs = "$(DESTDIR)$(bindir)"
 PROGRAMS = $(bin_PROGRAMS)
-am_panoptes_discover_OBJECTS = discover_core.$(OBJEXT) \
-	packet.$(OBJEXT) database.$(OBJEXT)
+am_panoptes_discover_OBJECTS =  \
+	panoptes_discover-discover_core.$(OBJEXT) \
+	panoptes_discover-packet.$(OBJEXT) \
+	panoptes_discover-database.$(OBJEXT)
 panoptes_discover_OBJECTS = $(am_panoptes_discover_OBJECTS)
 panoptes_discover_LDADD = $(LDADD)
 am_panoptes_monitor_OBJECTS = panoptes_monitor-monitor_core.$(OBJEXT) \
@@ -250,6 +252,7 @@ SUBDIRS = database utils
 AUTOMAKE_OPTIONS = no-dependencies
 panoptes_monitor_LDFLAGS = @LDFLAGS@ 
 panoptes_monitor_CPPFLAGS = @CPPFLAGS@ -D_REENTRANT
+panoptes_discover_CPPFLAGS = @CPPFLAGS@ -D_REENTRANT
 EXTRA_DIST = web
 all: config.h
 	$(MAKE) $(AM_MAKEFLAGS) all-recursive
@@ -371,6 +374,24 @@ distclean-compile:
 
 .c.lo:
 	$(LTCOMPILE) -c -o $@ $<
+
+panoptes_discover-discover_core.o: discover_core.c
+	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(panoptes_discover_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o panoptes_discover-discover_core.o `test -f 'discover_core.c' || echo '$(srcdir)/'`discover_core.c
+
+panoptes_discover-discover_core.obj: discover_core.c
+	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(panoptes_discover_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o panoptes_discover-discover_core.obj `if test -f 'discover_core.c'; then $(CYGPATH_W) 'discover_core.c'; else $(CYGPATH_W) '$(srcdir)/discover_core.c'; fi`
+
+panoptes_discover-packet.o: packet.c
+	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(panoptes_discover_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o panoptes_discover-packet.o `test -f 'packet.c' || echo '$(srcdir)/'`packet.c
+
+panoptes_discover-packet.obj: packet.c
+	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(panoptes_discover_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o panoptes_discover-packet.obj `if test -f 'packet.c'; then $(CYGPATH_W) 'packet.c'; else $(CYGPATH_W) '$(srcdir)/packet.c'; fi`
+
+panoptes_discover-database.o: database.c
+	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(panoptes_discover_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o panoptes_discover-database.o `test -f 'database.c' || echo '$(srcdir)/'`database.c
+
+panoptes_discover-database.obj: database.c
+	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(panoptes_discover_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o panoptes_discover-database.obj `if test -f 'database.c'; then $(CYGPATH_W) 'database.c'; else $(CYGPATH_W) '$(srcdir)/database.c'; fi`
 
 panoptes_monitor-monitor_core.o: monitor_core.c
 	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(panoptes_monitor_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o panoptes_monitor-monitor_core.o `test -f 'monitor_core.c' || echo '$(srcdir)/'`monitor_core.c

@@ -107,7 +107,10 @@ SELECT id, table_name INTO _id, _table_name
 
 IF (_table_name='port_monitors') THEN
   -- if it is a port monitor type, look in port_monitors table
-  SET @s = CONCAT('SELECT device_id, port, proto INTO @_dev_id, @_port, @_proto FROM ', _table_name, ' WHERE id=', _id);
+
+  -- get row with lock to prevent another monitor
+  -- thread from picking up the same row
+  SET @s = CONCAT('SELECT device_id, check_interval, port, proto INTO @_dev_id, @_interval, @_port, @_proto FROM ', _table_name, ' WHERE id=', _id, ' FOR UPDATE');
 
   SET autocommit=0;
   START TRANSACTION;
@@ -115,9 +118,6 @@ IF (_table_name='port_monitors') THEN
   PREPARE stmt FROM @s;
   EXECUTE stmt;
 
-  -- get check interval
-  SELECT check_interval INTO @_interval FROM port_monitors WHERE id=_id;
-  
   -- set update last_check and next_check
   SET @s = CONCAT('UPDATE port_monitors SET last_check=NOW(), ',
                   'next_check=DATE_ADD(NOW(), INTERVAL ', @_interval,
