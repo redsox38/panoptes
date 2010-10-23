@@ -27,6 +27,7 @@ void _term_handler()
 int _database_open(int initialize)
 {
   char          *db, *host, *pass, *user, *loader;
+  char          qry[256];
   struct passwd *pw;
 
   /* make sure we have the necessary config values */
@@ -74,8 +75,9 @@ int _database_open(int initialize)
   }
 
   if (initialize) {
-    loader = get_config("db.sqlinit");
-    mysql_query(mysql, "SOURCE %s", loader);
+    loader = get_config_value("db.sqlinit");
+    snprintf(qry, 256, "SOURCE %s", loader);
+    mysql_query(mysql, qry);
     free(loader);
   }
 
