@@ -135,7 +135,7 @@ int _database_open(int initialize)
       return(-1);
     }
 
-    if (mysql_query(mysql, "CREATE SQL SECURITY INVOKER VIEW monitor_tasks AS select 'port_monitors' AS table_name, port_monitors.id AS id, port_monitors.next_check AS next_check FROM port_monitors ORDER BY port_monitors.next_check")) {
+    if (mysql_query(mysql, "CREATE SQL SECURITY INVOKER VIEW monitor_tasks AS select 'port_monitors' AS table_name, port_monitors.id AS id, port_monitors.next_check AS next_check FROM port_monitors ORDER BY port_monitors.next_check DESC")) {
       mysql_close(mysql);
 	      
       free(db);
