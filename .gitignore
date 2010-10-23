@@ -4,3 +4,6 @@ autom4te.cache/*
 config.status
 .libs
 stamp-h1
+web/js/dojo/*
+web/js/dojox/*
+web/js/dijit/*
