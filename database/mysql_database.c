@@ -126,11 +126,13 @@ void _get_next_monitor_entry(monitor_entry_t *m)
       j = 0;
 
       if (num_fields) {
+	/* space for null terminator plus number of fields
+	   minus the id and table_name which are separated out */
 	m->attrs = (char **)malloc(sizeof(char *) * (num_fields - 1));
 	m->vals  = (char **)malloc(sizeof(char *) * (num_fields - 1));
       }
 
-      /*
+
       for (i = 0; i < num_fields; i++) {
 	if (!strcmp(fields[i].name, "id")) {
 	  m->id = strdup((char *)row[i]);
@@ -145,7 +147,7 @@ void _get_next_monitor_entry(monitor_entry_t *m)
 
       m->attrs[j] = NULL;
       m->vals[j] = NULL;
-      */
+
       mysql_free_result(result);
     } else {
       /* an error occurred or no results */

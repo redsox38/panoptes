@@ -8,9 +8,13 @@
 
 void *monitor_thread(void *arg) 
 {
-  sigset_t     sigmask;
-
-  monitor_entry_t m;
+  sigset_t         sigmask;
+  monitor_entry_t  m;
+  char             **p, **q;
+  monitor_result_t *r;
+  /* data for port monitoring */
+  char             *addr, *proto, *port;
+  int              portnum;
 
   /* block termination/interrupt signals */
   (void *)sigemptyset(&sigmask);
@@ -22,15 +26,27 @@ void *monitor_thread(void *arg)
   pthread_sigmask(SIG_BLOCK, &sigmask, NULL);
 
   /* get next monitor entry from task table */
-  allocate_new_monitor_entry(&m);
+  allocate_monitor_entry(&m);
 
   get_next_monitor_entry(&m);
 
-  /*
-  printf("id: %s\n", m.id);
-  printf("table: %s\n", m.table_name);
-  printf("attr %s: %s\n", m.attrs[0], m.vals[0]);
-  */
+  if (!strcmp(m.table_name, "port_monitors")) {
+    /* open socket if we have all the data needed */
+    addr = get_attr_val(&m, "address");
+    proto = get_attr_val(&m, "proto");
+    port = get_attr_val(&m, "port");
+    if (addr != NULL && proto != NULL && port != NULL) {
+      sscanf(port, "%d", &portnum);
+      r = (monitor_result_t *)malloc(sizeof(monitor_result_t));
+      r = monitor_port(addr, proto, portnum);
+      r->perf_data = NULL;
+
+      free_monitor_result(r);
+    } else {
+      fprintf(stderr, "Missing data required to monitor: %s %s", 
+	      m.table_name, m.id);
+    }
+  }
 
   free_monitor_entry(&m, 0);
 }

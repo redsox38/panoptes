@@ -99,6 +99,7 @@ BEGIN
 
 DECLARE _id BIGINT;
 DECLARE _table_name VARCHAR(50);
+DECLARE _dev_ip VARCHAR(15);
 
 -- Get next task and type of task
 SELECT id, table_name INTO _id, _table_name 
@@ -129,7 +130,10 @@ IF (_table_name='port_monitors') THEN
   COMMIT;
   SET autocommit=1;
 
-  SELECT _id AS id, 'port_monitors' AS table_name, @_dev_id AS device_id, 
+  -- get ip address of device id
+  SELECT address INTO _dev_ip FROM devices WHERE id=@_dev_id;
+
+  SELECT _id AS id, 'port_monitors' AS table_name, _dev_ip AS address, 
          @_port AS port, @_proto AS proto;
 END IF;
 
