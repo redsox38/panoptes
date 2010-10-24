@@ -21,15 +21,16 @@ void *monitor_thread(void *arg)
   (void *)sigaddset(&sigmask, SIGTERM);
   pthread_sigmask(SIG_BLOCK, &sigmask, NULL);
 
-
   /* get next monitor entry from task table */
   allocate_new_monitor_entry(&m);
 
   get_next_monitor_entry(&m);
 
+  /*
   printf("id: %s\n", m.id);
   printf("table: %s\n", m.table_name);
   printf("attr %s: %s\n", m.attrs[0], m.vals[0]);
+  */
 
   free_monitor_entry(&m, 0);
 }

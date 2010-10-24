@@ -14,13 +14,9 @@
 #include <pwd.h>
 #include <string.h>
 #include "monitor_core.h"
-
-#ifdef _REENTRANT
 #include <pthread.h>
 
-pthread_mutex_t sql_mutex;
-#endif
-
+pthread_mutex_t sql_mutex = PTHREAD_MUTEX_INITIALIZER;
 MYSQL *mysql = NULL;
 
 /* function called by discover on termination */
@@ -96,13 +92,17 @@ int _database_open(int initialize)
 void _add_discovered_connection(char *src, int src_port, char *dst, 
 				int dst_port, char *prot)
 {
-  char qry[MAX_MYSQL_DISC_QRY_LEN];
+  char *qry;
+
+  qry = (char *)malloc(sizeof(char) * MAX_MYSQL_DISC_QRY_LEN);
 
   snprintf(qry, MAX_MYSQL_DISC_QRY_LEN,
 	   "INSERT INTO discovered VALUES(0, '%s', %d, '%s', %d, '%s', NOW(), 0)",
 	   src, src_port, dst, dst_port, prot);
 
   mysql_query(mysql, qry);
+
+  free(qry);
 }
 
 void _get_next_monitor_entry(monitor_entry_t *m)
@@ -112,36 +112,25 @@ void _get_next_monitor_entry(monitor_entry_t *m)
   MYSQL_FIELD *fields;
   int         i, j, rc, num_fields;
 
-#ifdef _REENTRANT
   pthread_mutex_lock(&sql_mutex);
-#endif
 
   rc = mysql_query(mysql, "CALL get_next_monitor_entry()");
 
-  if (rc == 0) {
+  do {
     result = mysql_store_result(mysql);
-  } else {
-    /* an error occurred */
-    printf("Error: %s\n", mysql_error(mysql));
-  }
-
-#ifdef _REENTRANT
-  pthread_mutex_unlock(&sql_mutex);
-#endif
-
-  if (rc == 0) {
-    /* function only returns one row */
-    if (result != NULL) {
-      row = mysql_fetch_row(result); 
+    if (result) {
+      row = mysql_fetch_row(result);
       fields = mysql_fetch_fields(result);
 
-      /* fill in monitor entry */
       num_fields = mysql_num_fields(result);
       j = 0;
 
-      m->attrs = (char **)malloc(sizeof(char *) * (num_fields - 1));
-      m->vals  = (char **)malloc(sizeof(char *) * (num_fields - 1));
+      if (num_fields) {
+	m->attrs = (char **)malloc(sizeof(char *) * (num_fields - 1));
+	m->vals  = (char **)malloc(sizeof(char *) * (num_fields - 1));
+      }
 
+      /*
       for (i = 0; i < num_fields; i++) {
 	if (!strcmp(fields[i].name, "id")) {
 	  m->id = strdup((char *)row[i]);
@@ -154,13 +143,19 @@ void _get_next_monitor_entry(monitor_entry_t *m)
 	}
       }
 
-      /* terminate attr and val lists */
       m->attrs[j] = NULL;
       m->vals[j] = NULL;
-
+      */
       mysql_free_result(result);
+    } else {
+      /* an error occurred or no results */
+      if (mysql_field_count(mysql) != 0)
+	printf("Error: %s\n", mysql_error(mysql));
     }
-  }
+    rc = mysql_next_result(mysql);
+  } while (rc == 0);
+
+  pthread_mutex_unlock(&sql_mutex);
 }
 
 #endif

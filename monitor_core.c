@@ -59,6 +59,7 @@ int main(int argc, char *argv[]) {
   }
 
   /* initialize backed database connection */
+
   if (database_open(0) < 0) {
     exit(-1);
   }
