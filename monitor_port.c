@@ -16,5 +16,7 @@ monitor_result_t *monitor_port(char *addr, char *proto, int port)
   struct sockaddr_in serv_addr;
   struct hostent     *h_ent;
  
-
+  serv_addr.sin_family = AF_INET;
+  bcopy(addr, (char *)&serv_addr.sin_addr.s_addr, strlen(addr));
+  serv_addr.sin_port = htons(port);
 }
