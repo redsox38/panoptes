@@ -1,5 +1,6 @@
 <config>
     <monitor threads="2"/>
+    <port_monitor timeout="5"/>
     <lib database="/home/tmerritt/panoptes/database/.libs/libmysqldisc.so"/>
     <db name="panoptes" user="db_username" password="db_password" host="localhost" sqlinit="/home/tmerritt/panoptes/dbinit.sql"/>
     <rrd directory="/usr/local/panoptes/rrd"/>

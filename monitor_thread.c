@@ -30,22 +30,27 @@ void *monitor_thread(void *arg)
 
   get_next_monitor_entry(&m);
 
-  if (!strcmp(m.table_name, "port_monitors")) {
-    /* open socket if we have all the data needed */
-    addr = get_attr_val(&m, "address");
-    proto = get_attr_val(&m, "proto");
-    port = get_attr_val(&m, "port");
-    if (addr != NULL && proto != NULL && port != NULL) {
-      sscanf(port, "%d", &portnum);
-      r = (monitor_result_t *)malloc(sizeof(monitor_result_t));
-      r = monitor_port(addr, proto, portnum);
-      r->perf_data = NULL;
+  /* make sure we got a result */
+  if (m.table_name != NULL) {
+    if (!strcmp(m.table_name, "port_monitors")) {
+      /* open socket if we have all the data needed */
+      addr = get_attr_val(&m, "address");
+      proto = get_attr_val(&m, "proto");
+      port = get_attr_val(&m, "port");
+      if (addr != NULL && proto != NULL && port != NULL) {
+	sscanf(port, "%d", &portnum);
+	r = monitor_port(addr, proto, portnum);
 
-      free_monitor_result(r);
-    } else {
-      fprintf(stderr, "Missing data required to monitor: %s %s", 
-	      m.table_name, m.id);
+	printf("message: %s\n", r->monitor_msg);
+	free_monitor_result(r, 1);
+      } else {
+	fprintf(stderr, "Missing data required to monitor: %s %s", 
+		m.table_name, m.id);
+      }
     }
+  } else {
+    /* nothing to monitor, sleep for a minute and check again */
+    sleep(60);
   }
 
   free_monitor_entry(&m, 0);

@@ -5,6 +5,7 @@
 #include <stdlib.h>
 #include <pthread.h>
 #include <stdio.h>
+#include <sys/resource.h>
 
 extern void *monitor_thread(void *);
 extern void *shutdown_thread(void *);
@@ -31,6 +32,7 @@ int main(int argc, char *argv[]) {
   int                rc, i, c, option_index, num_threads;
   char               *p = NULL;
   sigset_t           sigmask;
+  struct rlimit      lim;
 
   /* process command line */
 
@@ -45,6 +47,16 @@ int main(int argc, char *argv[]) {
       exit(-1);
       break;
     }
+  }
+
+  /* set pertinent resource limits as high as we can */
+  if (getrlimit(RLIMIT_NOFILE, &lim) < 0) {
+    perror("setrlimit");
+  }
+  lim.rlim_cur = lim.rlim_max;
+
+  if (setrlimit(RLIMIT_NOFILE, &lim) < 0) {
+    perror("setrlimit");
   }
 
   if (configfile == NULL)

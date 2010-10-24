@@ -15,10 +15,18 @@ struct monitor_entry {
 typedef struct monitor_entry monitor_entry_t;
 
 struct monitor_result {
-  unsigned short rst;
+  unsigned short status;
   char           *perf_data;
+  char           *monitor_msg;
 };
 
 typedef struct monitor_result monitor_result_t;
 
+/* prototypes */
+monitor_entry_t *allocate_monitor_entry(monitor_entry_t *);
+monitor_result_t *allocate_monitor_result(monitor_result_t *);
+void free_monitor_entry(monitor_entry_t *, int);
+void free_monitor_result(monitor_result_t *, int);
+char *get_attr_val(monitor_entry_t *, char *);
+monitor_result_t *monitor_port(char *, char *, int);
 #endif
