@@ -22,6 +22,8 @@ struct monitor_result {
 
 typedef struct monitor_result monitor_result_t;
 
+#define max(x,y) ((x) > (y) ? (x) : (y))
+
 /* prototypes */
 monitor_entry_t *allocate_monitor_entry(monitor_entry_t *);
 monitor_result_t *allocate_monitor_result(monitor_result_t *);

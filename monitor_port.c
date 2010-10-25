@@ -12,16 +12,19 @@
 #include <sys/select.h>
 #include <unistd.h>
 #include <fcntl.h>
+#include <sys/time.h>
 #include "monitor_core.h"
 
 monitor_result_t *monitor_port(char *addr, char *proto, int port)
 {
   int                sock, len, rc;
+  int                nfds = 0;
   struct sockaddr_in serv_addr;
   monitor_result_t   *r;
   char               *to_str;
-  struct timeval     to;
-  fd_set             rd_set;
+  struct timeval     to, start, stop;
+  fd_set             rd_set, wr_set;
+  double             elapsed;
 
   r = allocate_monitor_result(NULL);
 
@@ -32,14 +35,14 @@ monitor_result_t *monitor_port(char *addr, char *proto, int port)
   to_str = get_config_value("port_monitor.timeout");
 
   if (to_str != NULL) {
-    sscanf(to_str, "%ld", &to.tv_sec);
-  } else {
+    sscanf(to_str, "%ld", &to.tv_sec); 
+    free(to_str);
+ } else {
     /* default to 30 seconds */
     to.tv_sec = 30;
   }
   to.tv_usec = 0;
 
-  free(to_str);
 
   serv_addr.sin_family = AF_INET;
   serv_addr.sin_port = htons(port);
@@ -60,6 +63,8 @@ monitor_result_t *monitor_port(char *addr, char *proto, int port)
 	 so we can set a timeout on the connect 
       */
       fcntl(sock, F_SETFL, O_NONBLOCK);
+      
+      gettimeofday(&start, NULL);
 
       rc = connect(sock, (struct sockaddr *)&serv_addr, 
 		   sizeof(struct sockaddr_in));
@@ -67,23 +72,37 @@ monitor_result_t *monitor_port(char *addr, char *proto, int port)
       if ((rc < 0) && 
 	  (errno != EALREADY) &&
 	  (errno != EINPROGRESS)) {
+
 	/* error not related to the fact that the connection is non-blocking */
 	r->status = MONITOR_RESULT_ERR;
 	len = strlen("connect: ") + strlen(strerror(errno)) + 1;
 	r->monitor_msg = (char *)malloc(len * sizeof(char));
 	snprintf(r->monitor_msg, len, "connect: %s", strerror(errno));
-	printf("err %s\n", r->monitor_msg);
       } else {
 	/* select on socket to see if it connected up until t/o */
 	FD_ZERO(&rd_set);
+	FD_ZERO(&wr_set);
 	FD_SET(sock, &rd_set);
+	FD_SET(sock, &wr_set);
 
-	rc = select(1, &rd_set, NULL, NULL, &to);
+	nfds = max(nfds, sock);
+	rc = select(++nfds, &rd_set, &wr_set, NULL, &to);
 	close(sock);
 
 	if (rc == 1) {
+	  gettimeofday(&stop, NULL);
 	  r->status = MONITOR_RESULT_OK;
 	  r->monitor_msg = strdup("success");
+
+	  /* get elapsed time in milliseconds */
+	  elapsed = (stop.tv_sec - start.tv_sec) * 1000;
+	  elapsed += (stop.tv_usec - start.tv_usec) / 1000;
+
+	  /* space for string and a 10 digit number */
+	  len = strlen("elapsed time|") + 10;
+	  r->perf_data = (char *)malloc(len * sizeof(char));
+	  snprintf(r->perf_data, len, "elapsed time|%.2f", 
+		   elapsed);
 	} else if (rc == 0) {
 	  /* timed out */
 	  r->status = MONITOR_RESULT_ERR;

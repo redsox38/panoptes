@@ -41,7 +41,12 @@ void *monitor_thread(void *arg)
 	sscanf(port, "%d", &portnum);
 	r = monitor_port(addr, proto, portnum);
 
-	printf("message: %s\n", r->monitor_msg);
+	printf("addr: %s port: %d message: %s\n", addr, portnum, 
+	       r->monitor_msg);
+
+	if (r->perf_data != NULL)
+	  printf("perf: %s\n", r->perf_data);
+	  
 	free_monitor_result(r, 1);
       } else {
 	fprintf(stderr, "Missing data required to monitor: %s %s", 
