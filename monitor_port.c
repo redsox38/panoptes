@@ -22,6 +22,7 @@ monitor_result_t *monitor_port(char *addr, char *proto,
   int                nfds = 0;
   struct sockaddr_in serv_addr;
   char               *to_str;
+  char               errbuf[1024]; /* 1024 is the max errrstr len in glibc */ 
   struct timeval     to, start, stop;
   fd_set             rd_set, wr_set;
   double             elapsed;
@@ -46,9 +47,10 @@ monitor_result_t *monitor_port(char *addr, char *proto,
     if ((sock = socket(AF_INET, SOCK_STREAM, 0)) < 0) {
       /* error */
       r->status = MONITOR_RESULT_ERR;
-      len = strlen("create: ") + strlen(strerror(errno)) + 1;
+      strerror_r(errno, &errbuf, 1024);
+      len = strlen("create: ") + strlen(errbuf)) + 1;
       r->monitor_msg = (char *)malloc(len * sizeof(char));
-      snprintf(r->monitor_msg, len, "create: %s", strerror(errno));
+      snprintf(r->monitor_msg, len, "create: %s", errbuf);
     } else {
       /* connect socket */
 
@@ -69,9 +71,10 @@ monitor_result_t *monitor_port(char *addr, char *proto,
 
 	/* error not related to the fact that the connection is non-blocking */
 	r->status = MONITOR_RESULT_ERR;
-	len = strlen("connect: ") + strlen(strerror(errno)) + 1;
+	strerror_r(errno, &errbuf, 1024);
+	len = strlen("connect: ") + strlen(errbuf) + 1;
 	r->monitor_msg = (char *)malloc(len * sizeof(char));
-	snprintf(r->monitor_msg, len, "connect: %s", strerror(errno));
+	snprintf(r->monitor_msg, len, "connect: %s", errbuf);
       } else {
 	/* select on socket to see if it connected up until t/o */
 	FD_ZERO(&rd_set);
@@ -104,9 +107,10 @@ monitor_result_t *monitor_port(char *addr, char *proto,
 	} else {
 	  /* select err */
 	  r->status = MONITOR_RESULT_ERR;
-	  len = strlen("select: ") + strlen(strerror(errno)) + 1;
+	  strerror_r(errno, &errbuf, 1024);
+	  len = strlen("select: ") + strlen(errbuf) + 1;
 	  r->monitor_msg = (char *)malloc(len * sizeof(char));
-	  snprintf(r->monitor_msg, len, "select: %s", strerror(errno));
+	  snprintf(r->monitor_msg, len, "select: %s", errbuf);
 	}
       }
     }
