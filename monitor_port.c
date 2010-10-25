@@ -101,7 +101,7 @@ monitor_result_t *monitor_port(char *addr, char *proto, int port)
 	  /* space for string and a 10 digit number */
 	  len = strlen("elapsed time|") + 10;
 	  r->perf_data = (char *)malloc(len * sizeof(char));
-	  snprintf(r->perf_data, len, "elapsed time|%.2f", 
+	  snprintf(r->perf_data, len, "elapsed time|%.4f", 
 		   elapsed);
 	} else if (rc == 0) {
 	  /* timed out */
