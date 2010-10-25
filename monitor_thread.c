@@ -11,7 +11,7 @@ void *monitor_thread(void *arg)
   sigset_t         sigmask;
   monitor_entry_t  m;
   char             **p, **q;
-  monitor_result_t *r;
+  monitor_result_t r;
   /* data for port monitoring */
   char             *addr, *proto, *port;
   int              portnum;
@@ -32,26 +32,29 @@ void *monitor_thread(void *arg)
 
   /* make sure we got a result */
   if (m.table_name != NULL) {
-    if (!strcmp(m.table_name, "port_monitors")) {
-      /* open socket if we have all the data needed */
-      addr = get_attr_val(&m, "address");
-      proto = get_attr_val(&m, "proto");
-      port = get_attr_val(&m, "port");
-      if (addr != NULL && proto != NULL && port != NULL) {
-	sscanf(port, "%d", &portnum);
-	r = monitor_port(addr, proto, portnum);
-
-	printf("addr: %s port: %d message: %s\n", addr, portnum, 
-	       r->monitor_msg);
-
-	if (r->perf_data != NULL)
-	  printf("perf: %s\n", r->perf_data);
+    if (allocate_monitor_result(&r) != NULL) {
+      if (!strcmp(m.table_name, "port_monitors")) {
+	/* open socket if we have all the data needed */
+	addr = get_attr_val(&m, "address");
+	proto = get_attr_val(&m, "proto");
+	port = get_attr_val(&m, "port");
+	if (addr != NULL && proto != NULL && port != NULL) {
+	  sscanf(port, "%d", &portnum);
 	  
-	free_monitor_result(r, 1);
-      } else {
-	fprintf(stderr, "Missing data required to monitor: %s %s", 
-		m.table_name, m.id);
+	  monitor_port(addr, proto, portnum, &r);
+	  update_monitor_entry(&m, &r);
+	  
+	  if (r.perf_data != NULL)
+	    printf("perf: %s\n", r.perf_data);
+	  
+	  free_monitor_result(&r, 0);
+	} else {
+	  fprintf(stderr, "Missing data required to monitor: %s %s", 
+		  m.table_name, m.id);
+	}
       }
+    } else {
+      fprintf(stderr, "Unable to allocate result\n");
     }
   } else {
     /* nothing to monitor, sleep for a minute and check again */

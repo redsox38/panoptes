@@ -15,22 +15,16 @@
 #include <sys/time.h>
 #include "monitor_core.h"
 
-monitor_result_t *monitor_port(char *addr, char *proto, int port)
+monitor_result_t *monitor_port(char *addr, char *proto, 
+			       int port, monitor_result_t *r)
 {
   int                sock, len, rc;
   int                nfds = 0;
   struct sockaddr_in serv_addr;
-  monitor_result_t   *r;
   char               *to_str;
   struct timeval     to, start, stop;
   fd_set             rd_set, wr_set;
   double             elapsed;
-
-  r = allocate_monitor_result(NULL);
-
-  if (r == NULL)
-    return(r);
-
 
   to_str = get_config_value("port_monitor.timeout");
 

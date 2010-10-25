@@ -73,7 +73,7 @@ void get_next_monitor_entry(monitor_entry_t *m)
 
   void (*get_ptr)(monitor_entry_t *);
 
-  /* load add function */
+  /* load get function */
   if ((get_ptr = (void (*)(monitor_entry_t *))dlsym(lib_handle, "_get_next_monitor_entry")) != NULL) {
     (*get_ptr)(m);
   } else {
@@ -94,5 +94,22 @@ void add_discovered_connection(char *src, int src_port, char *dst,
   } else {
     fprintf(stderr, "_add_discovered_connection not defined\n");
   }
+}
+
+/* call library's _update_monitor_entry function */
+int update_monitor_entry(monitor_entry_t *m, monitor_result_t *r)
+{
+
+  int rc = -1;
+  int (*update_ptr)(monitor_entry_t *, monitor_result_t *);
+
+  /* load update function */
+  if ((update_ptr = (int (*)(monitor_entry_t *, monitor_result_t *))dlsym(lib_handle, "_update_monitor_entry")) != NULL) {
+    rc = (*update_ptr)(m, r);
+  } else {
+    fprintf(stderr, "_update_monitor_entry not defined\n");
+  }
+
+  return(rc);
 }
 

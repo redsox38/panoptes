@@ -72,7 +72,8 @@ CREATE TABLE port_monitors (
   check_interval smallint(6) NOT NULL DEFAULT '15',
   last_check datetime DEFAULT NULL,
   next_check datetime DEFAULT NULL,
-  status enum('ok','warn','error') DEFAULT NULL,
+  status enum('ok','warn','error','pending') DEFAULT NULL,
+  status_string VARCHAR(255) DEFAULT NULL,
   PRIMARY KEY (id),
   UNIQUE KEY idx (device_id,port,proto),
   KEY device_id (device_id),
@@ -93,7 +94,7 @@ CREATE ALGORITHM=UNDEFINED SQL  SECURITY INVOKER VIEW monitor_tasks
 DELIMITER //
 DROP PROCEDURE IF EXISTS get_next_monitor_entry//
 CREATE PROCEDURE get_next_monitor_entry()
-READS SQL DATA
+MODIFIES SQL DATA
 COMMENT 'Retrieves the next monitor entry'
 BEGIN
 
@@ -122,7 +123,7 @@ IF (_table_name='port_monitors') THEN
   -- set update last_check and next_check
   SET @s = CONCAT('UPDATE port_monitors SET last_check=NOW(), ',
                   'next_check=DATE_ADD(NOW(), INTERVAL ', @_interval,
-                  ' MINUTE) WHERE id=', _id);
+                  ' MINUTE), status="pending" WHERE id=', _id);
 
   PREPARE stmt FROM @s;
   EXECUTE stmt;
@@ -135,6 +136,30 @@ IF (_table_name='port_monitors') THEN
 
   SELECT _id AS id, 'port_monitors' AS table_name, _dev_ip AS address, 
          @_port AS port, @_proto AS proto;
+END IF;
+
+END;
+//
+DELIMITER ;
+
+DELIMITER //
+DROP PROCEDURE IF EXISTS update_monitor_entry//
+CREATE PROCEDURE update_monitor_entry(IN in_id BIGINT,
+                                      IN in_status VARCHAR(10),
+                                      IN in_status_string VARCHAR(255),
+                                      IN in_table VARCHAR(50))
+MODIFIES SQL DATA
+SQL SECURITY INVOKER
+COMMENT 'Updates monitor entry with monitoring results'
+BEGIN
+
+-- DECLARE _id BIGINT;
+-- DECLARE _table_name VARCHAR(50);
+
+IF (in_table='port_monitors') THEN
+  -- if it is a port monitor type, update port_monitors table
+  UPDATE port_monitors SET status=in_status, status_string=in_status_string
+      WHERE id=in_id;
 END IF;
 
 END;

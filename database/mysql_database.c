@@ -160,4 +160,66 @@ void _get_next_monitor_entry(monitor_entry_t *m)
   pthread_mutex_unlock(&sql_mutex);
 }
 
+int _update_monitor_entry(monitor_entry_t *m, monitor_result_t *r)
+{
+  MYSQL_RES   *result;
+  int         len, rc, num_fields;
+  char        *qry, *status_str;
+
+  switch(r->status) {
+  case MONITOR_RESULT_OK:
+    status_str = strdup("ok");
+    break;
+  case MONITOR_RESULT_WARN:
+    status_str = strdup("warn");
+    break;
+  default:
+    status_str = strdup("error");
+    break;
+  }
+
+  /* 
+     space for query string, 20 digit id (max BIGINT value)     
+   */
+  len = (strlen("CALL update_monitior_entry(") +
+	 20 +
+	 strlen(",'") +
+	 strlen(status_str) +
+	 strlen("','") +
+	 (r-> monitor_msg == NULL ? 0 : strlen(r->monitor_msg)) +
+	 strlen("','") +
+	 strlen(m->table_name) +
+	 strlen("')"));
+  
+  qry = (char *)malloc(len * sizeof(char));
+  snprintf(qry, len, "CALL update_monitor_entry(%s,'%s','%s','%s')",
+	   m->id, status_str, 
+	   (r->monitor_msg == NULL ? "" : r->monitor_msg),
+	   m->table_name);
+
+  printf("query: %s\n", qry);
+
+  free(status_str);
+
+  pthread_mutex_lock(&sql_mutex);
+
+  rc = mysql_query(mysql, qry);
+
+  do {
+    result = mysql_store_result(mysql);
+    if (result) {
+      mysql_free_result(result);
+    } else {
+      /* an error occurred or no results */
+      if (mysql_field_count(mysql) != 0)
+	printf("Error: %s\n", mysql_error(mysql));
+    }
+    rc = mysql_next_result(mysql);
+  } while (rc == 0);
+
+  pthread_mutex_unlock(&sql_mutex);
+
+  free(qry);
+}
+
 #endif
