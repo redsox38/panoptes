@@ -47,8 +47,8 @@ monitor_result_t *monitor_port(char *addr, char *proto,
     if ((sock = socket(AF_INET, SOCK_STREAM, 0)) < 0) {
       /* error */
       r->status = MONITOR_RESULT_ERR;
-      strerror_r(errno, &errbuf, 1024);
-      len = strlen("create: ") + strlen(errbuf)) + 1;
+      strerror_r(errno, errbuf, 1024);
+      len = strlen("create: ") + strlen(errbuf) + 1;
       r->monitor_msg = (char *)malloc(len * sizeof(char));
       snprintf(r->monitor_msg, len, "create: %s", errbuf);
     } else {
@@ -71,7 +71,7 @@ monitor_result_t *monitor_port(char *addr, char *proto,
 
 	/* error not related to the fact that the connection is non-blocking */
 	r->status = MONITOR_RESULT_ERR;
-	strerror_r(errno, &errbuf, 1024);
+	strerror_r(errno, errbuf, 1024);
 	len = strlen("connect: ") + strlen(errbuf) + 1;
 	r->monitor_msg = (char *)malloc(len * sizeof(char));
 	snprintf(r->monitor_msg, len, "connect: %s", errbuf);
@@ -107,7 +107,7 @@ monitor_result_t *monitor_port(char *addr, char *proto,
 	} else {
 	  /* select err */
 	  r->status = MONITOR_RESULT_ERR;
-	  strerror_r(errno, &errbuf, 1024);
+	  strerror_r(errno, errbuf, 1024);
 	  len = strlen("select: ") + strlen(errbuf) + 1;
 	  r->monitor_msg = (char *)malloc(len * sizeof(char));
 	  snprintf(r->monitor_msg, len, "select: %s", errbuf);

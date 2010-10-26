@@ -28,6 +28,7 @@ AC_CHECK_LIB([pcap], [pcap_open_live], ,AC_MSG_ERROR(Cannot find libpcap))
 AC_CHECK_LIB([xml2], [xmlReadFile], , AC_MSG_ERROR(Cannot find libxml2))
 AC_CHECK_LIB([pthread], [pthread_create])
 AC_CHECK_LIB([mysqlclient_r], [mysql_init], , AC_MSG_ERROR(Cannot find libmysqlclient))
+AC_CHECK_LIB([rrd], [rrd_create_r], , AC_MSG_ERROR(Cannot find librrd))
 
 dnl Checks for typedefs, structures, and compiler characteristics.
 AC_C_CONST

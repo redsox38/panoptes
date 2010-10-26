@@ -197,8 +197,6 @@ int _update_monitor_entry(monitor_entry_t *m, monitor_result_t *r)
 	   (r->monitor_msg == NULL ? "" : r->monitor_msg),
 	   m->table_name);
 
-  printf("query: %s\n", qry);
-
   free(status_str);
 
   pthread_mutex_lock(&sql_mutex);

@@ -14,6 +14,7 @@ void *monitor_thread(void *arg)
   monitor_result_t r;
   /* data for port monitoring */
   char             *addr, *proto, *port;
+  char             perf_attr[256];
   int              portnum;
 
   /* block termination/interrupt signals */
@@ -44,8 +45,10 @@ void *monitor_thread(void *arg)
 	  monitor_port(addr, proto, portnum, &r);
 	  update_monitor_entry(&m, &r);
 	  
-	  if (r.perf_data != NULL)
-	    printf("perf: %s\n", r.perf_data);
+	  if (r.perf_data != NULL) {
+	    snprintf(perf_attr, 256, "%s-%s", proto, port);
+	    update_performance_data(addr, perf_attr, &m, &r);
+	  }
 	  
 	  free_monitor_result(&r, 0);
 	} else {

@@ -133,13 +133,16 @@ function openDevice() {
 	    style: "height: 100%; width: 100%;"
 	});
 
-    // tabs for new tab tab container
+    // tabs for new tab container
     var tc_1 = new dijit.layout.ContentPane({
 	    id: id + '_tc_avail',
 	    title: 'Availability',
 	    content: 'availability monitors',	    
 	});
     
+    // add availability monitors to availability tab 
+
+
     var tc_2 = new dijit.layout.ContentPane({
 	    id: id + '_tc_perf',
 	    title: 'Performance',

@@ -11360,6 +11360,53 @@ else
   as_fn_error "Cannot find libmysqlclient" "$LINENO" 5
 fi
 
+{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for rrd_create_r in -lrrd" >&5
+$as_echo_n "checking for rrd_create_r in -lrrd... " >&6; }
+if test "${ac_cv_lib_rrd_rrd_create_r+set}" = set; then :
+  $as_echo_n "(cached) " >&6
+else
+  ac_check_lib_save_LIBS=$LIBS
+LIBS="-lrrd  $LIBS"
+cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+
+/* Override any GCC internal prototype to avoid an error.
+   Use char because int might match the return type of a GCC
+   builtin and then its argument prototype would still apply.  */
+#ifdef __cplusplus
+extern "C"
+#endif
+char rrd_create_r ();
+int
+main ()
+{
+return rrd_create_r ();
+  ;
+  return 0;
+}
+_ACEOF
+if ac_fn_c_try_link "$LINENO"; then :
+  ac_cv_lib_rrd_rrd_create_r=yes
+else
+  ac_cv_lib_rrd_rrd_create_r=no
+fi
+rm -f core conftest.err conftest.$ac_objext \
+    conftest$ac_exeext conftest.$ac_ext
+LIBS=$ac_check_lib_save_LIBS
+fi
+{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_cv_lib_rrd_rrd_create_r" >&5
+$as_echo "$ac_cv_lib_rrd_rrd_create_r" >&6; }
+if test "x$ac_cv_lib_rrd_rrd_create_r" = x""yes; then :
+  cat >>confdefs.h <<_ACEOF
+@%:@define HAVE_LIBRRD 1
+_ACEOF
+
+  LIBS="-lrrd $LIBS"
+
+else
+  as_fn_error "Cannot find librrd" "$LINENO" 5
+fi
+
 
 { $as_echo "$as_me:${as_lineno-$LINENO}: checking for an ANSI C-conforming const" >&5
 $as_echo_n "checking for an ANSI C-conforming const... " >&6; }
