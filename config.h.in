@@ -21,8 +21,8 @@
 /* Define to 1 if you have the `pthread' library (-lpthread). */
 #undef HAVE_LIBPTHREAD
 
-/* Define to 1 if you have the `rrd' library (-lrrd). */
-#undef HAVE_LIBRRD
+/* Define to 1 if you have the `rrd_th' library (-lrrd_th). */
+#undef HAVE_LIBRRD_TH
 
 /* Define to 1 if you have the `xml2' library (-lxml2). */
 #undef HAVE_LIBXML2

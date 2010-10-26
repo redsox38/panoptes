@@ -26,6 +26,9 @@ void *monitor_thread(void *arg)
   (void *)sigaddset(&sigmask, SIGTERM);
   pthread_sigmask(SIG_BLOCK, &sigmask, NULL);
 
+  /* allocate TSD for rrd tool libraries */
+  rrd_get_context();
+
   /* get next monitor entry from task table */
   allocate_monitor_entry(&m);
 

@@ -68,5 +68,20 @@ class deviceEntry
     return($this->name);
   }
 
+  /**
+   * Get/Set address
+   *
+   * @param val optional string to set address to
+   * @throws none
+   * @return string name
+   */
+  public function address($val = null) {
+    if (!(is_null($val))) {
+      $this->address = $val;
+    }
+
+    return($this->address);
+  }
+
 }
 ?>

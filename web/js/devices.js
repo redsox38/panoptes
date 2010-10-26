@@ -3,6 +3,30 @@ var deviceStore;
 var deviceTreeSelectedItem;
 var groupStore;
 
+function addInfoData(id, container) {
+    var xhrArgs = {
+	url: '/panoptes/',
+	handleAs: 'json',
+	content: {
+	    action: 'getDeviceInfo',
+	    data: '{ "id": "' + id + '" }'
+	},
+	load: function(data) {
+	    if (data && !data.error) {
+		new_data = '<b>name : </b>' + data.data.name + '<br/>' +
+		'<b>IP : </b>' + data.data.address + '<br/>';
+		container.set('content', new_data);
+	    } else {
+		alert(data.error);
+	    }
+	},
+
+    };
+	
+    var resp = dojo.xhrGet(xhrArgs);
+
+}
+
 function getSelectedTreeNode(item, node, e) {
     // set global variables for processing 
     // menu option later
@@ -140,14 +164,18 @@ function openDevice() {
 	    content: 'availability monitors',	    
 	});
     
-    // add availability monitors to availability tab 
-
-
     var tc_2 = new dijit.layout.ContentPane({
 	    id: id + '_tc_perf',
 	    title: 'Performance',
 	    content: 'performance monitors',	    
 	});
+    
+    // add info data to info container
+    addInfoData(id, ic);
+
+    // register onshow functions for tabs
+    //addAvailabilityData(id, tc_1);
+    //addPerformanceData(id, tc_2);
     
     // put all of the components together in border container
     // and append to parent tab

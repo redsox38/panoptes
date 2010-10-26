@@ -134,7 +134,7 @@ class panoptes
     if (!is_null($id)) {
       // update from table
       $this->_dev_data = array();
-      $res = mysql_query("SELECT id, name FROM devices WHERE id='" . $id ."'", $this->db);
+      $res = mysql_query("SELECT id, address, name FROM devices WHERE id='" . $id ."'", $this->db);
       
       if ($res !== false) {
 	$r = mysql_fetch_assoc($res);      
@@ -147,7 +147,7 @@ class panoptes
 	// update from table
 	$this->_dev_data = array();
 
-        $res = mysql_query("SELECT id, name FROM devices", $this->db);
+        $res = mysql_query("SELECT id, address, name FROM devices", $this->db);
 
 	if ($res !== false) {
 	  while ($row = mysql_fetch_assoc($res)) {
@@ -167,6 +167,7 @@ class panoptes
       $dev->db($this->db);
       $dev->id($r['id']);
       $dev->name($r['name']);
+      $dev->address($r['address']);
     } else {
       $dev = null;
     }      
@@ -439,6 +440,35 @@ class panoptes
     }
 
     return(array('result' => 'success'));
+  }
+
+  /**
+   * get device info
+   *
+   * return information about given device id
+   *
+   * @param args json params converted into an array
+   *             id device id to get data for
+   * @throws none
+   * @return array containing result and possible error messages
+   */
+  public function ajax_getDeviceInfo($args) {
+    try {
+      $dev = $this->getDevice($args['id']);
+      if ($dev) {
+	$data = array('name'    => $dev->name(),
+		      'type'    => 'device',
+		      'address' => $dev->address(),
+		      'id'      => $args['id']);
+      } else {
+	$data = array();
+      }
+    } catch (Exception $e) {
+      return(array('result' => 'failure',
+		   'error'  => $e->getMessage()));
+    }
+
+    return(array('result' => 'success', 'data' => $data));
   }
 }
 

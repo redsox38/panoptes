@@ -12,13 +12,47 @@
 
 #include "monitor_core.h"
 
+/* update rrd */
+void panoptes_rrd_update(char *path, monitor_result_t *r)
+{
+  char *args[2], ds_str[256], *p, *q, *tkn;
+  int  num_args = 0;
+
+  snprintf(ds_str, 256, "%ld:", time(0));
+
+  p = r->perf_data;  
+
+  p = strtok_r(p, ";", &tkn);
+  while(p != NULL) {
+    q = index(p, '|');
+    q++;
+    strncat(ds_str, q, strlen(q));
+    strncat(ds_str, ":", 1);      
+
+    p = strtok_r(NULL, ";", &tkn);
+  }
+
+  /* remove trailing : */
+  ds_str[strlen(ds_str) - 2] = '\0';
+
+  args[num_args++] = ds_str;
+
+  rrd_clear_error();
+  rrd_update_r(path, NULL, num_args, (const char **)args);
+  if (rrd_test_error()) {
+    fprintf(stderr, "rrd_update: %s\n", rrd_get_error());
+  }
+
+}
+
 /* create rrd if it doesn't exist */
 void panoptes_rrd_create(char *path, 
 			 char *table_name, 
 			 monitor_result_t *r)
 {
-  char *args[128], start[64];
+  char *args[128];
   char *rrd_config_param, *rrd_tpl, *p;
+  /* allow up to 16 data sources in a single rrd */
   char ds[16][64];
   int  num_args = 0, ds_count = 0;
  
@@ -165,6 +199,7 @@ void update_performance_data(char *address,
 
   if (!err) {
     /* update rrd with perf data */
+    panoptes_rrd_update(rrd_path, r);
   }
 
   free(rrd_root);
