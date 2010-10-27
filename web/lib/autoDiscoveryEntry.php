@@ -66,9 +66,9 @@ class autoDiscoveryEntry extends hostEntry
 
     try {
       $monitor_ent = new monitorEntry($this->db);
-      $monitor_ent->srcaddr($addr);
-      $monitor_ent->sport($port);
-      $monitor_ent->proto($this->proto());
+      $monitor_ent->srcaddr = $addr;
+      $monitor_ent->sport = $port;
+      $monitor_ent->proto = $this->proto();
       
       $monitor_ent->commit();
     } catch (Exception $e) {

@@ -3,6 +3,38 @@ var deviceStore;
 var deviceTreeSelectedItem;
 var groupStore;
 
+var portMonitorStore  = new dojo.data.ItemFileWriteStore({});
+var port_monitor_data;
+
+function addPortMonitorData(id, container) {
+    var xhrArgs = {
+	url: '/panoptes/',
+	handleAs: 'json',
+	content: {
+	    action: 'getPortMonitorData',
+	    data: '{ "id": "' + id + '" }'
+	},
+	load: function(data) {
+	    if (data && !data.error) {          
+		// populate grid
+		
+		port_monitor_data = {
+		    label: "portmon",
+		    identifier: "id",
+		    items: data.data
+		};
+		
+		portMonitorStore.data = port_monitor_data;
+		container.update();		
+	    } else {
+		alert(data.error);
+	    }
+	},	
+    };
+       
+    var resp = dojo.xhrGet(xhrArgs);
+}
+
 function addInfoData(id, container) {
     var xhrArgs = {
 	url: '/panoptes/',
@@ -24,7 +56,6 @@ function addInfoData(id, container) {
     };
 	
     var resp = dojo.xhrGet(xhrArgs);
-
 }
 
 function getSelectedTreeNode(item, node, e) {
@@ -158,12 +189,52 @@ function openDevice() {
 	});
 
     // tabs for new tab container
-    var tc_1 = new dijit.layout.ContentPane({
-	    id: id + '_tc_avail',
-	    title: 'Availability',
-	    content: 'availability monitors',	    
-	});
-    
+    // create data  grid 
+    var port_monitor_layout = [{
+	    field: 'port',
+	    name: 'Port',
+	    width: '35px'
+	},      
+	{   
+	    field: 'proto', 
+	    name: 'Protocol',
+	    width: '55px'
+	},
+	{            
+	    field: 'last_check', 
+	    name: 'Last Check',
+	    width: '150px'
+	},
+	{            
+	    field: 'next_check', 
+	    name: 'Next Check',
+	    width: '150px'
+	},
+	{            
+	    field: 'status', 
+	    name: 'Status',
+	    width: '100px'
+	},
+	{            
+	    field: 'status_string', 
+	    name: 'Monitor Output',
+	    width: 'auto'
+	},
+	];
+
+    var tc_1 = new dojox.grid.EnhancedGrid({
+	    title: 'Port Monitors',
+	    store: portMonitorStore,
+	    structure: port_monitor_layout,
+	    clientSort: true,
+	    rowSelector: '10px',
+	    selectionMode: 'none',
+	    plugins: {
+		nestedSorting: true,
+	    }
+	}, document.createElement('div'));                  
+    tc_1.startup();                
+
     var tc_2 = new dijit.layout.ContentPane({
 	    id: id + '_tc_perf',
 	    title: 'Performance',
@@ -174,7 +245,7 @@ function openDevice() {
     addInfoData(id, ic);
 
     // register onshow functions for tabs
-    //addAvailabilityData(id, tc_1);
+    addPortMonitorData(id, tc_1);
     //addPerformanceData(id, tc_2);
     
     // put all of the components together in border container
@@ -267,6 +338,8 @@ function addToGroup() {
     dv2.style.marginLeft = "250px";
     dv2.style.marginRight = "250px";
     dv2.style.align = "center";
+    // needs to be on top of transparent overlay,
+    // but below the zIndex for the combobox
     dv2.zIndex = 51;
 
     dv2.appendChild(cb.domNode);

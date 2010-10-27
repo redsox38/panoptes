@@ -14,6 +14,7 @@ require_once 'panoptesConfiguration.php';
 require_once 'autoDiscoveryEntry.php';
 require_once 'deviceGroup.php';
 require_once 'deviceEntry.php';
+require_once 'monitorEntry.php';
 
 class panoptes
 {
@@ -248,6 +249,42 @@ class panoptes
   }
 
   /**
+   * Retrieve monitior entries
+   *
+   * @param id id of specific device to retrieve
+   *                 monitor data for
+   *
+   * @throws Exception 
+   * @return array of monitorEntry objects
+   */
+  public function getPortMonitorData($id) {
+    $rtndata = array();
+
+    $res = mysql_query("SELECT * FROM port_monitors WHERE device_id='" . 
+		       $id ."'", $this->db);
+    
+    if ($res !== false) {
+      while ($r = mysql_fetch_assoc($res)) {
+	$ent = new monitorEntry($this->db);
+	$ent->id = $r['id'];
+	$ent->device_id = $id;
+	$ent->port = $r['port'];
+	$ent->last_check = $r['last_check'];
+	$ent->next_check = $r['next_check'];
+	$ent->proto = $r['proto'];
+	$ent->status = $r['status'];
+	$ent->status_string = $r['status_string'];
+	array_push($rtndata, $ent);
+      }
+      mysql_free_result($res);
+    } else {
+      throw new Exception(mysql_error());
+    }
+
+    return($rtndata);
+  }
+
+  /**
    * ignore auto discovery entries for ajax request
    *
    * @param args json params converted into an array
@@ -466,6 +503,40 @@ class panoptes
     } catch (Exception $e) {
       return(array('result' => 'failure',
 		   'error'  => $e->getMessage()));
+    }
+
+    return(array('result' => 'success', 'data' => $data));
+  }
+
+  /**
+   * get availability monitor data
+   *
+   * return monitor information for given device id
+   *
+   * @param args json params converted into an array
+   *             id device id to get data for
+   * @throws none
+   * @return array containing result and possible error messages
+   */
+  public function ajax_getPortMonitorData($args) {
+    $data = array();
+    
+    try {
+      $rst = $this->getPortMonitorData($args['id']);
+      foreach ($rst as $a) {
+	array_push($data, array (
+				 'id'            => $a->id,
+				 'device_id'     => $a->device_id,
+				 'port'          => $a->port,
+				 'last_check'    => $a->last_check,
+				 'next_check'    => $a->next_check,
+				 'status'        => $a->status,
+				 'status_string' => $a->status_string
+				 ));
+      }
+    } catch (Exception $e) {
+      return(array('result' => 'failure',
+                  'error'  => $e->getMessage()));
     }
 
     return(array('result' => 'success', 'data' => $data));

@@ -13,7 +13,7 @@
 abstract class hostEntry
 {
   protected $db;
-
+  
   /**
    * Get/Set db link
    *

@@ -16,7 +16,20 @@ require_once 'hostEntry.php';
 class monitorEntry extends hostEntry
 {
   protected $db;
+  protected $data = array();
   protected $device_id = null;
+
+  public function __get($name) {
+    if (array_key_exists($name, $this->data)) {
+      return($this->data[$name]);
+    } else {
+      return(null);
+    }
+  }
+  
+  public function __set($name, $val) {
+    $this->data[$name] = $val;
+  }
 
   public function __construct($db = null) {
     if (!is_null($db)) {
