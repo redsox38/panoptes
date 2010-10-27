@@ -3,8 +3,7 @@ var deviceStore;
 var deviceTreeSelectedItem;
 var groupStore;
 
-var portMonitorStore  = new dojo.data.ItemFileWriteStore({});
-var port_monitor_data;
+var portMonitorStore;
 
 function addPortMonitorData(id, container) {
     var xhrArgs = {
@@ -17,14 +16,12 @@ function addPortMonitorData(id, container) {
 	load: function(data) {
 	    if (data && !data.error) {          
 		// populate grid
-		
-		port_monitor_data = {
-		    label: "portmon",
-		    identifier: "id",
-		    items: data.data
-		};
-		
-		portMonitorStore.data = port_monitor_data;
+		dojo.forEach(data.data, function(oneEntry) {
+			portMonitorStore.newItem(oneEntry);
+		    });
+
+		portMonitorStore.save();
+		container.setStore(portMonitorStore);
 		container.update();		
 	    } else {
 		alert(data.error);
@@ -193,12 +190,12 @@ function openDevice() {
     var port_monitor_layout = [{
 	    field: 'port',
 	    name: 'Port',
-	    width: '35px'
+	    width: '45px'
 	},      
 	{   
 	    field: 'proto', 
 	    name: 'Protocol',
-	    width: '55px'
+	    width: '65px'
 	},
 	{            
 	    field: 'last_check', 
@@ -213,7 +210,7 @@ function openDevice() {
 	{            
 	    field: 'status', 
 	    name: 'Status',
-	    width: '100px'
+	    width: '90px'
 	},
 	{            
 	    field: 'status_string', 
@@ -221,6 +218,16 @@ function openDevice() {
 	    width: 'auto'
 	},
 	];
+
+    port_monitor_data = {
+	label: "portmon",
+	identifier: "id",
+	items: []
+    };
+
+    portMonitorStore = new dojo.data.ItemFileWriteStore({ 
+	    data: port_monitor_data 
+	});		
 
     var tc_1 = new dojox.grid.EnhancedGrid({
 	    title: 'Port Monitors',

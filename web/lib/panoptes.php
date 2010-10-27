@@ -528,6 +528,7 @@ class panoptes
 				 'id'            => $a->id,
 				 'device_id'     => $a->device_id,
 				 'port'          => $a->port,
+				 'proto'         => $a->proto,
 				 'last_check'    => $a->last_check,
 				 'next_check'    => $a->next_check,
 				 'status'        => $a->status,
