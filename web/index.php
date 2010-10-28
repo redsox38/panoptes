@@ -60,6 +60,7 @@ if ($req->isXmlHttpRequest()) {
         dojo.require("dijit.MenuItem");
         dojo.require("dijit.form.Button");
         dojo.require("dijit.form.ComboBox");
+        dojo.require("dijit.form.FilteringSelect");
     </script>
     <script type="text/javascript" src="js/discovery.js"></script>
     <script type="text/javascript" src="js/devices.js"></script>

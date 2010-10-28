@@ -2,8 +2,20 @@ var deviceTree;
 var deviceStore;
 var deviceTreeSelectedItem;
 var groupStore;
-
 var portMonitorStore;
+
+function updatePerformanceGraph(id) {
+    // get selected metic
+    metric = dijit.byId(id + '_perf_metric').get('displayedValue');
+    var cp = new dijit.layout.ContentPane({
+	    id: id + '_perf_' + metric + '_cp',
+	    title: 'Chart 1',
+	    content: 'Chart 1 here',
+	    closable: true
+	});
+
+    cp.placeAt(dijit.byId(id + '_tc_perf').domNode);
+}
 
 function addPortMonitorData(id, container) {
     var xhrArgs = {
@@ -146,46 +158,42 @@ function createDeviceTree(){
     }
 }
 
-function openDevice() {
-    // get selected tree item
-    var id = deviceStore.getValues(deviceTreeSelectedItem, 'id').toString();
-    id = id.replace("d_", "");
-    var name = deviceStore.getValues(deviceTreeSelectedItem, 'name');
-						
-    // border container to hold the content for the tab for this
-    // device
-    var bc = new dijit.layout.BorderContainer({
-	    id: id + '_tab',
-	    title: name,
-	    style: "width: 100%; height: 100%;",
-	    closable: true
+function createPerformanceHistoryTab(id) {
+
+    // load available historical data
+    // for selectbox
+    
+    var tc_2 = new dijit.layout.ContentPane({
+	    id: id + '_tc_perf',
+	    title: 'Performance History',
+	    content: '',	    
+	});
+    
+    // create combo box and buttons for performance
+    // history tab
+    sb = new dijit.form.FilteringSelect({
+   	    id: id + '_perf_metric',
+   	    name: 'perf_metric',
+    	    store: portMonitorStore,
+    	    searchAttr: 'metric'
+    	}, dijit.byId(id + '_tc_perf'));
+
+    sb.placeAt(tc_2.domNode);
+
+    sub = new dijit.form.Button({
+	    label: 'Graph',
+	    onClick: function() {
+		updatePerformanceGraph(id);
+	    }
 	});
 
-    // info pane for new tab
-    var ic = new dijit.layout.ContentPane({
-	    id: id + '_info',
-	    title: ' Device Info',
-	    region: 'leading',
-	    style: 'width: 15%',
-	    content: 'info',	    
-	});
+    
+    sub.placeAt(tc_2.domNode);
+    
+    return(tc_2);
+}
 
-    // header for new tab
-    var hc = new dijit.layout.ContentPane({
-	    id: id + '_hdr',
-	    region: 'top',
-	    title: 'Device Header',
-	    content: '<b>' + name + '</b>'
-	});
-
-    // tab container for new tab
-    var tc = new dijit.layout.TabContainer({
-            id: id + '_tc',
-	    region: 'center',
-	    style: "height: 100%; width: 100%;"
-	});
-
-    // tabs for new tab container
+function createPortMonitorTab(id) {
     // create data  grid 
     var port_monitor_layout = [{
 	    field: 'port',
@@ -241,20 +249,59 @@ function openDevice() {
 	    }
 	}, document.createElement('div'));                  
     tc_1.startup();                
-
-    var tc_2 = new dijit.layout.ContentPane({
-	    id: id + '_tc_perf',
-	    title: 'Performance',
-	    content: 'performance monitors',	    
-	});
     
+    // load data for availability tab
+    addPortMonitorData(id, tc_1);
+    
+    return(tc_1);
+}
+
+function openDevice() {
+    // get selected tree item
+    var id = deviceStore.getValues(deviceTreeSelectedItem, 'id').toString();
+    id = id.replace("d_", "");
+    var name = deviceStore.getValues(deviceTreeSelectedItem, 'name');
+						
+    // border container to hold the content for the tab for this
+    // device
+    var bc = new dijit.layout.BorderContainer({
+	    id: id + '_tab',
+	    title: name,
+	    style: "width: 100%; height: 100%;",
+	    closable: true
+	});
+
+    // info pane for new tab
+    var ic = new dijit.layout.ContentPane({
+	    id: id + '_info',
+	    title: ' Device Info',
+	    region: 'leading',
+	    style: 'width: 15%',
+	    content: 'info',	    
+	});
+
     // add info data to info container
     addInfoData(id, ic);
 
-    // register onshow functions for tabs
-    addPortMonitorData(id, tc_1);
-    //addPerformanceData(id, tc_2);
-    
+    // header for new tab
+    var hc = new dijit.layout.ContentPane({
+	    id: id + '_hdr',
+	    region: 'top',
+	    title: 'Device Header',
+	    content: '<b>' + name + '</b>'
+	});
+
+    // tab container for new tab
+    var tc = new dijit.layout.TabContainer({
+            id: id + '_tc',
+	    region: 'center',
+	    style: "height: 100%; width: 100%;"
+	});
+
+    // tabs for new tab container
+    tc_1 = createPortMonitorTab(id);
+    tc_2 = createPerformanceHistoryTab(id);
+
     // put all of the components together in border container
     // and append to parent tab
     tc.addChild(tc_1);
@@ -267,7 +314,7 @@ function openDevice() {
     dijit.byId("panoptes_tab_container").selectChild(bc);
 }
 
-function xhdrGroupAdd(attr_name, device_id) {
+function xhrGroupAdd(attr_name, device_id) {
 
     grp = dijit.byId(attr_name).attr('value');
     
@@ -321,7 +368,7 @@ function addToGroup() {
     sub = new dijit.form.Button({
 	    label: 'Add',
 	    onClick: function() {
-		xhdrGroupAdd("group_to_add", id);
+		xhrGroupAdd("group_to_add", id);
 	    }
 	});
 

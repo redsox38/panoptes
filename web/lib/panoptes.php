@@ -532,7 +532,9 @@ class panoptes
 				 'last_check'    => $a->last_check,
 				 'next_check'    => $a->next_check,
 				 'status'        => $a->status,
-				 'status_string' => $a->status_string
+				 'status_string' => $a->status_string,
+				 'metric'        => $a->proto . '-' .
+				 $a->port
 				 ));
       }
     } catch (Exception $e) {
