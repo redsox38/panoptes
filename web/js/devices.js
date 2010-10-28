@@ -15,6 +15,12 @@ function updatePerformanceGraph(id) {
 	});
 
     cp.placeAt(dijit.byId(id + '_tc_perf').domNode);
+
+    graphImg = new Image();
+    graphImg.src = '/panoptes/graph.php?id=' + id + '&metric=' + metric;
+    graphImg.id = id + '_' + metric + '_graph';
+
+    dojo.place(graphImg, cp.domNode, 'last');
 }
 
 function addPortMonitorData(id, container) {
