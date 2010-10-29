@@ -45,6 +45,13 @@ void panoptes_rrd_update(char *path, monitor_result_t *r)
 
 }
 
+/* create xml template for this rrd to help graphing later */
+void panoptes_rrd_xml_create(char *path,
+			     char *table_name,
+			     monitor_result_t *r)
+{
+}
+
 /* create rrd if it doesn't exist */
 void panoptes_rrd_create(char *path, 
 			 char *table_name, 
@@ -187,6 +194,7 @@ void update_performance_data(char *address,
       case ENOENT:
 	/* create rrd */
 	panoptes_rrd_create(rrd_path, m->table_name, r);
+	panoptes_rrd_xml_create(rrd_path, m->table_name, r);
 	break;
       default:
 	strerror_r(errno, errbuf, 1024);

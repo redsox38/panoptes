@@ -21,6 +21,14 @@ function updatePerformanceGraph(id) {
     graphImg.id = id + '_' + metric + '_graph';
 
     dojo.place(graphImg, cp.domNode, 'last');
+
+    dojo.style(graphImg.id, "opacity", "0");
+
+    fadeArgs = {
+	node: graphImg.id,
+	duration: 1000
+    };
+    dojo.fadeIn(fadeArgs).play();
 }
 
 function addPortMonitorData(id, container) {
