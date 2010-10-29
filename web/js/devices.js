@@ -10,7 +10,7 @@ function updatePerformanceGraph(id) {
     var cp = new dijit.layout.ContentPane({
 	    id: id + '_perf_' + metric + '_cp',
 	    title: 'Chart 1',
-	    content: 'Chart 1 here',
+	    content: '',
 	    closable: true
 	});
 
