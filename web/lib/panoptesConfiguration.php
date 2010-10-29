@@ -11,22 +11,12 @@
  */
 class panoptesConfiguration
 {
-  protected $data = array();
-  
-  public function __get($name) {
-    if (array_key_exists($name, $this->data)) {
-      return($this->data[$name]);
+  public function __construct($file = null) {
+    if (is_null($file)) {
+      $this->config_file = '/home/tmerritt/panoptes/config.xml';
     } else {
-      return(null);
+      $this->config_file = $file;
     }
-  }
-  
-  public function __set($name, $val) {
-    $this->data[$name] = $val;
-  }
-
-  public function __construct() {
-    $this->config_file = '/home/tmerritt/panoptes/config.xml';
     $xml = file_get_contents($this->config_file);
     
     $t = $this->_xml2ary($xml);
@@ -49,6 +39,17 @@ class panoptesConfiguration
     $attr    = substr($name, $pos+1);
     
     return($this->configuration[$element . "_attr"][$attr]);
+  }
+
+  /**
+   * Retrieve raw configuration array
+   *
+   * @param none
+   * @throws none
+   * @return array
+   */
+  public function getConfigArray() {
+    return($this->configuration);
   }
 
   private function _xml2ary(&$string, $get_attributes = 1, $priority = 'tag') {

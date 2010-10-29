@@ -65,6 +65,100 @@ class panoptes
   }
 
   /**
+   * Parse RRD xml and return information for graphing
+   *
+   * @param id id of specific device to retrieve
+   *                 rrd info for
+   *        metric name of the metric to get rrd data from
+   *
+   * @throws Exception 
+   * @return array
+   */
+  public function getRRDInfo($id, $metric) {
+
+    try {
+      $r = array();
+
+      $dev = $this->getDevice($id);
+      
+      if ($dev) {
+	$r['image_file'] = '/tmp/' . $id . '-' . $metric . '.png';
+
+	$rrd_root = $this->config()->getConfigValue('rrd.directory'); 
+	$r['rrd_file'] = $rrd_root . '/' . $dev->address() . '/' . 
+	  'port_monitors' . '/' . $metric . '.rrd';
+	$r['xml_file'] = $rrd_root . '/' . $dev->address() . '/' . 
+	  'port_monitors' . '/' . $metric . '.xml';
+	
+	// parse xml
+	$rrd_cfg = new panoptesConfiguration($r['xml_file']);
+	$cfg = $rrd_cfg->getConfigArray();
+
+	// convert xml into options array
+	$r['rrd_opts'] = array();
+       
+	// if there's only one attribute the xml comes back
+	// as just an array of values
+	// otherwise, it comes back as an array of arrays
+	// just make it uniform for ease of processing
+	if (array_key_exists("0", $cfg['attribute'])) {
+	  $attrs = $cfg['attribute'];
+	} else {
+	  $attrs = array();
+	  array_push($attrs, $cfg['attribute']);
+	}
+
+	if (array_key_exists("vertical_label", $cfg)) {
+	  array_push($r['rrd_opts'], '--vertical-label=' .
+		     $cfg['vertical_label']);
+	}
+
+	if (array_key_exists("title", $cfg)) {
+	  array_push($r['rrd_opts'], '--title=' .
+		     $cfg['title']);
+	}
+
+	$defs = array();
+	$graphs = array();
+	$gprints = array();
+	
+	foreach ($attrs as $a) {
+	  if (array_key_exists("display_as", $a)) {
+	    $disp = $a['display_as'];
+	  } else {
+	    $disp = $a['name'];
+	  }
+	  array_push($defs, 'DEF:' . $disp . '=' . $r['rrd_file'] .
+		     ':' . $a['name'] . ':AVERAGE');
+	  array_push($graphs, $a['type'] . ':' . $disp . $a['color'] . ':' .
+		     $a['units']);
+	}
+
+	// append data definitions
+	// graphing definitions
+	// gprint params for legend
+	foreach ($defs as $v) {
+	  array_push($r['rrd_opts'], $v);
+	}
+
+	foreach ($graphs as $v) {
+	  array_push($r['rrd_opts'], $v);
+	}
+
+	foreach ($gprints as $v) {
+	  array_push($r['rrd_opts'], $v);
+	}
+      } else {
+	throw new Exception("Device " . $id . " does not exist");
+      }
+    } catch (Exception $e) {
+      throw($e);
+    }
+
+    return($r);
+  }
+
+  /**
    * Retrieve autoDiscoveryEntry
    *
    * @param id id of specific autoDiscoveryEntry to retrieve

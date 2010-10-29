@@ -1,12 +1,14 @@
 <?php
 require_once 'lib/panoptes.php';
 
-$file = '/tmp/' . $_REQUEST['id'] . '-' . $_REQUEST['metric'] . '.png';
-$opts = array( "--vertical-label=B/s",
-	       "DEF:time=/home/tmerritt/panoptes_rrds/127.0.0.1/port_monitors/tcp-80.rrd:ds0:AVERAGE",
-	       "LINE1:time#0000FF:Out traffic\\r"
-               );
-$ret = rrd_graph($file, $opts, count($opts));
+//load monitor object
+$panoptes = new panoptes();
+
+$rrd_info = $panoptes->getRRDInfo($_REQUEST['id'],
+				  $_REQUEST['metric']);
+
+$ret = rrd_graph($rrd_info['image_file'], $rrd_info['rrd_opts'], 
+		 count($rrd_info['rrd_opts']));
 
 if(!is_array($ret)) {
   $err = rrd_error();
@@ -15,7 +17,7 @@ if(!is_array($ret)) {
   header("Content-type: image/png");
   ob_clean();
   flush();
-  readfile($file);
+  readfile($rrd_info['image_file']);
 }
 
 ?>
