@@ -200,10 +200,26 @@ function createPerformanceHistoryTab(id) {
 		updatePerformanceGraph(id);
 	    }
 	});
-
     
     sub.placeAt(tc_2.domNode);
+
+    // create reset button that destroys all
+    // content panes below the perf tab
+    rst = new dijit.form.Button({
+	    label: 'Clear Graphs',
+	    onClick: function() {
+		dojo.query(dijit.byId(id + '_tc_perf').getDescendants().forEach(function(i) {
+			    p = /_cp$/;
+			    if (i.id.match(p)) {
+				dijit.byId(i.id).destroyRecursive();
+				//dojo.destroy(i.id);
+			    }
+			}));
+	    }
+	});
     
+    rst.placeAt(tc_2.domNode);
+
     return(tc_2);
 }
 
