@@ -3,7 +3,6 @@ add authentication to gui
 snmp monitors
 https certificate monitors
 shell script monitors
-create graph xml
 replace raw sql with stored procedures
 fork new thread for performance monitor updates
 replace fprintfs with syslog
@@ -11,3 +10,4 @@ daemonize
 add start/end time to graph
 replace methods with properties where applicable in php libs
 ping monitor
+have error in graph.php generate image file containing the error string

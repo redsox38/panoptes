@@ -20,6 +20,7 @@ class panoptesConfiguration
     $xml = file_get_contents($this->config_file);
     
     $t = $this->_xml2ary($xml);
+
     $this->configuration = $t['config'];
   }
 

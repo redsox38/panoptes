@@ -47,9 +47,32 @@ void panoptes_rrd_update(char *path, monitor_result_t *r)
 
 /* create xml template for this rrd to help graphing later */
 void panoptes_rrd_xml_create(char *path,
-			     char *table_name,
+			     monitor_entry_t *m,
 			     monitor_result_t *r)
 {
+  FILE *fh;
+  char errbuf[1024];
+
+  if ((fh = fopen(path, "w")) != NULL) {
+    fprintf(fh, "<config>\n");
+    if (!strcmp(m->table_name, "port_monitors")) {
+      fprintf(fh, "\t<title>%s port %s Connect Time</title>\n", 
+	      get_attr_val(m, "proto"), get_attr_val(m, "port"));
+      fprintf(fh, "\t<vertical_label>Seconds</vertical_label>\n");
+      fprintf(fh,"\t<attribute>\n");
+      fprintf(fh, "\t\t<name>ds0</name>\n");
+      fprintf(fh, "\t\t<display_as>ConnectTime</display_as>\n");
+      fprintf(fh, "\t\t<units>Seconds</units>\n");
+      fprintf(fh, "\t\t<color>#00ffff</color>\n");
+      fprintf(fh, "\t\t<type>LINE1</type>\n");
+      fprintf(fh, "\t\t<legend>AVERAGE:Average connect time\\: %%lf %%Ssecs</legend>\n");
+      fprintf(fh, "\t</attribute>\n");
+    }
+    fprintf(fh, "</config>\n");
+  } else {
+    strerror_r(errno, errbuf, 1024);
+    fprintf(stderr, "fopen: %s\n", errbuf);
+  }
 }
 
 /* create rrd if it doesn't exist */
@@ -143,7 +166,7 @@ void update_performance_data(char *address,
 			     monitor_entry_t *m, 
 			     monitor_result_t *r)
 {
-  char        *rrd_root, *rrd_path;
+  char        *rrd_root, *rrd_path, *rrd_xml_path;
   char        errbuf[1024];
   int         len, err = 0;
   struct stat st;
@@ -167,13 +190,15 @@ void update_performance_data(char *address,
     1;
 
   rrd_path = (char *)malloc(len * sizeof(char));
+  rrd_xml_path = (char *)malloc(len * sizeof(char));
   snprintf(rrd_path, len, "%s/%s/%s", rrd_root, address, m->table_name);
 
   /* create path if it doesn't exist */
   if (stat(rrd_path, &st) < 0) {
     switch (errno) {
     case ENOENT:
-      mkdir_p(rrd_path, S_IRUSR|S_IWUSR|S_IXUSR);
+      /* make directory world readable/executate for displaying rrds */
+      mkdir_p(rrd_path, S_IRUSR|S_IWUSR|S_IXUSR|S_IROTH|S_IXOTH);
       break;
     default:
       strerror_r(errno, errbuf, 1024);
@@ -186,7 +211,8 @@ void update_performance_data(char *address,
   if (!err) {
     snprintf(rrd_path, len, "%s/%s/%s/%s.rrd", rrd_root, address, 
 	     m->table_name, rrd_name);
-    
+    snprintf(rrd_xml_path, len, "%s/%s/%s/%s.xml", rrd_root, address, 
+	     m->table_name, rrd_name);
 
     /* see if we need to create rrd file */
     if (stat(rrd_path, &st) < 0) {
@@ -194,7 +220,7 @@ void update_performance_data(char *address,
       case ENOENT:
 	/* create rrd */
 	panoptes_rrd_create(rrd_path, m->table_name, r);
-	panoptes_rrd_xml_create(rrd_path, m->table_name, r);
+	panoptes_rrd_xml_create(rrd_xml_path, m, r);
 	break;
       default:
 	strerror_r(errno, errbuf, 1024);

@@ -132,6 +132,10 @@ class panoptes
 		     ':' . $a['name'] . ':AVERAGE');
 	  array_push($graphs, $a['type'] . ':' . $disp . $a['color'] . ':' .
 		     $a['units']);
+	  if (array_key_exists("legend", $a)) {
+	    array_push($gprints, 'GPRINT:' . $disp . ':' .
+		       $a['legend']);
+	  }
 	}
 
 	// append data definitions
