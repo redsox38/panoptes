@@ -12,3 +12,5 @@ add start/end time to graph
 make monitor thread loop
 have get next monitor sql procedure only return where next_check > now()
 don't show duplicates in auto disco tab
+delete device
+color code rowSelector based on monitor status

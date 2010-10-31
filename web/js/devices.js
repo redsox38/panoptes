@@ -7,6 +7,9 @@ var portMonitorStore;
 function updatePerformanceGraph(id) {
     // get selected metic
     metric = dijit.byId(id + '_perf_metric').get('displayedValue');
+    start_dt = dijit.byId(id + '_perf_start_date').get('value');
+    stop_dt = dijit.byId(id + '_perf_stop_date').get('value');
+
     var cp = new dijit.layout.ContentPane({
 	    id: id + '_perf_' + metric + '_cp',
 	    title: 'Chart 1',
@@ -17,7 +20,9 @@ function updatePerformanceGraph(id) {
     cp.placeAt(dijit.byId(id + '_tc_perf').domNode);
 
     graphImg = new Image();
-    graphImg.src = '/panoptes/graph.php?id=' + id + '&metric=' + metric;
+    graphImg.src = '/panoptes/graph.php?id=' + id + '&metric=' + metric +
+	'&start=' + encodeURIComponent(start_dt) + 
+	'&stop=' + encodeURIComponent(stop_dt);
     graphImg.id = id + '_' + metric + '_graph';
 
     dojo.place(graphImg, cp.domNode, 'last');
@@ -183,16 +188,37 @@ function createPerformanceHistoryTab(id) {
 	    content: '',	    
 	});
     
-    // create combo box and buttons for performance
+    // create combo box, date selectors, and buttons for performance
     // history tab
     sb = new dijit.form.FilteringSelect({
    	    id: id + '_perf_metric',
    	    name: 'perf_metric',
     	    store: portMonitorStore,
+	    title: 'Metric',	    
     	    searchAttr: 'metric'
     	}, dijit.byId(id + '_tc_perf'));
 
     sb.placeAt(tc_2.domNode);
+
+    start_dt = new dijit.form.DateTextBox({
+	    id: id + '_perf_start_date',
+	    name: id + '_perf_start_date',
+	    closable: true,
+	    title: 'Start Date',
+	    constraints: { datePattern:'MM/dd/yyyy'}
+	});
+
+    start_dt.placeAt(tc_2.domNode);
+
+    stop_dt = new dijit.form.DateTextBox({
+	    id: id + '_perf_stop_date',
+	    name: id + '_perf_stop_date',
+	    closable: true,
+	    title: 'Stop Date',
+	    constraints: { datePattern:'MM/dd/yyyy'}
+	});
+    
+    stop_dt.placeAt(tc_2.domNode);
 
     sub = new dijit.form.Button({
 	    label: 'Graph',
@@ -212,7 +238,6 @@ function createPerformanceHistoryTab(id) {
 			    p = /_cp$/;
 			    if (i.id.match(p)) {
 				dijit.byId(i.id).destroyRecursive();
-				//dojo.destroy(i.id);
 			    }
 			}));
 	    }
