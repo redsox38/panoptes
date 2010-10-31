@@ -63,6 +63,7 @@ function monitorEntry(type) {
     var ids = [];
     // get row ids
     var items = discoveryGrid.selection.getSelected();
+    discoveryGrid.selection.clear();
     
     if (items.length) {
 	dojo.forEach(items, function(selectedItem) {
@@ -96,6 +97,7 @@ function ignoreEntry() {
     var ids = [];
     // get row ids
     var items = discoveryGrid.selection.getSelected();
+    discoveryGrid.selection.clear();
 
    if (items.length) {
 	dojo.forEach(items, function(selectedItem) {
