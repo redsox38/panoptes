@@ -1,9 +1,7 @@
-#include "config.h"
+#include "panoptes.h"
 #include "utils/configuration.h"
 #include <signal.h>
-#include <stdlib.h>
 #include <pthread.h>
-#include <stdio.h>
 #include "monitor_core.h"
 
 void *monitor_thread(void *arg) 
@@ -55,12 +53,12 @@ void *monitor_thread(void *arg)
 	  
 	  free_monitor_result(&r, 0);
 	} else {
-	  fprintf(stderr, "Missing data required to monitor: %s %s", 
-		  m.table_name, m.id);
+	  syslog(LOG_NOTICE, "Missing data required to monitor: %s %s", 
+		 m.table_name, m.id);
 	}
       }
     } else {
-      fprintf(stderr, "Unable to allocate result\n");
+      syslog(LOG_ALERT, "Unable to allocate result");
     }
   } else {
     /* nothing to monitor, sleep for a minute and check again */

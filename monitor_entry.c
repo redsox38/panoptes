@@ -1,6 +1,5 @@
-#include <stdlib.h>
+#include "panoptes.h"
 #include <pthread.h>
-#include <stdio.h>
 #include "monitor_core.h"
 
 monitor_entry_t *allocate_monitor_entry(monitor_entry_t *m)

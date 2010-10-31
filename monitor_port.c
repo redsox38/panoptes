@@ -1,9 +1,7 @@
-#include "config.h"
+#include "panoptes.h"
 #include "utils/configuration.h"
 #include <signal.h>
-#include <stdlib.h>
 #include <pthread.h>
-#include <stdio.h>
 #include <sys/socket.h>
 #include <netdb.h>
 #include <netinet/in.h>

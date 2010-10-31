@@ -1,7 +1,5 @@
-#include "config.h"
-#include <stdio.h>
+#include "panoptes.h"
 #include <getopt.h>
-#include <stdlib.h>
 #include <string.h>
 #ifdef HAVE_PCAP_H
 #include <pcap.h>
@@ -93,7 +91,7 @@ int init_packet_capture_live(char *dev)
   }
 
   if (!pcap_handle) {
-    fprintf(stderr, "Unable to open device %s: %s\n", dev, errbuf);
+    syslog(LOG_ALERT, "Unable to open device %s: %s", dev, errbuf);
     return(-1);
   }
 
@@ -111,7 +109,7 @@ int init_packet_capture_from_file(char *file)
   }
 
   if (!pcap_handle) {
-    fprintf(stderr, "Unable to open device %s: %s\n", file, errbuf);
+    syslog(LOG_ALERT, "Unable to open device %s: %s", file, errbuf);
     return(-1);
   }
 
@@ -131,12 +129,12 @@ void run_packet_capture()
   if (pcap_handle) {
     /* compile filter */
     if (pcap_compile(pcap_handle, &filter, filter_ex, 0, 0) < 0) {
-      fprintf(stderr, "Couldn't parse filter %s: %s\n", filter_ex,
-	      pcap_geterr(pcap_handle));
+      syslog(LOG_ALERT, "Couldn't parse filter %s: %s\n", filter_ex,
+	     pcap_geterr(pcap_handle));
     } else {
       if (pcap_setfilter(pcap_handle, &filter) < 0) {
-	fprintf(stderr, "Couldn't parse filter %s: %s\n", filter_ex,
-		pcap_geterr(pcap_handle));
+	syslog(LOG_ALERT, "Couldn't parse filter %s: %s\n", filter_ex,
+	       pcap_geterr(pcap_handle));
       }
     }
   }

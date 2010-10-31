@@ -1,10 +1,8 @@
-#include "config.h"
+#include "panoptes.h"
 #include "utils/configuration.h"
 #include <getopt.h>
 #include <signal.h>
-#include <stdlib.h>
 #include <pthread.h>
-#include <stdio.h>
 #include <rrd.h>
 #include <sys/types.h>
 #include <sys/stat.h>
@@ -40,7 +38,7 @@ void panoptes_rrd_update(char *path, monitor_result_t *r)
   rrd_clear_error();
   rrd_update_r(path, NULL, num_args, (const char **)args);
   if (rrd_test_error()) {
-    fprintf(stderr, "rrd_update: %s\n", rrd_get_error());
+    syslog(LOG_NOTICE, "rrd_update: %s", rrd_get_error());
   }
 
 }
@@ -71,7 +69,7 @@ void panoptes_rrd_xml_create(char *path,
     fprintf(fh, "</config>\n");
   } else {
     strerror_r(errno, errbuf, 1024);
-    fprintf(stderr, "fopen: %s\n", errbuf);
+    syslog(LOG_NOTICE, "fopen: %s", errbuf);
   }
 }
 
@@ -118,7 +116,7 @@ void panoptes_rrd_create(char *path,
   rrd_clear_error();
   rrd_create_r(path, 900, time(0), num_args, (const char **)args);
   if (rrd_test_error()) {
-    fprintf(stderr, "rrd_create: %s\n", rrd_get_error());
+    syslog(LOG_ALERT, "rrd_create: %s", rrd_get_error());
   }
 
   free(rrd_tpl);
@@ -175,7 +173,7 @@ void update_performance_data(char *address,
   rrd_root = get_config_value("rrd.directory");
   
   if (rrd_root == NULL) {
-    fprintf(stderr, "rrd root not defined\n");
+    syslog(LOG_NOTICE, "rrd root not defined");
     return;
   }
 
@@ -202,7 +200,7 @@ void update_performance_data(char *address,
       break;
     default:
       strerror_r(errno, errbuf, 1024);
-      fprintf(stderr, "stat: %s", errbuf);
+      syslog(LOG_NOTICE, "stat: %s", errbuf);
       err = 1;
       break;
     }
@@ -224,7 +222,7 @@ void update_performance_data(char *address,
 	break;
       default:
 	strerror_r(errno, errbuf, 1024);
-	fprintf(stderr, "stat: %s", errbuf);
+	syslog(LOG_NOTICE, "stat: %s", errbuf);
 	err = 1;
 	break;
       }

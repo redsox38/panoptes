@@ -1,7 +1,6 @@
-#include "config.h"
+#include "panoptes.h"
 #include "utils/configuration.h"
 #include "database.h"
-#include <stdlib.h>
 #include <dlfcn.h>
 #include "monitor_core.h"
 
@@ -38,11 +37,11 @@ int database_module_init()
     free(mod_file);
 
     if (lib_handle == NULL) {
-      fprintf(stderr, "dlopen: %s\n", dlerror());
+      syslog(LOG_ALERT, "dlopen: %s", dlerror());
       return(-1);
     }
   } else {
-    fprintf(stderr,"lib entry has no database attribute\n");
+    syslog(LOG_ALERT, "lib entry has no database attribute");
     return(-1);
   }
 
@@ -61,7 +60,7 @@ int database_open(int initialize)
   if ((open_ptr = (int (*)(int))dlsym(lib_handle, "_database_open")) != NULL) {
     r = (*open_ptr)(initialize);
   } else {
-    fprintf(stderr, "_database_open not defined\n");
+    syslog(LOG_ALERT, "_database_open not defined");
   }
 
   return(r);
@@ -77,7 +76,7 @@ void get_next_monitor_entry(monitor_entry_t *m)
   if ((get_ptr = (void (*)(monitor_entry_t *))dlsym(lib_handle, "_get_next_monitor_entry")) != NULL) {
     (*get_ptr)(m);
   } else {
-    fprintf(stderr, "_get_next_monitor_entry not defined\n");
+    syslog(LOG_ALERT, "_get_next_monitor_entry not defined");
   }
 }
 
@@ -92,7 +91,7 @@ void add_discovered_connection(char *src, int src_port, char *dst,
   if ((insert_ptr = (void (*)(char *, int, char *, int, char *))dlsym(lib_handle, "_add_discovered_connection")) != NULL) {
     (*insert_ptr)(src, src_port, dst, dst_port, prot);
   } else {
-    fprintf(stderr, "_add_discovered_connection not defined\n");
+    syslog(LOG_ALERT, "_add_discovered_connection not defined");
   }
 }
 
@@ -107,7 +106,7 @@ int update_monitor_entry(monitor_entry_t *m, monitor_result_t *r)
   if ((update_ptr = (int (*)(monitor_entry_t *, monitor_result_t *))dlsym(lib_handle, "_update_monitor_entry")) != NULL) {
     rc = (*update_ptr)(m, r);
   } else {
-    fprintf(stderr, "_update_monitor_entry not defined\n");
+    syslog(LOG_ALERT, "_update_monitor_entry not defined");
   }
 
   return(rc);

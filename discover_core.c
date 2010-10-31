@@ -1,8 +1,7 @@
-#include "config.h"
+#include "panoptes.h"
 #include "utils/configuration.h"
 #include <getopt.h>
 #include <signal.h>
-#include <stdlib.h>
 
 /* array of command line options */
 static struct option long_options[] = {
@@ -96,16 +95,16 @@ int main(int argc, char *argv[]) {
     exit(-1);
   }
 
-  if (database_module_init() < 0) {
-    exit(-1);
-  }
-
   /* open syslog */
   facil_str = get_config_value("syslog.facility");
   sscanf(facil_str, "%d", &facil);
   free(facil_str);
 
   openlog("panoptes_discover", LOG_PID, LOG_FAC(facil));
+
+  if (database_module_init() < 0) {
+    exit(-1);
+  }
   
   /* initialize backed database connection */
   if (database_open(init_db_flag) < 0) {
