@@ -13,6 +13,19 @@
 class deviceEntry
 {
   protected $db;
+  protected $data = array();
+
+  public function __get($name) {
+    if (array_key_exists($name, $this->data)) {
+      return($this->data[$name]);
+    } else {
+      return(null);
+    }
+  }
+  
+  public function __set($name, $val) {
+    $this->data[$name] = $val;
+  }
 
   public function __construct($db = null) {
     if (!is_null($db)) {
@@ -37,51 +50,5 @@ class deviceEntry
     
     return($this->db);
   }
-
-  /**
-   * Get/Set id
-   *
-   * @param val optional string to set id to
-   * @throws none
-   * @return string current id
-   */
-  public function id($val = null) {
-    if (!(is_null($val))) {
-      $this->id = $val;
-    }
-
-    return($this->id);
-  }
-
-  /**
-   * Get/Set name
-   *
-   * @param val optional string to set name to
-   * @throws none
-   * @return string name
-   */
-  public function name($val = null) {
-    if (!(is_null($val))) {
-      $this->name = $val;
-    }
-
-    return($this->name);
-  }
-
-  /**
-   * Get/Set address
-   *
-   * @param val optional string to set address to
-   * @throws none
-   * @return string name
-   */
-  public function address($val = null) {
-    if (!(is_null($val))) {
-      $this->address = $val;
-    }
-
-    return($this->address);
-  }
-
 }
 ?>

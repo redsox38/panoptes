@@ -85,9 +85,9 @@ class panoptes
 	$r['image_file'] = '/tmp/' . $id . '-' . $metric . '.png';
 
 	$rrd_root = $this->config()->getConfigValue('rrd.directory'); 
-	$r['rrd_file'] = $rrd_root . '/' . $dev->address() . '/' . 
+	$r['rrd_file'] = $rrd_root . '/' . $dev->address . '/' . 
 	  'port_monitors' . '/' . $metric . '.rrd';
-	$r['xml_file'] = $rrd_root . '/' . $dev->address() . '/' . 
+	$r['xml_file'] = $rrd_root . '/' . $dev->address . '/' . 
 	  'port_monitors' . '/' . $metric . '.xml';
 	
 	// parse xml
@@ -207,10 +207,10 @@ class panoptes
     if ($r) {
       $ent = new autoDiscoveryEntry();
       $ent->db($this->db);
-      $ent->id($r['id']);
-      $ent->dstaddr($r['dst']);
-      $ent->dport($r['dport']);
-      $ent->proto($r['proto']);
+      $ent->id = $r['id'];
+      $ent->dstaddr = $r['dst'];
+      $ent->dport = $r['dport'];
+      $ent->proto = $r['proto'];
     } else {
       $ent = null;
     }      
@@ -264,9 +264,9 @@ class panoptes
     if ($r) {
       $dev = new deviceEntry();
       $dev->db($this->db);
-      $dev->id($r['id']);
-      $dev->name($r['name']);
-      $dev->address($r['address']);
+      $dev->id = $r['id'];
+      $dev->name = $r['name'];
+      $dev->address = $r['address'];
     } else {
       $dev = null;
     }      
@@ -337,8 +337,8 @@ class panoptes
     if (!is_null($r) && !empty($r)) {
       $grp = new deviceGroup();
       $grp->db($this->db);
-      $grp->id($r['id']);
-      $grp->name($r['group_name']);      
+      $grp->id = $r['id'];
+      $grp->name = $r['group_name'];      
     } else {
       $grp = null;
     }      
@@ -430,10 +430,10 @@ class panoptes
 	  break;
 	}
 	
-	array_push($data, array('id' => $ent->id(),
-				'dstaddr' => $ent->dstaddr(),
-				'dport'   => $ent->dport(),
-				'proto'   => $ent->proto()));
+	array_push($data, array('id' => $ent->id,
+				'dstaddr' => $ent->dstaddr,
+				'dport'   => $ent->dport,
+				'proto'   => $ent->proto));
       }
     } catch (Exception $e) {
       return(array('result' => 'failure',
@@ -488,10 +488,10 @@ class panoptes
 	  $chld[] = array('_reference' => 'd_' . $c);
 	  $grouped[$c] = 1;
 	}
-	array_push($data, array('name'     => $grp->name(),
+	array_push($data, array('name'     => $grp->name,
 				'type'     => 'group',
 				'children' => $chld,
-				'id'       => 'g_' . $grp->id()));
+				'id'       => 'g_' . $grp->id));
       }
 
       // get individual devices 
@@ -499,11 +499,11 @@ class panoptes
       // in the ungrouped group for display
       // purposes
       while($dev = $this->getDevice()) {
-	array_push($data, array('name' => $dev->name(),
+	array_push($data, array('name' => $dev->name,
 				'type' => 'device',
-				'id'   => 'd_' . $dev->id()));
-	if (!array_key_exists($dev->id(), $grouped)) {
-	  $ungrouped_children[] = array('_reference' => 'd_' . $dev->id());
+				'id'   => 'd_' . $dev->id));
+	if (!array_key_exists($dev->id, $grouped)) {
+	  $ungrouped_children[] = array('_reference' => 'd_' . $dev->id);
 	}
       }
       
@@ -532,8 +532,8 @@ class panoptes
       $data = array();
 
       while ($grp = $this->getDeviceGroup()) {
-	array_push($data, array('name' => $grp->name(),
-				'id'   => $grp->id()));
+	array_push($data, array('name' => $grp->name,
+				'id'   => $grp->id));
       }
     } catch (Exception $e) {
       return(array('result' => 'failure',
@@ -562,8 +562,8 @@ class panoptes
 	// add new group entry
 	$grp = new deviceGroup();
 	$grp->db($this->db);
-	$grp->id(0);
-	$grp->name($args['name']);      
+	$grp->id = 0;
+	$grp->name = $args['name'];      
 	$grp->commit();
       }
 
@@ -591,9 +591,9 @@ class panoptes
     try {
       $dev = $this->getDevice($args['id']);
       if ($dev) {
-	$data = array('name'    => $dev->name(),
+	$data = array('name'    => $dev->name,
 		      'type'    => 'device',
-		      'address' => $dev->address(),
+		      'address' => $dev->address,
 		      'id'      => $args['id']);
       } else {
 	$data = array();

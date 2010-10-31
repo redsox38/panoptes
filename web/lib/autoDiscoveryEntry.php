@@ -15,8 +15,6 @@ require_once 'monitorEntry.php';
 
 class autoDiscoveryEntry extends hostEntry
 {
-  protected $db;
-
   public function __construct($db = null) {
     if (!is_null($db)) {
       $this->db = $db;
@@ -57,18 +55,18 @@ class autoDiscoveryEntry extends hostEntry
   public function monitor($type) {
 
     if ($type == "src") {
-      $addr = $this->srcaddr();
-      $port = $this->sport();
+      $addr = $this->srcaddr;
+      $port = $this->sport;
     } else {
-      $addr = $this->dstaddr();
-      $port = $this->dport();
+      $addr = $this->dstaddr;
+      $port = $this->dport;
     }
 
     try {
       $monitor_ent = new monitorEntry($this->db);
       $monitor_ent->srcaddr = $addr;
       $monitor_ent->sport = $port;
-      $monitor_ent->proto = $this->proto();
+      $monitor_ent->proto = $this->proto;
       
       $monitor_ent->commit();
     } catch (Exception $e) {
@@ -77,6 +75,5 @@ class autoDiscoveryEntry extends hostEntry
 
     return(0);
   }
-
 }
 ?>

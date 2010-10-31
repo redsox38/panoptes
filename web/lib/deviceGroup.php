@@ -13,7 +13,20 @@
 class deviceGroup
 {
   protected $db;
+  protected $data = array();
   protected $children = null;
+
+  public function __get($name) {
+    if (array_key_exists($name, $this->data)) {
+      return($this->data[$name]);
+    } else {
+      return(null);
+    }
+  }
+  
+  public function __set($name, $val) {
+    $this->data[$name] = $val;
+  }
 
   public function __construct($db = null) {
     if (!is_null($db)) {
@@ -37,36 +50,6 @@ class deviceGroup
     }
     
     return($this->db);
-  }
-
-  /**
-   * Get/Set entry id
-   *
-   * @param val optional string id to set id to
-   * @throws none
-   * @return var current id
-   */
-  public function id($val = null) {
-    if (!(is_null($val))) {
-      $this->id = $val;
-    }
-
-    return($this->id);
-  }
-
-  /**
-   * Get/Set entry name
-   *
-   * @param val optional string to set name to
-   * @throws none
-   * @return var current name
-   */
-  public function name($val = null) {
-    if (!(is_null($val))) {
-      $this->name = $val;
-    }
-
-    return($this->name);
   }
 
   /**
@@ -106,16 +89,16 @@ class deviceGroup
   public function commit() {
     // insert into device table 
     $res = mysql_query("INSERT INTO device_groups VALUES(" .
-		       $this->id() . ",'" .
-		       $this->name() . "')", $this->db);
+		       $this->id . ",'" .
+		       $this->name . "')", $this->db);
     
     if ($res !== false) {
       // retrieve group id and update object
       $res = mysql_query("SELECT id FROM device_groups WHERE group_name='" .
-			 $this->name() . "'", $this->db);
+			 $this->name . "'", $this->db);
       if ($res !== false) {
 	$r = mysql_fetch_assoc($res);
-	$this->id($r['id']);
+	$this->id = $r['id'];
       } else {
 	throw new Exception(mysql_error());
       }
@@ -133,7 +116,7 @@ class deviceGroup
    */
   public function addMember($device_id) {
     $res = mysql_query("INSERT INTO group_membership VALUES(" .
-		       $this->id() . "," . $device_id . ")", $this->db);
+		       $this->id . "," . $device_id . ")", $this->db);
 
     if ($res === false)
       throw new Exception(mysql_error());

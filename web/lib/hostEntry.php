@@ -13,6 +13,19 @@
 abstract class hostEntry
 {
   protected $db;
+  protected $data = array();
+
+  public function __get($name) {
+    if (array_key_exists($name, $this->data)) {
+      return($this->data[$name]);
+    } else {
+      return(null);
+    }
+  }
+  
+  public function __set($name, $val) {
+    $this->data[$name] = $val;
+  }
   
   /**
    * Get/Set db link
@@ -29,94 +42,5 @@ abstract class hostEntry
     return($this->db);
   }
 
-  /**
-   * Get/Set id
-   *
-   * @param val optional id to set
-   * @throws none
-   * @return var current id 
-   */
-  public function id($val = null) {
-    if (!(is_null($val))) {
-      $this->id = $val;
-    }
-
-    return($this->id);
-  }
-
-  /**
-   * Get/Set db srcaddr
-   *
-   * @param val optional address to set srcaddr to
-   * @throws Exception
-   * @return var current srcaddr
-   */
-  public function srcaddr($val = null) {
-    if (!(is_null($val))) {
-      $this->srcaddr = $val;
-    }
-
-    return($this->srcaddr);
-  }
-
-  /**
-   * Get/Set db sport
-   *
-   * @param val optional port to set sport to
-   * @throws Exception
-   * @return var current sport
-   */
-  public function sport($val = null) {
-    if (!(is_null($val))) {
-      $this->sport = $val;
-    }
-
-    return($this->sport);
-  }
-
-  /**
-   * Get/Set db dstaddr
-   *
-   * @param val optional address to set dstaddr to
-   * @throws Exception
-   * @return var current dstaddr
-   */
-  public function dstaddr($val = null) {
-    if (!(is_null($val))) {
-      $this->dstaddr = $val;
-    }
-
-    return($this->dstaddr);
-  }
-
-  /**
-   * Get/Set db dport
-   *
-   * @param val optional port to set dport to
-   * @throws Exception
-   * @return var current dport
-   */
-  public function dport($val = null) {
-    if (!(is_null($val))) {
-      $this->dport = $val;
-    }
-
-    return($this->dport);
-  }
-
-  /**
-   * Get/Set db protocol
-   *
-   * @param val optional string to set protocol to
-   * @throws Exception
-   * @return var current proto
-   */
-  public function proto($val = null) {
-    if (!(is_null($val))) {
-      $this->proto = $val;
-    }
-
-    return($this->proto);
-  }
 }
 ?>

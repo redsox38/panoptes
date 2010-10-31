@@ -15,21 +15,7 @@ require_once 'hostEntry.php';
 
 class monitorEntry extends hostEntry
 {
-  protected $db;
-  protected $data = array();
   protected $device_id = null;
-
-  public function __get($name) {
-    if (array_key_exists($name, $this->data)) {
-      return($this->data[$name]);
-    } else {
-      return(null);
-    }
-  }
-  
-  public function __set($name, $val) {
-    $this->data[$name] = $val;
-  }
 
   public function __construct($db = null) {
     if (!is_null($db)) {
@@ -67,7 +53,7 @@ class monitorEntry extends hostEntry
     if (is_null($this->device_id)) {
       // see if it exists
       $res = mysql_query("SELECT id from devices WHERE address='" .
-			 $this->srcaddr() . "'", $this->db);
+			 $this->srcaddr . "'", $this->db);
 
       if ($res !== false) {
 	$r = mysql_fetch_assoc($res);
@@ -75,15 +61,15 @@ class monitorEntry extends hostEntry
 	  mysql_free_result($res);
 
 	  // try to get host name
-	  $name = gethostbyaddr($this->srcaddr());
+	  $name = gethostbyaddr($this->srcaddr);
 
 	  // insert new record
 	  mysql_query("INSERT INTO devices VALUES(0, '" .
-		      $this->srcaddr() . "','" . 
+		      $this->srcaddr . "','" . 
 		      $name . "')");
 
 	  $res = mysql_query("SELECT id from devices WHERE address='" .
-			     $this->srcaddr() . "'", $this->db);
+			     $this->srcaddr . "'", $this->db);
 	  if ($res !== false) {
 	    $r = mysql_fetch_assoc($res);
 	    mysql_free_result($res);
@@ -99,8 +85,8 @@ class monitorEntry extends hostEntry
     }
     
     $res = mysql_query("INSERT INTO port_monitors VALUES(0, '" .
-		       $this->device_id . "', " . $this->sport() . ", '" .
-		       $this->proto() . "', 15, NOW(), NOW(), 'warn')", $this->db);
+		       $this->device_id . "', " . $this->sport . ", '" .
+		       $this->proto . "', 15, NOW(), NOW(), 'warn')", $this->db);
 
     if ($res === false) {
       throw new Exception(mysql_error());
