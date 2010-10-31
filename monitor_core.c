@@ -33,6 +33,8 @@ int main(int argc, char *argv[]) {
   char               *p = NULL;
   sigset_t           sigmask;
   struct rlimit      lim;
+  char               *facil_str;
+  int                facil;
 
   /* process command line */
 
@@ -69,6 +71,13 @@ int main(int argc, char *argv[]) {
   if (database_module_init() < 0) {
     exit(-1);
   }
+
+  /* open syslog */
+  facil_str = get_config_value("syslog.facility");
+  sscanf(facil_str, "%d", &facil);
+  free(facil_str);
+
+  openlog("panoptes_monitor", LOG_PID, LOG_FAC(facil));
 
   /* initialize backed database connection */
 

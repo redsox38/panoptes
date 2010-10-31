@@ -39,6 +39,8 @@ void term_handler(int signum)
   database_term_handler();
   config_term_handler();
   core_term_handler();
+
+  closelog();
 }
 
 /* display help message */
@@ -56,6 +58,8 @@ int main(int argc, char *argv[]) {
   extern int         optind, optopt, opterr;
   int                c, option_index;
   int                init_db_flag = 0;
+  char               *facil_str;
+  int                facil;
 
   /* process command line */
 
@@ -96,6 +100,13 @@ int main(int argc, char *argv[]) {
     exit(-1);
   }
 
+  /* open syslog */
+  facil_str = get_config_value("syslog.facility");
+  sscanf(facil_str, "%d", &facil);
+  free(facil_str);
+
+  openlog("panoptes_discover", LOG_PID, LOG_FAC(facil));
+  
   /* initialize backed database connection */
   if (database_open(init_db_flag) < 0) {
     exit(-1);
@@ -112,4 +123,7 @@ int main(int argc, char *argv[]) {
   }
   
   run_packet_capture();
+
+  /* invoke term handler */
+  kill(0, SIGTERM);
 }
