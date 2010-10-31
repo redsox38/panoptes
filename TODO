@@ -8,7 +8,6 @@ replace raw sql with stored procedures
 fork new thread for performance monitor updates
 replace fprintfs with syslog
 daemonize
-add start/end time to graph
 make monitor thread loop
 have get next monitor sql procedure only return where next_check > now()
 don't show duplicates in auto disco tab
