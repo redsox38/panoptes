@@ -6,8 +6,8 @@ function imageTextWrap($fontSize, $fontFace, $string, $width){
   $arr = explode(' ', $string);
   
   foreach ( $arr as $word ){
-    $teststring = $ret.' '.$word;
-    $testbox = imagettfbbox($fontSize, 0, $fontFace, $teststring);
+    $str = $ret.' '.$word;
+    $testbox = imagettfbbox($fontSize, 0, $fontFace, $str);
     if ( $testbox[2] > $width ){
       $ret.=($ret==""?"":"\n").$word;
     } else {
@@ -24,6 +24,21 @@ $panoptes = new panoptes();
 $rrd_info = $panoptes->getRRDInfo($_REQUEST['id'],
 				  $_REQUEST['metric']);
 
+// parse start/end dates from user input
+$sd = date_parse_from_format('D M d Y H:i:s \G\M\TO \(T\)', $_REQUEST['start']);
+$ed = date_parse_from_format('D M d Y H:i:s \G\M\TO \(T\)', $_REQUEST['stop']);
+
+$opts = array();
+
+$start = sprintf("--start=%ld", mktime(0, 0, 0, $sd['month'], $sd['day'], 
+				       $sd['year']));
+$end = sprintf("--end=%ld", mktime(0, 0, 0, $ed['month'], $ed['day'], 
+				   $ed['year']));
+
+array_unshift($rrd_info['rrd_opts'], $end);
+array_unshift($rrd_info['rrd_opts'], $start);
+
+// and push onto start of parameter array
 $ret = rrd_graph($rrd_info['image_file'], $rrd_info['rrd_opts'], 
 		 count($rrd_info['rrd_opts']));
 
