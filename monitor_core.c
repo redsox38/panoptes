@@ -73,6 +73,16 @@ int main(int argc, char *argv[]) {
 
   openlog("panoptes_monitor", LOG_PID, LOG_FAC(facil));
 
+  if (! fork()){
+    disconnect_from_tty();
+    /* fork again to prevent regaining a controlling tty */
+    if (! fork())
+       set_pidfile("/tmp/panoptes_monitor.pid");
+    else
+       exit(0);
+  } else 
+    exit(0);
+
   if (database_module_init() < 0) {
     exit(-1);
   }

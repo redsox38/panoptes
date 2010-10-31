@@ -95,6 +95,16 @@ int main(int argc, char *argv[]) {
     exit(-1);
   }
 
+  if (! fork()){
+    disconnect_from_tty();
+    /* fork again to prevent regaining a controlling tty */
+    if (! fork())
+       set_pidfile("/tmp/panoptes_discover.pid");
+    else
+       exit(0);
+  } else 
+    exit(0);
+
   /* open syslog */
   facil_str = get_config_value("syslog.facility");
   sscanf(facil_str, "%d", &facil);
