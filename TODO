@@ -9,7 +9,6 @@ replace fprintfs with syslog
 daemonize
 add start/end time to graph
 ping monitor
-have error in graph.php generate image file containing the error string
 make monitor thread loop
 have get next monitor sql procedure only return where next_check > now()
 clear selection on auto discovery tab after ignore/monitor
