@@ -27,4 +27,7 @@ void *shutdown_thread(void *arg)
   if (configfile)
     free(configfile);
 
+  /* terminate monitor threads */
+
+  fprintf(stderr, "Terminated.\n");
 }

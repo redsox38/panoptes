@@ -189,7 +189,7 @@ class panoptes
       if (is_null($this->_disc_data)) {
 	// update from table
 	$this->_disc_data = array();
-	$res = mysql_query("SELECT id, srcaddr AS src, srcport AS sport, dstaddr AS dst, dstport AS dport, proto FROM discovered WHERE ignored=0 AND proto='tcp'", $this->db);
+	$res = mysql_query("SELECT id, srcaddr AS src, srcport AS sport, dstaddr AS dst, dstport AS dport, proto FROM discovered WHERE ignored=0 AND proto='tcp' GROUP BY dst,dport,proto", $this->db);
 	
 	if ($res !== false) {
 	  while ($row = mysql_fetch_assoc($res)) {
