@@ -305,6 +305,20 @@ function createPortMonitorTab(id) {
 	}, document.createElement('div'));                  
     tc_1.startup();                
     
+    // set color coding for grid rows based on monitor status
+    dojo.connect(tc_1, 'onStyleRow', function(row) {
+	    var item = tc_1.getItem(row.index);
+	    if (item) {
+		var status = tc_1.store.getValue(item, "status", null);
+
+		if (status == "error") {
+		    row.customStyles += 'color: #a62434;';
+		} else if (status == "warn") {
+		    row.customStyles += 'color: #b3511d;';
+		}
+		
+	    }
+	});
     // load data for availability tab
     addPortMonitorData(id, tc_1);
     

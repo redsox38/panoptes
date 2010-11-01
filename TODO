@@ -1,13 +1,13 @@
-add authentication to gui
 ping monitor
 snmp monitors
 https certificate monitors
 shell script monitors
-replace raw sql with stored procedures
-fork new thread for performance monitor updates
 make monitor thread loop
-have get next monitor sql procedure only return where next_check > now()
-delete device
-color code rowSelector based on monitor status
-remove device from group
+fork new thread for performance monitor updates
 finish shutdown thread
+
+add authentication to gui
+delete device
+remove device from group
+
+have get next monitor sql procedure only return where next_check > now()
