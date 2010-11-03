@@ -1,4 +1,4 @@
-/* tables */
+/* drop everything */
 
 DROP TABLE IF EXISTS discovered;
 DROP TABLE IF EXISTS group_membership;
@@ -7,6 +7,10 @@ DROP TABLE IF EXISTS ping_monitors;
 DROP TABLE IF EXISTS device_groups;
 DROP TABLE IF EXISTS devices;
 DROP VIEW monitor_tasks;
+DROP PROCEDURE IF EXISTS get_next_monitor_entry;
+DROP PROCEDURE IF EXISTS update_monitor_entry;
+
+/* tables */
 
 --
 -- Table structure for table device_groups
@@ -101,16 +105,19 @@ CREATE TABLE ping_monitors (
 
 /* views */
 
-CREATE ALGORITHM=UNDEFINED SQL  SECURITY INVOKER VIEW monitor_tasks
-    AS SELECT 'port_monitors' AS table_name, port_monitors.id AS id,
+CREATE ALGORITHM=UNDEFINED SQL SECURITY INVOKER VIEW monitor_tasks
+    AS (SELECT 'port_monitors' AS table_name, port_monitors.id AS id,
         port_monitors.last_check AS last_check, 
         port_monitors.next_check AS next_check FROM
-        port_monitors ORDER BY port_monitors.next_check;
+        port_monitors) 
+        UNION (SELECT 'ping_monitors' AS table_name, ping_monitors.id AS id, 
+        ping_monitors.last_check AS last_check, 
+        ping_monitors.next_check AS next_check FROM ping_monitors) 
+        ORDER BY next_check;
 
 /* stored procedures */
 
 DELIMITER //
-DROP PROCEDURE IF EXISTS get_next_monitor_entry//
 CREATE PROCEDURE get_next_monitor_entry()
 MODIFIES SQL DATA
 COMMENT 'Retrieves the next monitor entry'
@@ -161,7 +168,6 @@ END;
 DELIMITER ;
 
 DELIMITER //
-DROP PROCEDURE IF EXISTS update_monitor_entry//
 CREATE PROCEDURE update_monitor_entry(IN in_id BIGINT,
                                       IN in_status VARCHAR(10),
                                       IN in_status_string VARCHAR(255),
