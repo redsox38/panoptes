@@ -86,11 +86,22 @@ class panoptes
 	$r['image_file'] = '/tmp/' . $id . '-' . $metric . '.png';
 
 	$rrd_root = $this->config()->getConfigValue('rrd.directory'); 
-	$r['rrd_file'] = $rrd_root . '/' . $dev->address . '/' . 
-	  'port_monitors' . '/' . $metric . '.rrd';
-	$r['xml_file'] = $rrd_root . '/' . $dev->address . '/' . 
-	  'port_monitors' . '/' . $metric . '.xml';
 	
+	$monitor_types = array('port_monitors','ping_monitors');
+
+	foreach ($monitor_types as $t) {
+	  $tmp_rrd = $rrd_root . '/' . $dev->address . '/' . 
+	    $t . '/' . $metric . '.rrd';
+	  $tmp_xml = $rrd_root . '/' . $dev->address . '/' . 
+	    $t . '/' . $metric . '.xml';
+
+	  if (file_exists($tmp_rrd)) {
+	    $r['rrd_file'] = $tmp_rrd;
+	    $r['rrd_xml'] = $tmp_xml;
+	    break;
+	  }
+	}
+
 	// parse xml
 	$rrd_cfg = new panoptesConfiguration($r['xml_file']);
 	$cfg = $rrd_cfg->getConfigArray();

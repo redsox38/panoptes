@@ -73,17 +73,18 @@ int main(int argc, char *argv[]) {
 
   openlog("panoptes_monitor", LOG_PID, facil);
 
-  /*
+/*
   if (! fork()){
     disconnect_from_tty();
-    
+   
     if (! fork())
-       set_pidfile("/tmp/panoptes_monitor.pid");
+      set_pidfile("/tmp/panoptes_monitor.pid");
     else
        exit(0);
-  } else 
+  } else { 
     exit(0);
-  */
+  }
+*/
 
   if (database_module_init() < 0) {
     exit(-1);
