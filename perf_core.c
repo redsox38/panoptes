@@ -65,6 +65,17 @@ void panoptes_rrd_xml_create(char *path,
       fprintf(fh, "\t\t<type>LINE1</type>\n");
       fprintf(fh, "\t\t<legend>AVERAGE:Average connect time\\: %%lf %%Ssecs</legend>\n");
       fprintf(fh, "\t</attribute>\n");
+    } else if (!strcmp(m->table_name, "ping_monitors")) {
+      fprintf(fh, "\t<title>ICMP Response Time</title>\n");
+      fprintf(fh, "\t<vertical_label>Seconds</vertical_label>\n");
+      fprintf(fh,"\t<attribute>\n");
+      fprintf(fh, "\t\t<name>ds0</name>\n");
+      fprintf(fh, "\t\t<display_as>ResponseTime</display_as>\n");
+      fprintf(fh, "\t\t<units>Seconds</units>\n");
+      fprintf(fh, "\t\t<color>#00ffff</color>\n");
+      fprintf(fh, "\t\t<type>LINE1</type>\n");
+      fprintf(fh, "\t\t<legend>AVERAGE:Average response time\\: %%lf %%Ssecs</legend>\n");
+      fprintf(fh, "\t</attribute>\n");
     }
     fprintf(fh, "</config>\n");
   } else {

@@ -56,6 +56,22 @@ void *monitor_thread(void *arg)
 	  syslog(LOG_NOTICE, "Missing data required to monitor: %s %s", 
 		 m.table_name, m.id);
 	}
+      } else if (!strcmp(m.table_name, "ping_monitors")) {
+	addr = get_attr_val(&m, "address");
+	if (addr != NULL) {
+	  monitor_icmp(addr, &r);
+	  update_monitor_entry(&m, &r);
+	  
+	  if (r.perf_data != NULL) {
+	    snprintf(perf_attr, 256, "icmp");
+	    update_performance_data(addr, perf_attr, &m, &r);
+	  }
+	  
+	  free_monitor_result(&r, 0);
+	} else {
+	  syslog(LOG_NOTICE, "Missing data required to monitor: %s %s", 
+		 m.table_name, m.id);
+	}
       }
     } else {
       syslog(LOG_ALERT, "Unable to allocate result");

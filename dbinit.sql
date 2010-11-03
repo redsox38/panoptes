@@ -161,6 +161,32 @@ IF (_table_name='port_monitors') THEN
 
   SELECT _id AS id, 'port_monitors' AS table_name, _dev_ip AS address, 
          @_port AS port, @_proto AS proto;
+ELSEIF (_table_name='ping_monitors') THEN
+  -- get row with lock to prevent another monitor
+  -- thread from picking up the same row
+  SET @s = CONCAT('SELECT device_id, check_interval INTO @_dev_id, @_interval FROM ', _table_name, ' WHERE id=', _id, ' FOR UPDATE');
+
+  SET autocommit=0;
+  START TRANSACTION;
+
+  PREPARE stmt FROM @s;
+  EXECUTE stmt;
+
+  -- set update last_check and next_check
+  SET @s = CONCAT('UPDATE ping_monitors SET last_check=NOW(), ',
+                  'next_check=DATE_ADD(NOW(), INTERVAL ', @_interval,
+                  ' MINUTE), status="pending" WHERE id=', _id);
+
+  PREPARE stmt FROM @s;
+  EXECUTE stmt;
+
+  COMMIT;
+  SET autocommit=1;
+
+  -- get ip address of device id
+  SELECT address INTO _dev_ip FROM devices WHERE id=@_dev_id;
+
+  SELECT _id AS id, 'ping_monitors' AS table_name, _dev_ip AS address;
 END IF;
 
 END;
@@ -180,9 +206,12 @@ BEGIN
 -- DECLARE _id BIGINT;
 -- DECLARE _table_name VARCHAR(50);
 
+-- update approprate table
 IF (in_table='port_monitors') THEN
-  -- if it is a port monitor type, update port_monitors table
   UPDATE port_monitors SET status=in_status, status_string=in_status_string
+      WHERE id=in_id;
+ELSEIF (in_table='ping_monitors') THEN
+  UPDATE ping_monitors SET status=in_status, status_string=in_status_string
       WHERE id=in_id;
 END IF;
 

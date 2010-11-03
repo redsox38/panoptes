@@ -68,20 +68,22 @@ int main(int argc, char *argv[]) {
 
   /* open syslog */
   facil_str = get_config_value("syslog.facility");
-  sscanf(facil_str, "%d", &facil);
+  facil = LOG_LOCAL0;
   free(facil_str);
 
-  openlog("panoptes_monitor", LOG_PID, LOG_FAC(facil));
+  openlog("panoptes_monitor", LOG_PID, facil);
 
+  /*
   if (! fork()){
     disconnect_from_tty();
-    /* fork again to prevent regaining a controlling tty */
+    
     if (! fork())
        set_pidfile("/tmp/panoptes_monitor.pid");
     else
        exit(0);
   } else 
     exit(0);
+  */
 
   if (database_module_init() < 0) {
     exit(-1);

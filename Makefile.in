@@ -65,6 +65,7 @@ am_panoptes_monitor_OBJECTS = panoptes_monitor-monitor_core.$(OBJEXT) \
 	panoptes_monitor-shutdown_thread.$(OBJEXT) \
 	panoptes_monitor-monitor_entry.$(OBJEXT) \
 	panoptes_monitor-monitor_port.$(OBJEXT) \
+	panoptes_monitor-monitor_icmp.$(OBJEXT) \
 	panoptes_monitor-perf_core.$(OBJEXT) \
 	panoptes_monitor-panoptes_utils.$(OBJEXT)
 panoptes_monitor_OBJECTS = $(am_panoptes_monitor_OBJECTS)
@@ -251,7 +252,7 @@ top_build_prefix = @top_build_prefix@
 top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
 panoptes_discover_SOURCES = discover_core.c  packet.c database.c panoptes_utils.c
-panoptes_monitor_SOURCES = monitor_core.c database.c monitor_thread.c shutdown_thread.c monitor_entry.c monitor_port.c perf_core.c panoptes_utils.c
+panoptes_monitor_SOURCES = monitor_core.c database.c monitor_thread.c shutdown_thread.c monitor_entry.c monitor_port.c monitor_icmp.c perf_core.c panoptes_utils.c
 SUBDIRS = database utils
 AUTOMAKE_OPTIONS = no-dependencies
 panoptes_monitor_LDFLAGS = @LDFLAGS@ 
@@ -438,6 +439,12 @@ panoptes_monitor-monitor_port.o: monitor_port.c
 
 panoptes_monitor-monitor_port.obj: monitor_port.c
 	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(panoptes_monitor_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o panoptes_monitor-monitor_port.obj `if test -f 'monitor_port.c'; then $(CYGPATH_W) 'monitor_port.c'; else $(CYGPATH_W) '$(srcdir)/monitor_port.c'; fi`
+
+panoptes_monitor-monitor_icmp.o: monitor_icmp.c
+	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(panoptes_monitor_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o panoptes_monitor-monitor_icmp.o `test -f 'monitor_icmp.c' || echo '$(srcdir)/'`monitor_icmp.c
+
+panoptes_monitor-monitor_icmp.obj: monitor_icmp.c
+	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(panoptes_monitor_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o panoptes_monitor-monitor_icmp.obj `if test -f 'monitor_icmp.c'; then $(CYGPATH_W) 'monitor_icmp.c'; else $(CYGPATH_W) '$(srcdir)/monitor_icmp.c'; fi`
 
 panoptes_monitor-perf_core.o: perf_core.c
 	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(panoptes_monitor_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o panoptes_monitor-perf_core.o `test -f 'perf_core.c' || echo '$(srcdir)/'`perf_core.c
