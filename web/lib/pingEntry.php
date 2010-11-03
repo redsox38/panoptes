@@ -1,8 +1,8 @@
 <?php
 /**
- * deviceEntry class
+ * pingEntry class
  *
- * class for interacting with monitored device objects
+ * class for interacting with ping device objects
  *
  * @version 0.01
  * @author Todd Merritt <redsox38@gmail.com>
@@ -10,7 +10,9 @@
  *
  */
 
-class deviceEntry
+require_once 'deviceEntry.php';
+
+class pingEntry
 {
   protected $db;
   protected $data = array();
@@ -59,32 +61,20 @@ class deviceEntry
    * @return none
    */
   public function commit() {
-    // try to get host name
-    $this->name = gethostbyaddr($this->srcaddr);
+    // insert into ping_monitors table if not there already
+    if (is_null($this->id)) {
+      // insert new entry 
+      $res = mysql_query("INSERT INTO ping_monitors VALUES(0," .
+			 $this->device->id . ",15,0, 0, 'warn', 'pending')");
 
-    // insert into device table if not there already
-    if (is_null($this->id)) {      
-      // insert new record
-      mysql_query("INSERT INTO devices VALUES(0, '" .
-		  $this->srcaddr . "','" . 
-		  $this->name . "')");
-
-      $res = mysql_query("SELECT id from devices WHERE address='" .
-			 $this->srcaddr . "'", $this->db);
       if ($res !== false) {
+	// go back and select entry to get entry id
+	$res = mysql_query("SELECT id FROM ping_monitors WHERE device_id=" .
+			   $this->device->id);
 	$r = mysql_fetch_assoc($res);
 	$this->id = $r['id'];
-	mysql_free_result($res);
+	mysql_free_result($res);	
       } else {
-	throw new Exception(mysql_error());
-      }
-    } else {
-      // update existing entry
-      $res = mysql_query("UPDATE devices SET name='" .
-			 $this->name . "', address='" .
-			 $this->srcaddr . "' WHERE id='" .
-			 $this->id . "'");
-      if ($res == false) {
 	throw new Exception(mysql_error());
       }
     }

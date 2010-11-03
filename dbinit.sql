@@ -3,6 +3,7 @@
 DROP TABLE IF EXISTS discovered;
 DROP TABLE IF EXISTS group_membership;
 DROP TABLE IF EXISTS port_monitors;
+DROP TABLE IF EXISTS ping_monitors;
 DROP TABLE IF EXISTS device_groups;
 DROP TABLE IF EXISTS devices;
 DROP VIEW monitor_tasks;
@@ -79,6 +80,23 @@ CREATE TABLE port_monitors (
   KEY device_id (device_id),
   KEY port (port),
   CONSTRAINT port_monitors_ibfk_1 FOREIGN KEY (device_id) REFERENCES devices (id) ON DELETE CASCADE ON UPDATE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+--
+-- Table structure for table ping_monitors
+--
+
+CREATE TABLE ping_monitors (
+  id bigint(20) NOT NULL AUTO_INCREMENT,
+  device_id bigint(20) NOT NULL,
+  check_interval smallint(6) NOT NULL DEFAULT '15',
+  last_check datetime DEFAULT NULL,
+  next_check datetime DEFAULT NULL,
+  status enum('ok','warn','error','pending') DEFAULT NULL,
+  status_string VARCHAR(255) DEFAULT NULL,
+  PRIMARY KEY (id),
+  UNIQUE KEY device_id (device_id),
+  CONSTRAINT ping_monitors_ibfk_1 FOREIGN KEY (device_id) REFERENCES devices (id) ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 /* views */

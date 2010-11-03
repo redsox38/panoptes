@@ -9,5 +9,6 @@ finish shutdown thread
 add authentication to gui
 delete device
 remove device from group
+update device tree when group membership changes
 
 have get next monitor sql procedure only return where next_check > now()

@@ -62,16 +62,18 @@ if ($req->isXmlHttpRequest()) {
         dojo.require("dijit.form.ComboBox");
         dojo.require("dijit.form.FilteringSelect");
         dojo.require("dijit.form.DateTextBox");
+        dojo.require("dijit.form.TextBox");
     </script>
     <script type="text/javascript" src="js/discovery.js"></script>
     <script type="text/javascript" src="js/devices.js"></script>
+    <script type="text/javascript" src="js/tools.js"></script>
 
 </head>
 <body class="claro">
     <div id="master_layout" dojoType="dijit.layout.BorderContainer" style="width: 100%; height: 100%;">
         <div id="left_nav" region="leading" dojoType="dijit.layout.AccordionContainer" style="width: 15%;" splitter="true">
             <div id="tools" title="Tools" dojoType="dijit.layout.AccordionPane">
-                Tools
+	        <a href="#" onClick="addPingable();">Add Pingable Device</a>
             </div>
             <div id="device_list" title="Device List" dojoType="dijit.layout.AccordionPane">
                 <div id="device_tree"></div>

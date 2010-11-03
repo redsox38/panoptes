@@ -14,6 +14,7 @@ require_once 'panoptesConfiguration.php';
 require_once 'autoDiscoveryEntry.php';
 require_once 'deviceGroup.php';
 require_once 'deviceEntry.php';
+require_once 'pingEntry.php';
 require_once 'monitorEntry.php';
 
 class panoptes
@@ -635,6 +636,39 @@ class panoptes
 				 $a->port
 				 ));
       }
+    } catch (Exception $e) {
+      return(array('result' => 'failure',
+                  'error'  => $e->getMessage()));
+    }
+
+    return(array('result' => 'success', 'data' => $data));
+  }
+
+  /**
+   * add new pingable device
+   *
+   * adds new pingable device and returns information needed to
+   * add it to the deviceTree
+   *
+   * @param args json params converted into an array
+   *             id device id to get data for
+   * @throws none
+   * @return array containing result and possible error messages
+   */
+  public function ajax_addPingMonitor($args) {
+    $data = array();
+
+    try {
+      $dev = new deviceEntry();
+      $dev->db($this->db);
+      $dev->srcaddr = $args['address'];
+      $dev->commit();
+
+      // add ping monitor 
+      $pm = new pingEntry();
+      $pm->db($this->db);
+      $pm->device = $dev;
+      $pm->commit();
     } catch (Exception $e) {
       return(array('result' => 'failure',
                   'error'  => $e->getMessage()));
