@@ -3,6 +3,7 @@ var deviceStore;
 var deviceTreeSelectedItem;
 var groupStore;
 var portMonitorStore;
+var perfMonitorStore;
 
 function updatePerformanceGraph(id) {
     // get selected metic
@@ -60,6 +61,32 @@ function addPortMonitorData(id, container) {
 	},	
     };
        
+    var resp = dojo.xhrGet(xhrArgs);
+}
+
+function addRRDData(id) {
+    var xhrArgs = {
+	url: '/panoptes/',
+	handleAs: 'json',
+	content: {
+	    action: 'getRRDs',
+	    data: '{ "id": "' + id + '" }'
+	},
+	load: function(data) {
+	    if (data && !data.error) {
+		// populate data store
+		dojo.forEach(data.data, function(oneEntry) {
+			perfMonitorStore.newItem(oneEntry);
+		    });
+
+		perfMonitorStore.save();
+	    } else {
+		alert(data.error);
+	    }
+	},
+
+    };
+	
     var resp = dojo.xhrGet(xhrArgs);
 }
 
@@ -193,7 +220,7 @@ function createPerformanceHistoryTab(id) {
     sb = new dijit.form.FilteringSelect({
    	    id: id + '_perf_metric',
    	    name: 'perf_metric',
-    	    store: portMonitorStore,
+    	    store: perfMonitorStore,
 	    title: 'Metric',	    
     	    searchAttr: 'metric'
     	}, dijit.byId(id + '_tc_perf'));
@@ -292,6 +319,16 @@ function createPortMonitorTab(id) {
 	    data: port_monitor_data 
 	});		
 
+    perf_monitor_data = {
+	label: "perfmon",
+	identifier: "metric",
+	items: []
+    };
+
+    perfMonitorStore = new dojo.data.ItemFileWriteStore({ 
+	    data: perf_monitor_data 
+	});		
+
     var tc_1 = new dojox.grid.EnhancedGrid({
 	    title: 'Port Monitors',
 	    store: portMonitorStore,
@@ -322,6 +359,9 @@ function createPortMonitorTab(id) {
     // load data for availability tab
     addPortMonitorData(id, tc_1);
     
+    // load data for performance monitor tab
+    addRRDData(id);
+
     return(tc_1);
 }
 

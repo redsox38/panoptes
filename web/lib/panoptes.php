@@ -65,6 +65,44 @@ class panoptes
     return($this->config);
   }
 
+
+  /**
+   * Return list of available RRDs for a given device
+   *
+   * @param id id of specific device to retrieve
+   *                 rrd info for
+   *
+   * @throws Exception 
+   * @return array
+   */
+  public function getRRDs($id) {
+
+    try {
+      $dev = $this->getDevice($id);
+      
+      if ($dev) {
+	$rrd_root = $this->config()->getConfigValue('rrd.directory'); 
+	$path = $rrd_root . '/' . $dev->address;
+	
+	// find all rrd files below path
+	// stripping off prefix and .rrd extension
+
+	$t = glob($path . '/*/*.rrd');
+	foreach ($t as $f) {	
+	  $pat = ':' . $path . '/[^/]+/([^\.]+).rrd:';
+	  $f = preg_replace($pat, '\1', $f);
+	  $r[] = array('metric' => $f);
+	}
+      } else {
+	throw new Exception("Device " . $id . " does not exist");
+      }
+    } catch (Exception $e) {
+      throw($e);
+    }
+    
+    return($r);
+  }
+
   /**
    * Parse RRD xml and return information for graphing
    *
@@ -97,7 +135,7 @@ class panoptes
 
 	  if (file_exists($tmp_rrd)) {
 	    $r['rrd_file'] = $tmp_rrd;
-	    $r['rrd_xml'] = $tmp_xml;
+	    $r['xml_file'] = $tmp_xml;
 	    break;
 	  }
 	}
@@ -164,7 +202,7 @@ class panoptes
 	foreach ($gprints as $v) {
 	  array_push($r['rrd_opts'], $v);
 	}
-      } else {
+    } else {
 	throw new Exception("Device " . $id . " does not exist");
       }
     } catch (Exception $e) {
@@ -683,6 +721,27 @@ class panoptes
     } catch (Exception $e) {
       return(array('result' => 'failure',
                   'error'  => $e->getMessage()));
+    }
+
+    return(array('result' => 'success', 'data' => $data));
+  }
+
+  /**
+   * get available RRDs for a given device
+   *
+   * @param args json params converted into an array
+   *             id device id to get data for
+   * @throws none
+   * @return array containing result and possible error messages
+   */
+  public function ajax_getRRDs($args) {
+    $data = array();
+
+    try {
+      $data = $this->getRRDs($args['id']);
+    } catch (Exception $e) {
+      return(array('result' => 'failure',
+		   'error'  => $e->getMessage()));
     }
 
     return(array('result' => 'success', 'data' => $data));
