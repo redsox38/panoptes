@@ -451,8 +451,41 @@ function xhrGroupAdd(attr_name, device_id) {
 );
 }
 
-function addToGroup() {
+function deleteDevice() {
+    var id = deviceStore.getValues(deviceTreeSelectedItem, 'id').toString();
+    id = id.replace("d_", "");
+    var name = deviceStore.getValues(deviceTreeSelectedItem, 'name');
 
+    if (confirm('All historical data will be lost.\nReally delete ' + name + '?')) {
+        var xhrArgs = {
+       	    url: '/panoptes/',
+	    handleAs: 'json',
+	    content: {
+	        action: 'deleteDevice',
+	        data: '{ "id": "' + id + '" }'
+	    },
+	    load: function(data) {
+	        if (data && !data.error) {
+                    // update data store
+	        } else {
+	    	    alert(data.error);
+	        }
+	    },
+        };
+	
+        dojo.xhrGet(xhrArgs);
+    }
+}
+
+function removeFromGroup() {
+    var id = deviceStore.getValues(deviceTreeSelectedItem, 'id').toString();
+    id = id.replace("d_", "");
+    var name = deviceStore.getValues(deviceTreeSelectedItem, 'name');
+
+    alert('Function not yet implemented');
+}
+
+function addToGroup() {
     var id = deviceStore.getValues(deviceTreeSelectedItem, 'id').toString();
     id = id.replace("d_", "");
     var name = deviceStore.getValues(deviceTreeSelectedItem, 'name');

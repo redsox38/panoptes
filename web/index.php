@@ -84,6 +84,12 @@ if ($req->isXmlHttpRequest()) {
                     <div dojoType="dijit.MenuItem" onClick="addToGroup();">
                         Add to Group
                     </div>
+                    <div dojoType="dijit.MenuItem" onClick="removeFromGroup();">
+                        Remove from Group
+                    </div>
+                    <div dojoType="dijit.MenuItem" iconClass="dijitIconDelete" onClick="deleteDevice();">
+                       Delete Device 
+                    </div>
                 </div>
             </div>
             <div id="dashboard_widgets" title="Dashboard Widgets" dojoType="dijit.layout.AccordionPane">

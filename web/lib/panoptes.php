@@ -746,6 +746,32 @@ class panoptes
 
     return(array('result' => 'success', 'data' => $data));
   }
+
+  /**
+   * delete device
+   *
+   * @param args json params converted into an array
+   *             id device id to get data for
+   * @throws none
+   * @return array containing result and possible error messages
+   */
+  public function ajax_deleteDevice($args) {
+    try {
+      // get device object and call delete
+      $dev = $this->getDevice($args['id']);
+
+      if ($dev) {
+	$dev->delete();
+      } else {
+	throw new Exception("Device " . $id . " does not exist");
+      }
+    } catch (Exception $e) {
+      return(array('result' => 'failure',
+		   'error'  => $e->getMessage()));
+    }
+
+    return(array('result' => 'success'));
+  }
 }
 
 ?>

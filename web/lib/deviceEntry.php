@@ -66,7 +66,7 @@ class deviceEntry
     if (is_null($this->id)) {      
       // insert new record
       mysql_query("INSERT INTO devices VALUES(0, '" .
-		  $this->srcaddr . "','" . 
+ 		  $this->srcaddr . "','" . 
 		  $this->name . "')");
 
       $res = mysql_query("SELECT id from devices WHERE address='" .
@@ -87,6 +87,20 @@ class deviceEntry
       if ($res == false) {
 	throw new Exception(mysql_error());
       }
+    }
+  }
+
+  /**
+   * Delete device entry
+   *
+   * @param none
+   * @throws Exception
+   * @return none
+   */
+  public function delete() {
+    $res = mysql_query("DELETE FROM devices WHERE id='" . $this->id . "'");
+    if ($res == false) {
+      throw new Exception(mysql_error());
     }
   }
 
