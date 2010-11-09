@@ -130,6 +130,7 @@ DECLARE _dev_ip VARCHAR(15);
 -- Get next task and type of task
 SELECT id, table_name INTO _id, _table_name 
   FROM monitor_tasks 
+  WHERE next_check > DATE_SUB(NOW(), INTERVAL 1 MINUTE) 
   LIMIT 1;
 
 IF (_table_name='port_monitors') THEN

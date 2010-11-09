@@ -9,5 +9,3 @@ add authentication to gui
 remove device from group
 update device tree when group membership changes
 update device store on delete device
-
-have get next monitor sql procedure only return where next_check > now()

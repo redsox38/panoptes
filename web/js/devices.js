@@ -427,6 +427,9 @@ function xhrGroupAdd(attr_name, device_id) {
 
     grp = dijit.byId(attr_name).attr('value');
     
+    // add group to groupStore if it's a new group
+
+
     var xhrGrpArgs = {
 	url: '/panoptes/',
 	handleAs: 'json',
@@ -437,6 +440,10 @@ function xhrGroupAdd(attr_name, device_id) {
 	load: function(data) {
 	    if (data && !data.error) {
 		// update group store and refresh device tree
+		req = deviceStore.fetch({ query: { name: grp,
+						   type: 'group'}, 
+					  onItem: function (itm) {
+			}});
 	    } else {
 		alert(data.error);
 	    }
