@@ -11138,7 +11138,7 @@ fi
 # Checks for libraries.
 
 # Checks for header files.
-for ac_header in arpa/inet.h netinet/in.h stdlib.h string.h sys/socket.h pcap.h libxml/parser.h mysql.h syslog.h
+for ac_header in arpa/inet.h netinet/in.h stdlib.h string.h sys/socket.h pcap.h libxml/parser.h mysql.h syslog.h curl/curl.h
 do :
   as_ac_Header=`$as_echo "ac_cv_header_$ac_header" | $as_tr_sh`
 ac_fn_c_check_header_mongrel "$LINENO" "$ac_header" "$as_ac_Header" "$ac_includes_default"
@@ -11401,6 +11401,53 @@ _ACEOF
 
 else
   as_fn_error "Cannot find librrd_th" "$LINENO" 5
+fi
+
+{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for curl_easy_perform in -lcurl" >&5
+$as_echo_n "checking for curl_easy_perform in -lcurl... " >&6; }
+if test "${ac_cv_lib_curl_curl_easy_perform+set}" = set; then :
+  $as_echo_n "(cached) " >&6
+else
+  ac_check_lib_save_LIBS=$LIBS
+LIBS="-lcurl  $LIBS"
+cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+
+/* Override any GCC internal prototype to avoid an error.
+   Use char because int might match the return type of a GCC
+   builtin and then its argument prototype would still apply.  */
+#ifdef __cplusplus
+extern "C"
+#endif
+char curl_easy_perform ();
+int
+main ()
+{
+return curl_easy_perform ();
+  ;
+  return 0;
+}
+_ACEOF
+if ac_fn_c_try_link "$LINENO"; then :
+  ac_cv_lib_curl_curl_easy_perform=yes
+else
+  ac_cv_lib_curl_curl_easy_perform=no
+fi
+rm -f core conftest.err conftest.$ac_objext \
+    conftest$ac_exeext conftest.$ac_ext
+LIBS=$ac_check_lib_save_LIBS
+fi
+{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_cv_lib_curl_curl_easy_perform" >&5
+$as_echo "$ac_cv_lib_curl_curl_easy_perform" >&6; }
+if test "x$ac_cv_lib_curl_curl_easy_perform" = x""yes; then :
+  cat >>confdefs.h <<_ACEOF
+#define HAVE_LIBCURL 1
+_ACEOF
+
+  LIBS="-lcurl $LIBS"
+
+else
+  as_fn_error "Cannot find libcurl" "$LINENO" 5
 fi
 
 

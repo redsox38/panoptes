@@ -17,7 +17,7 @@ AC_PROG_CC
 # Checks for libraries.
 
 # Checks for header files.
-AC_CHECK_HEADERS([arpa/inet.h netinet/in.h stdlib.h string.h sys/socket.h pcap.h libxml/parser.h mysql.h syslog.h])
+AC_CHECK_HEADERS([arpa/inet.h netinet/in.h stdlib.h string.h sys/socket.h pcap.h libxml/parser.h mysql.h syslog.h curl/curl.h])
 
 # Checks for typedefs, structures, and compiler characteristics.
 
@@ -29,6 +29,7 @@ AC_CHECK_LIB([xml2], [xmlReadFile], , AC_MSG_ERROR(Cannot find libxml2))
 AC_CHECK_LIB([pthread], [pthread_create])
 AC_CHECK_LIB([mysqlclient_r], [mysql_init], , AC_MSG_ERROR(Cannot find libmysqlclient))
 AC_CHECK_LIB([rrd_th], [rrd_create_r], , AC_MSG_ERROR(Cannot find librrd_th))
+AC_CHECK_LIB([curl], [curl_easy_perform], , AC_MSG_ERROR(Cannot find libcurl))
 
 dnl Checks for typedefs, structures, and compiler characteristics.
 AC_C_CONST
