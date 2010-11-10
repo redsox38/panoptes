@@ -220,4 +220,8 @@ int _update_monitor_entry(monitor_entry_t *m, monitor_result_t *r)
   free(qry);
 }
 
+void _add_ssl_monitor(char *addr, int port)
+{
+}
+
 #endif

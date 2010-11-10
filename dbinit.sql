@@ -77,7 +77,7 @@ CREATE TABLE port_monitors (
   check_interval smallint(6) NOT NULL DEFAULT '15',
   last_check datetime DEFAULT NULL,
   next_check datetime DEFAULT NULL,
-  status enum('ok','warn','error','pending') DEFAULT NULL,
+  status enum('new','ok','warn','error','pending') DEFAULT NULL,
   status_string VARCHAR(255) DEFAULT NULL,
   PRIMARY KEY (id),
   UNIQUE KEY idx (device_id,port,proto),
@@ -138,7 +138,7 @@ IF (_table_name='port_monitors') THEN
 
   -- get row with lock to prevent another monitor
   -- thread from picking up the same row
-  SET @s = CONCAT('SELECT device_id, check_interval, port, proto INTO @_dev_id, @_interval, @_port, @_proto FROM ', _table_name, ' WHERE id=', _id, ' FOR UPDATE');
+  SET @s = CONCAT('SELECT device_id, check_interval, port, proto, status INTO @_dev_id, @_interval, @_port, @_proto, @_status FROM ', _table_name, ' WHERE id=', _id, ' FOR UPDATE');
 
   SET autocommit=0;
   START TRANSACTION;
@@ -161,11 +161,11 @@ IF (_table_name='port_monitors') THEN
   SELECT address INTO _dev_ip FROM devices WHERE id=@_dev_id;
 
   SELECT _id AS id, 'port_monitors' AS table_name, _dev_ip AS address, 
-         @_port AS port, @_proto AS proto;
+         @_port AS port, @_proto AS proto, @_status AS status;
 ELSEIF (_table_name='ping_monitors') THEN
   -- get row with lock to prevent another monitor
   -- thread from picking up the same row
-  SET @s = CONCAT('SELECT device_id, check_interval INTO @_dev_id, @_interval FROM ', _table_name, ' WHERE id=', _id, ' FOR UPDATE');
+  SET @s = CONCAT('SELECT device_id, check_interval, status INTO @_dev_id, @_interval, @_status FROM ', _table_name, ' WHERE id=', _id, ' FOR UPDATE');
 
   SET autocommit=0;
   START TRANSACTION;
@@ -187,7 +187,8 @@ ELSEIF (_table_name='ping_monitors') THEN
   -- get ip address of device id
   SELECT address INTO _dev_ip FROM devices WHERE id=@_dev_id;
 
-  SELECT _id AS id, 'ping_monitors' AS table_name, _dev_ip AS address;
+  SELECT _id AS id, 'ping_monitors' AS table_name, _dev_ip AS address, 
+         @_status AS status;
 END IF;
 
 END;

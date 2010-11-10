@@ -43,6 +43,16 @@ void *monitor_thread(void *arg)
 	if (addr != NULL && proto != NULL && port != NULL) {
 	  sscanf(port, "%d", &portnum);
 	  
+	  /*
+	    add ssl certificate check if there isn't one there already 
+	    and this is the first time this has been checked
+	  */
+	  if ((portnum == 443 || portnum = 8443) && 
+	      (!strcmp(get_attr_val(&m, "status"), "new"))) {
+	    /* add ssl check */
+	    add_ssl_monitor(addr, portnum);
+	  }
+
 	  monitor_port(addr, proto, portnum, &r);
 	  update_monitor_entry(&m, &r);
 	  
