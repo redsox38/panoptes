@@ -113,7 +113,7 @@ int update_monitor_entry(monitor_entry_t *m, monitor_result_t *r)
 }
 
 /* call library's _add_ssl_monitor routine */
-void add_ssl_monitor(char *addr, int port)
+void add_ssl_monitor(char *dev_id, int port)
 {
   
   int rc = -1;
@@ -121,7 +121,7 @@ void add_ssl_monitor(char *addr, int port)
 
   /* load add function */
   if ((update_ptr = (void (*)(char *, int))dlsym(lib_handle, "_add_ssl_monitor")) != NULL) {
-    (*add_ptr)(addr, port);
+    (*add_ptr)(dev_id, port);
   } else {
     syslog(LOG_ALERT, "_add_ssl_monitor not defined");
   }

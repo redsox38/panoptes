@@ -50,7 +50,7 @@ void *monitor_thread(void *arg)
 	  if ((portnum == 443 || portnum = 8443) && 
 	      (!strcmp(get_attr_val(&m, "status"), "new"))) {
 	    /* add ssl check */
-	    add_ssl_monitor(addr, portnum);
+	    add_ssl_monitor(get_attr_val(&m, "device_id"), portnum);
 	  }
 
 	  monitor_port(addr, proto, portnum, &r);
