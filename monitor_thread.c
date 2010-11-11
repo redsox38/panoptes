@@ -11,7 +11,7 @@ void *monitor_thread(void *arg)
   char             **p, **q;
   monitor_result_t r;
   /* data for port monitoring */
-  char             *addr, *proto, *port;
+  char             *addr, *proto, *port, *url;
   char             perf_attr[256];
   int              portnum;
 
@@ -50,7 +50,7 @@ void *monitor_thread(void *arg)
 	  if ((portnum == 443 || portnum == 8443) && 
 	      (!strcmp(get_attr_val(&m, "status"), "new"))) {
 	    /* add ssl check */
-	    add_ssl_monitor(get_attr_val(&m, "device_id"), portnum);
+	    add_ssl_monitor(get_attr_val(&m, "device_id"), addr, portnum);
 	  }
 
 	  monitor_port(addr, proto, portnum, &r);
@@ -83,12 +83,10 @@ void *monitor_thread(void *arg)
 		 m.table_name, m.id);
 	}
       } else if (!strcmp(m.table_name, "certificate_monitors")) {
-	addr = get_attr_val(&m, "address");
-	port = get_attr_val(&m, "port");
-	if (addr != NULL && port != NULL) {
-	  sscanf(port, "%d", &portnum);
+	url = get_attr_val(&m, "url");
+	if (url != NULL) {
 
-	  monitor_certificate(addr, portnum, &r);
+	  monitor_certificate(url, &r);
 	  update_monitor_entry(&m, &r);
 
 	  free_monitor_result(&r, 0);

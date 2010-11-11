@@ -220,18 +220,22 @@ int _update_monitor_entry(monitor_entry_t *m, monitor_result_t *r)
   free(qry);
 }
 
-void _add_ssl_monitor(char *dev_id, int port)
+void _add_ssl_monitor(char *dev_id, char *addr, int port)
 {
-  char *qry;
+  char *qry, *url;
 
-  qry = (char *)malloc(sizeof(char) * MAX_MYSQL_DISC_QRY_LEN);
+  url = (char *)malloc(sizeof(char) * MAX_MYSQL_DISC_QRY_LEN);
+  snprintf(url, MAX_MYSQL_DISC_QRY_LEN, "https://%s:%d", addr, port);
 
-  snprintf(qry, MAX_MYSQL_DISC_QRY_LEN,
-	   "INSERT INTO certificate_monitors VALUES(0, '%s', %d, NOW(), NOW(), 'new', '')",
-	   dev_id, port);
+  qry = (char *)malloc(sizeof(char) * 2 * MAX_MYSQL_DISC_QRY_LEN);
+
+  snprintf(qry, 2 * MAX_MYSQL_DISC_QRY_LEN,
+	   "INSERT INTO certificate_monitors VALUES(0, '%s', '%s', 1440, NOW(), NOW(), 'new', '')",
+	   dev_id, url);
 
   mysql_query(mysql, qry);
 
+  free(url);
   free(qry);
 }
 

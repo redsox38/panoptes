@@ -111,7 +111,7 @@ CREATE TABLE ping_monitors (
 CREATE TABLE certificate_monitors (
   id bigint(20) NOT NULL AUTO_INCREMENT,
   device_id bigint(20) NOT NULL,
-  port smallint(5) unsigned NOT NULL,
+  url varchar(255) NOT NULL,
   check_interval smallint(6) NOT NULL DEFAULT '1440',
   last_check datetime DEFAULT NULL,
   next_check datetime DEFAULT NULL,
@@ -150,9 +150,9 @@ DECLARE V_table_name VARCHAR(50);
 DECLARE V_dev_ip VARCHAR(15);
 
 -- Get next task and type of task
+--  WHERE next_check > DATE_SUB(NOW(), INTERVAL 1 MINUTE) 
 SELECT id, table_name INTO V_id, V_table_name 
   FROM monitor_tasks 
-  WHERE next_check > DATE_SUB(NOW(), INTERVAL 1 MINUTE) 
   LIMIT 1;
 
 IF (V_table_name='port_monitors') THEN
@@ -217,7 +217,7 @@ ELSEIF (V_table_name='ping_monitors') THEN
 ELSEIF (V_table_name='certificate_monitors') THEN
   -- get row with lock to prevent another monitor
   -- thread from picking up the same row
-  SET @s = CONCAT('SELECT device_id, check_interval, port, status INTO @_dev_id, @_interval, @_port, @_status FROM ', V_table_name, ' WHERE id=', V_id, ' FOR UPDATE');
+  SET @s = CONCAT('SELECT device_id, check_interval, url, status INTO @_dev_id, @_interval, @_url, @_status FROM ', V_table_name, ' WHERE id=', V_id, ' FOR UPDATE');
 
   SET autocommit=0;
   START TRANSACTION;
@@ -236,13 +236,9 @@ ELSEIF (V_table_name='certificate_monitors') THEN
   COMMIT;
   SET autocommit=1;
 
-  -- get ip address of device id
-  SELECT address INTO V_dev_ip FROM devices WHERE id=@_dev_id;
-
   SELECT V_id AS id, @_dev_id AS device_id, 
-  	 'certificate_monitors' AS table_name, V_dev_ip AS address, 
-	 @_port AS port, @_status AS status;
-
+  	 'certificate_monitors' AS table_name,  
+	 @_url AS url, @_status AS status;
 END IF;
 
 END;
