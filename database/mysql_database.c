@@ -222,6 +222,17 @@ int _update_monitor_entry(monitor_entry_t *m, monitor_result_t *r)
 
 void _add_ssl_monitor(char *dev_id, int port)
 {
+  char *qry;
+
+  qry = (char *)malloc(sizeof(char) * MAX_MYSQL_DISC_QRY_LEN);
+
+  snprintf(qry, MAX_MYSQL_DISC_QRY_LEN,
+	   "INSERT INTO certificate_monitors VALUES(0, '%s', %d, NOW(), NOW(), 'new', '')",
+	   dev_id, port);
+
+  mysql_query(mysql, qry);
+
+  free(qry);
 }
 
 #endif

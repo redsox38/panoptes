@@ -75,7 +75,7 @@ monitor_result_t *monitor_icmp(char *addr, monitor_result_t *r)
   ip.id = htons(random());
   ip.ttl = 255;
   ip.protocol = IPPROTO_ICMP;
-  ip.saddr = inet_addr("192.168.0.100");
+  ip.saddr = htonl(INADDR_ANY);
   ip.daddr = inet_addr(addr);
 
   /*

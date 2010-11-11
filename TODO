@@ -1,10 +1,11 @@
+fix linking against self warnings in build
+
 snmp monitors
 https certificate monitors
 shell script monitors
 make monitor thread loop
 fork new thread for performance monitor updates
 finish shutdown thread
-monitor_icmp get address of device on primary gateway as src addr
 
 add authentication to gui
 remove device from group

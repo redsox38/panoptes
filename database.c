@@ -117,10 +117,10 @@ void add_ssl_monitor(char *dev_id, int port)
 {
   
   int rc = -1;
-  int (*add_ptr)(char *, int);
+  void (*add_ptr)(char *, int);
 
   /* load add function */
-  if ((update_ptr = (void (*)(char *, int))dlsym(lib_handle, "_add_ssl_monitor")) != NULL) {
+  if ((add_ptr = (void (*)(char *, int))dlsym(lib_handle, "_add_ssl_monitor")) != NULL) {
     (*add_ptr)(dev_id, port);
   } else {
     syslog(LOG_ALERT, "_add_ssl_monitor not defined");
