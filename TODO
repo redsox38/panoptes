@@ -2,7 +2,7 @@ fix linking against self warnings in build
 
 snmp monitors
 shell script monitors
-web page output monitors - accept selenium output maybe ?
+web page output monitors - accept selenium output to generate script maybe ?
 fork new thread for performance monitor updates
 finish shutdown thread
 
@@ -10,5 +10,4 @@ add authentication to gui
 remove device from group
 update device tree when group membership changes
 update device store on delete device
-add certificate_monitors tab to device view
 context menus for monitors for add new, ack, disable, etc...

@@ -119,6 +119,7 @@ CREATE TABLE certificate_monitors (
   status_string varchar(255) DEFAULT NULL,
   PRIMARY KEY (id),
   KEY device_id (device_id),
+  UNIQUE KEY url (url),
   CONSTRAINT certificate_monitors_ibfk_1 FOREIGN KEY (device_id) REFERENCES devices (id) ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 

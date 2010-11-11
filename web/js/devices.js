@@ -4,6 +4,7 @@ var deviceTreeSelectedItem;
 var groupStore;
 var portMonitorStore;
 var perfMonitorStore;
+var certificateMonitorStore;
 
 function updatePerformanceGraph(id) {
     // get selected metic
@@ -54,6 +55,33 @@ function addPortMonitorData(id, container) {
 
 		portMonitorStore.save();
 		container.setStore(portMonitorStore);
+		container.update();		
+	    } else {
+		alert(data.error);
+	    }
+	},	
+    };
+       
+    var resp = dojo.xhrGet(xhrArgs);
+}
+
+function addCertificateMonitorData(id, container) {
+    var xhrArgs = {
+	url: '/panoptes/',
+	handleAs: 'json',
+	content: {
+	    action: 'getCertificateMonitorData',
+	    data: '{ "id": "' + id + '" }'
+	},
+	load: function(data) {
+	    if (data && !data.error) {          
+		// populate grid
+		dojo.forEach(data.data, function(oneEntry) {
+			certificateMonitorStore.newItem(oneEntry);
+		    });
+
+		certificateMonitorStore.save();
+		container.setStore(certificateMonitorStore);
 		container.update();		
 	    } else {
 		alert(data.error);
@@ -206,6 +234,19 @@ function createDeviceTree(){
 
 function createPerformanceHistoryTab(id) {
 
+    perf_monitor_data = {
+	label: "perfmon",
+	identifier: "metric",
+	items: []
+    };
+
+    perfMonitorStore = new dojo.data.ItemFileWriteStore({ 
+	    data: perf_monitor_data 
+	});		
+
+    // load data for performance monitor tab
+    addRRDData(id);
+
     // load available historical data
     // for selectbox
     
@@ -319,16 +360,6 @@ function createPortMonitorTab(id) {
 	    data: port_monitor_data 
 	});		
 
-    perf_monitor_data = {
-	label: "perfmon",
-	identifier: "metric",
-	items: []
-    };
-
-    perfMonitorStore = new dojo.data.ItemFileWriteStore({ 
-	    data: perf_monitor_data 
-	});		
-
     var tc_1 = new dojox.grid.EnhancedGrid({
 	    title: 'Port Monitors',
 	    store: portMonitorStore,
@@ -348,7 +379,7 @@ function createPortMonitorTab(id) {
 	    if (item) {
 		var status = tc_1.store.getValue(item, "status", null);
 
-		if (status == "error") {
+		if (status == "critical") {
 		    row.customStyles += 'color: #a62434;';
 		} else if (status == "warn") {
 		    row.customStyles += 'color: #b3511d;';
@@ -359,9 +390,79 @@ function createPortMonitorTab(id) {
     // load data for availability tab
     addPortMonitorData(id, tc_1);
     
-    // load data for performance monitor tab
-    addRRDData(id);
+    return(tc_1);
+}
 
+
+function createCertificateTab(id) {
+    // create data  grid 
+    var certificate_layout = [{
+	    field: 'url',
+	    name: 'Url',
+	    width: '170px'
+	},      
+	{            
+	    field: 'last_check', 
+	    name: 'Last Check',
+	    width: '150px'
+	},
+	{            
+	    field: 'next_check', 
+	    name: 'Next Check',
+	    width: '150px'
+	},
+	{            
+	    field: 'status', 
+	    name: 'Status',
+	    width: '90px'
+	},
+	{            
+	    field: 'status_string', 
+	    name: 'Monitor Output',
+	    width: 'auto'
+	},
+	];
+
+    certificate_data = {
+	label: "certmon",
+	identifier: "id",
+	items: []
+    };
+
+    certificateMonitorStore = new dojo.data.ItemFileWriteStore({ 
+	    data: certificate_data 
+	});		
+
+    var tc_1 = new dojox.grid.EnhancedGrid({
+	    title: 'SSL Certificate Monitors',
+	    store: certificateMonitorStore,
+	    structure: certificate_layout,
+	    clientSort: true,
+	    rowSelector: '10px',
+	    selectionMode: 'none',
+	    plugins: {
+		nestedSorting: true,
+	    }
+	}, document.createElement('div'));                  
+    tc_1.startup();                
+    
+    // set color coding for grid rows based on monitor status
+    dojo.connect(tc_1, 'onStyleRow', function(row) {
+	    var item = tc_1.getItem(row.index);
+	    if (item) {
+		var status = tc_1.store.getValue(item, "status", null);
+
+		if (status == "critical") {
+		    row.customStyles += 'color: #a62434;';
+		} else if (status == "warn") {
+		    row.customStyles += 'color: #b3511d;';
+		}
+		
+	    }
+	});
+    // load data for tab
+    addCertificateMonitorData(id, tc_1);
+    
     return(tc_1);
 }
 
@@ -410,11 +511,13 @@ function openDevice() {
     // tabs for new tab container
     tc_1 = createPortMonitorTab(id);
     tc_2 = createPerformanceHistoryTab(id);
+    tc_3 = createCertificateTab(id);
 
     // put all of the components together in border container
     // and append to parent tab
     tc.addChild(tc_1);
     tc.addChild(tc_2);
+    tc.addChild(tc_3);
     bc.addChild(ic);
     bc.addChild(hc);
     bc.addChild(tc);

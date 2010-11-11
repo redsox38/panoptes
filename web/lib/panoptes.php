@@ -433,6 +433,41 @@ class panoptes
   }
 
   /**
+   * Retrieve certificate monitior entries
+   *
+   * @param id id of specific device to retrieve
+   *                 certificate monitor data for
+   *
+   * @throws Exception 
+   * @return array of monitorEntry objects
+   */
+  public function getCertificateMonitorData($id) {
+    $rtndata = array();
+
+    $res = mysql_query("SELECT * FROM certificate_monitors WHERE device_id='" . 
+		       $id ."'", $this->db);
+    
+    if ($res !== false) {
+      while ($r = mysql_fetch_assoc($res)) {
+	$ent = new monitorEntry($this->db);
+	$ent->id = $r['id'];
+	$ent->device_id = $id;
+	$ent->last_check = $r['last_check'];
+	$ent->next_check = $r['next_check'];
+	$ent->url = $r['url'];
+	$ent->status = $r['status'];
+	$ent->status_string = $r['status_string'];
+	array_push($rtndata, $ent);
+      }
+      mysql_free_result($res);
+    } else {
+      throw new Exception(mysql_error());
+    }
+
+    return($rtndata);
+  }
+
+  /**
    * ignore auto discovery entries for ajax request
    *
    * @param args json params converted into an array
@@ -771,6 +806,40 @@ class panoptes
     }
 
     return(array('result' => 'success'));
+  }
+
+  /**
+   * get certificate monitor data
+   *
+   * return monitor information for given device id
+   *
+   * @param args json params converted into an array
+   *             id device id to get data for
+   * @throws none
+   * @return array containing result and possible error messages
+   */
+  public function ajax_getCertificateMonitorData($args) {
+    $data = array();
+    
+    try {
+      $rst = $this->getCertificateMonitorData($args['id']);
+      foreach ($rst as $a) {
+	array_push($data, array (
+				 'id'            => $a->id,
+				 'device_id'     => $a->device_id,
+				 'url'           => $a->url,
+				 'last_check'    => $a->last_check,
+				 'next_check'    => $a->next_check,
+				 'status'        => $a->status,
+				 'status_string' => $a->status_string
+				 ));
+      }
+    } catch (Exception $e) {
+      return(array('result' => 'failure',
+                  'error'  => $e->getMessage()));
+    }
+
+    return(array('result' => 'success', 'data' => $data));
   }
 }
 
