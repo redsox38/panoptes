@@ -174,7 +174,7 @@ int _update_monitor_entry(monitor_entry_t *m, monitor_result_t *r)
     status_str = strdup("warn");
     break;
   default:
-    status_str = strdup("error");
+    status_str = strdup("critical");
     break;
   }
 

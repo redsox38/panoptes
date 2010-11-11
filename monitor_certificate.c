@@ -5,6 +5,7 @@
 #include <errno.h>
 #include <sys/time.h>
 #include <string.h>
+#include <time.h>
 #include "monitor_core.h"
 #include <curl/curl.h>
 #include <curl/types.h>
@@ -23,8 +24,30 @@ monitor_result_t *monitor_certificate(char *url, monitor_result_t *r)
   CURLcode             res;
   struct curl_certinfo *certs = NULL;
   struct curl_slist    *sl;
-  int                  i;
-  char                 *p, *tkn;
+  struct tm            t;
+  int                  i, yr, mo, day, rem_days, warn_days, crit_days;
+  char                 *p, *q, *tkn, *to_str;
+  time_t               now, exp;
+
+  r->status = MONITOR_RESULT_OK;
+
+  to_str = get_config_value("certificate.warndays");
+
+  if (to_str != NULL) {
+    sscanf(to_str, "%d", &warn_days); 
+    free(to_str);
+  } else {
+    warn_days = PANOPTES_DEFAULT_CERT_WARN_DAYS;
+  }
+  
+  to_str = get_config_value("certificate.criticaldays");
+  
+  if (to_str != NULL) {
+    sscanf(to_str, "%d", &crit_days); 
+    free(to_str);
+  } else {
+    crit_days = PANOPTES_DEFAULT_CERT_CRITICAL_DAYS;
+  }
 
   curl_global_init(CURL_GLOBAL_ALL);
 
@@ -43,16 +66,49 @@ monitor_result_t *monitor_certificate(char *url, monitor_result_t *r)
     if (!res) {
       res = curl_easy_getinfo(curl_handle, CURLINFO_CERTINFO, &certs);
 
+      now = time(NULL);
+
       if (!res && certs) {
-	for (sl = certs->certinfo[0]; sl != NULL; sl = sl->next) {
-	  /* Expire date:2028-08-01 23:59:59 GMT */
-	  p = strtok_r(sl->data, "\n", &tkn);
-	  while(p != NULL) {
-	    if (!strncmp(p, "Expire date:", strlen("Expire date:"))) {
-	      p += strlen("Expire date:");
-	      printf("%s\n", p);
+	r->monitor_msg = (char *)malloc(sizeof(char) * 36 * certs->num_of_certs);
+	q = r->monitor_msg;
+	for (i = 0; i < certs->num_of_certs; i++) {
+	  for (sl = certs->certinfo[i]; sl != NULL; sl = sl->next) {
+	    /* Expire date:2028-08-01 23:59:59 GMT */
+	    p = strtok_r(sl->data, "\n", &tkn);
+	    while(p != NULL) {
+	      if (!strncmp(p, "Expire date:", strlen("Expire date:"))) {
+		/* append to status string */
+		snprintf(q, strlen(p) + 1, "%s", p);
+		q += strlen(p);
+		if (i < (certs->num_of_certs - 1)) {
+		  sprintf(q, ";");
+		  q++;
+		}
+
+		p += strlen("Expire date:");
+		sscanf(p, "%4d-%2d-%2d %*d:%*d:%*d GMT", &yr, &mo, &day);
+		t.tm_sec = 0;
+		t.tm_min = 0;
+		t.tm_hour = 0;
+		t.tm_mday = day;
+		t.tm_mon = mo;
+		t.tm_year = yr - 1900;
+		t.tm_isdst = -1;
+		exp = mktime(&t);
+
+		/* calculate number of days remaining */
+		rem_days = ((exp - now) / 3600) / 24;
+
+		if (rem_days < crit_days) {
+		  r->status = MONITOR_RESULT_ERR;
+		} else if ((rem_days < warn_days) && 
+			   r->status != MONITOR_RESULT_ERR) {
+		  r->status = MONITOR_RESULT_WARN;
+		}
+
+	      }
+	      p = strtok_r(NULL, "\n", &tkn);
 	    }
-	    p = strtok_r(NULL, "\n", &tkn);
 	  }
 	}
       }

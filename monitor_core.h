@@ -28,6 +28,13 @@ typedef struct monitor_result monitor_result_t;
 
 #define max(x,y) ((x) > (y) ? (x) : (y))
 
+/* default thresholds */
+#define PANOPTES_DEFAULT_CERT_WARN_DAYS 30
+#define PANOPTES_DEFAULT_CERT_CRITICAL_DAYS 15
+
+#define PANOPTES_DEFAULT_PING_TIMEOUT_SECS 30
+#define PANOPTES_DEFAULT_PORT_TIMEOUT_SECS 30
+
 /* prototypes */
 monitor_entry_t *allocate_monitor_entry(monitor_entry_t *);
 monitor_result_t *allocate_monitor_result(monitor_result_t *);

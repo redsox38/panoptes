@@ -56,7 +56,7 @@ monitor_result_t *monitor_icmp(char *addr, monitor_result_t *r)
     free(to_str);
  } else {
     /* default to 30 seconds */
-    to.tv_sec = 30;
+    to.tv_sec = PANOPTES_DEFAULT_PING_TIMEOUT_SECS;
   }
   to.tv_usec = 0;
 

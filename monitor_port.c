@@ -32,7 +32,7 @@ monitor_result_t *monitor_port(char *addr, char *proto,
     free(to_str);
  } else {
     /* default to 30 seconds */
-    to.tv_sec = 30;
+    to.tv_sec = PANOPTES_DEFAULT_PORT_TIMEOUT_SECS;
   }
   to.tv_usec = 0;
 
