@@ -2,7 +2,7 @@ fix linking against self warnings in build
 
 snmp monitors
 shell script monitors
-web page output monitors
+web page output monitors - accept selenium output maybe ?
 make monitor thread loop
 fork new thread for performance monitor updates
 finish shutdown thread
