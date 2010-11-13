@@ -1,13 +1,16 @@
 fix linking against self warnings in build
-
 snmp monitors
 shell script monitors
 web page output monitors - accept selenium output to generate script maybe ?
 fork new thread for performance monitor updates
 finish shutdown thread
+email/sms notifications
 
 add authentication to gui
 remove device from group
 update device tree when group membership changes
 update device store on delete device
-context menus for monitors for add new, ack, disable, etc...
+functions for monitor context menus
+schedule outages
+display ping monitor timing somewhere
+dynamically load JS funcs not needed @ startup

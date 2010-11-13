@@ -70,6 +70,24 @@ if ($req->isXmlHttpRequest()) {
 
 </head>
 <body class="claro">
+    <div dojoType="dijit.Menu" id="monitorMenu" style="display: none;">
+        <div dojoType="dijit.MenuItem" onClick="addMonitor();">
+            Add New
+        </div>  
+        <div dojoType="dijit.MenuItem" onClick="editMonitor();">
+            Edit
+        </div>
+        <div dojoType="dijit.MenuItem" onClick="ackMonitor();">
+            Acknowledge
+        </div>
+        <div dojoType="dijit.MenuItem" onClick="disableMonitor();">
+            Disable
+        </div>
+        <div dojoType="dijit.MenuItem" iconClass="dijitIconDelete" onClick="deleteMonitor();">
+            Delete
+        </div>
+    </div>
+
     <div id="master_layout" dojoType="dijit.layout.BorderContainer" style="width: 100%; height: 100%;">
         <div id="left_nav" region="leading" dojoType="dijit.layout.AccordionContainer" style="width: 15%;" splitter="true">
             <div id="tools" title="Tools" dojoType="dijit.layout.AccordionPane">
@@ -77,7 +95,7 @@ if ($req->isXmlHttpRequest()) {
             </div>
             <div id="device_list" title="Device List" dojoType="dijit.layout.AccordionPane">
                 <div id="device_tree"></div>
-	            <div dojoType="dijit.Menu" id="device_tree_menu" style="display: none;">
+	        <div dojoType="dijit.Menu" id="device_tree_menu" style="display: none;">
                     <div dojoType="dijit.MenuItem" iconClass="dijitIconTask" onClick="openDevice();">
                         Open Device
                     </div>

@@ -75,14 +75,16 @@ function addCertificateMonitorData(id, container) {
 	},
 	load: function(data) {
 	    if (data && !data.error) {          
-		// populate grid
-		dojo.forEach(data.data, function(oneEntry) {
-			certificateMonitorStore.newItem(oneEntry);
-		    });
+		if (data.data.length > 0) {
+		    // populate grid		
+		    dojo.forEach(data.data, function(oneEntry) {
+			    certificateMonitorStore.newItem(oneEntry);
+			});
 
-		certificateMonitorStore.save();
-		container.setStore(certificateMonitorStore);
-		container.update();		
+		    certificateMonitorStore.save();
+		    container.setStore(certificateMonitorStore);
+		    container.update();	
+		}
 	    } else {
 		alert(data.error);
 	    }
@@ -144,6 +146,7 @@ function addInfoData(id, container) {
 function getSelectedTreeNode(item, node, e) {
     // set global variables for processing 
     // menu option later
+    alert(node);
     deviceTreeSelectedItem = item;
 };
 
@@ -369,6 +372,10 @@ function createPortMonitorTab(id) {
 	    selectionMode: 'none',
 	    plugins: {
 		nestedSorting: true,
+		menus: { 
+		    rowMenu: 'monitorMenu',
+		    headerMenu: 'monitorMenu',
+		}
 	    }
 	}, document.createElement('div'));                  
     tc_1.startup();                
@@ -392,7 +399,6 @@ function createPortMonitorTab(id) {
     
     return(tc_1);
 }
-
 
 function createCertificateTab(id) {
     // create data  grid 
@@ -442,6 +448,10 @@ function createCertificateTab(id) {
 	    selectionMode: 'none',
 	    plugins: {
 		nestedSorting: true,
+		menus: { 
+		    rowMenu: 'monitorMenu',
+		    headerMenu: 'monitorMenu',
+		}
 	    }
 	}, document.createElement('div'));                  
     tc_1.startup();                
@@ -660,6 +670,26 @@ function addToGroup() {
     dv1.appendChild(dv2);
 
     document.body.appendChild(dv1);    
+}
+
+function addMonitor() {
+    alert('Function not yet implemented');
+}
+
+function editMonitor() {
+    alert('Function not yet implemented');
+}
+
+function ackMonitor() {
+    alert('Function not yet implemented');
+}
+
+function disableMonitor() {
+    alert('Function not yet implemented');
+}
+
+function deleteMonitor() {
+    alert('Function not yet implemented');
 }
 
 dojo.addOnLoad(function(){
