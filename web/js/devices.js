@@ -146,7 +146,6 @@ function addInfoData(id, container) {
 function getSelectedTreeNode(item, node, e) {
     // set global variables for processing 
     // menu option later
-    alert(node);
     deviceTreeSelectedItem = item;
 };
 
@@ -364,12 +363,13 @@ function createPortMonitorTab(id) {
 	});		
 
     var tc_1 = new dojox.grid.EnhancedGrid({
+	    id: id + '_port_mon_grid',
 	    title: 'Port Monitors',
 	    store: portMonitorStore,
 	    structure: port_monitor_layout,
 	    clientSort: true,
 	    rowSelector: '10px',
-	    selectionMode: 'none',
+	    selectionMode: 'multiple',
 	    plugins: {
 		nestedSorting: true,
 		menus: { 
@@ -439,13 +439,14 @@ function createCertificateTab(id) {
 	    data: certificate_data 
 	});		
 
-    var tc_1 = new dojox.grid.EnhancedGrid({
+    var tc_1 = new dojox.grid.EnhancxedGrid({
+	    id: id + '_cert_mon_grid',
 	    title: 'SSL Certificate Monitors',
 	    store: certificateMonitorStore,
 	    structure: certificate_layout,
 	    clientSort: true,
 	    rowSelector: '10px',
-	    selectionMode: 'none',
+	    selectionMode: 'multiple',
 	    plugins: {
 		nestedSorting: true,
 		menus: { 
@@ -689,7 +690,50 @@ function disableMonitor() {
 }
 
 function deleteMonitor() {
-    alert('Function not yet implemented');
+    // figure out which grid we're working with
+    selectedTab = dijit.byId('panoptes_tab_container').selectedChildWidget;
+    id = selectedTab.id.replace("_tab", "");
+
+    if (dijit.byId(id + '_port_mon_grid').selected) {
+	_deleteMonitor(dijit.byId(id + '_port_mon_grid'), 'port_monitors');
+    } else if (dijit.byId(id + '_cert_mon_grid').selected) {
+	_deleteMonitor(dijit.byId(id + '_cert_mon_grid'), 'port_monitors');
+    }
+}
+
+function _deleteMonitor(dataGrid, type) {
+    var ids = [];
+    // get row ids
+    var items = dataGrid.selection.getSelected();
+    dataGrid.selection.clear();
+    
+    if (items.length) {
+	dojo.forEach(items, function(selectedItem) {
+		if (selectedItem !== null) {
+		    var id = dataGrid.store.getValues(selectedItem, 'id');
+		    ids.push(id);
+		    dataGrid.store.deleteItem(selectedItem);
+		}
+	    });
+	dataGrid.store.save();
+
+	// send xml request to actually delete them
+	var xhrArgs = {
+	    url: '/panoptes/',
+	    handleAs: 'json',
+	    content: {
+		action: 'deleteMonitorEntry',
+		data: '{ "id" : [' + ids + '], "type" : "' + type + '" }'
+	    },
+	    load: function(data) {
+		if (data && data.error) {
+		    alert(data.error);
+		}
+	    },
+	};
+	
+	var deferred = dojo.xhrGet(xhrArgs);
+    }
 }
 
 dojo.addOnLoad(function(){

@@ -6,6 +6,8 @@ fork new thread for performance monitor updates
 finish shutdown thread
 email/sms notifications
 
+svc dependencies
+
 add authentication to gui
 remove device from group
 update device tree when group membership changes

@@ -15,7 +15,8 @@ require_once 'autoDiscoveryEntry.php';
 require_once 'deviceGroup.php';
 require_once 'deviceEntry.php';
 require_once 'pingEntry.php';
-require_once 'monitorEntry.php';
+require_once 'portMonitorEntry.php';
+require_once 'certificateMonitorEntry.php';
 
 class panoptes
 {
@@ -78,6 +79,8 @@ class panoptes
   public function getRRDs($id) {
 
     try {
+      $r = array();
+
       $dev = $this->getDevice($id);
       
       if ($dev) {
@@ -403,7 +406,7 @@ class panoptes
    *                 monitor data for
    *
    * @throws Exception 
-   * @return array of monitorEntry objects
+   * @return array of portMonitorEntry objects
    */
   public function getPortMonitorData($id) {
     $rtndata = array();
@@ -413,7 +416,7 @@ class panoptes
     
     if ($res !== false) {
       while ($r = mysql_fetch_assoc($res)) {
-	$ent = new monitorEntry($this->db);
+	$ent = new portMonitorEntry($this->db);
 	$ent->id = $r['id'];
 	$ent->device_id = $id;
 	$ent->port = $r['port'];
@@ -439,7 +442,7 @@ class panoptes
    *                 certificate monitor data for
    *
    * @throws Exception 
-   * @return array of monitorEntry objects
+   * @return array of certificateMonitorEntry objects
    */
   public function getCertificateMonitorData($id) {
     $rtndata = array();
@@ -449,7 +452,7 @@ class panoptes
     
     if ($res !== false) {
       while ($r = mysql_fetch_assoc($res)) {
-	$ent = new monitorEntry($this->db);
+	$ent = new certificateMonitorEntry($this->db);
 	$ent->id = $r['id'];
 	$ent->device_id = $id;
 	$ent->last_check = $r['last_check'];
@@ -840,6 +843,42 @@ class panoptes
     }
 
     return(array('result' => 'success', 'data' => $data));
+  }
+
+  /**
+   * delete monitor entries
+   *
+   * @param args json params converted into an array
+   *             id key contains an array of ids to remove
+   * @throws none
+   * @return array containing result and possible error messages
+   */
+  public function ajax_deleteMonitorEntry($args) {
+
+    try {
+      // table is based on type argument
+      if ($args['type'] == 'port_monitors') {
+	foreach ($args['id'] as $v) {	  
+	  $ent = new portMonitorEntry($this->db);
+	  $ent->id = $v;
+	  $ent->delete();
+	}
+      } elseif ($args['type'] == 'certificate_monitors') {
+	foreach ($args['id'] as $v) {	  
+	  $ent = new certificateMonitorEntry($this->db);
+	  $ent->id = $v;
+	  $ent->delete();
+	}
+      } else {
+	return(array('result' => 'failure',
+		     'error'  => 'unknown type: ' . $args['type']));	
+      }
+    } catch (Exception $e) {
+      return(array('result' => 'failure',
+		   'error'  => $e->getMessage()));
+    }
+    
+    return(array('result' => 'success'));
   }
 }
 

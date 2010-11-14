@@ -11,7 +11,7 @@
  */
 
 require_once 'hostEntry.php';
-require_once 'monitorEntry.php';
+require_once 'portMonitorEntry.php';
 
 class autoDiscoveryEntry extends hostEntry
 {
@@ -63,7 +63,7 @@ class autoDiscoveryEntry extends hostEntry
     }
 
     try {
-      $monitor_ent = new monitorEntry($this->db);
+      $monitor_ent = new portMonitorEntry($this->db);
       $monitor_ent->srcaddr = $addr;
       $monitor_ent->sport = $port;
       $monitor_ent->proto = $this->proto;
