@@ -25,6 +25,9 @@ void core_term_handler()
 
   if (configfile)
     free(configfile);
+
+  unlink("/tmp/panoptes_discover.pid");
+  closelog();
 }
 
 /* 
@@ -38,8 +41,6 @@ void term_handler(int signum)
   database_term_handler();
   config_term_handler();
   core_term_handler();
-
-  closelog();
 }
 
 /* display help message */
@@ -106,7 +107,7 @@ int main(int argc, char *argv[]) {
 
   set_pidfile("/tmp/panoptes_discover.pid");
   disconnect_from_tty();
-  
+
   /* parent terminates */
   if (fork()){
     exit(0);

@@ -5,10 +5,12 @@ web page output monitors - accept selenium output to generate script maybe ?
 fork new thread for performance monitor updates
 finish shutdown thread
 email/sms notifications
+replace SOURCE... in db init with reading in statements and executing them
 
 svc dependencies
 
 lazy load php classes
+remove zend framework dependencies
 
 add authentication to gui
 remove device from group
@@ -17,4 +19,3 @@ update device store on delete device
 functions for monitor context menus
 schedule outages
 display ping monitor timing somewhere
-dynamically load JS funcs not needed @ startup

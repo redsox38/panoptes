@@ -82,6 +82,7 @@ int _database_open(int initialize)
     loader = get_config_value("db.sqlinit");
     snprintf(qry, MAX_MYSQL_DISC_QRY_LEN, "SOURCE %s", loader);
     mysql_query(mysql, qry);
+    printf("Error: %s\n", mysql_error(mysql));
     free(loader);
   }
 
