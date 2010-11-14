@@ -746,7 +746,38 @@ function _ackMonitor(dataGrid, type) {
 }
 
 function _disableMonitor(dataGrid, type) {
-    alert('Function not yet implemented');
+    var ids = [];
+    // get row ids
+    var items = dataGrid.selection.getSelected();
+    dataGrid.selection.clear();
+    
+    if (items.length) {
+	dojo.forEach(items, function(selectedItem) {
+		if (selectedItem !== null) {
+		    var id = dataGrid.store.getValues(selectedItem, 'id');
+		    ids.push(id);
+		    dataGrid.store.deleteItem(selectedItem);
+		}
+	    });
+	dataGrid.store.save();
+
+	// send xml request to actually delete them
+	var xhrArgs = {
+	    url: '/panoptes/',
+	    handleAs: 'json',
+	    content: {
+		action: 'disableMonitorEntry',
+		data: '{ "id" : [' + ids + '], "type" : "' + type + '" }'
+	    },
+	    load: function(data) {
+		if (data && data.error) {
+		    alert(data.error);
+		}
+	    },
+	};
+	
+	var deferred = dojo.xhrGet(xhrArgs);
+    }
 }
 
 function _deleteMonitor(dataGrid, type) {

@@ -108,5 +108,20 @@ class certificateMonitorEntry extends hostEntry
       throw new Exception(mysql_error());
     }
   }
+
+  /**
+   * Disable entry in database
+   *
+   * @param none
+   * @throws Exception
+   * @return none
+   */
+  public function disable() {
+    $res = mysql_query("UPDATE certificate_monitors SET disabled=1 WHERE id='" .
+		       $this->id . "'");
+    if ($res == false) {
+      throw new Exception(mysql_error());
+    }
+  }
 }
 ?>

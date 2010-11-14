@@ -85,6 +85,7 @@ CREATE TABLE port_monitors (
   UNIQUE KEY idx (device_id,port,proto),
   KEY device_id (device_id),
   KEY port (port),
+  KEY disabled (disabled),
   CONSTRAINT port_monitors_ibfk_1 FOREIGN KEY (device_id) REFERENCES devices (id) ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
@@ -103,6 +104,7 @@ CREATE TABLE ping_monitors (
   disabled smallint(5) unsigned NOT NULL DEFAULT 0,
   PRIMARY KEY (id),
   UNIQUE KEY device_id (device_id),
+  KEY disabled (disabled),
   CONSTRAINT ping_monitors_ibfk_1 FOREIGN KEY (device_id) REFERENCES devices (id) ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
@@ -123,6 +125,7 @@ CREATE TABLE certificate_monitors (
   PRIMARY KEY (id),
   KEY device_id (device_id),
   UNIQUE KEY url (url),
+  KEY disabled (disabled),
   CONSTRAINT certificate_monitors_ibfk_1 FOREIGN KEY (device_id) REFERENCES devices (id) ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 

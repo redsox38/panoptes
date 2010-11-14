@@ -425,6 +425,7 @@ class panoptes
 	$ent->proto = $r['proto'];
 	$ent->status = $r['status'];
 	$ent->status_string = $r['status_string'];
+	$ent->disabled = $r['disabled'];
 	array_push($rtndata, $ent);
       }
       mysql_free_result($res);
@@ -460,6 +461,7 @@ class panoptes
 	$ent->url = $r['url'];
 	$ent->status = $r['status'];
 	$ent->status_string = $r['status_string'];
+	$ent->disabled = $r['disabled'];
 	array_push($rtndata, $ent);
       }
       mysql_free_result($res);
@@ -868,6 +870,43 @@ class panoptes
 	  $ent = new certificateMonitorEntry($this->db);
 	  $ent->id = $v;
 	  $ent->delete();
+	}
+      } else {
+	return(array('result' => 'failure',
+		     'error'  => 'unknown type: ' . $args['type']));	
+      }
+    } catch (Exception $e) {
+      return(array('result' => 'failure',
+		   'error'  => $e->getMessage()));
+    }
+    
+    return(array('result' => 'success'));
+  }
+
+
+  /**
+   * disable monitor entries
+   *
+   * @param args json params converted into an array
+   *             id key contains an array of ids to remove
+   * @throws none
+   * @return array containing result and possible error messages
+   */
+  public function ajax_disableMonitorEntry($args) {
+
+    try {
+      // table is based on type argument
+      if ($args['type'] == 'port_monitors') {
+	foreach ($args['id'] as $v) {	  
+	  $ent = new portMonitorEntry($this->db);
+	  $ent->id = $v;
+	  $ent->disable();
+	}
+      } elseif ($args['type'] == 'certificate_monitors') {
+	foreach ($args['id'] as $v) {	  
+	  $ent = new certificateMonitorEntry($this->db);
+	  $ent->id = $v;
+	  $ent->disable();
 	}
       } else {
 	return(array('result' => 'failure',
