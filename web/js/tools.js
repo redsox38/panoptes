@@ -45,42 +45,7 @@ function addPingable() {
             }
         });
 
-    // create new div 
-    // with transparent background 
-    // defined in css
+    var items = [ tb.domNode, rst.domNode, sub.domNode ];
 
-    var dv1 = document.createElement("div");
-    dv1.id = "add_ping_device";
-    dv1.innerHTML = "";
-    
-    // create white background div 
-    // to hold form elements
-    var dv2 = document.createElement("div");
-    dv2.id = "add_ping_device_bg";
-    dv2.style.backgroundColor = "white";
-    dv2.style.color = "black";
-    dv2.style.border = "solid";
-    dv2.style.marginTop = "75px";
-    dv2.style.marginBottom = "50px";
-    dv2.style.marginLeft = "250px";
-    dv2.style.marginRight = "250px";
-    dv2.style.align = "center";
-  
-    // needs to be on top of transparent overlay,
-    dv2.zIndex = 51;
-
-    dv2.appendChild(tb.domNode);
-    dv2.appendChild(rst.domNode);
-    dv2.appendChild(sub.domNode);
-
-    // make the div big enough to display
-    dv2.appendChild(document.createElement("br"));
-    dv2.appendChild(document.createElement("br"));
-    dv2.appendChild(document.createElement("br"));
-    dv2.appendChild(document.createElement("br"));
-
-    dv1.appendChild(dv2);
-
-    document.body.appendChild(dv1);    
-
+    createOverlayWindow("add_ping_device", items);
 }

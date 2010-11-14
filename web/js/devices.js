@@ -635,42 +635,10 @@ function addToGroup() {
 	    }
 	});
 
-    // create new div 
-    // with transparent background 
-    // defined in css
-
-    var dv1 = document.createElement("div");
-    dv1.id = "add_to_device_group_win";
-    dv1.innerHTML = "";
+    var items = [ cb.domNode, rst.domNode, sub.domNode ];
     
-    // create white background div 
-    // to hold form elements
-    var dv2 = document.createElement("div");
-    dv2.id = "add_to_device_group_win_bg";
-    dv2.style.backgroundColor = "white";
-    dv2.style.color = "black";
-    dv2.style.border = "solid";
-    dv2.style.marginTop = "75px";
-    dv2.style.marginBottom = "50px";
-    dv2.style.marginLeft = "250px";
-    dv2.style.marginRight = "250px";
-    dv2.style.align = "center";
-    // needs to be on top of transparent overlay,
-    // but below the zIndex for the combobox
-    dv2.zIndex = 51;
+    createOverlayWindow("add_to_device_group_win", items);
 
-    dv2.appendChild(cb.domNode);
-    dv2.appendChild(rst.domNode);
-    dv2.appendChild(sub.domNode);
-
-    // make the div big enough to display
-    dv2.appendChild(document.createElement("br"));
-    dv2.appendChild(document.createElement("br"));
-    dv2.appendChild(document.createElement("br"));
-    dv2.appendChild(document.createElement("br"));
-    dv1.appendChild(dv2);
-
-    document.body.appendChild(dv1);    
 }
 
 function addMonitor() {

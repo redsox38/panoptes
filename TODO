@@ -8,6 +8,8 @@ email/sms notifications
 
 svc dependencies
 
+lazy load php classes
+
 add authentication to gui
 remove device from group
 update device tree when group membership changes
