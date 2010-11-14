@@ -86,7 +86,8 @@ class certificateMonitorEntry extends hostEntry
     
     $res = mysql_query("INSERT INTO certificate_monitors VALUES(0, '" .
 		       $this->device_id . "', '" .
-		       $this->url . "', 1440, NOW(), NOW(), 'new', '')", $this->db);
+		       $this->url . "', 1440, NOW(), NOW(), 'new', '', 0)", 
+                       $this->db);
 
     if ($res === false) {
       throw new Exception(mysql_error());

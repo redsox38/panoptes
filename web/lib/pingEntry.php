@@ -65,7 +65,7 @@ class pingEntry
     if (is_null($this->id)) {
       // insert new entry 
       $res = mysql_query("INSERT INTO ping_monitors VALUES(0," .
-			 $this->device->id . ",15,0, 0, 'warn', 'pending')");
+			 $this->device->id . ",15, NOW(), NOW(), 'new', 'pending', 0)");
 
       if ($res !== false) {
 	// go back and select entry to get entry id

@@ -230,7 +230,7 @@ void _add_ssl_monitor(char *dev_id, char *addr, int port)
   qry = (char *)malloc(sizeof(char) * 2 * MAX_MYSQL_DISC_QRY_LEN);
 
   snprintf(qry, 2 * MAX_MYSQL_DISC_QRY_LEN,
-	   "INSERT INTO certificate_monitors VALUES(0, '%s', '%s', 1440, NOW(), NOW(), 'new', '')",
+	   "INSERT INTO certificate_monitors VALUES(0, '%s', '%s', 1440, NOW(), NOW(), 'new', '', 0)",
 	   dev_id, url);
 
   mysql_query(mysql, qry);

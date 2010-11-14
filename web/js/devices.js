@@ -674,19 +674,51 @@ function addToGroup() {
 }
 
 function addMonitor() {
-    alert('Function not yet implemented');
+    // figure out which grid we're working with
+    selectedTab = dijit.byId('panoptes_tab_container').selectedChildWidget;
+    id = selectedTab.id.replace("_tab", "");
+
+    if (dijit.byId(id + '_port_mon_grid').selected) {
+	_addMonitor(dijit.byId(id + '_port_mon_grid'), 'port_monitors');
+    } else if (dijit.byId(id + '_cert_mon_grid').selected) {
+	_addMonitor(dijit.byId(id + '_cert_mon_grid'), 'certificate_monitors');
+    }
 }
 
 function editMonitor() {
-    alert('Function not yet implemented');
+    // figure out which grid we're working with
+    selectedTab = dijit.byId('panoptes_tab_container').selectedChildWidget;
+    id = selectedTab.id.replace("_tab", "");
+
+    if (dijit.byId(id + '_port_mon_grid').selected) {
+	_editMonitor(dijit.byId(id + '_port_mon_grid'), 'port_monitors');
+    } else if (dijit.byId(id + '_cert_mon_grid').selected) {
+	_editMonitor(dijit.byId(id + '_cert_mon_grid'), 'certificate_monitors');
+    }
 }
 
 function ackMonitor() {
-    alert('Function not yet implemented');
+    // figure out which grid we're working with
+    selectedTab = dijit.byId('panoptes_tab_container').selectedChildWidget;
+    id = selectedTab.id.replace("_tab", "");
+
+    if (dijit.byId(id + '_port_mon_grid').selected) {
+	_ackMonitor(dijit.byId(id + '_port_mon_grid'), 'port_monitors');
+    } else if (dijit.byId(id + '_cert_mon_grid').selected) {
+	_ackMonitor(dijit.byId(id + '_cert_mon_grid'), 'certificate_monitors');
+    }
 }
 
 function disableMonitor() {
-    alert('Function not yet implemented');
+    // figure out which grid we're working with
+    selectedTab = dijit.byId('panoptes_tab_container').selectedChildWidget;
+    id = selectedTab.id.replace("_tab", "");
+
+    if (dijit.byId(id + '_port_mon_grid').selected) {
+	_disableMonitor(dijit.byId(id + '_port_mon_grid'), 'port_monitors');
+    } else if (dijit.byId(id + '_cert_mon_grid').selected) {
+	_disableMonitor(dijit.byId(id + '_cert_mon_grid'), 'certificate_monitors');
+    }
 }
 
 function deleteMonitor() {
@@ -697,8 +729,24 @@ function deleteMonitor() {
     if (dijit.byId(id + '_port_mon_grid').selected) {
 	_deleteMonitor(dijit.byId(id + '_port_mon_grid'), 'port_monitors');
     } else if (dijit.byId(id + '_cert_mon_grid').selected) {
-	_deleteMonitor(dijit.byId(id + '_cert_mon_grid'), 'port_monitors');
+	_deleteMonitor(dijit.byId(id + '_cert_mon_grid'), 'certificate_monitors');
     }
+}
+
+function _addMonitor(dataGrid, type) {
+    alert('Function not yet implemented');
+}
+
+function _editMonitor(dataGrid, type) {
+    alert('Function not yet implemented');
+}
+
+function _ackMonitor(dataGrid, type) {
+    alert('Function not yet implemented');
+}
+
+function _disableMonitor(dataGrid, type) {
+    alert('Function not yet implemented');
 }
 
 function _deleteMonitor(dataGrid, type) {

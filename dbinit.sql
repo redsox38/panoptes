@@ -80,6 +80,7 @@ CREATE TABLE port_monitors (
   next_check datetime DEFAULT NULL,
   status enum('new','ok','pending','warn','critical') DEFAULT NULL,
   status_string VARCHAR(255) DEFAULT NULL,
+  disabled smallint(5) unsigned NOT NULL DEFAULT 0,
   PRIMARY KEY (id),
   UNIQUE KEY idx (device_id,port,proto),
   KEY device_id (device_id),
@@ -99,6 +100,7 @@ CREATE TABLE ping_monitors (
   next_check datetime DEFAULT NULL,
   status enum('new','ok','pending','warn','critical') DEFAULT NULL,
   status_string VARCHAR(255) DEFAULT NULL,
+  disabled smallint(5) unsigned NOT NULL DEFAULT 0,
   PRIMARY KEY (id),
   UNIQUE KEY device_id (device_id),
   CONSTRAINT ping_monitors_ibfk_1 FOREIGN KEY (device_id) REFERENCES devices (id) ON DELETE CASCADE ON UPDATE CASCADE
@@ -117,6 +119,7 @@ CREATE TABLE certificate_monitors (
   next_check datetime DEFAULT NULL,
   status enum('new', 'ok','pending','warn','critical') DEFAULT NULL,
   status_string varchar(255) DEFAULT NULL,
+  disabled smallint(5) unsigned NOT NULL DEFAULT 0,
   PRIMARY KEY (id),
   KEY device_id (device_id),
   UNIQUE KEY url (url),
@@ -129,13 +132,15 @@ CREATE ALGORITHM=UNDEFINED SQL SECURITY INVOKER VIEW monitor_tasks
     AS (SELECT 'port_monitors' AS table_name, po.id AS id,
         po.last_check AS last_check, 
         po.next_check AS next_check FROM
-        port_monitors po) 
+        port_monitors po WHERE po.disabled=0) 
         UNION (SELECT 'ping_monitors' AS table_name, pi.id AS id, 
         pi.last_check AS last_check, 
-        pi.next_check AS next_check FROM ping_monitors pi) 
+        pi.next_check AS next_check FROM ping_monitors pi
+        WHERE pi.disabled=0) 
 	UNION(SELECT 'certificate_monitors' AS table_name, ce.id AS id,
         ce.last_check AS last_check, 
-        ce.next_check AS next_check FROM certificate_monitors ce)          	
+        ce.next_check AS next_check FROM certificate_monitors ce
+        WHERE ce.disabled=0)          	
         ORDER BY next_check;
 
 /* stored procedures */
