@@ -49,6 +49,7 @@ if ($req->isXmlHttpRequest()) {
         dojo.require("dojox.grid.enhanced.plugins.NestedSorting");
         dojo.require("dojox.grid.enhanced.plugins.IndirectSelection");
         dojo.require("dojox.grid.enhanced.plugins.Menu");
+        dojo.require("dojo.data.ItemFileReadStore");
         dojo.require("dojo.data.ItemFileWriteStore");
         dojo.require("dijit.layout.BorderContainer");
         dojo.require("dijit.layout.ContentPane");
@@ -63,6 +64,7 @@ if ($req->isXmlHttpRequest()) {
         dojo.require("dijit.form.FilteringSelect");
         dojo.require("dijit.form.DateTextBox");
         dojo.require("dijit.form.TextBox");
+        dojo.require("dijit.form.NumberSpinner");
     </script>
     <script type="text/javascript" src="js/utils.js"></script>
     <script type="text/javascript" src="js/discovery.js"></script>

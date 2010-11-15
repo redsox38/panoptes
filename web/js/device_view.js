@@ -145,7 +145,7 @@ function createPerformanceHistoryTab(id) {
 
     perfMonitorStore = new dojo.data.ItemFileWriteStore({ 
 	    data: perf_monitor_data 
-	});		
+	});	      
 
     // load data for performance monitor tab
     addRRDData(id);
@@ -444,9 +444,10 @@ function addMonitor() {
     id = selectedTab.id.replace("_tab", "");
 
     if (dijit.byId(id + '_port_mon_grid').selected) {
-	_addMonitor(dijit.byId(id + '_port_mon_grid'), 'port_monitors');
+	_addMonitor(dijit.byId(id + '_port_mon_grid'), 'port_monitors', id);
     } else if (dijit.byId(id + '_cert_mon_grid').selected) {
-	_addMonitor(dijit.byId(id + '_cert_mon_grid'), 'certificate_monitors');
+	_addMonitor(dijit.byId(id + '_cert_mon_grid'), 'certificate_monitors', 
+		    id);
     }
 }
 
@@ -498,8 +499,107 @@ function deleteMonitor() {
     }
 }
 
-function _addMonitor(dataGrid, type) {
-    alert('Function not yet implemented');
+function _addMonitor(dataGrid, type, id) {
+
+    var items;
+    if (type == "certificate_monitors") {
+	tb_label = document.createElement("label");
+	tb_label.htmlFor = 'add_monitor_url';
+	tb_label.appendChild(document.createTextNode('URL'));
+
+	tb = new dijit.form.TextBox({
+		id: 'add_monitor_url',
+		name: 'add_monitor_url',
+		style: 'width: 25em;',
+		value: 'https://'
+	    });
+
+	sub = new dijit.form.Button({
+		label: 'Add',
+		onClick: function() {
+		    var params = { 
+			url: dijit.byId('add_monitor_url').getValue() 
+		    };
+		    xhrAddMonitor(id, params);
+		    dijit.byId("add_monitor_url").destroy();
+		    document.body.removeChild(document.getElementById("add_monitor"));
+	    }
+	});
+    
+	rst = new dijit.form.Button({
+		label: 'Cancel',
+		onClick: function() {
+		    dijit.byId("add_monitor_url").destroy();
+		    document.body.removeChild(document.getElementById("add_monitor"));
+		}
+	    });
+
+        items = [ tb_label, tb.domNode, rst.domNode, sub.domNode ];
+    } else if (type == "port_monitors") {
+	tb1_label = document.createElement("label");
+	tb1_label.htmlFor = 'add_monitor_port';
+	tb1_label.appendChild(document.createTextNode('Port'));
+
+	tb1 = new dijit.form.NumberSpinner({
+		id: 'add_monitor_port',
+		name: 'add_monitor_port',
+		value: 80,
+		style: 'width: 100px;',
+		constraints: {
+		    min: 4,
+		    max: 65536,
+		    places: 0
+		}
+	    });
+
+	tb2_label = document.createElement("label");
+	tb2_label.htmlFor = 'add_monitor_proto';
+	tb2_label.appendChild(document.createTextNode('Protocol'));
+
+	protoStore = new dojo.data.ItemFileReadStore({ 
+		data: {
+		    identifier: 'value',
+		    label: 'label',
+		    items: [
+	                    { value: 'tcp', label: 'tcp' },
+	                    { value: 'udp', label: 'udp' },
+			    ],
+		} 
+	});		
+
+	tb2 = new dijit.form.FilteringSelect({
+		id: 'add_monitor_proto',
+		name: 'add_monitor_proto',	
+		store: protoStore,
+		searchAttr: 'value',
+		value: 'tcp'
+	    });
+
+	sub = new dijit.form.Button({
+		label: 'Add',
+		onClick: function() {
+		    var params = { 
+			port: dijit.byId('add_monitor_port').getValue() 
+		    };
+		    xhrAddMonitor(id, params);
+		    dijit.byId("add_monitor_port").destroy();
+		    document.body.removeChild(document.getElementById("add_monitor"));
+	    }
+	});
+    
+	rst = new dijit.form.Button({
+		label: 'Cancel',
+		onClick: function() {
+		    dijit.byId("add_monitor_port").destroy();
+		    document.body.removeChild(document.getElementById("add_monitor"));
+		}
+	    });
+
+        items = [ tb1_label, tb1.domNode, tb2_label, tb2.domNode,
+		  document.createElement("br"), rst.domNode, sub.domNode ];
+    }
+
+    createOverlayWindow("add_monitor", items);
 }
 
 function _editMonitor(dataGrid, type) {
@@ -578,4 +678,7 @@ function _deleteMonitor(dataGrid, type) {
 	
 	var deferred = dojo.xhrGet(xhrArgs);
     }
+}
+
+function xhrAddMonitor(device_id, params) {
 }

@@ -2,7 +2,8 @@ function createOverlayWindow(id, objs) {
     var dv1 = document.createElement("div");
     dv1.id = id;
     dv1.innerHTML = "";
-    
+    dv1.className = "overlayWindow";
+
     // create white background div 
     // to hold form elements
     var dv2 = document.createElement("div");

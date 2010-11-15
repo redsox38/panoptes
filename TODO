@@ -6,11 +6,14 @@ fork new thread for performance monitor updates
 finish shutdown thread
 email/sms notifications
 replace SOURCE... in db init with reading in statements and executing them
+replace raw SQL with stored procedures
+udp port monitor
 
 svc dependencies
 
 lazy load php classes
 remove zend framework dependencies
+replace raw SQL with stored procedures
 
 add authentication to gui
 remove device from group
