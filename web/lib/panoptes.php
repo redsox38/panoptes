@@ -883,7 +883,6 @@ class panoptes
     return(array('result' => 'success'));
   }
 
-
   /**
    * disable monitor entries
    *
@@ -917,6 +916,40 @@ class panoptes
 		   'error'  => $e->getMessage()));
     }
     
+    return(array('result' => 'success'));
+  }
+
+  /**
+   * add monitor entry
+   *
+   * @param args json params converted into an array
+   *             
+   * @throws none
+   * @return array containing result and possible error messages
+   */
+  public function ajax_addMonitorEntry($args) {
+    try {
+      // table is based on type argument
+      if ($args['params']['type'] == 'port_monitors') {
+	$ent = new portMonitorEntry($this->db);
+	$ent->device_id = $args['id'];
+	$ent->sport = $args['params']['port'];
+	$ent->proto = $args['params']['proto'];
+	$ent->commit();
+      } else if ($args['params']['type'] == 'certificate_monitors') {
+	$ent = new certificateMonitorEntry($this->db);
+	$ent->device_id = $args['id'];
+	$ent->url = $args['params']['url'];
+	$ent->commit();
+      } else {
+	return(array('result' => 'failure',
+		     'error'  => 'unknown type: ' . $args['params']['type']));	
+      }
+    } catch (Exception $e) {
+      return(array('result' => 'failure',
+		   'error'  => $e->getMessage()));
+    }
+
     return(array('result' => 'success'));
   }
 }

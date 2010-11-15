@@ -41,6 +41,5 @@ abstract class hostEntry
 
     return($this->db);
   }
-
 }
 ?>

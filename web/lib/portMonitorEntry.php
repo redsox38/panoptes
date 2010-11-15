@@ -15,32 +15,12 @@ require_once 'hostEntry.php';
 
 class portMonitorEntry extends hostEntry
 {
-  protected $device_id = null;
-
   public function __construct($db = null) {
     if (!is_null($db)) {
       $this->db = $db;
     }
   }
   
-  public function __destroy() {
-  }
-
- /**
-   * Get/Set db link
-   *
-   * @param val optional db link variable to set db link
-   * @throws none
-   * @return current db link 
-   */
-  public function db($val = null) {
-    if (!(is_null($val))) {
-      $this->db = $val;
-    }
-
-    return($this->db);
-  }
-
  /**
    * Commit entry into database
    *

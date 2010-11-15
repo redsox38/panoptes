@@ -77,9 +77,6 @@ if ($req->isXmlHttpRequest()) {
         <div dojoType="dijit.MenuItem" onClick="addMonitor();">
             Add New
         </div>  
-        <div dojoType="dijit.MenuItem" onClick="editMonitor();">
-            Edit
-        </div>
         <div dojoType="dijit.MenuItem" onClick="ackMonitor();">
             Acknowledge
         </div>

@@ -451,18 +451,6 @@ function addMonitor() {
     }
 }
 
-function editMonitor() {
-    // figure out which grid we're working with
-    selectedTab = dijit.byId('panoptes_tab_container').selectedChildWidget;
-    id = selectedTab.id.replace("_tab", "");
-
-    if (dijit.byId(id + '_port_mon_grid').selected) {
-	_editMonitor(dijit.byId(id + '_port_mon_grid'), 'port_monitors');
-    } else if (dijit.byId(id + '_cert_mon_grid').selected) {
-	_editMonitor(dijit.byId(id + '_cert_mon_grid'), 'certificate_monitors');
-    }
-}
-
 function ackMonitor() {
     // figure out which grid we're working with
     selectedTab = dijit.byId('panoptes_tab_container').selectedChildWidget;
@@ -518,6 +506,7 @@ function _addMonitor(dataGrid, type, id) {
 		label: 'Add',
 		onClick: function() {
 		    var params = { 
+			type: 'certificate_monitors',
 			url: dijit.byId('add_monitor_url').getValue() 
 		    };
 		    xhrAddMonitor(id, params);
@@ -579,6 +568,7 @@ function _addMonitor(dataGrid, type, id) {
 		label: 'Add',
 		onClick: function() {
 		    var params = { 
+			type: 'port_monitors',
 			port: dijit.byId('add_monitor_port').getValue() 
 		    };
 		    xhrAddMonitor(id, params);
@@ -600,10 +590,6 @@ function _addMonitor(dataGrid, type, id) {
     }
 
     createOverlayWindow("add_monitor", items);
-}
-
-function _editMonitor(dataGrid, type) {
-    alert('Function not yet implemented');
 }
 
 function _ackMonitor(dataGrid, type) {
@@ -681,4 +667,20 @@ function _deleteMonitor(dataGrid, type) {
 }
 
 function xhrAddMonitor(device_id, params) {
+    var xhrArgs = {
+	url: '/panoptes/',
+	handleAs: 'json',
+	content: {
+	    action: 'addMonitorEntry',
+		data: '{ "id" : "' + device_id + '", ' +
+	              '"params" : ' + dojo.toJson(params) + ' }'
+	    },
+	    load: function(data) {
+		if (data && data.error) {
+		    alert(data.error);
+		}
+	    },
+	};
+	
+	var deferred = dojo.xhrGet(xhrArgs);
 }
