@@ -7,6 +7,9 @@ DROP TABLE IF EXISTS ping_monitors;
 DROP TABLE IF EXISTS certificate_monitors;
 DROP TABLE IF EXISTS device_groups;
 DROP TABLE IF EXISTS devices;
+DROP TABLE IF EXISTS port_acknowledgments;
+DROP TABLE IF EXISTS ping_acknowledgments;
+DROP TABLE IF EXISTS certificate_acknowledgments;
 DROP VIEW monitor_tasks;
 DROP PROCEDURE IF EXISTS get_next_monitor_entry;
 DROP PROCEDURE IF EXISTS update_monitor_entry;
@@ -127,6 +130,48 @@ CREATE TABLE certificate_monitors (
   UNIQUE KEY url (url),
   KEY disabled (disabled),
   CONSTRAINT certificate_monitors_ibfk_1 FOREIGN KEY (device_id) REFERENCES devices (id) ON DELETE CASCADE ON UPDATE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+--
+-- Table structure for table port_acknowlegments
+--
+
+CREATE TABLE port_acknowledgments (
+  id bigint(20) NOT NULL AUTO_INCREMENT,
+  monitor_id bigint(20) NOT NULL,
+  ack_user varchar(64) DEFAULT NULL,
+  ack_time datetime DEFAULT NULL,
+  ack_msg varchar(255) DEFAULT NULL,
+  PRIMARY KEY (id),
+  CONSTRAINT port_acknowledgments_ibfk_1 FOREIGN KEY (monitor_id) REFERENCES port_monitors (id) ON DELETE CASCADE ON UPDATE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+--
+-- Table structure for table ping_acknowlegments
+--
+
+CREATE TABLE ping_acknowledgments (
+  id bigint(20) NOT NULL AUTO_INCREMENT,
+  monitor_id bigint(20) NOT NULL,
+  ack_user varchar(64) DEFAULT NULL,
+  ack_time datetime DEFAULT NULL,
+  ack_msg varchar(255) DEFAULT NULL,
+  PRIMARY KEY (id),
+  CONSTRAINT ping_acknowledgments_ibfk_1 FOREIGN KEY (monitor_id) REFERENCES ping_monitors (id) ON DELETE CASCADE ON UPDATE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+--
+-- Table structure for table certificate_acknowlegments
+--
+
+CREATE TABLE certificate_acknowledgments (
+  id bigint(20) NOT NULL AUTO_INCREMENT,
+  monitor_id bigint(20) NOT NULL,
+  ack_user varchar(64) DEFAULT NULL,
+  ack_time datetime DEFAULT NULL,
+  ack_msg varchar(255) DEFAULT NULL,
+  PRIMARY KEY (id),
+  CONSTRAINT certificate_acknowledgments_ibfk_1 FOREIGN KEY (monitor_id) REFERENCES certificate_monitors (id) ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 /* views */
