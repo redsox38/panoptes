@@ -509,7 +509,7 @@ function _addMonitor(dataGrid, type, id) {
 			type: 'certificate_monitors',
 			url: dijit.byId('add_monitor_url').getValue() 
 		    };
-		    xhrAddMonitor(id, params);
+		    xhrAddMonitor(dataGrid, id, params);
 		    dijit.byId("add_monitor_url").destroy();
 		    document.body.removeChild(document.getElementById("add_monitor"));
 	    }
@@ -571,7 +571,7 @@ function _addMonitor(dataGrid, type, id) {
 			type: 'port_monitors',
 			port: dijit.byId('add_monitor_port').getValue() 
 		    };
-		    xhrAddMonitor(id, params);
+		    xhrAddMonitor(dataGrid, id, params);
 		    dijit.byId("add_monitor_port").destroy();
 		    document.body.removeChild(document.getElementById("add_monitor"));
 	    }
@@ -666,7 +666,7 @@ function _deleteMonitor(dataGrid, type) {
     }
 }
 
-function xhrAddMonitor(device_id, params) {
+function xhrAddMonitor(dataGrid, device_id, params) {
     var xhrArgs = {
 	url: '/panoptes/',
 	handleAs: 'json',
@@ -676,7 +676,15 @@ function xhrAddMonitor(device_id, params) {
 	              '"params" : ' + dojo.toJson(params) + ' }'
 	    },
 	    load: function(data) {
-		if (data && data.error) {
+		if (data && !data.error) {
+		    // update data grid
+		    for (i = 0; i < data.data.length; i++) {
+			dataGrid.store.newItem(data.data[i]);
+		    }
+		    dataGrid.store.save();
+		    dataGrid.setStore(dataGrid.store);
+		    dataGrid.update();
+		} else {
 		    alert(data.error);
 		}
 	    },
