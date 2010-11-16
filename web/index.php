@@ -83,6 +83,9 @@ if ($req->isXmlHttpRequest()) {
         <div dojoType="dijit.MenuItem" onClick="disableMonitor();">
             Disable
         </div>
+        <div dojoType="dijit.MenuItem" onClick="enableMonitor();">
+            Enable
+        </div>
         <div dojoType="dijit.MenuItem" iconClass="dijitIconDelete" onClick="deleteMonitor();">
             Delete
         </div>

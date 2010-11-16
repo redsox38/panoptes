@@ -469,9 +469,21 @@ function disableMonitor() {
     id = selectedTab.id.replace("_tab", "");
 
     if (dijit.byId(id + '_port_mon_grid').selected) {
-	_disableMonitor(dijit.byId(id + '_port_mon_grid'), 'port_monitors');
+	_disableMonitor(dijit.byId(id + '_port_mon_grid'), 'port_monitors', 'disable');
     } else if (dijit.byId(id + '_cert_mon_grid').selected) {
-	_disableMonitor(dijit.byId(id + '_cert_mon_grid'), 'certificate_monitors');
+	_disableMonitor(dijit.byId(id + '_cert_mon_grid'), 'certificate_monitors', 'disable');
+    }
+}
+
+function enableMonitor() {
+    // figure out which grid we're working with
+    selectedTab = dijit.byId('panoptes_tab_container').selectedChildWidget;
+    id = selectedTab.id.replace("_tab", "");
+
+    if (dijit.byId(id + '_port_mon_grid').selected) {
+	_disableMonitor(dijit.byId(id + '_port_mon_grid'), 'port_monitors', 'enable');
+    } else if (dijit.byId(id + '_cert_mon_grid').selected) {
+	_disableMonitor(dijit.byId(id + '_cert_mon_grid'), 'certificate_monitors', 'enable');
     }
 }
 
@@ -596,7 +608,7 @@ function _ackMonitor(dataGrid, type) {
     alert('Function not yet implemented');
 }
 
-function _disableMonitor(dataGrid, type) {
+function _disableMonitor(dataGrid, type, status) {
     var ids = [];
     // get row ids
     var items = dataGrid.selection.getSelected();
@@ -618,7 +630,8 @@ function _disableMonitor(dataGrid, type) {
 	    handleAs: 'json',
 	    content: {
 		action: 'disableMonitorEntry',
-		data: '{ "id" : [' + ids + '], "type" : "' + type + '" }'
+		data: '{ "id" : [' + ids + '], "type" : "' + type + 
+		'", "status" : "' + status + '" }'
 	    },
 	    load: function(data) {
 		if (data && data.error) {

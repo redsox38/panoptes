@@ -20,7 +20,6 @@ remove device from group
 update device tree when group membership changes
 update device store on delete device
 ack monitor function
-enable monitor function
 
 schedule outages
 display ping monitor timing somewhere

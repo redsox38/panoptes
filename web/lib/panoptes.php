@@ -895,17 +895,27 @@ class panoptes
 
     try {
       // table is based on type argument
+      $flag = strcmp($args['status'], 'disable');
+
       if ($args['type'] == 'port_monitors') {
 	foreach ($args['id'] as $v) {	  
 	  $ent = new portMonitorEntry($this->db);
 	  $ent->id = $v;
-	  $ent->disable();
+	  if ($flag) {
+	    $ent->enable();
+	  } else {
+	    $ent->disable();
+	  }
 	}
       } elseif ($args['type'] == 'certificate_monitors') {
 	foreach ($args['id'] as $v) {	  
 	  $ent = new certificateMonitorEntry($this->db);
 	  $ent->id = $v;
-	  $ent->disable();
+	  if ($flag) {
+	    $ent->enable();
+	  } else {
+	    $ent->disable();
+	  }
 	}
       } else {
 	return(array('result' => 'failure',

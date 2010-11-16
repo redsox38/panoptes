@@ -96,5 +96,20 @@ class portMonitorEntry extends hostEntry
       throw new Exception(mysql_error());
     }
   }
+
+  /**
+   * Enable entry in database
+   *
+   * @param none
+   * @throws Exception
+   * @return none
+   */
+  public function enable() {
+    $res = mysql_query("UPDATE port_monitors SET disabled=0 WHERE id='" .
+		       $this->id . "'");
+    if ($res == false) {
+      throw new Exception(mysql_error());
+    }
+  }
 }
 ?>
