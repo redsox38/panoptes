@@ -48,17 +48,8 @@ class portMonitorEntry extends hostEntry
 		      $this->srcaddr . "','" . 
 		      $name . "')");
 
-	  $res = mysql_query("SELECT id from devices WHERE address='" .
-			     $this->srcaddr . "'", $this->db);
-	  if ($res !== false) {
-	    $r = mysql_fetch_assoc($res);
-	    mysql_free_result($res);
-	  } else {
-	    throw new Exception(mysql_error());
-	  }
+	  $this->device_id = $this->_last_insert_id();
 	}
-
-	$this->device_id = $r['id'];
       } else {
 	throw new Exception(mysql_error());
       }
@@ -71,6 +62,8 @@ class portMonitorEntry extends hostEntry
 
     if ($res === false) {
       throw new Exception(mysql_error());
+    } else {
+      $this->id = $this->_last_insert_id();
     }
   }
 

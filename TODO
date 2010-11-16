@@ -14,13 +14,13 @@ svc dependencies
 lazy load php classes
 remove zend framework dependencies
 replace raw SQL with stored procedures
-add monitor return new monitor objects in data field of result
 
 add authentication to gui
 remove device from group
 update device tree when group membership changes
 update device store on delete device
 ack monitor function
+enable monitor function
 
 schedule outages
 display ping monitor timing somewhere

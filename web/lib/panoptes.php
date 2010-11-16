@@ -929,6 +929,7 @@ class panoptes
    */
   public function ajax_addMonitorEntry($args) {
     try {
+      $data = array();
       // table is based on type argument
       if ($args['params']['type'] == 'port_monitors') {
 	$ent = new portMonitorEntry($this->db);
@@ -936,11 +937,34 @@ class panoptes
 	$ent->sport = $args['params']['port'];
 	$ent->proto = $args['params']['proto'];
 	$ent->commit();
+
+	array_push($data, array (
+				 'id'            => $ent->id,
+				 'device_id'     => $ent->device_id,
+				 'port'          => $ent->sport,
+				 'proto'         => $ent->proto,
+				 'last_check'    => '0000-00-00 00:00:00',
+				 'next_check'    => '0000-00-00 00:00:00',
+				 'status'        => 'new',
+				 'status_string' => '',
+				 'metric'        => $ent->proto . '-' .
+				 $ent->sport
+				 ));
       } else if ($args['params']['type'] == 'certificate_monitors') {
 	$ent = new certificateMonitorEntry($this->db);
 	$ent->device_id = $args['id'];
 	$ent->url = $args['params']['url'];
 	$ent->commit();
+
+	array_push($data, array (
+				 'id'            => $ent->id,
+				 'device_id'     => $ent->device_id,
+				 'url'           => $ent->url,
+				 'last_check'    => '0000-00-00 00:00:00',
+				 'next_check'    => '0000-00-00 00:00:00',
+				 'status'        => 'new',
+				 'status_string' => ''
+				 ));
       } else {
 	return(array('result' => 'failure',
 		     'error'  => 'unknown type: ' . $args['params']['type']));	
@@ -950,7 +974,7 @@ class panoptes
 		   'error'  => $e->getMessage()));
     }
 
-    return(array('result' => 'success'));
+    return(array('result' => 'success', 'data' => $data));
   }
 }
 
