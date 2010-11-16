@@ -605,7 +605,55 @@ function _addMonitor(dataGrid, type, id) {
 }
 
 function _ackMonitor(dataGrid, type) {
-    alert('Function not yet implemented');
+    var ids = [];
+    // get row ids
+    var items = dataGrid.selection.getSelected();
+    dataGrid.selection.clear();
+    
+    if (items.length) {
+	dojo.forEach(items, function(selectedItem) {
+		if (selectedItem !== null) {
+		    // add acked flag maybe ?
+		    ids.push(id);
+		}
+	    });
+    }
+
+    tb_label = document.createElement("label");
+    tb_label.htmlFor = 'ack_monitor_msg';
+    tb_label.appendChild(document.createTextNode('Comment '));
+    
+    tb = new dijit.form.TextBox({
+	    id: 'ack_monitor_msg',
+	    name: 'ack_monitor_msg',
+	    style: 'width: 25em;'
+	});
+
+
+    sub = new dijit.form.Button({
+	    label: 'Acknowledge',
+	    onClick: function() {
+		var params = { 
+		    type: 'port_monitors',
+		    port: dijit.byId('ack_monitor_msg').getValue() 
+		};
+		xhrAckMonitor(ids, type);
+		dijit.byId("ack_monitor_msg").destroy();
+		document.body.removeChild(document.getElementById("ack_monitor"));
+	    }
+	});
+    
+    rst = new dijit.form.Button({
+	    label: 'Cancel',
+	    onClick: function() {
+		dijit.byId("ack_monitor_msg").destroy();
+		document.body.removeChild(document.getElementById("ack_monitor"));
+	    }
+	});
+
+    items = [ tb_label, tb.domNode, rst.domNode, sub.domNode ];
+    
+    createOverlayWindow("ack_monitor", items);
 }
 
 function _disableMonitor(dataGrid, type, status) {
@@ -677,6 +725,25 @@ function _deleteMonitor(dataGrid, type) {
 	
 	var deferred = dojo.xhrGet(xhrArgs);
     }
+}
+
+function xhrAckMonitor(ids, type) {
+    var xhrArgs = {
+	url: '/panoptes/',
+	handleAs: 'json',
+	content: {
+	    action: 'ackMonitorEntry',
+	    data: '{ "id" : ' + dojo.toJson(ids) + ', ' +
+	              '"type" : ' + type + ' }'
+	    },
+	    load: function(data) {
+		if (data && data.error) {
+		    alert(data.error);
+		}
+	    },
+	};
+    
+    var deferred = dojo.xhrGet(xhrArgs);
 }
 
 function xhrAddMonitor(dataGrid, device_id, params) {
