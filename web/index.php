@@ -27,15 +27,15 @@ if ($_SERVER["HTTP_X_REQUESTED_WITH"] == 'XMLHttpRequest') {
 <html dir="ltr">
 <head>
         <title>panoptes</title>
-        <link rel="stylesheet" type="text/css" href="js/dijit/themes/claro/claro.css"/>
+        <link rel="stylesheet" type="text/css" href="/js/dijit/themes/claro/claro.css"/>
         <link rel="stylesheet" type="text/css" href="panoptes.css"/>
         <style type="text/css">
-            @import "js/dojox/grid/resources/Grid.css"; 
-            @import "js/dojox/grid/resources/claroGrid.css";
-            @import "js/dojox/grid/enhanced/resources/claroEnhancedGrid.css";
-            @import "js/dojox/grid/enhanced/resources/EnhancedGrid_rtl.css";
+            @import "/js/dojox/grid/resources/Grid.css"; 
+            @import "/js/dojox/grid/resources/claroGrid.css";
+            @import "/js/dojox/grid/enhanced/resources/claroEnhancedGrid.css";
+            @import "/js/dojox/grid/enhanced/resources/EnhancedGrid_rtl.css";
         </style>
-    <script type="text/javascript" src="js/dojo/dojo.js" djConfig="parseOnLoad: true">
+    <script type="text/javascript" src="/js/dojo/dojo.js" djConfig="parseOnLoad: true">
     </script>
     <script type="text/javascript">
         dojo.require("dojox.grid.EnhancedGrid");
