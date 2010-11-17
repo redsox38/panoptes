@@ -16,6 +16,10 @@ static struct option long_options[] = {
 
 char            *configfile = NULL;
 pthread_t       *threads, shutdown_thr;
+int             stop_threads = 0;
+int             working_count = 0;
+pthread_cond_t  working = PTHREAD_COND_INITIALIZER;
+pthread_mutex_t working_lock = PTHREAD_MUTEX_INITIALIZER;
 
 /* display help message */
 void usage() 

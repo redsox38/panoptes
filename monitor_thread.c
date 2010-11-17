@@ -4,6 +4,11 @@
 #include <pthread.h>
 #include "monitor_core.h"
 
+extern int             working_count;
+extern int             stop_threads;
+extern pthread_cond_t  working;
+extern pthread_mutex_t working_lock;
+
 void *monitor_thread(void *arg) 
 {
   sigset_t         sigmask;
@@ -12,8 +17,8 @@ void *monitor_thread(void *arg)
   monitor_result_t r;
   /* data for port monitoring */
   char             *addr, *proto, *port, *url;
-  char             perf_attr[256];
-  int              portnum;
+  char             perf_attr[256], errbuf[1024];
+  int              portnum, rc;
 
   /* block termination/interrupt signals */
   (void *)sigemptyset(&sigmask);
@@ -28,6 +33,20 @@ void *monitor_thread(void *arg)
   rrd_get_context();
 
   while(1) {
+    /* increment active thread count */
+    if ((rc = pthread_mutex_lock(&working_lock)) != 0) {
+      strerror_r(errno, errbuf, 1024);
+      syslog(LOG_ALERT, "pthread_mutex_lock: %s", errbuf);
+    }
+
+    working_count++;
+
+    /* unlock working lock */
+    if ((rc = pthread_mutex_unlock(&working_lock)) != 0) {
+      strerror_r(errno, errbuf, 1024);
+      syslog(LOG_ALERT, "pthread_mutex_unlock: %s", errbuf);
+    }
+
     /* get next monitor entry from task table */
     allocate_monitor_entry(&m);
 
@@ -105,5 +124,31 @@ void *monitor_thread(void *arg)
     }
 
     free_monitor_entry(&m, 0);
+
+    /* decrement active thread count */
+
+    /* increment active thread count */
+    if ((rc = pthread_mutex_lock(&working_lock)) != 0) {
+      strerror_r(errno, errbuf, 1024);
+      syslog(LOG_ALERT, "pthread_mutex_lock: %s", errbuf);
+    }
+
+    working_count--;
+
+    if (working_count == 0) {
+      /* wake up shutdown thread if it's waiting */
+      pthread_cond_broadcast(&working);
+    }
+
+    /* unlock working lock */
+    if ((rc = pthread_mutex_unlock(&working_lock)) != 0) {
+      strerror_r(errno, errbuf, 1024);
+      syslog(LOG_ALERT, "pthread_mutex_unlock: %s", errbuf);
+    }
+
+    /* see if shutting down */
+    if (stop_threads) {
+      pthread_exit(NULL);
+    }
   }
 }

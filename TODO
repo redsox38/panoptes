@@ -3,7 +3,6 @@ snmp monitors
 shell script monitors
 web page output monitors - accept selenium output to generate script maybe ?
 fork new thread for performance monitor updates
-finish shutdown thread
 email/sms notifications
 replace SOURCE... in db init with reading in statements and executing them
 replace raw SQL with stored procedures
@@ -15,7 +14,7 @@ lazy load php classes
 remove zend framework dependencies
 replace raw SQL with stored procedures
 
-add authentication to gui
+add group authz
 remove device from group
 update device tree when group membership changes
 update device store on delete device
