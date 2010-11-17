@@ -11,7 +11,6 @@ udp port monitor
 svc dependencies
 
 lazy load php classes
-remove zend framework dependencies
 replace raw SQL with stored procedures
 
 add group authz

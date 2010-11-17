@@ -1,30 +1,23 @@
 <?php
 
-require_once 'Zend/Loader/Autoloader.php';
 require_once 'lib/panoptes.php';
 require_once 'lib/autoDiscoveryEntry.php';
-
-$al = Zend_Loader_Autoloader::getInstance(); 
-
-// load current request
-$req = new Zend_Controller_Request_Http();
 
 // load monitor object
 $panoptes = new panoptes();
 
 // see if it is an ajax request and process it if it is
 // otherwise render form
-if ($req->isXmlHttpRequest()) {
-  require_once('Zend/Json.php');
-  
+if ($_SERVER["HTTP_X_REQUESTED_WITH"] == 'XMLHttpRequest') {
   header("Content-type: text/json");
   $action = 'ajax_' . $_REQUEST["action"];
 
   $data = $_REQUEST["data"];
   $data = str_replace("\\\"","\"",$data);
 
-  $func_output = call_user_func(array($panoptes, $action), Zend_Json::decode($data));
-  print Zend_Json::encode($func_output);
+  $func_output = call_user_func(array($panoptes, $action), 
+				json_decode($data, true));
+  print json_encode($func_output);
 
   exit(0);
 }
