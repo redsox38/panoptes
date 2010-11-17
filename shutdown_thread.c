@@ -58,4 +58,5 @@ void *shutdown_thread(void *arg)
   closelog();
 
   fprintf(stderr, "Terminated.\n");
+  exit(0);
 }
