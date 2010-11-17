@@ -457,9 +457,10 @@ function ackMonitor() {
     id = selectedTab.id.replace("_tab", "");
 
     if (dijit.byId(id + '_port_mon_grid').selected) {
-	_ackMonitor(dijit.byId(id + '_port_mon_grid'), 'port_monitors');
+	_ackMonitor(dijit.byId(id + '_port_mon_grid'), id, 'port_monitors');
     } else if (dijit.byId(id + '_cert_mon_grid').selected) {
-	_ackMonitor(dijit.byId(id + '_cert_mon_grid'), 'certificate_monitors');
+	_ackMonitor(dijit.byId(id + '_cert_mon_grid'), id, 
+		    'certificate_monitors');
     }
 }
 
@@ -604,7 +605,7 @@ function _addMonitor(dataGrid, type, id) {
     createOverlayWindow("add_monitor", items);
 }
 
-function _ackMonitor(dataGrid, type) {
+function _ackMonitor(dataGrid, device_id, type) {
     var ids = [];
     // get row ids
     var items = dataGrid.selection.getSelected();
@@ -614,7 +615,9 @@ function _ackMonitor(dataGrid, type) {
 	dojo.forEach(items, function(selectedItem) {
 		if (selectedItem !== null) {
 		    // add acked flag maybe ?
-		    ids.push(id);
+		    var ent_id = dataGrid.store.getValue(selectedItem, 
+							 "id", null);
+		    ids.push(ent_id);
 		}
 	    });
     }
@@ -633,11 +636,8 @@ function _ackMonitor(dataGrid, type) {
     sub = new dijit.form.Button({
 	    label: 'Acknowledge',
 	    onClick: function() {
-		var params = { 
-		    type: 'port_monitors',
-		    port: dijit.byId('ack_monitor_msg').getValue() 
-		};
-		xhrAckMonitor(ids, type);
+		xhrAckMonitor(device_id, ids, type, 
+			      dijit.byId('ack_monitor_msg').getValue());
 		dijit.byId("ack_monitor_msg").destroy();
 		document.body.removeChild(document.getElementById("ack_monitor"));
 	    }
@@ -727,14 +727,16 @@ function _deleteMonitor(dataGrid, type) {
     }
 }
 
-function xhrAckMonitor(ids, type) {
+function xhrAckMonitor(device_id, ids, type, msg) {
     var xhrArgs = {
 	url: '/panoptes/',
 	handleAs: 'json',
 	content: {
 	    action: 'ackMonitorEntry',
 	    data: '{ "id" : ' + dojo.toJson(ids) + ', ' +
-	              '"type" : ' + type + ' }'
+	              '"type" : "' + type + '", "msg" : "' +
+	              msg + '", "device_id" : "' + 
+	              device_id + '" }'
 	    },
 	    load: function(data) {
 		if (data && data.error) {

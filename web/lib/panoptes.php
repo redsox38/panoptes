@@ -986,6 +986,38 @@ class panoptes
 
     return(array('result' => 'success', 'data' => $data));
   }
+
+  /**
+   * ack monitor entry
+   *
+   * @param args json params converted into an array
+   *             id contains an array of ids
+   *             type contains the table name
+   * @throws none
+   * @return array containing result and possible error messages
+   */
+  public function ajax_ackMonitorEntry($args) {
+    try {
+      $data = array();
+      // table is based on type argument
+      foreach ($args['id'] as $v) {	  
+	if ($args['type'] == 'port_monitors') {
+	  $ent = new portMonitorEntry($this->db);
+	} else if ($args['type'] == 'certificate_monitors') {
+	  $ent = new certificateMonitorEntry($this->db);
+	}
+
+	$ent->id = $v;
+	$ent->ack($args['msg']);
+      }
+    } catch (Exception $e) {
+      return(array('result' => 'failure',
+		   'error'  => $e->getMessage()));
+    }
+
+    return(array('result' => 'success', 'data' => $data));
+  }
+
 }
 
 ?>

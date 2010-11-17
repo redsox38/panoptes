@@ -111,5 +111,21 @@ class portMonitorEntry extends hostEntry
       throw new Exception(mysql_error());
     }
   }
+
+  /**
+   * Ack entry in database
+   *
+   * @param msg ack message
+   * @throws Exception
+   * @return none
+   */
+  public function ack($msg) {
+    $res = mysql_query("INSERT into port_acknowledgments VALUES(0, " .
+		       $this->id . ",'webuser',NOW(),'" . 
+		       mysql_real_escape_string($msg) . "')");
+    if ($res == false) {
+      throw new Exception(mysql_error());
+    }
+  }
 }
 ?>
