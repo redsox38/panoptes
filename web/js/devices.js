@@ -5,7 +5,7 @@ var groupStore;
 var portMonitorStore;
 var perfMonitorStore;
 var certificateMonitorStore;
-
+var SNMPMonitorStore;
 
 function getSelectedTreeNode(item, node, e) {
     // set global variables for processing 

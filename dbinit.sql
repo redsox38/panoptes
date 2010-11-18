@@ -2,14 +2,16 @@
 
 DROP TABLE IF EXISTS discovered;
 DROP TABLE IF EXISTS group_membership;
+DROP TABLE IF EXISTS port_acknowledgments;
+DROP TABLE IF EXISTS ping_acknowledgments;
+DROP TABLE IF EXISTS snmp_acknowledgments;
+DROP TABLE IF EXISTS certificate_acknowledgments;
 DROP TABLE IF EXISTS port_monitors;
 DROP TABLE IF EXISTS ping_monitors;
 DROP TABLE IF EXISTS certificate_monitors;
+DROP TABLE IF EXISTS snmp_monitors;
 DROP TABLE IF EXISTS device_groups;
 DROP TABLE IF EXISTS devices;
-DROP TABLE IF EXISTS port_acknowledgments;
-DROP TABLE IF EXISTS ping_acknowledgments;
-DROP TABLE IF EXISTS certificate_acknowledgments;
 DROP VIEW monitor_tasks;
 DROP PROCEDURE IF EXISTS get_next_monitor_entry;
 DROP PROCEDURE IF EXISTS update_monitor_entry;
@@ -133,6 +135,28 @@ CREATE TABLE certificate_monitors (
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 --
+-- Table structure for table snmp_monitors
+--
+
+CREATE TABLE snmp_monitors (
+  id bigint(20) NOT NULL AUTO_INCREMENT,
+  device_id bigint(20) NOT NULL,
+  oid varchar(255) NOT NULL,
+  check_interval smallint(6) NOT NULL DEFAULT '15',
+  last_check datetime DEFAULT NULL,
+  next_check datetime DEFAULT NULL,
+  status enum('new', 'ok','pending','warn','critical') DEFAULT NULL,
+  status_string varchar(255) DEFAULT NULL,
+  disabled smallint(5) unsigned NOT NULL DEFAULT 0,
+  PRIMARY KEY (id),
+  KEY device_id (device_id),
+  KEY oid (oid),
+  UNIQUE KEY oid_tup (device_id, oid),
+  KEY disabled (disabled),
+  CONSTRAINT snmp_monitors_ibfk_1 FOREIGN KEY (device_id) REFERENCES devices (id) ON DELETE CASCADE ON UPDATE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+--
 -- Table structure for table port_acknowlegments
 --
 
@@ -172,6 +196,20 @@ CREATE TABLE certificate_acknowledgments (
   ack_msg varchar(255) DEFAULT NULL,
   PRIMARY KEY (id),
   CONSTRAINT certificate_acknowledgments_ibfk_1 FOREIGN KEY (monitor_id) REFERENCES certificate_monitors (id) ON DELETE CASCADE ON UPDATE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+--
+-- Table structure for table snmp_acknowlegments
+--
+
+CREATE TABLE snmp_acknowledgments (
+  id bigint(20) NOT NULL AUTO_INCREMENT,
+  monitor_id bigint(20) NOT NULL,
+  ack_user varchar(64) DEFAULT NULL,
+  ack_time datetime DEFAULT NULL,
+  ack_msg varchar(255) DEFAULT NULL,
+  PRIMARY KEY (id),
+  CONSTRAINT snmp_acknowledgments_ibfk_1 FOREIGN KEY (monitor_id) REFERENCES snmp_monitors (id) ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 /* views */
