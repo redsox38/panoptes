@@ -44,7 +44,7 @@ $ret = rrd_graph($rrd_info['image_file'], $rrd_info['rrd_opts'],
 
 if(!is_array($ret)) {
   $fontsize = 10;
-  $font = '/usr/share/fonts/truetype/freefont/FreeMono.ttf';
+  $font = '/home/tmerritt/fonts/sfd/FreeMono.ttf';
   $hgt = 175;
   $wdt = 500;
 
