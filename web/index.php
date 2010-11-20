@@ -44,6 +44,7 @@ if ($_SERVER["HTTP_X_REQUESTED_WITH"] == 'XMLHttpRequest') {
         dojo.require("dojox.grid.enhanced.plugins.Menu");
         dojo.require("dojo.data.ItemFileReadStore");
         dojo.require("dojo.data.ItemFileWriteStore");
+        dojo.require("dojo.dnd.Source");
         dojo.require("dijit.layout.BorderContainer");
         dojo.require("dijit.layout.ContentPane");
         dojo.require("dijit.layout.AccordionPane");

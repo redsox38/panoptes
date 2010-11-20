@@ -399,6 +399,22 @@ class panoptes
     return($grp);
   }
 
+
+  /**
+   * Retrieve snmp monitior entries
+   *
+   * @param id id of specific device to retrieve
+   *                 snmp monitor data for
+   *
+   * @throws Exception 
+   * @return array of SNMPMonitorEntry objects
+   */
+  public function getSNMPMonitorData($id) {
+    $rtndata = array();
+
+    return($rtndata);
+  }
+
   /**
    * Retrieve monitior entries
    *
@@ -687,6 +703,43 @@ class panoptes
 		      'id'      => $args['id']);
       } else {
 	$data = array();
+      }
+    } catch (Exception $e) {
+      return(array('result' => 'failure',
+		   'error'  => $e->getMessage()));
+    }
+
+    return(array('result' => 'success', 'data' => $data));
+  }
+
+
+  /**
+   * get snmp monitor data
+   *
+   * return snmp monitor information for given device id
+   *
+   * @param args json params converted into an array
+   *             id device id to get data for
+   * @throws none
+   * @return array containing result and possible error messages
+   */
+  public function ajax_getSNMPMonitorData($args) {
+    $data = array();
+    
+    try {
+      $rst = $this->getSNMPMonitorData($args['id']);
+      foreach ($rst as $a) {
+	array_push($data, array (
+				 'id'            => $a->id,
+				 'device_id'     => $a->device_id,
+				 'oid'           => $a->oid,
+				 'last_check'    => $a->last_check,
+				 'next_check'    => $a->next_check,
+				 'status'        => $a->status,
+				 'status_string' => $a->status_string,
+				 'metric'        => $a->proto . '-' .
+				 $a->port
+				 ));
       }
     } catch (Exception $e) {
       return(array('result' => 'failure',
@@ -1015,6 +1068,45 @@ class panoptes
 		   'error'  => $e->getMessage()));
     }
 
+    return(array('result' => 'success', 'data' => $data));
+  }
+
+  /**
+   * get available mibs for a device
+   *
+   * @param args json params converted into an array
+   *             id contains an array of ids
+   *             community snmp community string
+   * @throws none
+   * @return array containing result and possible error messages
+   */
+  public function ajax_getMIBS($args) {
+    try {
+      $data = array();
+
+      $dev = $this->getDevice($args['id']);
+      
+      snmp_set_quick_print(true);
+
+      $oids = snmprealwalk($dev->address, $args['community'], null);
+
+      if ($oids === false) {
+	return(array('result' => 'failure',
+		     'error'  => 'SNMP Failure'));
+      } else {
+	// load returned mibs
+	foreach($oids as $k => $v) {
+	  $mib_txt = sprintf("%s%s (%s)", substr($k, 0, 25), 
+			     (strlen($k) > 25 ? "..." : ""), $v);
+	  $data[] = array('mib' => $k, 'mib_txt' => $mib_txt,
+			  'value' => $v);
+	}
+      }
+    } catch (Exception $e) {
+      return(array('result' => 'failure',
+		   'error'  => $e->getMessage()));
+    }
+    
     return(array('result' => 'success', 'data' => $data));
   }
 

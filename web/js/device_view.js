@@ -1,3 +1,35 @@
+var _dndSNMPCreator = function(item) {
+    var type = ['mib'];
+    var node = document.createElement("div");
+    node.innerHTML = item.mib_txt;
+    node.id = dojo.dnd.getUniqueId();
+    node.title = item.mib;
+
+    return({ node: node, data: item, type: type });
+};
+
+function loadMibs(id, community, dndNode) {
+    var xhrArgs = {
+	url: '/panoptes/',
+	handleAs: 'json',
+	content: {
+	    action: 'getMIBS',
+	    data: '{ "id": "' + id + '", "community": "' +
+	          community + '"}'
+	},
+	load: function(data) {
+	    if (data && data.data) {          
+		// populate dnd container
+		dndNode.insertNodes(false, data.data);
+	    } else if (data.error) {
+		alert(data.error);
+	    }
+	},	
+    };
+       
+    var resp = dojo.xhrGet(xhrArgs);
+}
+
 function updatePerformanceGraph(id) {
     // get selected metic
     metric = dijit.byId(id + '_perf_metric').get('displayedValue');
@@ -333,6 +365,11 @@ function createPortMonitorTab(id) {
 function createSNMPTab(id) {
     // create data  grid 
     var snmp_layout = [{
+	    field: 'name',
+	    name: 'Name',
+	    width: '50px'
+	},      
+	{
 	    field: 'oid',
 	    name: 'OID',
 	    width: '100px'
@@ -714,7 +751,7 @@ function _addMonitor(dataGrid, type, id) {
     } else if (type == "snmp_monitors") {
 	tb1_label = document.createElement("label");
 	tb1_label.htmlFor = 'add_monitor_community';
-	tb1_label.appendChild(document.createTextNode('Community String '));
+	tb1_label.appendChild(document.createTextNode('SNMP Community '));
 
 	tb1 = new dijit.form.TextBox({
 		id: 'add_monitor_community',
@@ -722,32 +759,106 @@ function _addMonitor(dataGrid, type, id) {
 		style: 'width: 100px;'
 	    });
 
+	tb2_label = document.createElement("label");
+	tb2_label.htmlFor = 'add_monitor_name';
+	tb2_label.appendChild(document.createTextNode('Group Name '));
+
+	tb2 = new dijit.form.TextBox({
+		id: 'add_monitor_name',
+		name: 'add_monitor_name',
+		style: 'width: 100px;'
+	    });
+
 	sub = new dijit.form.Button({
-		label: 'Add',
+		label: 'Load MIBs',
+		id: 'add_monitor_submit',
 		onClick: function() {
 		    var params = { 
 			type: 'snmp_monitors',
-			community: dijit.byId('add_monitor_community').getValue() 
+			community: dijit.byId('add_monitor_community').getValue(),
+			name: dijit.byId('add_monitor_name').getValue()
 		    };
-		    xhrAddMonitor(dataGrid, id, params);
+		    // destroy dijits
 		    dijit.byId("add_monitor_community").destroy();
-		    document.body.removeChild(document.getElementById("add_monitor"));
-	    }
+		    dijit.byId("add_monitor_name").destroy();
+		    dijit.byId("add_monitor_reset").destroy();
+		    dijit.byId("add_monitor_submit").destroy();
+		    
+		    // destroy remaining dom nodes
+		    win = document.getElementById("add_monitor");
+		    while (win.hasChildNodes() >= 1) {
+			win.removeChild(win.firstChild);
+		    }
+
+		    document.body.removeChild(win);
+
+		    snmpMonitorStep2(dataGrid, id, params);
+		}
 	});
     
 	rst = new dijit.form.Button({
 		label: 'Cancel',
+		id: 'add_monitor_reset',
 		onClick: function() {
+		    // destroy dijits
 		    dijit.byId("add_monitor_community").destroy();
-		    document.body.removeChild(document.getElementById("add_monitor"));
+		    dijit.byId("add_monitor_name").destroy();
+		    dijit.byId("add_monitor_reset").destroy();
+		    dijit.byId("add_monitor_submit").destroy();
+		    
+		    // destroy remaining dom nodes
+		    win = document.getElementById("add_monitor");
+		    while (win.hasChildNodes() >= 1) {
+			win.removeChild(win.firstChild);
+		    }
+
+		    document.body.removeChild(win);
 		}
 	    });
 
-        items = [ tb1_label, tb1.domNode, 
-		  document.createElement("br"), rst.domNode, sub.domNode ];
+        items = [ tb1_label, tb1.domNode,
+		  document.createElement("br"),
+		  tb2_label, tb2.domNode,
+		  document.createElement("br"),
+		  rst.domNode, sub.domNode ];
     }
 
     createOverlayWindow("add_monitor", items);
+}
+
+function snmpMonitorStep2(dataGrid, id, params) {
+
+    dnd_src = document.createElement("div");
+    dnd_src.style.border = '1px solid black';
+    dnd_src.id = 'add_monitor_dnd_src';
+
+    srcMibs = new dojo.dnd.Source(dnd_src, {
+	    creator: _dndSNMPCreator
+	});
+
+    // kick off snmp walk to load available mibs
+    loadMibs(id, params['community'], srcMibs);
+
+    sub = new dijit.form.Button({
+	    label: 'Add',
+	    id: 'add_monitor_submit',
+	    onClick: function() {
+		xhrAddMonitor(dataGrid, id, params);		    
+		document.body.removeChild(document.getElementById("add_monitor"));
+	    }
+	});
+    
+    rst = new dijit.form.Button({
+	    label: 'Cancel',
+	    id: 'add_monitor_reset',
+	    onClick: function() {
+		document.body.removeChild(document.getElementById("add_monitor"));
+	    }
+	});
+
+    createOverlayWindow("add_monitor", [ dnd_src,
+					 document.createElement("br"),
+					 rst.domNode, sub.domNode ]);
 }
 
 function _ackMonitor(dataGrid, device_id, type) {
