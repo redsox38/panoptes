@@ -17,6 +17,7 @@ require_once 'deviceEntry.php';
 require_once 'pingEntry.php';
 require_once 'portMonitorEntry.php';
 require_once 'certificateMonitorEntry.php';
+require_once 'SNMPMonitorEntry.php';
 
 class panoptes
 {
@@ -411,6 +412,30 @@ class panoptes
    */
   public function getSNMPMonitorData($id) {
     $rtndata = array();
+
+
+    $res = mysql_query("SELECT * FROM snmp_monitors WHERE device_id='" . 
+		       $id ."'", $this->db);
+    
+    if ($res !== false) {
+      while ($r = mysql_fetch_assoc($res)) {
+	$ent = new SNMPMonitorEntry($this->db);
+	$ent->id = $r['id'];
+	$ent->device_id = $id;
+	$ent->name = $r['name'];
+	$ent->oid = $r['oid'];
+	$ent->last_check = $r['last_check'];
+	$ent->next_check = $r['next_check'];
+	$ent->proto = $r['proto'];
+	$ent->status = $r['status'];
+	$ent->status_string = $r['status_string'];
+	$ent->disabled = $r['disabled'];
+	array_push($rtndata, $ent);
+      }
+      mysql_free_result($res);
+    } else {
+      throw new Exception(mysql_error());
+    }
 
     return($rtndata);
   }
@@ -1023,6 +1048,23 @@ class panoptes
 				 'id'            => $ent->id,
 				 'device_id'     => $ent->device_id,
 				 'url'           => $ent->url,
+				 'last_check'    => '0000-00-00 00:00:00',
+				 'next_check'    => '0000-00-00 00:00:00',
+				 'status'        => 'new',
+				 'status_string' => ''
+				 ));
+      } else if ($args['params']['type'] == 'snmp_monitors') {
+	$ent = new SNMPMonitorEntry($this->db);
+	$ent->device_id = $args['id'];
+	$ent->name = $args['params']['name'];
+	$ent->oid = implode(',', $args['params']['oids']);
+	$ent->commit();
+
+	array_push($data, array (
+				 'id'            => $ent->id,
+				 'device_id'     => $ent->device_id,
+				 'name'          => $ent->name,
+				 'oid'           => $ent->oids,
 				 'last_check'    => '0000-00-00 00:00:00',
 				 'next_check'    => '0000-00-00 00:00:00',
 				 'status'        => 'new',

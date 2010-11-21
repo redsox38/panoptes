@@ -1,4 +1,5 @@
-var _dndSNMPCreator = function(item, hint) {
+
+var _dndMibCreator = function(item, hint) {
     var type = ['mib'];
     var node = document.createElement("div");
     node.innerHTML = item.mib_txt;
@@ -367,7 +368,7 @@ function createSNMPTab(id) {
     var snmp_layout = [{
 	    field: 'name',
 	    name: 'Name',
-	    width: '50px'
+	    width: '70px'
 	},      
 	{
 	    field: 'oid',
@@ -851,7 +852,8 @@ function snmpMonitorStep2(dataGrid, id, params) {
     dnd_src.style.overflow = 'scroll';
 
     srcMibs = new dojo.dnd.Source(dnd_src, {
-	    creator: _dndSNMPCreator
+	    accept: ['mib'],
+	    creator: _dndMibCreator
 	});
 
     dnd_tgt = document.createElement("div");
@@ -863,9 +865,9 @@ function snmpMonitorStep2(dataGrid, id, params) {
     dnd_tgt.style.align = 'right';
     dnd_tgt.style.overflow = 'scroll';
 
-    tgtMibs = new dojo.dnd.Target(dnd_tgt, {
+    tgtMibs = new dojo.dnd.Source(dnd_tgt, {
 	    accept: ['mib'],
-	    creator: _dndSNMPCreator
+	    creator: _dndMibCreator
 	});
 
     // kick off snmp walk to load available mibs
@@ -875,11 +877,12 @@ function snmpMonitorStep2(dataGrid, id, params) {
 	    label: 'Add',
 	    id: 'add_monitor_submit',
 	    onClick: function() {
-		itms = tgtMibs.getAllNodes();
 		var a = [];
-		for (i = 0; i < itms.length; i++) {
-		    a.push(itms[i].data);
-		}
+
+		tgtMibs.forInItems(function (obj, id, map) {
+			a.push(obj.data.mib);
+		    });
+
 		params['oids'] = a;
 
 		xhrAddMonitor(dataGrid, id, params);		    

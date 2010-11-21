@@ -141,7 +141,8 @@ CREATE TABLE certificate_monitors (
 CREATE TABLE snmp_monitors (
   id bigint(20) NOT NULL AUTO_INCREMENT,
   device_id bigint(20) NOT NULL,
-  oid varchar(255) NOT NULL,
+  name varchar(255) NOT NULL,
+  oid BLOB NOT NULL,
   check_interval smallint(6) NOT NULL DEFAULT '15',
   last_check datetime DEFAULT NULL,
   next_check datetime DEFAULT NULL,
@@ -150,8 +151,9 @@ CREATE TABLE snmp_monitors (
   disabled smallint(5) unsigned NOT NULL DEFAULT 0,
   PRIMARY KEY (id),
   KEY device_id (device_id),
-  KEY oid (oid),
-  UNIQUE KEY oid_tup (device_id, oid),
+  KEY oid (oid(256)),
+  UNIQUE KEY oid_pr (device_id, oid(256)),
+  UNIQUE KEY nm_pr (device_id, name),
   KEY disabled (disabled),
   CONSTRAINT snmp_monitors_ibfk_1 FOREIGN KEY (device_id) REFERENCES devices (id) ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
