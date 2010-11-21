@@ -1096,8 +1096,10 @@ class panoptes
       } else {
 	// load returned mibs
 	foreach($oids as $k => $v) {
-	  $mib_txt = sprintf("%s%s (%s)", substr($k, 0, 25), 
-			     (strlen($k) > 25 ? "..." : ""), $v);
+	  $mib_txt = sprintf("%s%s (%s%s)", substr($k, 0, 25), 
+			     (strlen($k) > 25 ? "..." : ""), 
+			     substr($v, 0, 15) ,
+			     (strlen($v) > 15 ? "..." : ""));
 	  $data[] = array('mib' => $k, 'mib_txt' => $mib_txt,
 			  'value' => $v);
 	}

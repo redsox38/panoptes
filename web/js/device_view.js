@@ -1,4 +1,4 @@
-var _dndSNMPCreator = function(item) {
+var _dndSNMPCreator = function(item, hint) {
     var type = ['mib'];
     var node = document.createElement("div");
     node.innerHTML = item.mib_txt;
@@ -665,6 +665,7 @@ function _addMonitor(dataGrid, type, id) {
 
 	sub = new dijit.form.Button({
 		label: 'Add',
+		id: 'add_monitor_submit',
 		onClick: function() {
 		    var params = { 
 			type: 'certificate_monitors',
@@ -672,14 +673,19 @@ function _addMonitor(dataGrid, type, id) {
 		    };
 		    xhrAddMonitor(dataGrid, id, params);
 		    dijit.byId("add_monitor_url").destroy();
+		    dijit.byId("add_monitor_reset").destroy();
+		    dijit.byId("add_monitor_submit").destroy();
 		    document.body.removeChild(document.getElementById("add_monitor"));
 	    }
 	});
     
 	rst = new dijit.form.Button({
 		label: 'Cancel',
+		id: 'add_monitor_reset',
 		onClick: function() {
 		    dijit.byId("add_monitor_url").destroy();
+		    dijit.byId("add_monitor_reset").destroy();
+		    dijit.byId("add_monitor_submit").destroy();
 		    document.body.removeChild(document.getElementById("add_monitor"));
 		}
 	    });
@@ -727,6 +733,7 @@ function _addMonitor(dataGrid, type, id) {
 
 	sub = new dijit.form.Button({
 		label: 'Add',
+		id: 'add_monitor_submit',
 		onClick: function() {
 		    var params = { 
 			type: 'port_monitors',
@@ -734,14 +741,19 @@ function _addMonitor(dataGrid, type, id) {
 		    };
 		    xhrAddMonitor(dataGrid, id, params);
 		    dijit.byId("add_monitor_port").destroy();
+		    dijit.byId("add_monitor_reset").destroy();
+		    dijit.byId("add_monitor_submit").destroy();
 		    document.body.removeChild(document.getElementById("add_monitor"));
 	    }
 	});
     
 	rst = new dijit.form.Button({
 		label: 'Cancel',
+		id: 'add_monitor_reset',
 		onClick: function() {
 		    dijit.byId("add_monitor_port").destroy();
+		    dijit.byId("add_monitor_reset").destroy();
+		    dijit.byId("add_monitor_submit").destroy();
 		    document.body.removeChild(document.getElementById("add_monitor"));
 		}
 	    });
@@ -829,10 +841,30 @@ function _addMonitor(dataGrid, type, id) {
 function snmpMonitorStep2(dataGrid, id, params) {
 
     dnd_src = document.createElement("div");
-    dnd_src.style.border = '1px solid black';
     dnd_src.id = 'add_monitor_dnd_src';
+    dnd_src.style.border = '1px solid black';
+    dnd_src.style.height = '200px';
+    dnd_src.style.width = '350px';
+    dnd_src.style.float = 'left';
+    dnd_src.style.align = 'left';
+    dnd_src.style.marginRight = '200px';
+    dnd_src.style.overflow = 'scroll';
 
     srcMibs = new dojo.dnd.Source(dnd_src, {
+	    creator: _dndSNMPCreator
+	});
+
+    dnd_tgt = document.createElement("div");
+    dnd_tgt.id = 'add_monitor_dnd_tgt';
+    dnd_tgt.style.border = '1px solid black';
+    dnd_tgt.style.height = '200px';
+    dnd_tgt.style.width = '350px';
+    dnd_tgt.style.float = 'right';
+    dnd_tgt.style.align = 'right';
+    dnd_tgt.style.overflow = 'scroll';
+
+    tgtMibs = new dojo.dnd.Target(dnd_tgt, {
+	    accept: ['mib'],
 	    creator: _dndSNMPCreator
 	});
 
@@ -843,7 +875,23 @@ function snmpMonitorStep2(dataGrid, id, params) {
 	    label: 'Add',
 	    id: 'add_monitor_submit',
 	    onClick: function() {
+		itms = tgtMibs.getAllNodes();
+		var a = [];
+		for (i = 0; i < itms.length; i++) {
+		    a.push(itms[i].data);
+		}
+		params['oids'] = a;
+
 		xhrAddMonitor(dataGrid, id, params);		    
+		srcMibs.destroy();
+		tgtMibs.destroy();
+		
+		// destroy remaining dom nodes
+		win = document.getElementById("add_monitor");
+		while (win.hasChildNodes() >= 1) {
+		    win.removeChild(win.firstChild);
+		}
+
 		document.body.removeChild(document.getElementById("add_monitor"));
 	    }
 	});
@@ -852,11 +900,20 @@ function snmpMonitorStep2(dataGrid, id, params) {
 	    label: 'Cancel',
 	    id: 'add_monitor_reset',
 	    onClick: function() {
+		srcMibs.destroy();
+		tgtMibs.destroy();
+		
+		// destroy remaining dom nodes
+		win = document.getElementById("add_monitor");
+		while (win.hasChildNodes() >= 1) {
+		    win.removeChild(win.firstChild);
+		}
+		
 		document.body.removeChild(document.getElementById("add_monitor"));
 	    }
 	});
 
-    createOverlayWindow("add_monitor", [ dnd_src,
+    createOverlayWindow("add_monitor", [ dnd_src, dnd_tgt,
 					 document.createElement("br"),
 					 rst.domNode, sub.domNode ]);
 }
