@@ -1098,7 +1098,7 @@ class panoptes
 	$ent->device_id = $args['id'];
 	$ent->name = $args['params']['name'];
 	$ent->community = $args['params']['community'];
-	$ent->oid_string = implode('\n', $args['params']['oids']);
+	$ent->oid_string = implode("\n", $args['params']['oids']);
 	$ent->oid_array = $args['params']['oids'];
 	$ent->commit();
 
@@ -1106,6 +1106,7 @@ class panoptes
 				 'id'            => $ent->id,
 				 'device_id'     => $ent->device_id,
 				 'name'          => $ent->name,
+				 'community'     => $ent->community,
 				 'oid'           => $ent->oid_string,
 				 'last_check'    => '0000-00-00 00:00:00',
 				 'next_check'    => '0000-00-00 00:00:00',

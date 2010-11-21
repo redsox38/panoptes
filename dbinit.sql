@@ -230,6 +230,10 @@ CREATE ALGORITHM=UNDEFINED SQL SECURITY INVOKER VIEW monitor_tasks
         ce.last_check AS last_check, 
         ce.next_check AS next_check FROM certificate_monitors ce
         WHERE ce.disabled=0)          	
+	UNION(SELECT 'snmp_monitors' AS table_name, sn.id AS id,
+        sn.last_check AS last_check, 
+        sn.next_check AS next_check FROM snmp_monitors sn
+        WHERE sn.disabled=0)          	
         ORDER BY next_check;
 
 /* stored procedures */

@@ -77,7 +77,7 @@ class SNMPMonitorEntry extends hostEntry
     $res = mysql_query("INSERT INTO snmp_monitors VALUES(0, '" .
 		       $this->device_id . "', '" .
 		       $this->name . "','" .
-		       $this->community, "','" .
+		       $this->community . "','" .
 		       implode(',', $this->oid_array) . 
 		       "', 15, NOW(), NOW(), 'new', '', 0)", 
                        $this->db);
