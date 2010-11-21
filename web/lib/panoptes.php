@@ -442,6 +442,7 @@ class panoptes
 	$ent->id = $r['id'];
 	$ent->device_id = $id;
 	$ent->name = $r['name'];
+	$ent->community = $r['community'];
 	$ent->oid_array = explode(',', $r['oid']);
 	$ent->oid_string = implode("\n", $ent->oid_array);
 	$ent->last_check = $r['last_check'];
@@ -778,6 +779,7 @@ class panoptes
 				 'id'            => $a->id,
 				 'device_id'     => $a->device_id,
 				 'name'          => $a->name,
+				 'community'     => $a->community,
 				 'oid'           => $a->oid_string,
 				 'oids'          => $a->oid_array,
 				 'last_check'    => $a->last_check,
@@ -1095,6 +1097,7 @@ class panoptes
 	$ent = new SNMPMonitorEntry($this->db);
 	$ent->device_id = $args['id'];
 	$ent->name = $args['params']['name'];
+	$ent->community = $args['params']['community'];
 	$ent->oid_string = implode('\n', $args['params']['oids']);
 	$ent->oid_array = $args['params']['oids'];
 	$ent->commit();

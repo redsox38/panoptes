@@ -36,13 +36,14 @@ void *monitor_thread(void *arg)
   monitor_result_t r;
   char             perf_attr[256], errbuf[1024];
   int              rc;
+  char             *addr;
   /* data for port monitoring */
-  char             *addr, *proto, *port;
+  char             *proto, *port;
   int              portnum;
   /* for certificate monitoring */
   char             *url;
   /* for snmp monitoring */
-  char             *nm, *oid, **oid_list;
+  char             *nm, *oid, *comm;
 
   /* block termination/interrupt signals */
   (void *)sigemptyset(&sigmask);
@@ -139,12 +140,16 @@ void *monitor_thread(void *arg)
 		   m.table_name, m.id);
 	  }
 	} else if (!strcmp(m.table_name, "snmp_monitors")) {
+	  addr = get_attr_val(&m, "address");
 	  nm = get_attr_val(&m, "name");
-	  oids = get_attr_val(&m, "oid");
+	  comm = get_attr_val(&m, "community");
+	  oid = get_attr_val(&m, "oid");
 	  if (nm != NULL &&
-	      oids != NULL) {
+	      oid != NULL &&
+	      comm != NULL &
+	      addr != NULL) {
 	    
-	    monitor_certificate(oid_list, &r);
+	    monitor_snmp(addr, nm, comm, oid, &r);
 	    update_monitor_entry(&m, &r);
 	    
 	    free_monitor_result(&r, 0);

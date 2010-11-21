@@ -142,6 +142,7 @@ CREATE TABLE snmp_monitors (
   id bigint(20) NOT NULL AUTO_INCREMENT,
   device_id bigint(20) NOT NULL,
   name varchar(255) NOT NULL,
+  community varchar(255) NOT NULL,
   oid BLOB NOT NULL,
   check_interval smallint(6) NOT NULL DEFAULT '15',
   last_check datetime DEFAULT NULL,
@@ -336,7 +337,7 @@ ELSEIF (V_table_name='certificate_monitors') THEN
 ELSEIF (V_table_name='snmp_monitors') THEN
   -- get row with lock to prevent another monitor
   -- thread from picking up the same row
-  SET @s = CONCAT('SELECT device_id, check_interval, name, oid, status INTO @_dev_id, @_interval, @_name, @_oid, @_status FROM ', V_table_name, ' WHERE id=', V_id, ' FOR UPDATE');
+  SET @s = CONCAT('SELECT device_id, check_interval, name, community, oid, status INTO @_dev_id, @_interval, @_name, @_comm, @_oid, @_status FROM ', V_table_name, ' WHERE id=', V_id, ' FOR UPDATE');
 
   SET autocommit=0;
   START TRANSACTION;
@@ -357,7 +358,7 @@ ELSEIF (V_table_name='snmp_monitors') THEN
 
   SELECT V_id AS id, @_dev_id AS device_id, 
   	 'snmp_monitors' AS table_name,  
-	 @_name AS name, @_oid AS oid, @_status AS status;
+	 @_name AS name, @_comm AS community, @_oid AS oid, @_status AS status;
 END IF;
 
 END;

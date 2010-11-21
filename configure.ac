@@ -1,7 +1,7 @@
 #                                               -*- Autoconf -*-
 # Process this file with autoconf to produce a configure script.
 
-AC_PREREQ([2.65])
+AC_PREREQ([2.63])
 AC_INIT([panoptes], [0.1], [redsox38@gmail.com])
 AC_CONFIG_SRCDIR([discover_core.c])
 AM_INIT_AUTOMAKE([foreign])
@@ -17,7 +17,7 @@ AC_PROG_CC
 # Checks for libraries.
 
 # Checks for header files.
-AC_CHECK_HEADERS([arpa/inet.h netinet/in.h stdlib.h string.h sys/socket.h pcap.h libxml/parser.h mysql.h syslog.h curl/curl.h])
+AC_CHECK_HEADERS([arpa/inet.h netinet/in.h stdlib.h string.h sys/socket.h pcap.h libxml/parser.h mysql.h syslog.h curl/curl.h net-snmp/net-snmp-config.h])
 
 # Checks for typedefs, structures, and compiler characteristics.
 
@@ -30,6 +30,7 @@ AC_CHECK_LIB([pthread], [pthread_create])
 AC_CHECK_LIB([mysqlclient_r], [mysql_init], , AC_MSG_ERROR(Cannot find libmysqlclient))
 AC_CHECK_LIB([rrd_th], [rrd_create_r], , AC_MSG_ERROR(Cannot find librrd_th))
 AC_CHECK_LIB([curl], [curl_easy_perform], , AC_MSG_ERROR(Cannot find libcurl))
+AC_CHECK_LIB([snmp], [init_snmp], , AC_MSG_ERROR(Cannot find libsnmp))
 
 dnl Checks for typedefs, structures, and compiler characteristics.
 AC_C_CONST
