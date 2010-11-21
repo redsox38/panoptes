@@ -21,6 +21,7 @@
 #include "utils/configuration.h"
 #include <signal.h>
 #include <pthread.h>
+#include <errno.h>
 
 extern char            *configfile;
 extern int             stop_threads;

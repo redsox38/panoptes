@@ -22,6 +22,7 @@
 #include <signal.h>
 #include <pthread.h>
 #include "monitor_core.h"
+#include <errno.h>
 
 extern int             working_count;
 extern int             stop_threads;
