@@ -306,7 +306,7 @@ function createPortMonitorTab(id) {
 	{            
 	    field: 'status', 
 	    name: 'Status',
-	    width: '90px'
+	    width: '80px'
 	},
 	{            
 	    field: 'status_string', 
@@ -373,7 +373,7 @@ function createSNMPTab(id) {
 	{
 	    field: 'oid',
 	    name: 'OID',
-	    width: '100px'
+	    width: '150px'
 	},      
 	{            
 	    field: 'last_check', 
@@ -388,7 +388,7 @@ function createSNMPTab(id) {
 	{            
 	    field: 'status', 
 	    name: 'Status',
-	    width: '90px'
+	    width: '80px'
 	},
 	{            
 	    field: 'status_string', 
@@ -465,7 +465,7 @@ function createCertificateTab(id) {
 	{            
 	    field: 'status', 
 	    name: 'Status',
-	    width: '90px'
+	    width: '80px'
 	},
 	{            
 	    field: 'status_string', 

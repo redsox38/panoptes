@@ -423,7 +423,8 @@ class panoptes
 	$ent->id = $r['id'];
 	$ent->device_id = $id;
 	$ent->name = $r['name'];
-	$ent->oid = $r['oid'];
+	$ent->oid_array = explode(',', $r['oid']);
+	$ent->oid_string = implode("\n", $ent->oid_array);
 	$ent->last_check = $r['last_check'];
 	$ent->next_check = $r['next_check'];
 	$ent->proto = $r['proto'];
@@ -757,7 +758,9 @@ class panoptes
 	array_push($data, array (
 				 'id'            => $a->id,
 				 'device_id'     => $a->device_id,
-				 'oid'           => $a->oid,
+				 'name'          => $a->name,
+				 'oid'           => $a->oid_string,
+				 'oids'          => $a->oid_array,
 				 'last_check'    => $a->last_check,
 				 'next_check'    => $a->next_check,
 				 'status'        => $a->status,
@@ -949,6 +952,12 @@ class panoptes
 	  $ent->id = $v;
 	  $ent->delete();
 	}
+      } elseif ($args['type'] == 'snmp_monitors') {
+	foreach ($args['id'] as $v) {	  
+	  $ent = new SNMPMonitorEntry($this->db);
+	  $ent->id = $v;
+	  $ent->delete();
+	}
       } else {
 	return(array('result' => 'failure',
 		     'error'  => 'unknown type: ' . $args['type']));	
@@ -988,6 +997,16 @@ class panoptes
       } elseif ($args['type'] == 'certificate_monitors') {
 	foreach ($args['id'] as $v) {	  
 	  $ent = new certificateMonitorEntry($this->db);
+	  $ent->id = $v;
+	  if ($flag) {
+	    $ent->enable();
+	  } else {
+	    $ent->disable();
+	  }
+	}
+      } elseif ($args['type'] == 'snmp_monitors') {
+	foreach ($args['id'] as $v) {	  
+	  $ent = new SNMPMonitorEntry($this->db);
 	  $ent->id = $v;
 	  if ($flag) {
 	    $ent->enable();
@@ -1057,14 +1076,15 @@ class panoptes
 	$ent = new SNMPMonitorEntry($this->db);
 	$ent->device_id = $args['id'];
 	$ent->name = $args['params']['name'];
-	$ent->oid = implode(',', $args['params']['oids']);
+	$ent->oid_string = implode('\n', $args['params']['oids']);
+	$ent->oid_array = $args['params']['oids'];
 	$ent->commit();
 
 	array_push($data, array (
 				 'id'            => $ent->id,
 				 'device_id'     => $ent->device_id,
 				 'name'          => $ent->name,
-				 'oid'           => $ent->oids,
+				 'oid'           => $ent->oid_string,
 				 'last_check'    => '0000-00-00 00:00:00',
 				 'next_check'    => '0000-00-00 00:00:00',
 				 'status'        => 'new',
@@ -1100,6 +1120,8 @@ class panoptes
 	  $ent = new portMonitorEntry($this->db);
 	} else if ($args['type'] == 'certificate_monitors') {
 	  $ent = new certificateMonitorEntry($this->db);
+	} else if ($args['type'] == 'snmp_monitors') {
+	  $ent = new SNMPMonitorEntry($this->db);
 	}
 
 	$ent->id = $v;
