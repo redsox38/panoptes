@@ -610,6 +610,9 @@ function ackMonitor() {
     } else if (dijit.byId(id + '_cert_mon_grid').selected) {
 	_ackMonitor(dijit.byId(id + '_cert_mon_grid'), id, 
 		    'certificate_monitors');
+    } else if (dijit.byId(id + '_snmp_mon_grid').selected) {
+	_ackMonitor(dijit.byId(id + '_snmp_mon_grid'), id, 
+		    'snmp_monitors');
     }
 }
 
@@ -622,6 +625,8 @@ function disableMonitor() {
 	_disableMonitor(dijit.byId(id + '_port_mon_grid'), 'port_monitors', 'disable');
     } else if (dijit.byId(id + '_cert_mon_grid').selected) {
 	_disableMonitor(dijit.byId(id + '_cert_mon_grid'), 'certificate_monitors', 'disable');
+    } else if (dijit.byId(id + '_snmp_mon_grid').selected) {
+	_disableMonitor(dijit.byId(id + '_snmp_mon_grid'), 'snmp_monitors', 'disable');
     }
 }
 
@@ -634,6 +639,8 @@ function enableMonitor() {
 	_disableMonitor(dijit.byId(id + '_port_mon_grid'), 'port_monitors', 'enable');
     } else if (dijit.byId(id + '_cert_mon_grid').selected) {
 	_disableMonitor(dijit.byId(id + '_cert_mon_grid'), 'certificate_monitors', 'enable');
+    } else if (dijit.byId(id + '_snmp_mon_grid').selected) {
+	_disableMonitor(dijit.byId(id + '_snmp_mon_grid'), 'snmp_monitors', 'enable');
     }
 }
 
@@ -646,6 +653,8 @@ function deleteMonitor() {
 	_deleteMonitor(dijit.byId(id + '_port_mon_grid'), 'port_monitors');
     } else if (dijit.byId(id + '_cert_mon_grid').selected) {
 	_deleteMonitor(dijit.byId(id + '_cert_mon_grid'), 'certificate_monitors');
+    } else if (dijit.byId(id + '_snmp_mon_grid').selected) {
+	_deleteMonitor(dijit.byId(id + '_snmp_mon_grid'), 'snmp_monitors');
     }
 }
 
