@@ -333,6 +333,31 @@ ELSEIF (V_table_name='certificate_monitors') THEN
   SELECT V_id AS id, @_dev_id AS device_id, 
   	 'certificate_monitors' AS table_name,  
 	 @_url AS url, @_status AS status;
+ELSEIF (V_table_name='snmp_monitors') THEN
+  -- get row with lock to prevent another monitor
+  -- thread from picking up the same row
+  SET @s = CONCAT('SELECT device_id, check_interval, name, oid, status INTO @_dev_id, @_interval, @_name, @_oid, @_status FROM ', V_table_name, ' WHERE id=', V_id, ' FOR UPDATE');
+
+  SET autocommit=0;
+  START TRANSACTION;
+
+  PREPARE stmt FROM @s;
+  EXECUTE stmt;
+
+  -- set update last_check and next_check
+  SET @s = CONCAT('UPDATE snmp_monitors SET last_check=NOW(), ',
+                  'next_check=DATE_ADD(NOW(), INTERVAL ', @_interval,
+                  ' MINUTE), status="pending" WHERE id=', V_id);
+
+  PREPARE stmt FROM @s;
+  EXECUTE stmt;
+
+  COMMIT;
+  SET autocommit=1;
+
+  SELECT V_id AS id, @_dev_id AS device_id, 
+  	 'snmp_monitors' AS table_name,  
+	 @_name AS name, @_oid AS oid, @_status AS status;
 END IF;
 
 END;
@@ -358,6 +383,10 @@ ELSEIF (in_table='ping_monitors') THEN
       WHERE id=in_id;
 ELSEIF (in_table='certificate_monitors') THEN
   UPDATE certificate_monitors SET status=in_status, 
+  	 status_string=in_status_string
+      WHERE id=in_id;
+ELSEIF (in_table='snmp_monitors') THEN
+  UPDATE snmp_monitors SET status=in_status, 
   	 status_string=in_status_string
       WHERE id=in_id;
 END IF;

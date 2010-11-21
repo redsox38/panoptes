@@ -34,10 +34,15 @@ void *monitor_thread(void *arg)
   monitor_entry_t  m;
   char             **p, **q;
   monitor_result_t r;
-  /* data for port monitoring */
-  char             *addr, *proto, *port, *url;
   char             perf_attr[256], errbuf[1024];
-  int              portnum, rc;
+  int              rc;
+  /* data for port monitoring */
+  char             *addr, *proto, *port;
+  int              portnum;
+  /* for certificate monitoring */
+  char             *url;
+  /* for snmp monitoring */
+  char             *nm, *oid, **oid_list;
 
   /* block termination/interrupt signals */
   (void *)sigemptyset(&sigmask);
@@ -126,6 +131,20 @@ void *monitor_thread(void *arg)
 	  if (url != NULL) {
 	    
 	    monitor_certificate(url, &r);
+	    update_monitor_entry(&m, &r);
+	    
+	    free_monitor_result(&r, 0);
+	  } else {
+	    syslog(LOG_NOTICE, "Missing data required to monitor: %s %s", 
+		   m.table_name, m.id);
+	  }
+	} else if (!strcmp(m.table_name, "snmp_monitors")) {
+	  nm = get_attr_val(&m, "name");
+	  oids = get_attr_val(&m, "oid");
+	  if (nm != NULL &&
+	      oids != NULL) {
+	    
+	    monitor_certificate(oid_list, &r);
 	    update_monitor_entry(&m, &r);
 	    
 	    free_monitor_result(&r, 0);
