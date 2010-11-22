@@ -131,6 +131,7 @@ void _get_next_monitor_entry(monitor_entry_t *m)
   MYSQL_ROW   row;
   MYSQL_FIELD *fields;
   int         i, j, rc, num_fields;
+  long        *lengths;
 
   pthread_mutex_lock(&sql_mutex);
 
@@ -141,6 +142,7 @@ void _get_next_monitor_entry(monitor_entry_t *m)
     if (result) {
       row = mysql_fetch_row(result);
       fields = mysql_fetch_fields(result);
+      lengths = mysql_fetch_lengths(result);
 
       num_fields = mysql_num_fields(result);
       j = 0;
@@ -160,8 +162,17 @@ void _get_next_monitor_entry(monitor_entry_t *m)
 	  m->table_name = strdup((char *)row[i]);
 	} else {
 	  m->attrs[j] = strdup(fields[i].name);
-	  m->vals[j] = strdup((char *)row[i]);	       
-	  j++;
+	  if (row[i] != NULL) {
+	    if (fields[i].type == MYSQL_TYPE_BLOB) {
+	      m->vals[j] = (char *)malloc(sizeof(char) * (lengths[i] + 1));
+	      snprintf(m->vals[j], lengths[i], row[i]);
+	    } else {
+	      m->vals[j] = strdup((char *)row[i]);	       
+	    }
+	  } else {
+	    m->vals[j] = NULL;
+	  }
+	  j++;	    
 	}
       }
 

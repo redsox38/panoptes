@@ -84,9 +84,13 @@ monitor_result_t *monitor_snmp(char *addr, char *nm, char *comm,
       if (r->perf_data == NULL) {
 	r->perf_data = strdup(perf_str);
       } else {
-	r->perf_data = realloc(r->perf_data, 
-                               sizeof(char) * (strlen(r->perf_data) +
-	  		                       strlen(perf_str) + 1));
+	if (realloc(r->perf_data, sizeof(char) * (strlen(r->perf_data) +
+						  strlen(perf_str) + 1)) == NULL) {
+	  syslog(LOG_ALERT, "realloc: Out of Memory");
+	  r->status = MONITOR_RESULT_ERR;
+	  r->monitor_msg = strdup("realloc: out of memory");
+	  return(r);
+	}
 	q = r->perf_data[strlen(r->perf_data) + 1];
 	sprintf(q, ";%s", perf_str);
       }
@@ -108,7 +112,7 @@ monitor_result_t *monitor_snmp(char *addr, char *nm, char *comm,
       p = NULL;
     }
   }
-
+ 
   if (r->status != MONITOR_RESULT_ERR) {
     r->monitor_msg = strdup("OK");
     r->status = MONITOR_RESULT_OK;

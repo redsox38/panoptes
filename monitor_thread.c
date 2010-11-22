@@ -47,12 +47,12 @@ void *monitor_thread(void *arg)
   char             *nm, *oid, *comm;
 
   /* block termination/interrupt signals */
-  (void *)sigemptyset(&sigmask);
-  (void *)sigaddset(&sigmask, SIGINT);
-  (void *)sigaddset(&sigmask, SIGSEGV);
-  (void *)sigaddset(&sigmask, SIGPIPE);
-  (void *)sigaddset(&sigmask, SIGBUS);
-  (void *)sigaddset(&sigmask, SIGTERM);
+  sigemptyset(&sigmask);
+  sigaddset(&sigmask, SIGINT);
+  sigaddset(&sigmask, SIGSEGV);
+  sigaddset(&sigmask, SIGPIPE);
+  sigaddset(&sigmask, SIGBUS);
+  sigaddset(&sigmask, SIGTERM);
   pthread_sigmask(SIG_BLOCK, &sigmask, NULL);
 
   /* allocate TSD for rrd tool libraries */

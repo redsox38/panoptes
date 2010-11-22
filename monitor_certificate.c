@@ -45,7 +45,7 @@ monitor_result_t *monitor_certificate(char *url, monitor_result_t *r)
   struct curl_slist    *sl;
   struct tm            t;
   int                  i, yr, mo, day, rem_days, warn_days, crit_days;
-  char                 *p, *q, *tkn, *to_str;
+  char                 *p, *q, *tkn, *to_str, errbuf[CURL_ERROR_SIZE];
   time_t               now, exp;
 
   r->status = MONITOR_RESULT_OK;
@@ -78,6 +78,7 @@ monitor_result_t *monitor_certificate(char *url, monitor_result_t *r)
     curl_easy_setopt(curl_handle, CURLOPT_SSL_VERIFYPEER, 0L);
     curl_easy_setopt(curl_handle, CURLOPT_SSL_VERIFYHOST, 0L);
     curl_easy_setopt(curl_handle, CURLOPT_CERTINFO, 1L);
+    curl_easy_setopt(curl_handle, CURLOPT_ERRORBUFFER, errbuf);
 
     res = curl_easy_perform(curl_handle);
 
@@ -130,13 +131,21 @@ monitor_result_t *monitor_certificate(char *url, monitor_result_t *r)
 	    }
 	  }
 	}
+      } else {
+	r->status = MONITOR_RESULT_ERR;
+	r->monitor_msg = strdup(errbuf);
       }
+    } else {
+      r->status = MONITOR_RESULT_ERR;
+      r->monitor_msg = strdup(errbuf);
     }
 
     curl_easy_cleanup(curl_handle);
     curl_global_cleanup();
 
   } else {
+    r->status = MONITOR_RESULT_ERR;
+    r->monitor_msg = strdup(errbuf);
   }
 
   return(r);

@@ -23,6 +23,7 @@
 #include <signal.h>
 #include <pthread.h>
 #include <sys/resource.h>
+#include <stdio.h>
 
 extern void *monitor_thread(void *);
 extern void *shutdown_thread(void *);
@@ -118,7 +119,7 @@ int main(int argc, char *argv[]) {
   /* start monitoring ... */
   /* initialize monitor threads */ 
   p = get_config_value("monitor.threads");
-  (void *)sscanf(p, "%d", &num_threads);
+  sscanf(p, "%d", &num_threads);
   free(p);
 
   if ((threads = (pthread_t *)malloc(sizeof(pthread_t *) * 
@@ -128,13 +129,13 @@ int main(int argc, char *argv[]) {
   }
 
   /* block signals that will be handled by other threads */
-  (void *)sigemptyset(&sigmask);
-  (void *)sigaddset(&sigmask, SIGINT);
-  (void *)sigaddset(&sigmask, SIGPIPE);
-  (void *)sigaddset(&sigmask, SIGTERM);
-  (void *)sigaddset(&sigmask, SIGSEGV);
-  (void *)sigaddset(&sigmask, SIGBUS);
-  (void *)pthread_sigmask(SIG_BLOCK, &sigmask, NULL);
+  sigemptyset(&sigmask);
+  sigaddset(&sigmask, SIGINT);
+  sigaddset(&sigmask, SIGPIPE);
+  sigaddset(&sigmask, SIGTERM);
+  sigaddset(&sigmask, SIGSEGV);
+  sigaddset(&sigmask, SIGBUS);
+  pthread_sigmask(SIG_BLOCK, &sigmask, NULL);
 
 
   /* start termination signal handler thread */

@@ -35,11 +35,11 @@ void *shutdown_thread(void *arg)
   int          caught, rc;
   char         errbuf[1024];
 
-  (void *)sigemptyset(&sigs_to_catch);
-  (void *)sigaddset(&sigs_to_catch, SIGINT);
-  (void *)sigaddset(&sigs_to_catch, SIGTERM);
-  (void *)sigaddset(&sigs_to_catch, SIGSEGV);
-  (void *)sigaddset(&sigs_to_catch, SIGBUS);
+  sigemptyset(&sigs_to_catch);
+  sigaddset(&sigs_to_catch, SIGINT);
+  sigaddset(&sigs_to_catch, SIGTERM);
+  sigaddset(&sigs_to_catch, SIGSEGV);
+  sigaddset(&sigs_to_catch, SIGBUS);
   
   (void *)sigwait(&sigs_to_catch, &caught);
 

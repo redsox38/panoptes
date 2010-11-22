@@ -360,6 +360,9 @@ ELSEIF (V_table_name='snmp_monitors') THEN
   COMMIT;
   SET autocommit=1;
 
+  -- get ip address of device id
+  SELECT address INTO V_dev_ip FROM devices WHERE id=@_dev_id;
+
   SELECT V_id AS id, @_dev_id AS device_id, 
   	 'snmp_monitors' AS table_name,  
          V_dev_ip AS address,
