@@ -362,7 +362,9 @@ ELSEIF (V_table_name='snmp_monitors') THEN
 
   SELECT V_id AS id, @_dev_id AS device_id, 
   	 'snmp_monitors' AS table_name,  
-	 @_name AS name, @_comm AS community, @_oid AS oid, @_status AS status;
+         V_dev_ip AS address,
+	 @_name AS name, @_comm AS community, 
+         @_oid AS oid, @_status AS status;
 END IF;
 
 END;

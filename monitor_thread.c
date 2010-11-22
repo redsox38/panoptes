@@ -147,7 +147,7 @@ void *monitor_thread(void *arg)
 	  oid = get_attr_val(&m, "oid");
 	  if (nm != NULL &&
 	      oid != NULL &&
-	      comm != NULL &
+	      comm != NULL &&
 	      addr != NULL) {
 	    
 	    monitor_snmp(addr, nm, comm, oid, &r);
