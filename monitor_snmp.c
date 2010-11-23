@@ -26,6 +26,7 @@
 #include <sys/time.h>
 #include <string.h>
 #include <time.h>
+#include <syslog.h>
 #include "monitor_core.h"
 #include <net-snmp/net-snmp-config.h>
 #include <net-snmp/net-snmp-includes.h>
@@ -40,7 +41,10 @@ monitor_result_t *monitor_snmp(char *addr, char *nm, char *comm,
   int                  status, snmp_err, sys_err, len;
   char                 *errstr, *p, *q, *tkn;
   /* 1024 is the max errrstr len in glibc */
-  char                 *perf_str;
+  char                 *perf_str = NULL;
+  size_t               this_oid_size;
+
+  r->status = MONITOR_RESULT_OK;
 
   /* initialize snmp lib */
   init_snmp("panoptes");
@@ -62,47 +66,64 @@ monitor_result_t *monitor_snmp(char *addr, char *nm, char *comm,
     return(r);
   }
 
+  pdu = snmp_pdu_create(SNMP_MSG_GET);
+
   p = oids;
   p = strtok_r(p, ",", &tkn);
-  while(p != NULL) {
-    pdu = snmp_pdu_create(SNMP_MSG_GET);
-    get_node(p, this_oid, (size_t *)MAX_OID_LEN);
-    snmp_add_null_var(pdu, this_oid, MAX_OID_LEN);
-    status = snmp_synch_response(ss, pdu, &resp);
 
+  while(p != NULL) {
+    syslog(LOG_DEBUG, "pdu: %s", p);
+    this_oid_size = MAX_OID_LEN;
+    if (!snmp_parse_oid(p, this_oid, &this_oid_size)) {
+      snmp_sess_error(ss, &snmp_err, &sys_err, &errstr);
+
+      len = strlen("snmp_parse_oid: ") + strlen(errstr);
+      r->monitor_msg = (char *)malloc(len * sizeof(char));
+      snprintf(r->monitor_msg, len, "snmp_parse_oid: %s", errstr);    
+      free(errstr);
+      r->status = MONITOR_RESULT_ERR;
+      p = NULL;
+    } else {
+      snmp_add_null_var(pdu, this_oid, this_oid_size);
+      p = strtok_r(NULL, ",", &tkn);
+    }
+  }
+
+  if (r->status == MONITOR_RESULT_OK) {
+    status = snmp_synch_response(ss, pdu, &resp);
+    
+    syslog(LOG_DEBUG, "snmp:status: %d", status);
     if (status == STAT_SUCCESS && resp->errstat == SNMP_ERR_NOERROR) {
       for (vars = resp->variables; vars; vars = vars->next_variable) {
+	print_variable(vars->name, vars->name_length, vars);
+	syslog(LOG_DEBUG, "var_name: %s", vars->name);
 	switch (vars->type) {
-	case ASN_OCTET_STR:
-	  perf_str = (char *)malloc(sizeof(char) * 
-				    (vars->name_length + 1 + vars->val_len));
-	  sprintf(perf_str, "%s|%s", vars->name, vars->val.string);
+        case ASN_OCTET_STR:
+          syslog(LOG_DEBUG, "var_val: %s", vars->val.string);
+          perf_str = (char *)malloc(sizeof(char) * 
+                                    (vars->name_length + 1 + vars->val_len));
+          sprintf(perf_str, "%s|", vars->name);
+	  q = perf_str[strlen(perf_str)];
+	  memcpy(q, vars->val.string, vars->val_len);
+	  
+          break;
+        case ASN_COUNTER:
+          syslog(LOG_DEBUG, "var_val: %d", vars->val.integer);
+          perf_str = (char *)malloc(sizeof(char) * 
+                                    (vars->name_length + 25));
+          sprintf(perf_str, "%s|%d", vars->name, vars->val.integer);
 	  break;
+        default:
+          syslog(LOG_DEBUG, "uncaught type: %d", vars->type);
 	}
-      }
-      
-      if (r->perf_data == NULL) {
-	r->perf_data = strdup(perf_str);
-      } else {
-	if (realloc(r->perf_data, sizeof(char) * (strlen(r->perf_data) +
-						  strlen(perf_str) + 1)) == NULL) {
-	  syslog(LOG_ALERT, "realloc: Out of Memory");
-	  r->status = MONITOR_RESULT_ERR;
-	  r->monitor_msg = strdup("realloc: out of memory");
-	  return(r);
-	}
-	q = r->perf_data[strlen(r->perf_data) + 1];
-	sprintf(q, ";%s", perf_str);
-      }
 
-      free(perf_str);
-      p = strtok_r(NULL, ",", &tkn);
-    } else {
-      if (status == STAT_SUCCESS) {
-	snmp_error(&sess, &snmp_err, &sys_err, &errstr);
-      } else {
-	snmp_sess_error(ss, &snmp_err, &sys_err, &errstr);
+	if (perf_str != NULL) {
+	  free(perf_str);
+	  perf_str = NULL;
+	}
       }
+    } else {
+      snmp_sess_error(ss, &snmp_err, &sys_err, &errstr);
 
       len = strlen("snmp_synch_response: ") + strlen(errstr);
       r->monitor_msg = (char *)malloc(len * sizeof(char));
@@ -112,7 +133,7 @@ monitor_result_t *monitor_snmp(char *addr, char *nm, char *comm,
       p = NULL;
     }
   }
- 
+
   if (r->status != MONITOR_RESULT_ERR) {
     r->monitor_msg = strdup("OK");
     r->status = MONITOR_RESULT_OK;
