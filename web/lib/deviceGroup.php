@@ -82,7 +82,7 @@ class deviceGroup
     if (is_null($this->children)) {
       $this->children = array();
       
-      $res = mysql_query("SELECT device_id FROM group_membership WHERE group_id='" .
+      $res = mysql_query("SELECT device_id FROM device_group_membership WHERE group_id='" .
 			 $this->id ."'", $this->db);
       
       if ($res) {
@@ -134,7 +134,7 @@ class deviceGroup
    * @return none
    */
   public function addMember($device_id) {
-    $res = mysql_query("INSERT INTO group_membership VALUES(" .
+    $res = mysql_query("INSERT INTO device_group_membership VALUES(" .
 		       $this->id . "," . $device_id . ")", $this->db);
 
     if ($res === false)

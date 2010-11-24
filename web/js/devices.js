@@ -53,11 +53,10 @@ function createDeviceTree(){
 
 		    deviceTree = new dijit.Tree({
 			    model: treeModel,
-			    showRoot: false
+			    showRoot: false,			
+			    onClick: getSelectedTreeNode
 			},
 			"device_tree");		    
-
-		    deviceTree.onClick = getSelectedTreeNode;
 		    
 		    // connect context menu to tree
 		    dojo.connect(dijit.byId("device_tree"), "onLoad", function() {
@@ -136,8 +135,7 @@ function xhrGroupAdd(attr_name, device_id) {
     
     dijit.byId(attr_name).destroy();
     
-    document.body.removeChild(document.getElementById("add_to_device_group_win")
-);
+    document.body.removeChild(document.getElementById("add_to_device_group_win"));
 }
 
 function deleteDevice() {
@@ -168,9 +166,23 @@ function deleteDevice() {
 
 function removeFromGroup() {
     var id = deviceStore.getValues(deviceTreeSelectedItem, 'id').toString();
-    id = id.replace("d_", "");
     var name = deviceStore.getValues(deviceTreeSelectedItem, 'name');
 
+    req = deviceStore.fetch({ query: { type: 'group' },
+			      onItem: function (grp) {
+		                  // see if this is the parent of the selected node
+		                  deviceTree.model.getChildren(grp, function(items) { 
+					  dojo.forEach(items, function(chld) { 
+						  if ((chld) && 
+						      (chld == deviceTreeSelectedItem)) {
+						      alert(chld);
+						  }
+					      });
+				      });
+	    }
+	});
+
+    id = id.replace("d_", "");
     alert('Function not yet implemented');
 }
 

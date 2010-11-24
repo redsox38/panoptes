@@ -1,7 +1,7 @@
 /* drop everything */
 
 DROP TABLE IF EXISTS discovered;
-DROP TABLE IF EXISTS group_membership;
+DROP TABLE IF EXISTS device_group_membership;
 DROP TABLE IF EXISTS port_acknowledgments;
 DROP TABLE IF EXISTS ping_acknowledgments;
 DROP TABLE IF EXISTS snmp_acknowledgments;
@@ -59,16 +59,16 @@ CREATE TABLE discovered (
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 --
--- Table structure for table group_membership
+-- Table structure for table device_group_membership
 --
 
-CREATE TABLE group_membership (
+CREATE TABLE device_group_membership (
   group_id bigint(20) NOT NULL,
   device_id bigint(20) NOT NULL,
   KEY group_id (group_id),
   KEY device_id (device_id),
-  CONSTRAINT group_membership_ibfk_1 FOREIGN KEY (device_id) REFERENCES devices (id) ON DELETE CASCADE ON UPDATE CASCADE,
-  CONSTRAINT group_membership_ibfk_2 FOREIGN KEY (group_id) REFERENCES device_groups (id) ON DELETE CASCADE ON UPDATE CASCADE
+  CONSTRAINT device_group_membership_ibfk_1 FOREIGN KEY (device_id) REFERENCES devices (id) ON DELETE CASCADE ON UPDATE CASCADE,
+  CONSTRAINT device_group_membership_ibfk_2 FOREIGN KEY (group_id) REFERENCES device_groups (id) ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 --
