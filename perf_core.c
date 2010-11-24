@@ -29,6 +29,10 @@
 
 #include "monitor_core.h"
 
+const char *colors[] = { "#00ffff", "#01fa43", "#09aa00",
+			 "#ff0000", "#0000ff", "#12ab00",
+			 "#022afa", "#220aee", "#0a11ee",
+			 NULL };
 /* update rrd */
 void panoptes_rrd_update(char *path, monitor_result_t *r)
 {
@@ -69,6 +73,8 @@ void panoptes_rrd_xml_create(char *path,
 {
   FILE *fh;
   char errbuf[1024];
+  char *oids, *q, *tkn;
+  int  i = 0;
 
   if ((fh = fopen(path, "w")) != NULL) {
     fprintf(fh, "<config>\n");
@@ -95,6 +101,26 @@ void panoptes_rrd_xml_create(char *path,
       fprintf(fh, "\t\t<type>LINE1</type>\n");
       fprintf(fh, "\t\t<legend>AVERAGE:Average response time\\: %%lf %%Ssecs</legend>\n");
       fprintf(fh, "\t</attribute>\n");
+    } else if (!strcmp(m->table_name, "snmp_monitors")) {
+      fprintf(fh, "\t<title>%s</title>\n", get_attr_val(m, "name"));
+      fprintf(fh, "\t<vertical_label>Value</vertical_label>\n");
+
+      /* go through oid list */
+      oids = get_attr_val(m, "oid");
+      q = oids;
+      q = strtok_r(q, ".", &tkn);
+      while (q != NULL) {
+	fprintf(fh,"\t<attribute>\n");
+	fprintf(fh, "\t\t<name>ds%d</name>\n", i);
+	fprintf(fh, "\t\t<display_as>%s</display_as>\n", q);
+	fprintf(fh, "\t\t<units>v</units>\n");
+	fprintf(fh, "\t\t<color>%s</color>\n", colors[i]);
+	fprintf(fh, "\t\t<type>LINE1</type>\n");
+	fprintf(fh, "\t\t<legend>AVERAGE:Average \\: %%lf %%S</legend>\n");
+	fprintf(fh, "\t</attribute>\n");
+	q = strtok_r(NULL, ",", &tkn);
+	i++;
+      }
     }
     fprintf(fh, "</config>\n");
   } else {

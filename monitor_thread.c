@@ -152,6 +152,11 @@ void *monitor_thread(void *arg)
 	    
 	    monitor_snmp(addr, nm, comm, oid, &r);
 	    update_monitor_entry(&m, &r);
+
+	    if (r.perf_data != NULL) {
+	      snprintf(perf_attr, 256, nm);
+	      update_performance_data(addr, perf_attr, &m, &r);
+	    }
 	    
 	    free_monitor_result(&r, 0);
 	  } else {

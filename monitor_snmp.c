@@ -54,7 +54,11 @@ monitor_result_t *monitor_snmp(char *addr, char *nm, char *comm,
   sess.version = SNMP_VERSION_2c;
   sess.community = comm;
   sess.community_len = strlen(sess.community);
- 
+
+  /* only print values */
+  netsnmp_ds_set_boolean(NETSNMP_DS_LIBRARY_ID, 
+			 NETSNMP_DS_LIB_QUICK_PRINT, 1);
+
   /* noop on linux, required for win 32 if this is ever ported there */
   SOCK_STARTUP;
 
