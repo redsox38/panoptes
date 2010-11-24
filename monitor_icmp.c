@@ -149,11 +149,13 @@ monitor_result_t *monitor_icmp(char *addr, monitor_result_t *r)
     if (rc == 1) {
       gettimeofday(&stop, NULL);
       r->status = MONITOR_RESULT_OK;
-      r->monitor_msg = strdup("success");
 
       /* get elapsed time in milliseconds */
       elapsed = (stop.tv_sec - start.tv_sec) * 1000;
       elapsed += (stop.tv_usec - start.tv_usec) / 1000;
+
+      r->monitor_msg = (char *)malloc(sizeof(char) * 11);
+      snprintf(r->monitor_msg, 10, "%.4f", elapsed);
   
       /* space for string and a 10 digit number */
       len = strlen("elapsed time|") + 10;

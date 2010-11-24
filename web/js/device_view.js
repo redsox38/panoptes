@@ -186,6 +186,10 @@ function addInfoData(id, container) {
 	    if (data && !data.error) {
 		new_data = '<b>name : </b>' + data.data.name + '<br/>' +
 		'<b>IP : </b>' + data.data.address + '<br/>';
+		if (data.data.ping_data) {
+		    new_data += '<b>icmp response : </b>' +
+			data.data.ping_data + '<br/>';
+		}
 		container.set('content', new_data);
 	    } else {
 		alert(data.error);

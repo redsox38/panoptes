@@ -8,8 +8,8 @@ replace raw SQL with stored procedures
 udp port monitor
 
 svc dependencies
+schedule outages
 
-lazy load php classes
 replace raw SQL with stored procedures
 
 add group authz
@@ -17,6 +17,3 @@ remove device from group
 update device tree when group membership changes
 update device store on delete device
 loading indicator
-
-schedule outages
-display ping monitor timing somewhere

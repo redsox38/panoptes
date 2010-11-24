@@ -29,14 +29,8 @@
  *
  */
 
-require_once 'panoptesConfiguration.php';
-require_once 'autoDiscoveryEntry.php';
 require_once 'deviceGroup.php';
 require_once 'deviceEntry.php';
-require_once 'pingEntry.php';
-require_once 'portMonitorEntry.php';
-require_once 'certificateMonitorEntry.php';
-require_once 'SNMPMonitorEntry.php';
 
 class panoptes
 {
@@ -60,6 +54,7 @@ class panoptes
   }
 
   public function __construct() {
+    require_once 'panoptesConfiguration.php';
     $this->config = new panoptesConfiguration();
     $this->db = mysql_connect(
 			      $this->config->getConfigValue('db.host'),
@@ -164,6 +159,7 @@ class panoptes
 	}
 
 	// parse xml
+	require_once 'panoptesConfiguration.php';
 	$rrd_cfg = new panoptesConfiguration($r['xml_file']);
 	$cfg = $rrd_cfg->getConfigArray();
 
@@ -244,7 +240,7 @@ class panoptes
    *                            entries remaining
    */
   public function getAutoDiscoveryEntry($id = null) {
-
+    require_once 'autoDiscoveryEntry.php';
     $r = null;
 
     if (!is_null($id)) {
@@ -430,6 +426,7 @@ class panoptes
    * @return array of SNMPMonitorEntry objects
    */
   public function getSNMPMonitorData($id) {
+    require_once 'SNMPMonitorEntry.php';
     $rtndata = array();
 
 
@@ -499,6 +496,42 @@ class panoptes
   }
 
   /**
+   * Retrieve icmp monitior entry
+   *
+   * @param id id of specific device to retrieve
+   *                 monitor data for
+   *
+   * @throws Exception 
+   * @return pingEntry object
+   */
+  public function getPingMonitorData($id) {    
+    require_once 'pingEntry.php';
+    $ent = false;
+
+    $res = mysql_query("SELECT * FROM ping_monitors WHERE device_id='" . 
+		       $id ."'", $this->db);
+    
+    if ($res !== false) {
+      $r = mysql_fetch_assoc($res);
+      if ($r) {
+	$ent = new pingEntry($this->db);
+	$ent->id = $r['id'];
+	$ent->device_id = $id;
+	$ent->last_check = $r['last_check'];
+	$ent->next_check = $r['next_check'];
+	$ent->status = $r['status'];
+	$ent->status_string = $r['status_string'];
+	$ent->disabled = $r['disabled'];
+      }
+      mysql_free_result($res);
+    } else {
+      throw new Exception(mysql_error());
+    }
+
+    return($ent);
+  }
+
+  /**
    * Retrieve certificate monitior entries
    *
    * @param id id of specific device to retrieve
@@ -508,6 +541,7 @@ class panoptes
    * @return array of certificateMonitorEntry objects
    */
   public function getCertificateMonitorData($id) {
+    require_once 'certificateMonitorEntry.php';
     $rtndata = array();
 
     $res = mysql_query("SELECT * FROM certificate_monitors WHERE device_id='" . 
@@ -747,6 +781,12 @@ class panoptes
 		      'type'    => 'device',
 		      'address' => $dev->address,
 		      'id'      => $args['id']);
+
+	// get ping data if there is any
+	$ent = $this->getPingMonitorData($args['id']);
+	if ($ent) {
+	  $data['ping_data'] = $ent->status_string;
+	}
       } else {
 	$data = array();
       }
@@ -856,6 +896,7 @@ class panoptes
       $dev->commit();
 
       // add ping monitor 
+      require_once 'pingEntry.php';
       $pm = new pingEntry();
       $pm->db($this->db);
       $pm->device = $dev;
@@ -962,12 +1003,14 @@ class panoptes
     try {
       // table is based on type argument
       if ($args['type'] == 'port_monitors') {
+	require_once 'portMonitorEntry.php';
 	foreach ($args['id'] as $v) {	  
 	  $ent = new portMonitorEntry($this->db);
 	  $ent->id = $v;
 	  $ent->delete();
 	}
       } elseif ($args['type'] == 'certificate_monitors') {
+	require_once 'certificateMonitorEntry.php';
 	foreach ($args['id'] as $v) {	  
 	  $ent = new certificateMonitorEntry($this->db);
 	  $ent->id = $v;
@@ -975,6 +1018,7 @@ class panoptes
 	}
       } elseif ($args['type'] == 'snmp_monitors') {
 	foreach ($args['id'] as $v) {	  
+	  require_once 'SNMPMonitorEntry.php';
 	  $ent = new SNMPMonitorEntry($this->db);
 	  $ent->id = $v;
 	  $ent->delete();
@@ -1006,6 +1050,7 @@ class panoptes
       $flag = strcmp($args['status'], 'disable');
 
       if ($args['type'] == 'port_monitors') {
+	require_once 'portMonitorEntry.php';
 	foreach ($args['id'] as $v) {	  
 	  $ent = new portMonitorEntry($this->db);
 	  $ent->id = $v;
@@ -1016,6 +1061,7 @@ class panoptes
 	  }
 	}
       } elseif ($args['type'] == 'certificate_monitors') {
+	require_once 'certificateMonitorEntry.php';
 	foreach ($args['id'] as $v) {	  
 	  $ent = new certificateMonitorEntry($this->db);
 	  $ent->id = $v;
@@ -1026,6 +1072,7 @@ class panoptes
 	  }
 	}
       } elseif ($args['type'] == 'snmp_monitors') {
+	require_once 'SNMPMonitorEntry.php';
 	foreach ($args['id'] as $v) {	  
 	  $ent = new SNMPMonitorEntry($this->db);
 	  $ent->id = $v;
@@ -1060,6 +1107,7 @@ class panoptes
       $data = array();
       // table is based on type argument
       if ($args['params']['type'] == 'port_monitors') {
+	require_once 'portMonitorEntry.php';
 	$ent = new portMonitorEntry($this->db);
 	$ent->device_id = $args['id'];
 	$ent->sport = $args['params']['port'];
@@ -1079,6 +1127,7 @@ class panoptes
 				 $ent->sport
 				 ));
       } else if ($args['params']['type'] == 'certificate_monitors') {
+	require_once 'certificateMonitorEntry.php';
 	$ent = new certificateMonitorEntry($this->db);
 	$ent->device_id = $args['id'];
 	$ent->url = $args['params']['url'];
@@ -1094,6 +1143,7 @@ class panoptes
 				 'status_string' => ''
 				 ));
       } else if ($args['params']['type'] == 'snmp_monitors') {
+	require_once 'SNMPMonitorEntry.php';
 	$ent = new SNMPMonitorEntry($this->db);
 	$ent->device_id = $args['id'];
 	$ent->name = $args['params']['name'];
@@ -1140,10 +1190,13 @@ class panoptes
       // table is based on type argument
       foreach ($args['id'] as $v) {	  
 	if ($args['type'] == 'port_monitors') {
+	  require_once 'portMonitorEntry.php';
 	  $ent = new portMonitorEntry($this->db);
 	} else if ($args['type'] == 'certificate_monitors') {
+	  require_once 'certificateMonitorEntry.php';
 	  $ent = new certificateMonitorEntry($this->db);
 	} else if ($args['type'] == 'snmp_monitors') {
+	  require_once 'SNMPMonitorEntry.php';
 	  $ent = new SNMPMonitorEntry($this->db);
 	}
 
