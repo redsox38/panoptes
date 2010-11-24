@@ -41,10 +41,11 @@ monitor_result_t *monitor_snmp(char *addr, char *nm, char *comm,
   int                  status, snmp_err, sys_err, len;
   char                 *errstr, *p, *q, *tkn;
   /* 1024 is the max errrstr len in glibc */
-  char                 *perf_str = NULL;
+  char                 *perf_str = NULL, *val_buf, *name_buf;
   size_t               this_oid_size;
 
   r->status = MONITOR_RESULT_OK;
+  r->perf_data = NULL;
 
   /* initialize snmp lib */
   init_snmp("panoptes");
@@ -95,32 +96,35 @@ monitor_result_t *monitor_snmp(char *addr, char *nm, char *comm,
     syslog(LOG_DEBUG, "snmp:status: %d", status);
     if (status == STAT_SUCCESS && resp->errstat == SNMP_ERR_NOERROR) {
       for (vars = resp->variables; vars; vars = vars->next_variable) {
-	print_variable(vars->name, vars->name_length, vars);
-	syslog(LOG_DEBUG, "var_name: %s", vars->name);
-	switch (vars->type) {
-        case ASN_OCTET_STR:
-          syslog(LOG_DEBUG, "var_val: %s", vars->val.string);
-          perf_str = (char *)malloc(sizeof(char) * 
-                                    (vars->name_length + 1 + vars->val_len));
-          sprintf(perf_str, "%s|", vars->name);
-	  q = perf_str[strlen(perf_str)];
-	  memcpy(q, vars->val.string, vars->val_len);
-	  
-          break;
-        case ASN_COUNTER:
-          syslog(LOG_DEBUG, "var_val: %d", vars->val.integer);
-          perf_str = (char *)malloc(sizeof(char) * 
-                                    (vars->name_length + 25));
-          sprintf(perf_str, "%s|%d", vars->name, vars->val.integer);
-	  break;
-        default:
-          syslog(LOG_DEBUG, "uncaught type: %d", vars->type);
+	val_buf = (char *)malloc(sizeof(char) * MAX_OID_LEN);
+	name_buf = (char *)malloc(sizeof(char) * MAX_OID_LEN);
+	snprint_objid(name_buf, MAX_OID_LEN, vars->name, vars->name_length);
+	snprint_value(val_buf, MAX_OID_LEN, vars->name, vars->name_length,
+		      vars);
+
+	perf_str = (char *)malloc(sizeof(char) * (strlen(val_buf) + 
+						  strlen(name_buf) + 1));
+
+	sprintf(perf_str, "%s|%s", name_buf, val_buf);
+
+	syslog(LOG_DEBUG, "var_name: %s var_value: %s", name_buf, val_buf);
+
+
+	if (r->perf_data == NULL) {
+	  r->perf_data = strdup(perf_str);
+	} else {
+	  if ((r->perf_data = realloc(r->perf_data, 
+				      (sizeof(char) * (strlen(perf_str) + 
+						       strlen(r->perf_data) + 1)))) != NULL) {
+	    syslog(LOG_DEBUG, "len: %d %s", strlen(r->perf_data),
+		   r->perf_data);
+	    sprintf(r->perf_data, "%s;%s", r->perf_data, perf_str);
+	  }
 	}
 
-	if (perf_str != NULL) {
-	  free(perf_str);
-	  perf_str = NULL;
-	}
+	free(perf_str);
+	free(val_buf);
+	free(name_buf);
       }
     } else {
       snmp_sess_error(ss, &snmp_err, &sys_err, &errstr);

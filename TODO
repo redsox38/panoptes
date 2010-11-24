@@ -7,6 +7,7 @@ email/sms notifications
 replace SOURCE... in db init with reading in statements and executing them
 replace raw SQL with stored procedures
 udp port monitor
+don't print var type to perf_str in monitor_snmp
 
 svc dependencies
 
