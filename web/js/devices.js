@@ -104,6 +104,9 @@ function createDeviceTree(){
     }
 }
 
+function xhrScheduleOurage(device_id) {
+}
+
 function xhrGroupAdd(attr_name, device_id) {
 
     grp = dijit.byId(attr_name).attr('value');
@@ -162,6 +165,59 @@ function deleteDevice() {
 	
         dojo.xhrGet(xhrArgs);
     }
+}
+
+function scheduleOutage() {
+    var id = deviceStore.getValues(deviceTreeSelectedItem, 'id').toString();
+    id = id.replace("d_", "");
+
+    start_date = new dijit.form.DateTextBox({
+            id: 'outage_start_date',
+            name: 'outage_start_date',
+            closable: true,
+            title: 'Start Date',
+            constraints: { datePattern:'MM/dd/yyyy'}
+        });
+
+    stop_date = new dijit.form.DateTextBox({
+            id: 'outage_stop_date',
+            name: 'outage_stop_date',
+            closable: true,
+            title: 'Stop Date',
+            constraints: { datePattern:'MM/dd/yyyy'}
+        });
+
+    rst = new dijit.form.Button({
+	    label: 'Cancel',
+	    id: 'schedule_outage_reset',
+	    onClick: function() {
+		dijit.byId("outage_start_date").destroy();
+		dijit.byId("outage_stop_date").destroy();
+		dijit.byId("schedule_outage_reset").destroy();
+		dijit.byId("schedule_outage_submit").destroy();
+		document.body.removeChild(document.getElementById("schedule_outage_win"));
+	    }
+	});
+
+    sub = new dijit.form.Button({
+	    label: 'Add',
+	    id: 'schedule_outage_submit',
+	    onClick: function() {
+		xhrScheduleOutage(id);
+		dijit.byId("outage_start_date").destroy();
+		dijit.byId("outage_stop_date").destroy();
+		dijit.byId("schedule_outage_reset").destroy();
+		dijit.byId("schedule_outage_submit").destroy();
+		document.body.removeChild(document.getElementById("schedule_outage_win"));
+	    }
+	});
+
+    var items = [ start_date.domNode, 
+		  stop_date.domNode,
+		  document.createElement("br"),
+		  rst.domNode, sub.domNode ];
+    
+    createOverlayWindow("schedule_outage_win", items);
 }
 
 function removeFromGroup() {

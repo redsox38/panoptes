@@ -4,13 +4,9 @@ web page output monitors - accept selenium output to generate script maybe ?
 fork new thread for performance monitor updates
 email/sms notifications
 replace SOURCE... in db init with reading in statements and executing them
-replace raw SQL with stored procedures
-udp port monitor
 
 svc dependencies
 schedule outages
-
-replace raw SQL with stored procedures
 
 add group authz
 remove device from group

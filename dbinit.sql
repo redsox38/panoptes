@@ -1,6 +1,7 @@
 /* drop everything */
 
 DROP TABLE IF EXISTS discovered;
+DROP TABLE IF EXISTS device_outages;
 DROP TABLE IF EXISTS device_group_membership;
 DROP TABLE IF EXISTS port_acknowledgments;
 DROP TABLE IF EXISTS ping_acknowledgments;
@@ -69,6 +70,20 @@ CREATE TABLE device_group_membership (
   KEY device_id (device_id),
   CONSTRAINT device_group_membership_ibfk_1 FOREIGN KEY (device_id) REFERENCES devices (id) ON DELETE CASCADE ON UPDATE CASCADE,
   CONSTRAINT device_group_membership_ibfk_2 FOREIGN KEY (group_id) REFERENCES device_groups (id) ON DELETE CASCADE ON UPDATE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+--
+-- Table structure for table device_outages
+--
+
+CREATE TABLE device_outages (
+  id bigint(20) NOT NULL AUTO_INCREMENT,
+  device_id bigint(20) NOT NULL,
+  start_date DATETIME,
+  stop_date DATETIME,
+  PRIMARY KEY(id),
+  KEY device_id (device_id),
+  CONSTRAINT device_outages_ibfk_1 FOREIGN KEY (device_id) REFERENCES devices (id) ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 --

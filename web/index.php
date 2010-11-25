@@ -120,6 +120,9 @@ if ($_SERVER["HTTP_X_REQUESTED_WITH"] == 'XMLHttpRequest') {
                     <div dojoType="dijit.MenuItem" onClick="removeFromGroup();">
                         Remove from Group
                     </div>
+                    <div dojoType="dijit.MenuItem" onClick="scheduleOutage();">
+                        Schedule Outage
+                    </div>
                     <div dojoType="dijit.MenuItem" iconClass="dijitIconDelete" onClick="deleteDevice();">
                        Delete Device 
                     </div>
