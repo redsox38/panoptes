@@ -1252,6 +1252,43 @@ class panoptes
     return(array('result' => 'success', 'data' => $data));
   }
 
+  /**
+   * schedule outage window for device
+   *
+   * @param args json params converted into an array
+   *             id contains device id
+   *             start_date start of outage 
+   *             start_time start time of outage
+   *             stop_date stop of outage
+   *             stop_time stop of outage
+   * @throws none
+   * @return array containing result and possible error messages
+   */
+  public function ajax_scheduleDeviceOutage($args) {
+    try {
+      $dev = $this->getDevice($args['id']);
+
+      $start = $args['start_date'];
+      $start = preg_replace('/(\d+)\/(\d+)\/(\d+)/', '\3-\1-\2', $start);
+      $start .= ' ' . $args['start_time'];
+
+      $stop = $args['stop_date'];
+      $stop = preg_replace('/(\d+)\/(\d+)\/(\d+)/', '\3-\1-\2', $stop);
+      $stop .= ' ' . $args['stop_time'];
+
+      if ($dev) {
+	$dev->scheduleOutage($start, $stop);
+      } else {
+	return(array('result' => 'failure',
+		     'error'  => 'Device does not exist'));
+      }
+    } catch (Exception $e) {
+      return(array('result' => 'failure',
+		   'error'  => $e->getMessage()));
+    }
+    
+    return(array('result' => 'success', 'data' => $data));
+  }
 }
 
 ?>

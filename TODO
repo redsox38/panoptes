@@ -6,8 +6,8 @@ email/sms notifications
 replace SOURCE... in db init with reading in statements and executing them
 
 svc dependencies
-schedule outages
 
+display scheduled outages in device view
 add group authz
 remove device from group
 update device tree when group membership changes

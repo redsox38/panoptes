@@ -234,18 +234,22 @@ CREATE TABLE snmp_acknowledgments (
 
 CREATE ALGORITHM=UNDEFINED SQL SECURITY INVOKER VIEW monitor_tasks
     AS (SELECT 'port_monitors' AS table_name, po.id AS id,
+        po.device_id AS device_id,
         po.last_check AS last_check, 
         po.next_check AS next_check FROM
         port_monitors po WHERE po.disabled=0) 
         UNION (SELECT 'ping_monitors' AS table_name, pi.id AS id, 
+        pi.device_id AS device_id,
         pi.last_check AS last_check, 
         pi.next_check AS next_check FROM ping_monitors pi
         WHERE pi.disabled=0) 
 	UNION(SELECT 'certificate_monitors' AS table_name, ce.id AS id,
+        ce.device_id AS device_id,
         ce.last_check AS last_check, 
         ce.next_check AS next_check FROM certificate_monitors ce
         WHERE ce.disabled=0)          	
 	UNION(SELECT 'snmp_monitors' AS table_name, sn.id AS id,
+        sn.device_id AS device_id,
         sn.last_check AS last_check, 
         sn.next_check AS next_check FROM snmp_monitors sn
         WHERE sn.disabled=0)          	
@@ -260,14 +264,41 @@ COMMENT 'Retrieves the next monitor entry'
 BEGIN
 
 DECLARE V_id BIGINT;
+DECLARE V_device_id BIGINT;
 DECLARE V_table_name VARCHAR(50);
 DECLARE V_dev_ip VARCHAR(15);
 
--- Get next task and type of task
-SELECT id, table_name INTO V_id, V_table_name 
-  FROM monitor_tasks 
-  WHERE next_check < DATE_ADD(NOW(), INTERVAL 1 MINUTE) 
-  LIMIT 1;
+SET V_device_id=0;
+SET @_ignore_ids = '';
+SET @_outage_id = 0;
+
+WHILE V_device_id = 0 DO
+    -- Get next task and type of task
+    SELECT id, device_id, table_name INTO V_id, V_device_id, V_table_name 
+      FROM monitor_tasks 
+      WHERE next_check < DATE_ADD(NOW(), INTERVAL 1 MINUTE) AND 
+            device_id NOT IN (@_ignore_ids)
+      LIMIT 1;
+
+    IF V_device_id > 0 THEN
+        -- see if this device is in maintenance mode
+        SELECT id INTO @_outage_id FROM device_outages WHERE device_id=V_device_id AND start_date < NOW() AND stop_date > NOW();
+        IF @_outage_id > 0 THEN
+            -- in maint mode, ignore this entry
+            if @_ignore_ids = '' THEN
+                SET @_ignore_ids = V_device_id;
+            ELSE 
+                SET @_ignore_ids = CONCAT(@_ignore_ids, ',', V_device_id);
+            END IF;
+            SET V_device_id = 0;
+            SET @_outage_id = 0;
+        END IF;
+    ELSE
+        -- nothing to check...
+        SET V_device_id = -1;
+        SET V_table_name = '';
+    END IF;
+END WHILE;
 
 IF (V_table_name='port_monitors') THEN
   -- if it is a port monitor type, look in port_monitors table

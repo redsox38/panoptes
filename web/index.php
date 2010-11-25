@@ -63,20 +63,21 @@ if ($_SERVER["HTTP_X_REQUESTED_WITH"] == 'XMLHttpRequest') {
         dojo.require("dojo.data.ItemFileReadStore");
         dojo.require("dojo.data.ItemFileWriteStore");
         dojo.require("dojo.dnd.Source");
+        dojo.require("dijit.layout.AccordionContainer");
         dojo.require("dijit.layout.BorderContainer");
-        dojo.require("dijit.layout.ContentPane");
         dojo.require("dijit.layout.AccordionPane");
         dojo.require("dijit.layout.TabContainer");
-        dojo.require("dijit.layout.AccordionContainer");
+        dojo.require("dijit.layout.ContentPane");
+        dojo.require("dijit.MenuItem");
         dojo.require("dijit.Tree");
         dojo.require("dijit.Menu");
-        dojo.require("dijit.MenuItem");
-        dojo.require("dijit.form.Button");
-        dojo.require("dijit.form.ComboBox");
         dojo.require("dijit.form.FilteringSelect");
-        dojo.require("dijit.form.DateTextBox");
-        dojo.require("dijit.form.TextBox");
         dojo.require("dijit.form.NumberSpinner");
+        dojo.require("dijit.form.DateTextBox");
+        dojo.require("dijit.form.TimeTextBox");
+        dojo.require("dijit.form.ComboBox");
+        dojo.require("dijit.form.TextBox");
+        dojo.require("dijit.form.Button");
     </script>
     <script type="text/javascript" src="js/utils.js"></script>
     <script type="text/javascript" src="js/discovery.js"></script>

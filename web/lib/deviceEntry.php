@@ -103,7 +103,7 @@ class deviceEntry
 			 $this->name . "', address='" .
 			 $this->srcaddr . "' WHERE id='" .
 			 $this->id . "'");
-      if ($res == false) {
+      if ($res === false) {
 	throw new Exception(mysql_error());
       }
     }
@@ -118,10 +118,29 @@ class deviceEntry
    */
   public function delete() {
     $res = mysql_query("DELETE FROM devices WHERE id='" . $this->id . "'");
-    if ($res == false) {
+    if ($res === false) {
       throw new Exception(mysql_error());
     }
   }
 
+
+  /**
+   * schedule outage window for device
+   *
+   * @param start date string 'yyyy/mm/dd hh:mm'
+   *        stop date string 'yyyy/mm/dd hh:mm'
+   * @throws Exception
+   * @return none
+   */
+  public function scheduleOutage($start, $stop) {
+    $qry = "INSERT INTO device_outages VALUES(0, '" .
+      $this->id . "','" .
+      $start . "','" .
+      $stop . "')";
+    $res = mysql_query($qry);
+    if ($res === false) {
+      throw new Exception($qry);
+    }
+  }
 }
 ?>
