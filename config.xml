@@ -5,6 +5,7 @@
     <lib database="/home/tmerritt/panoptes/database/.libs/libmysqldisc.so"/>
     <db name="panoptes" user="db_username" password="db_password" host="localhost" sqlinit="/home/tmerritt/panoptes/dbinit.sql"/>
     <rrd directory="/home/tmerritt/panoptes_rrds"/>
+    <script directory="/home/tmerritt/panoptes_scripts"/>
     <port_monitors_rrd datasource_type="GAUGE"/>
     <autodiscoveryform displayentries="10"/>
     <certificate warndays="10" criticaldays="5"/>

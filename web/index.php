@@ -108,6 +108,7 @@ if ($_SERVER["HTTP_X_REQUESTED_WITH"] == 'XMLHttpRequest') {
         <div id="left_nav" region="leading" dojoType="dijit.layout.AccordionContainer" style="width: 15%;" splitter="true">
             <div id="tools" title="Tools" dojoType="dijit.layout.AccordionPane">
 	        <a href="#" onClick="addPingable();">Add Pingable Device</a>
+	        <a href="#" onClick="uploadFile();">Upload Shell Script</a>
             </div>
             <div id="device_list" title="Device List" dojoType="dijit.layout.AccordionPane">
                 <div id="device_tree"></div>
