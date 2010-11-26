@@ -119,6 +119,9 @@ function addCertificateMonitorData(id, container) {
     var resp = dojo.xhrGet(xhrArgs);
 }
 
+function addShellMonitorData(id, container) {
+}
+
 function addSNMPMonitorData(id, container) {
     var xhrArgs = {
 	url: '/panoptes/',
@@ -449,6 +452,89 @@ function createSNMPTab(id) {
     return(tc_1);
 }
 
+function createShellTab(id) {
+    // create data  grid 
+    var shell_layout = [{
+	    field: 'script',
+	    name: 'Script',
+	    width: '70px'
+	},      
+	{
+	    field: 'params',
+	    name: 'Parameters',
+	    width: '150px'
+	},      
+	{            
+	    field: 'last_check', 
+	    name: 'Last Check',
+	    width: '150px'
+	},
+	{            
+	    field: 'next_check', 
+	    name: 'Next Check',
+	    width: '150px'
+	},
+	{            
+	    field: 'status', 
+	    name: 'Status',
+	    width: '80px'
+	},
+	{            
+	    field: 'status_string', 
+	    name: 'Monitor Output',
+	    width: 'auto'
+	},
+	];
+
+    shell_data = {
+	label: "shellmon",
+	identifier: "id",
+	items: []
+    };
+
+    ShellMonitorStore = new dojo.data.ItemFileWriteStore({ 
+	    data: shell_data 
+	});		
+
+    var tc_1 = new dojox.grid.EnhancedGrid({
+	    id: id + '_shell_mon_grid',
+	    title: 'Shell Script Monitors',
+	    store: ShellMonitorStore,
+	    structure: shell_layout,
+	    clientSort: true,
+	    rowSelector: '10px',
+	    selectionMode: 'multiple',
+	    plugins: {
+		nestedSorting: true,
+		menus: { 
+		    rowMenu: 'monitorMenu',
+		    headerMenu: 'monitorMenu',
+		}
+	    }
+	}, document.createElement('div'));                  
+    tc_1.startup();                
+    
+    // set color coding for grid rows based on monitor status
+    dojo.connect(tc_1, 'onStyleRow', function(row) {
+	    var item = tc_1.getItem(row.index);
+	    if (item) {
+		var status = tc_1.store.getValue(item, "status", null);
+
+		if (status == "critical") {
+		    row.customStyles += 'color: #a62434;';
+		} else if (status == "warn") {
+		    row.customStyles += 'color: #b3511d;';
+		}
+		
+	    }
+	});
+
+    // load data for tab
+    addShellMonitorData(id, tc_1);
+    
+    return(tc_1);
+}
+
 function createCertificateTab(id) {
     // create data  grid 
     var certificate_layout = [{
@@ -573,6 +659,7 @@ function openDevice() {
     tc_2 = createPerformanceHistoryTab(id);
     tc_3 = createCertificateTab(id);
     tc_4 = createSNMPTab(id);
+    tc_5 = createShellTab(id);
 
     // put all of the components together in border container
     // and append to parent tab
@@ -580,6 +667,7 @@ function openDevice() {
     tc.addChild(tc_2);
     tc.addChild(tc_3);
     tc.addChild(tc_4);
+    tc.addChild(tc_5);
     bc.addChild(ic);
     bc.addChild(hc);
     bc.addChild(tc);
@@ -601,6 +689,9 @@ function addMonitor() {
     } else if (dijit.byId(id + '_snmp_mon_grid').selected) {
 	_addMonitor(dijit.byId(id + '_snmp_mon_grid'), 'snmp_monitors', 
 		    id);
+    } else if (dijit.byId(id + '_shell_mon_grid').selected) {
+	_addMonitor(dijit.byId(id + '_shell_mon_grid'), 'shell_monitors', 
+		    id);
     }
 }
 
@@ -617,6 +708,9 @@ function ackMonitor() {
     } else if (dijit.byId(id + '_snmp_mon_grid').selected) {
 	_ackMonitor(dijit.byId(id + '_snmp_mon_grid'), id, 
 		    'snmp_monitors');
+    } else if (dijit.byId(id + '_shell_mon_grid').selected) {
+	_ackMonitor(dijit.byId(id + '_shell_mon_grid'), id, 
+		    'shell_monitors');
     }
 }
 
@@ -631,6 +725,8 @@ function disableMonitor() {
 	_disableMonitor(dijit.byId(id + '_cert_mon_grid'), 'certificate_monitors', 'disable');
     } else if (dijit.byId(id + '_snmp_mon_grid').selected) {
 	_disableMonitor(dijit.byId(id + '_snmp_mon_grid'), 'snmp_monitors', 'disable');
+    } else if (dijit.byId(id + '_shell_mon_grid').selected) {
+	_disableMonitor(dijit.byId(id + '_shel_mon_grid'), 'shell_monitors', 'disable');
     }
 }
 
@@ -645,6 +741,8 @@ function enableMonitor() {
 	_disableMonitor(dijit.byId(id + '_cert_mon_grid'), 'certificate_monitors', 'enable');
     } else if (dijit.byId(id + '_snmp_mon_grid').selected) {
 	_disableMonitor(dijit.byId(id + '_snmp_mon_grid'), 'snmp_monitors', 'enable');
+    } else if (dijit.byId(id + '_shell_mon_grid').selected) {
+	_disableMonitor(dijit.byId(id + '_shell_mon_grid'), 'shell_monitors', 'enable');
     }
 }
 
@@ -659,6 +757,8 @@ function deleteMonitor() {
 	_deleteMonitor(dijit.byId(id + '_cert_mon_grid'), 'certificate_monitors');
     } else if (dijit.byId(id + '_snmp_mon_grid').selected) {
 	_deleteMonitor(dijit.byId(id + '_snmp_mon_grid'), 'snmp_monitors');
+    } else if (dijit.byId(id + '_shell_mon_grid').selected) {
+	_deleteMonitor(dijit.byId(id + '_shell_mon_grid'), 'shell_monitors');
     }
 }
 
@@ -774,6 +874,92 @@ function _addMonitor(dataGrid, type, id) {
 
         items = [ tb1_label, tb1.domNode, tb2_label, tb2.domNode,
 		  document.createElement("br"), rst.domNode, sub.domNode ];
+    } else if (type == "shell_monitors") {
+	sb1_label = document.createElement("label");
+	sb1_label.htmlFor = 'add_monitor_script';
+	sb1_label.appendChild(document.createTextNode('Script '));
+
+	sb1 = new dijit.form.FilteringSelect({
+		id: 'add_monitor_script',
+		store: availableShellMonitorStore,
+		title: 'Monitor',	    
+		searchAttr: 'script',
+		onChange: function(val) {
+		    sb = dijit.byId('add_monitor_script');
+
+		    document.getElementById('add_monitor_param_div_label').style.display='none';
+		    // remove existing parameter list if any
+		    // and add appropriate ones for this script
+		    pr = dijit.byId('add_monitor_script_param');
+		    if (pr) {
+			pr.destroy();
+		    }
+		   
+		    // get item from store
+		    var handleGet = function(item) {
+			param = availableShellMonitorStore.getValue(item, 'param');
+			if (param) {
+			    // create param input
+			    tb = new dijit.form.TextBox({
+				    id: 'add_monitor_script_param',
+				    name: 'add_monitor_script_param',
+				    style: 'width: 25em;',
+				    placeHolder: param
+				});
+			    
+			    document.getElementById('add_monitor_param_div_label').style.display='block';
+			    tb.placeAt(document.getElementById('add_monitor_param_div'));
+			}
+		    };
+
+		    availableShellMonitorStore.fetchItemByIdentity({
+			    identity: val,
+			    onItem: handleGet
+			});
+		}
+	    });
+
+	param_label = document.createElement("label");
+	param_label.id = 'add_monitor_param_div_label';
+	param_label.htmlFor = 'add_monitor_param_div';
+	param_label.style.display = 'none';
+	param_label.appendChild(document.createTextNode('Parameter '));
+
+	param_div = document.createElement("div");
+	param_div.id = 'add_monitor_param_div';
+
+	sub = new dijit.form.Button({
+		label: 'Add',
+		id: 'add_monitor_submit',
+		onClick: function() {
+		    var params = { 
+			type: 'shell_monitors',
+			script: dijit.byId('add_monitor_script').getValue() 
+		    };
+		    xhrAddMonitor(dataGrid, id, params);
+		    dijit.byId("add_monitor_script").destroy();
+		    dijit.byId("add_monitor_reset").destroy();
+		    dijit.byId("add_monitor_submit").destroy();
+		    document.body.removeChild(document.getElementById("add_monitor"));
+	    }
+	});
+    
+	rst = new dijit.form.Button({
+		label: 'Cancel',
+		id: 'add_monitor_reset',
+		onClick: function() {
+		    dijit.byId("add_monitor_script").destroy();
+		    dijit.byId("add_monitor_reset").destroy();
+		    dijit.byId("add_monitor_submit").destroy();
+		    document.body.removeChild(document.getElementById("add_monitor"));
+		}
+	    });
+
+        items = [ sb1_label, sb1.domNode,
+		  document.createElement("br"), 
+		  param_label, param_div,
+		  document.createElement("br"), 
+		  rst.domNode, sub.domNode ];
     } else if (type == "snmp_monitors") {
 	tb1_label = document.createElement("label");
 	tb1_label.htmlFor = 'add_monitor_community';

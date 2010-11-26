@@ -79,6 +79,7 @@ if ($_SERVER["HTTP_X_REQUESTED_WITH"] == 'XMLHttpRequest') {
         dojo.require("dijit.form.TextBox");
         dojo.require("dijit.form.Button");
     </script>
+    <script type="text/javascript" src="js/preload.js"></script>
     <script type="text/javascript" src="js/utils.js"></script>
     <script type="text/javascript" src="js/discovery.js"></script>
     <script type="text/javascript" src="js/devices.js"></script>

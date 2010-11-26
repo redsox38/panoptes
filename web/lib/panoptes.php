@@ -1324,10 +1324,11 @@ class panoptes
 	    if ($fh === false) {
 	      $result = 'failure';
 	      $error = 'fopen: ' . $php_errormsg;
+	    } else {
+	      fwrite($fh, $contents);
+	      fclose($fh);
+	      chmod($file_path, 0755);
 	    }
-	    fwrite($fh, $contents);
-	    fclose($fh);
-	    chmod($file_path, 0755);
 	  } else {
 	    $result = 'failure';
 	    $error = 'script with that name already exists';
@@ -1339,6 +1340,76 @@ class panoptes
       } else {
 	$result = 'failure';
 	$error  = 'Unsupported upload type: ' . $args['type'];
+      }
+    } catch (Exception $e) {
+      return(array('result' => 'failure',
+		   'error'  => $e->getMessage()));
+    }
+    
+    return(array('result' => $result, 'error' => $error, 
+		 'data' => $data));
+  }
+
+  /**
+   * list shell monitors
+   *
+   * @param args json params converted into an array
+   *             id optional device id to get monitors for, if 
+                    omitted, returns all available monitors
+   * @throws none
+   * @return array containing result and possible error messages
+   */
+  public function ajax_getShellMonitors($args) {
+    global $php_errormsg;
+
+    $result = 'success';
+    $error = '';
+    $data = array();
+
+    try {     
+      ini_set('track_errors', true);
+
+      if ($args['id']) {
+      } else {
+	$count = 0;
+	$script_root = $this->config()->getConfigValue('script.directory'); 
+
+	if ($script_root) {
+	  $dh = @opendir($script_root);
+	  if ($dh !== false) {
+	    while(($fname = readdir($dh)) !== false) {
+	      if ($fname != '.' && $fname != '..') {
+		// read script up until first non comment
+		// non blank line and look for required/optional parameters
+		$params = '';
+		$fh = fopen($script_root . '/' . $fname, "r");
+		while(($ln = fgets($fh)) !== false) {
+		  if (preg_match('/^#param:\s*(.*)/', 
+				 $ln, $matches)) {
+		    $params = $matches[1];
+		    break;
+		  } else if (preg_match('/^[#\s].*/', $ln)) {
+		    continue;
+		  } else {
+		    break;
+		  }
+		}
+		fclose($fh);
+
+		array_push($data, array('id' => $count++,
+					'script' => $fname,
+					'param' => $params));
+	      }
+	    }
+	    closedir($dh);
+	  } else {
+	    $result = 'failure';
+	    $error = 'opendir: ' . $php_errormsg;
+	  }
+	} else {
+	  $result = 'failure';
+	  $error = 'No script upload directory defined';	  
+	}
       }
     } catch (Exception $e) {
       return(array('result' => 'failure',
