@@ -1289,6 +1289,66 @@ class panoptes
     
     return(array('result' => 'success', 'data' => $data));
   }
+
+  /**
+   * utility method for accepting file uplaods
+   *
+   * @param args json params converted into an array
+   *             type type of file being uploaded
+   *             contents base64 encoded file contents
+   * @throws none
+   * @return array containing result and possible error messages
+   */
+  public function ajax_uploadFile($args) {
+    global $php_errormsg;
+
+    $result = 'success';
+    $error = '';
+    $data = '';
+
+    try {     
+      ini_set('track_errors', true);
+
+      if ($args['type'] == 'script') {
+	// make sure we accept script uploads
+	$script_root = $this->config()->getConfigValue('script.directory'); 
+
+	if ($script_root) {
+	  // decode file contents
+	  $contents = base64_decode($args['contents']);
+	  $file_path = $script_root . '/' . $args['name'];
+
+	  // make sure it doesn't exist already
+	  if (!file_exists($file_path)) {
+	    $fh = @fopen($file_path, 'w');
+	    if ($fh === false) {
+	      $result = 'failure';
+	      $error = 'fopen: ' . $php_errormsg;
+	    }
+	    fwrite($fh, $contents);
+	    fclose($fh);
+	    chmod($file_path, 0755);
+	  } else {
+	    $result = 'failure';
+	    $error = 'script with that name already exists';
+	  }
+	} else {
+	  $result = 'failure';
+	  $error = 'No script upload directory defined';
+	}
+      } else {
+	$result = 'failure';
+	$error  = 'Unsupported upload type: ' . $args['type'];
+      }
+    } catch (Exception $e) {
+      return(array('result' => 'failure',
+		   'error'  => $e->getMessage()));
+    }
+    
+    return(array('result' => $result, 'error' => $error, 
+		 'data' => $data));
+  }
+
 }
 
 ?>

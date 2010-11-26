@@ -6,7 +6,7 @@ function xhrAddPingable(ip_address) {
 	content: {
 	    action: 'addPingMonitor',
 	    data: '{ "address": "' + ip_address + '" }'
-	    },
+	},
 	load: function(data) {
 	    if (data && !data.error) {
 		// refresh device tree
@@ -23,6 +23,25 @@ function xhrAddPingable(ip_address) {
 }
 
 function xhrUploadFile(type, file) {
+    file_contents = Base64.encode(file.getAsText(""));
+
+    var xhrArgs = {
+	url: '/panoptes/',
+	handleAs: 'json',
+	content: {
+	    action: 'uploadFile',
+	    data: '{ "type": "' + type + '", "name": "' +
+	             file.fileName + '", "contents": "' +
+	             file_contents + '" }'
+	},
+	load: function(data) {
+	    if (data && data.error) {
+		alert(data.error);
+	    }
+	},
+    };
+	
+    dojo.xhrGet(xhrArgs);    
 }
 
 function uploadFile() {
