@@ -137,7 +137,6 @@ int main(int argc, char *argv[]) {
   sigaddset(&sigmask, SIGBUS);
   pthread_sigmask(SIG_BLOCK, &sigmask, NULL);
 
-
   /* start termination signal handler thread */
   if ((rc = pthread_create(&shutdown_thr, NULL, 
 			   shutdown_thread, (void *)NULL)) != 0)  {

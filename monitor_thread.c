@@ -45,6 +45,8 @@ void *monitor_thread(void *arg)
   char             *url;
   /* for snmp monitoring */
   char             *nm, *oid, *comm;
+  /* for shell script monitoring */
+  char             *script, *params;
 
   /* block termination/interrupt signals */
   sigemptyset(&sigmask);
@@ -163,6 +165,26 @@ void *monitor_thread(void *arg)
 	    syslog(LOG_NOTICE, "Missing data required to monitor: %s %s", 
 		   m.table_name, m.id);
 	  }
+	} else if (!strcmp(m.table_name, "shell_monitors")) {
+	  addr = get_attr_val(&m, "address");
+	  script = get_attr_val(&m, "script");
+	  params = get_attr_val(&m, "params");
+	  if (script != NULL) {
+	    monitor_shell(addr, script, params, &r);
+	    update_monitor_entry(&m, &r);
+
+	    if (r.perf_data != NULL) {
+	      snprintf(perf_attr, 256, script);
+	      update_performance_data(addr, perf_attr, &m, &r);
+	    }
+	    
+	    free_monitor_result(&r, 0);
+	  } else {
+	    syslog(LOG_NOTICE, "Missing data required to monitor: %s %s", 
+		   m.table_name, m.id);
+	  }
+	} else {
+	  syslog(LOG_ALERT, "Unknown monitor type: %s", m.table_name);
 	}
       } else {
 	syslog(LOG_ALERT, "Unable to allocate result");

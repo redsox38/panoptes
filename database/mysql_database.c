@@ -38,6 +38,25 @@
 pthread_mutex_t sql_mutex = PTHREAD_MUTEX_INITIALIZER;
 MYSQL *mysql = NULL;
 
+/* 
+   register atfork handler to close database connections in
+   forked processes 
+*/
+#ifdef GNUC
+__init__(_database_onload);
+#endif
+
+void _database_child_fork_cleanup(void) 
+{
+  if (mysql)
+    mysql_close(mysql);  
+}
+
+void _database_onload(void)
+{
+  pthread_atfork(NULL, NULL, _database_child_fork_cleanup);
+}
+
 /* function called by discover on termination */
 void _term_handler()
 {

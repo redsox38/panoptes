@@ -1,5 +1,4 @@
 fix linking against self warnings in build
-shell script monitors
 web page output monitors 
 fork new thread for performance monitor updates
 email/sms notifications
