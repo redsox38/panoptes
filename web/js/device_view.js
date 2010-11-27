@@ -932,11 +932,22 @@ function _addMonitor(dataGrid, type, id) {
 		label: 'Add',
 		id: 'add_monitor_submit',
 		onClick: function() {
+		    prms = dijit.byId('add_monitor_script_param');
+		    if (prms) {
+			scr_parms = prms.getValue(); 
+		    } else {
+			scr_parms = '';
+		    }
+		    
 		    var params = { 
 			type: 'shell_monitors',
-			script: dijit.byId('add_monitor_script').getValue() 
+			script: dijit.byId('add_monitor_script').get('displayedValue'),
+			params: scr_parms 
 		    };
 		    xhrAddMonitor(dataGrid, id, params);
+		    if (prms) {
+			prms.destroy();
+		    }
 		    dijit.byId("add_monitor_script").destroy();
 		    dijit.byId("add_monitor_reset").destroy();
 		    dijit.byId("add_monitor_submit").destroy();
@@ -948,6 +959,10 @@ function _addMonitor(dataGrid, type, id) {
 		label: 'Cancel',
 		id: 'add_monitor_reset',
 		onClick: function() {
+		    prms = dijit.byId('add_monitor_script_param');
+		    if (prms) {
+			prms.destroy();
+		    }
 		    dijit.byId("add_monitor_script").destroy();
 		    dijit.byId("add_monitor_reset").destroy();
 		    dijit.byId("add_monitor_submit").destroy();

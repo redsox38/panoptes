@@ -1163,6 +1163,24 @@ class panoptes
 				 'status'        => 'new',
 				 'status_string' => ''
 				 ));
+      } else if ($args['params']['type'] == 'shell_monitors') {
+	require_once 'shellMonitorEntry.php';
+	$ent = new shellMonitorEntry($this->db);
+	$ent->device_id = $args['id'];
+	$ent->script = $args['params']['script'];
+	$ent->params = $args['params']['params'];
+	$ent->commit();
+
+	array_push($data, array (
+				 'id'            => $ent->id,
+				 'device_id'     => $ent->device_id,
+				 'script'        => $ent->script,
+				 'params'        => $ent->params,
+				 'last_check'    => '0000-00-00 00:00:00',
+				 'next_check'    => '0000-00-00 00:00:00',
+				 'status'        => 'new',
+				 'status_string' => ''
+				 ));
       } else {
 	return(array('result' => 'failure',
 		     'error'  => 'unknown type: ' . $args['params']['type']));	

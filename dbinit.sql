@@ -6,11 +6,13 @@ DROP TABLE IF EXISTS device_group_membership;
 DROP TABLE IF EXISTS port_acknowledgments;
 DROP TABLE IF EXISTS ping_acknowledgments;
 DROP TABLE IF EXISTS snmp_acknowledgments;
+DROP TABLE IF EXISTS shell_acknowledgments;
 DROP TABLE IF EXISTS certificate_acknowledgments;
 DROP TABLE IF EXISTS port_monitors;
 DROP TABLE IF EXISTS ping_monitors;
 DROP TABLE IF EXISTS certificate_monitors;
 DROP TABLE IF EXISTS snmp_monitors;
+DROP TABLE IF EXISTS shell_monitors;
 DROP TABLE IF EXISTS device_groups;
 DROP TABLE IF EXISTS devices;
 DROP VIEW monitor_tasks;
@@ -79,8 +81,8 @@ CREATE TABLE device_group_membership (
 CREATE TABLE device_outages (
   id bigint(20) NOT NULL AUTO_INCREMENT,
   device_id bigint(20) NOT NULL,
-  start_date DATETIME,
-  stop_date DATETIME,
+  start_date datetime,
+  stop_date datetime,
   PRIMARY KEY(id),
   KEY device_id (device_id),
   CONSTRAINT device_outages_ibfk_1 FOREIGN KEY (device_id) REFERENCES devices (id) ON DELETE CASCADE ON UPDATE CASCADE
@@ -175,6 +177,29 @@ CREATE TABLE snmp_monitors (
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 --
+-- Table structure for table shell_monitors
+--
+
+CREATE TABLE shell_monitors (
+  id bigint(20) NOT NULL AUTO_INCREMENT,
+  device_id bigint(20) NOT NULL,
+  script varchar(255) NOT NULL,
+  params varchar(255) NOT NULL,
+  check_interval smallint(6) NOT NULL DEFAULT '15',
+  last_check datetime DEFAULT NULL,
+  next_check datetime DEFAULT NULL,
+  status enum('new', 'ok','pending','warn','critical') DEFAULT NULL,
+  status_string varchar(255) DEFAULT NULL,
+  disabled smallint(5) unsigned NOT NULL DEFAULT 0,
+  PRIMARY KEY (id),
+  KEY device_id (device_id),
+  KEY script (script),
+  UNIQUE KEY scr_pr (device_id, script),
+  KEY disabled (disabled),
+  CONSTRAINT shell_monitors_ibfk_1 FOREIGN KEY (device_id) REFERENCES devices (id) ON DELETE CASCADE ON UPDATE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+--
 -- Table structure for table port_acknowlegments
 --
 
@@ -230,6 +255,20 @@ CREATE TABLE snmp_acknowledgments (
   CONSTRAINT snmp_acknowledgments_ibfk_1 FOREIGN KEY (monitor_id) REFERENCES snmp_monitors (id) ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
+--
+-- Table structure for table shell_acknowlegments
+--
+
+CREATE TABLE shell_acknowledgments (
+  id bigint(20) NOT NULL AUTO_INCREMENT,
+  monitor_id bigint(20) NOT NULL,
+  ack_user varchar(64) DEFAULT NULL,
+  ack_time datetime DEFAULT NULL,
+  ack_msg varchar(255) DEFAULT NULL,
+  PRIMARY KEY (id),
+  CONSTRAINT shell_acknowledgments_ibfk_1 FOREIGN KEY (monitor_id) REFERENCES shell_monitors (id) ON DELETE CASCADE ON UPDATE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
 /* views */
 
 CREATE ALGORITHM=UNDEFINED SQL SECURITY INVOKER VIEW monitor_tasks
@@ -253,6 +292,11 @@ CREATE ALGORITHM=UNDEFINED SQL SECURITY INVOKER VIEW monitor_tasks
         sn.last_check AS last_check, 
         sn.next_check AS next_check FROM snmp_monitors sn
         WHERE sn.disabled=0)          	
+	UNION(SELECT 'shell_monitors' AS table_name, sh.id AS id,
+        sh.device_id AS device_id,
+        sh.last_check AS last_check, 
+        sh.next_check AS next_check FROM shell_monitors sh
+        WHERE sh.disabled=0)          	
         ORDER BY next_check;
 
 /* stored procedures */
@@ -414,6 +458,37 @@ ELSEIF (V_table_name='snmp_monitors') THEN
          V_dev_ip AS address,
 	 @_name AS name, @_comm AS community, 
          @_oid AS oid, @_status AS status;
+ELSEIF (V_table_name='shell_monitors') THEN
+  -- get row with lock to prevent another monitor
+  -- thread from picking up the same row
+  SET @s = CONCAT('SELECT device_id, check_interval, script, params, status INTO @_dev_id, @_interval, @_script, @_params, @_status FROM ', V_table_name, ' WHERE id=', V_id, ' FOR UPDATE');
+
+  SET autocommit=0;
+  START TRANSACTION;
+
+  PREPARE stmt FROM @s;
+  EXECUTE stmt;
+
+  -- set update last_check and next_check
+  SET @s = CONCAT('UPDATE shell_monitors SET last_check=NOW(), ',
+                  'next_check=DATE_ADD(NOW(), INTERVAL ', @_interval,
+                  ' MINUTE), status="pending" WHERE id=', V_id);
+
+  PREPARE stmt FROM @s;
+  EXECUTE stmt;
+
+  COMMIT;
+  SET autocommit=1;
+
+  -- get ip address of device id
+  SELECT address INTO V_dev_ip FROM devices WHERE id=@_dev_id;
+
+  SELECT V_id AS id, @_dev_id AS device_id, 
+  	 'shell_monitors' AS table_name,  
+         V_dev_ip AS address,
+	 @_script AS script, 
+	 @_params AS params, 
+         @_status AS status;
 END IF;
 
 END;
@@ -431,21 +506,12 @@ COMMENT 'Updates monitor entry with monitoring results'
 BEGIN
 
 -- update approprate table
-IF (in_table='port_monitors') THEN
-  UPDATE port_monitors SET status=in_status, status_string=in_status_string
-      WHERE id=in_id;
-ELSEIF (in_table='ping_monitors') THEN
-  UPDATE ping_monitors SET status=in_status, status_string=in_status_string
-      WHERE id=in_id;
-ELSEIF (in_table='certificate_monitors') THEN
-  UPDATE certificate_monitors SET status=in_status, 
-  	 status_string=in_status_string
-      WHERE id=in_id;
-ELSEIF (in_table='snmp_monitors') THEN
-  UPDATE snmp_monitors SET status=in_status, 
-  	 status_string=in_status_string
-      WHERE id=in_id;
-END IF;
+SET @s = CONCAT('UPDATE ', in_table, ' SET status="', in_status,
+                '",status_string="',
+		in_status_string, '" WHERE id=', in_id);
+
+PREPARE stmt FROM @s;
+EXECUTE stmt;
 
 END;
 //
