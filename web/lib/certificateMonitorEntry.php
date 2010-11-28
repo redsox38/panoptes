@@ -139,8 +139,11 @@ class certificateMonitorEntry extends hostEntry
    * @return none
    */
   public function ack($msg) {
+    global $panoptes_curent_user;
+
     $res = mysql_query("INSERT into certificate_acknowledgments VALUES(0, " .
-		       $this->id . ",'webuser',NOW(),'" . 
+		       $this->id . ",'" . $panoptes_current_user . 
+		       "',NOW(),'" . 
 		       mysql_real_escape_string($msg) . "')");
     if ($res == false) {
       throw new Exception(mysql_error());

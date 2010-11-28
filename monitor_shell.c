@@ -41,7 +41,8 @@ monitor_result_t *monitor_shell(char *addr, char *script,
   int            rc, exit_status, done = 0, pipe_fd[2];
   fd_set         rd_set;
   int            i, nfds = 0, logged = 0;
-  struct timeval to;
+  struct timeval to, start, stop;
+  double         elapsed;
   char           *envp[3];
 
   r->status = MONITOR_RESULT_OK;
@@ -108,6 +109,8 @@ monitor_result_t *monitor_shell(char *addr, char *script,
       syslog(LOG_ALERT, "No script user defined running as root.  It's your funeral...");
     }
   } else {
+    gettimeofday(&start, NULL);
+
     while(!done) {
       /* read from pipe */
       FD_ZERO(&rd_set);
@@ -158,12 +161,25 @@ monitor_result_t *monitor_shell(char *addr, char *script,
 	}
       }     
     }
+    gettimeofday(&stop, NULL);
 
     /* update monitor message */
     if (output) {
       r->monitor_msg = strdup(output);
     }
 
+    /* if script didn't provide timing data, save execution time */
+    if (r->perf_data == NULL) {
+      /* get elapsed time in milliseconds */
+      elapsed = (stop.tv_sec - start.tv_sec) * 1000;
+      elapsed += (stop.tv_usec - start.tv_usec) / 1000;
+
+      /* space for string and a 10 digit number */
+      len = strlen("elapsed time|") + 10;
+      r->perf_data = (char *)malloc(len * sizeof(char));
+      snprintf(r->perf_data, len, "elapsed time|%.4f", 
+	       elapsed);
+    }
   }
 
   free(scrbuf);

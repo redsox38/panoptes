@@ -21,6 +21,13 @@
 require_once 'lib/panoptes.php';
 require_once 'lib/autoDiscoveryEntry.php';
 
+// set current user global
+if (isset($_SERVER['PHP_AUTH_USER'])) {
+  $panoptes_current_user = $_SERVER['PHP_AUTH_USER'];
+} else {
+  $panoptes_current_user = 'webuser';
+}
+
 // load monitor object
 $panoptes = new panoptes();
 

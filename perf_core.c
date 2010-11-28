@@ -121,6 +121,24 @@ void panoptes_rrd_xml_create(char *path,
 	q = strtok_r(NULL, ",", &tkn);
 	i++;
       }
+    } else if (!strcmp(m->table_name, "shell_monitors")) {
+      if(r->perf_title) {
+	fprintf(fh, "\t<title>%s</title>\n", r->perf_title);
+      } else {
+	fprintf(fh, "\t<title>%s Time</title>\n", get_attr_val(m, "script"));
+      }
+      fprintf(fh, "\t<vertical_label>Seconds</vertical_label>\n");
+      fprintf(fh,"\t<attribute>\n");
+      fprintf(fh, "\t\t<name>ds0</name>\n");
+      fprintf(fh, "\t\t<display_as>ExecutionTime</display_as>\n");
+      fprintf(fh, "\t\t<units>Seconds</units>\n");
+      fprintf(fh, "\t\t<color>#00ffff</color>\n");
+      fprintf(fh, "\t\t<type>LINE1</type>\n");
+      fprintf(fh, "\t\t<legend>AVERAGE:Average execution time\\: %%lf %%Ssecs</legend>\n");
+      fprintf(fh, "\t</attribute>\n");
+    } else {
+      syslog(LOG_NOTICE, "error creating rrd xml: unknown type %s", 
+	     m->table_name);
     }
     fprintf(fh, "</config>\n");
   } else {

@@ -16,6 +16,7 @@ typedef struct monitor_entry monitor_entry_t;
 
 struct monitor_result {
   unsigned short status;
+  char           *perf_title;
   char           *perf_data;
   char           *monitor_msg;
 };

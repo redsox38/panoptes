@@ -49,10 +49,12 @@ monitor_result_t *allocate_monitor_result(monitor_result_t *m)
 
   if (m == NULL) {
     r = (monitor_result_t *)malloc(sizeof(monitor_result_t));
+    r->pref_title = NULL;
     r->perf_data = NULL;
     r->monitor_msg = NULL;
     return(r);
   } else {
+    r->pref_title = NULL;
     m->perf_data = NULL;
     m->monitor_msg = NULL;    
     return(m);
@@ -112,6 +114,9 @@ void free_monitor_entry(monitor_entry_t *m, int free_struct)
 
 void free_monitor_result(monitor_result_t *r, int free_struct)
 {
+
+  if (r->perf_title != NULL)
+    free(r->perf_title);
 
   if (r->perf_data != NULL)
     free(r->perf_data);

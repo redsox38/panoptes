@@ -444,7 +444,6 @@ class panoptes
 	$ent->oid_string = implode("\n", $ent->oid_array);
 	$ent->last_check = $r['last_check'];
 	$ent->next_check = $r['next_check'];
-	$ent->proto = $r['proto'];
 	$ent->status = $r['status'];
 	$ent->status_string = $r['status_string'];
 	$ent->disabled = $r['disabled'];
@@ -1387,7 +1386,7 @@ class panoptes
     try {     
       ini_set('track_errors', true);
 
-      if ($args['id']) {
+      if (array_key_exists('id', $args)) {
       } else {
 	$count = 0;
 	$script_root = $this->config()->getConfigValue('script.directory'); 

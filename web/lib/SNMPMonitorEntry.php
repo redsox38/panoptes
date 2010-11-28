@@ -142,8 +142,11 @@ class SNMPMonitorEntry extends hostEntry
    * @return none
    */
   public function ack($msg) {
+    global $panoptes_current_user;
+
     $res = mysql_query("INSERT into snmp_acknowledgments VALUES(0, " .
-		       $this->id . ",'webuser',NOW(),'" . 
+		       $this->id . ",'" . $panoptes_current_user . 
+		       "',NOW(),'" . 
 		       mysql_real_escape_string($msg) . "')");
     if ($res == false) {
       throw new Exception(mysql_error());
