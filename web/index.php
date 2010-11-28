@@ -171,8 +171,7 @@ if ($_SERVER["HTTP_X_REQUESTED_WITH"] == 'XMLHttpRequest') {
             </div>
 <?php
 	  if ($panoptes->isAdmin($panoptes_current_user)) {
-            echo '           <div id="user_mgmt_tab" title="Manage Users" dojoType="dijit.layout.ContentPane" onClick="loadUserData();" style="height: 100%; width: 100%;">' . "\n";
-	    echo 'User Data' . "\n";
+            echo '           <div id="user_mgmt_tab" title="Manage Users" dojoType="dijit.layout.ContentPane" onShow="buildUserForm();" style="height: 100%; width: 100%;">' . "\n";
 	    echo '           </div>' . "\n";
 	  }
 ?>

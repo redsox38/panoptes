@@ -253,6 +253,37 @@ class panoptes
   }
 
   /**
+   * Retrieve all users
+   *
+   * @param none
+   * @throws Exception 
+   * @return array of user objects
+   */
+  public function getAllUsers() {
+    require_once 'userEntry.php';
+
+    $rtn = array();
+
+    $res = mysql_query("SELECT * FROM users", $this->db);
+
+    if ($res !== false) {
+      while ($r = mysql_fetch_assoc($res)) {
+	$e = new userEntry($this->db);
+	$e->id = $r['id'];
+	$e->name = $r['name'];
+	$e->created_by = $r['created_by'];
+	$e->modified = $r['modified'];
+	array_push($rtn, $e);
+      }
+      mysql_free_result($res);
+    } else {
+      throw new Exception(mysql_error());
+    }
+    
+    return($rtn);
+  }
+
+  /**
    * Retrieve autoDiscoveryEntry
    *
    * @param id id of specific autoDiscoveryEntry to retrieve
@@ -1489,6 +1520,77 @@ class panoptes
 		 'data' => $data));
   }
 
+  /**
+   * get individual or all users
+   *
+   * @param args json params converted into an array
+   *                  id id of the user to get info for
+   *                  if not provided, list all users
+   * @throws none
+   * @return array containing result and possible error messages
+   */
+  public function ajax_getUser($args) {
+    $result = 'success';
+    $error = '';
+    $data = array();
+
+    try {
+      if (array_key_exists('id', $args)) {
+      } else {
+	$r = $this->getAllUsers();
+	foreach ($r as $usr) {
+	  array_push($data, array(
+				  'id'         => $usr->id,
+				  'name'       => $usr->name,
+				  'created_by' => $usr->created_by,
+				  'modified'   => $usr->modified,
+				  ));
+	}
+      }
+    } catch (Exception $e) {
+      return(array('result' => 'failure',
+		   'error'  => $e->getMessage()));
+    }
+    
+    return(array('result' => $result, 'error' => $error, 
+		 'data' => $data));
+  }
+
+  /**
+   * get individual or all users
+   *
+   * @param args json params converted into an array
+   *                  name name of user to add
+   * @throws none
+   * @return array containing result and possible error messages
+   */
+  public function ajax_addUser($args) {
+    $result = 'success';
+    $error = '';
+    $data = array();
+
+    try {
+      if (array_key_exists('name', $args)) {
+	require_once 'userEntry.php';
+	$usr = new userEntry($this->db);
+	$usr->name = $args['name'];
+	$usr->commit();
+	$data['id'] = $usr->id;
+	$data['name'] = $usr->name;
+	$data['created_by'] = $usr->created_by;
+	$data['modified'] = $usr->modified;
+      } else {
+	$result = 'failure';
+	$error = 'No name provided';
+      }
+    } catch (Exception $e) {
+      return(array('result' => 'failure',
+		   'error'  => $e->getMessage()));
+    }
+    
+    return(array('result' => $result, 'error' => $error, 
+		 'data' => $data));
+  }
 }
 
 ?>

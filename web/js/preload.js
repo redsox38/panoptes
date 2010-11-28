@@ -8,6 +8,36 @@ var certificateMonitorStore;
 var SNMPMonitorStore;
 var shellMonitorStore;
 var availableShellMonitorStore;
+var userStore;
+
+function loadUsers() {
+    var xhrArgs = {
+	url: '/panoptes/',
+	handleAs: 'json',
+	content: {
+	    action: 'getUser',
+	    data: '{ }'
+	},
+	load: function(data) {
+	    if (data && !data.error) {
+		// fill in data store
+		all_user_data = {
+		    label: "all_users",
+		    identifier: "id",
+		    items: data.data
+		};
+
+		userStore = new dojo.data.ItemFileWriteStore({
+			data: all_user_data
+		    });
+	    } else {
+		alert(data.error);
+	    }
+	},
+    };
+
+    dojo.xhrGet(xhrArgs);    
+}
 
 function getSelectedTreeNode(item, node, e) {
     // set global variables for processing 
@@ -140,5 +170,6 @@ dojo.addOnLoad(function(){
 		     dojo.partial(createDeviceTree));
 
 	loadAvailableShellScripts();
+	loadUsers();
     });
 
