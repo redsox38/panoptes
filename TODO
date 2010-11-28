@@ -11,5 +11,4 @@ display scheduled outages in device view
 display acks in device view
 add group authz
 remove device from group
-update device tree when group membership changes
 loading indicator

@@ -12,6 +12,9 @@ function xhrAddPingable(ip_address) {
 		// refresh device tree
 		// if it's already been loaded
 		if (deviceTree) {
+		    // add item to device store
+		    deviceStore.newItem(data.data);
+		    deviceStore.save();
 		}
 	    } else {
 		alert(data.error);

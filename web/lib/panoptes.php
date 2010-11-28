@@ -946,6 +946,10 @@ class panoptes
       $dev->srcaddr = $args['address'];
       $dev->commit();
 
+      $data['id'] = 'd_' . $dev->id;
+      $data['type'] = 'device';
+      $data['name'] = $dev->name;
+
       // add ping monitor 
       require_once 'pingEntry.php';
       $pm = new pingEntry();

@@ -44,7 +44,10 @@ function xhrGroupAdd(attr_name, device_id) {
 		req = deviceStore.fetch({ query: { name: grp,
 						   type: 'group'}, 
 					  onItem: function (itm) {
+			    // add child item
+			    itm.children.push({'_reference' : 'd_' + device_id });
 			}});
+		deviceStore.save();
 	    } else {
 		alert(data.error);
 	    }
