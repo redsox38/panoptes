@@ -74,6 +74,13 @@ function deleteDevice() {
 	    load: function(data) {
 	        if (data && !data.error) {
                     // update data store
+		    var req = deviceStore.fetch({ query: { id: 'd_' + id }, 
+						  onComplete: function(items, req) {
+				for (var i = 0; i < items.length; i++) {
+				    deviceStore.deleteItem(items[i]);
+				}
+				deviceStore.save();
+			    }});
 	        } else {
 	    	    alert(data.error);
 	        }

@@ -12,5 +12,4 @@ display acks in device view
 add group authz
 remove device from group
 update device tree when group membership changes
-update device store on delete device
 loading indicator
