@@ -3,7 +3,6 @@ web page output monitors
 fork new thread for performance monitor updates
 email/sms notifications
 replace SOURCE... in db init with reading in statements and executing them
-read/report perf data reported by shell script monitors
 config option to auto accept auto discovery entries
 
 svc dependencies

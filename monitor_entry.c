@@ -49,12 +49,12 @@ monitor_result_t *allocate_monitor_result(monitor_result_t *m)
 
   if (m == NULL) {
     r = (monitor_result_t *)malloc(sizeof(monitor_result_t));
-    r->pref_title = NULL;
+    r->perf_title = NULL;
     r->perf_data = NULL;
     r->monitor_msg = NULL;
     return(r);
   } else {
-    r->pref_title = NULL;
+    r->perf_title = NULL;
     m->perf_data = NULL;
     m->monitor_msg = NULL;    
     return(m);

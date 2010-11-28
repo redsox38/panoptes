@@ -29,6 +29,7 @@
 #include <stdlib.h>
 #include <sys/select.h>
 #include <pwd.h>
+#include <unistd.h>
 
 monitor_result_t *monitor_shell(char *addr, char *script, 
 				char *params, monitor_result_t *r)
@@ -36,18 +37,21 @@ monitor_result_t *monitor_shell(char *addr, char *script,
   pid_t          pid, waited_pid;
   char           *user, *pfx, *scrbuf, pwbuf[256];
   char           readbuf[1024], errbuf[1024];
-  char           *output = NULL;
+  char           *monitor_output = NULL;
+  char           *p, *perf_output = NULL;
   struct passwd  *pw;
-  int            rc, exit_status, done = 0, pipe_fd[2];
+  int            rc, exit_status, done = 0;
+  int            pipe_stdout_fd[2], pipe_stderr_fd[2];
   fd_set         rd_set;
-  int            i, nfds = 0, logged = 0;
+  int            len, i, nfds = 0, logged = 0;
   struct timeval to, start, stop;
   double         elapsed;
   char           *envp[3];
 
   r->status = MONITOR_RESULT_OK;
 
-  pipe(pipe_fd);
+  pipe(pipe_stdout_fd);
+  pipe(pipe_stderr_fd);
 
   pfx = get_config_value("script.directory");
   scrbuf = (char *)malloc(sizeof(char) * (strlen(pfx) + 
@@ -56,7 +60,8 @@ monitor_result_t *monitor_shell(char *addr, char *script,
 
   /* fork */
   if (!(pid = fork())) {
-    dup2(pipe_fd[1], fileno(stdout));
+    dup2(pipe_stdout_fd[1], fileno(stdout));
+    dup2(pipe_stderr_fd[1], fileno(stderr));
 
     /* child */
     
@@ -114,24 +119,49 @@ monitor_result_t *monitor_shell(char *addr, char *script,
     while(!done) {
       /* read from pipe */
       FD_ZERO(&rd_set);
-      FD_SET(pipe_fd[0], &rd_set);
+      FD_SET(pipe_stdout_fd[0], &rd_set);
+      FD_SET(pipe_stderr_fd[0], &rd_set);
 
       /* set how long to wait for output before moving on to see
 	 if the script has terminated */
       to.tv_sec = 5;
       to.tv_usec = 0;
 
-      nfds = max(nfds, pipe_fd[0]);
+      nfds = max(nfds, pipe_stdout_fd[0]);
+      nfds = max(nfds, pipe_stderr_fd[0]);
       rc = select(++nfds, &rd_set, NULL, NULL, &to);      
       
       if (rc > 0) {
 	/* got output */
-	read(pipe_fd[0], readbuf, 1024);
-	if (output == NULL) {
-	  output = strdup(readbuf);
-	} else {
-	  output = realloc(output, (sizeof(char) * (strlen(output) + strlen(readbuf) + 1)));
-	  sprintf(output, "%s%s", output, readbuf);
+	/* see which fd */
+	if (FD_ISSET(pipe_stdout_fd[0], &rd_set)) {
+	  /* stdout is for perf mon data */
+	  read(pipe_stderr_fd[0], readbuf, 1024);
+	  /* see if it's setting a title, otherwise append it to perf mon 
+	     output */
+	  if (!strncasecmp(readbuf, "title:", strlen("title:"))) {
+	    if (r->perf_title) {
+	      free(r->perf_title);
+	    }
+	    *p = readbuf[strlen("title:")];
+	    r->perf_title = strdup(p);
+	  } else {
+	    if (perf_output == NULL) {
+	      perf_output = strdup(readbuf);
+	    } else {
+	      perf_output = realloc(perf_output, (sizeof(char) * (strlen(perf_output) + strlen(readbuf) + 1)));
+	      sprintf(perf_output, "%s%s", perf_output, readbuf);
+	    }
+	  }
+	} else if (FD_ISSET(pipe_stderr_fd[0], &rd_set)) {
+	  /* stderr is for monitor messages */
+	  read(pipe_stdout_fd[0], readbuf, 1024);
+	  if (monitor_output == NULL) {
+	    monitor_output = strdup(readbuf);
+	  } else {
+	    monitor_output = realloc(perf_output, (sizeof(char) * (strlen(monitor_output) + strlen(readbuf) + 1)));
+	    sprintf(monitor_output, "%s%s", monitor_output, readbuf);
+	  }
 	}
       } else if ((rc < 0) && (!logged)) {
 	/* error, only report it once though */
@@ -147,8 +177,10 @@ monitor_result_t *monitor_shell(char *addr, char *script,
 	strerror_r(errno, errbuf, 1024);
 	syslog(LOG_NOTICE, "waitpid: %s", errbuf);
       } else if (waited_pid > 0) {
-	close(pipe_fd[0]);
-	close(pipe_fd[1]);
+	close(pipe_stdout_fd[0]);
+	close(pipe_stdout_fd[1]);
+	close(pipe_stderr_fd[0]);
+	close(pipe_stderr_fd[1]);
 	done = 1;
 	syslog(LOG_DEBUG, "%s exited with %d", scrbuf, 
 	       WEXITSTATUS(exit_status));
@@ -164,12 +196,16 @@ monitor_result_t *monitor_shell(char *addr, char *script,
     gettimeofday(&stop, NULL);
 
     /* update monitor message */
-    if (output) {
-      r->monitor_msg = strdup(output);
+    if (monitor_output) {
+      r->monitor_msg = strdup(monitor_output);
+      free(monitor_output);
     }
-
+ 
     /* if script didn't provide timing data, save execution time */
-    if (r->perf_data == NULL) {
+    if (perf_output) {
+      r->perf_data = strdup(perf_output);
+      free(perf_output);
+   } else {
       /* get elapsed time in milliseconds */
       elapsed = (stop.tv_sec - start.tv_sec) * 1000;
       elapsed += (stop.tv_usec - start.tv_usec) / 1000;
