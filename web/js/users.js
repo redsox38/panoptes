@@ -26,6 +26,33 @@ function xhrAddUser(name) {
 }
 
 function xhrDeleteUser(name) {
+    var xhrArgs = {
+        url: '/panoptes/',
+        handleAs: 'json',
+        content: {
+            action: 'deleteUser',
+            data: '{ "id": "' + name.get('value') + '" }'
+        },
+        load: function(data) {
+            if (data && !data.error) {
+		// delete item from store
+		var req = userStore.fetch({ query: { id: name.get('value') },
+					    onComplete: function(items, req) {
+			    for (var i = 0; i < items.length; i++) {
+				userStore.deleteItem(items[i]);
+			    }
+			    userStore.save();
+			    // update display
+			    name.set('displayedValue', '');
+			    name.set('placeHolder', 'Delete Successful');
+			}});
+            } else {
+                alert(data.error);
+            }
+        },
+    };
+        
+    dojo.xhrGet(xhrArgs);    
 }
 
 function buildUserForm() {
@@ -66,7 +93,7 @@ function buildUserForm() {
     del_sub = new dijit.form.Button({
 	    label: 'Delete',
 	    onClick: function() {
-		xhrDeleteUser(dijit.byId('del_user').get('displayedValue'));
+		xhrDeleteUser(dijit.byId('del_user'));
 	    }
 	});
     del_sub.placeAt(user_tab.domNode);

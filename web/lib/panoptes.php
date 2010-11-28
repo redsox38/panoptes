@@ -1591,6 +1591,39 @@ class panoptes
     return(array('result' => $result, 'error' => $error, 
 		 'data' => $data));
   }
+
+  /**
+   * delete user
+   *
+   * @param args json params converted into an array
+   *                  name name of user to delete
+   * @throws none
+   * @return array containing result and possible error messages
+   */
+  public function ajax_deleteUser($args) {
+    $result = 'success';
+    $error = '';
+    $data = array();
+
+    try {
+      if (array_key_exists('id', $args)) {
+	require_once 'userEntry.php';
+	$usr = new userEntry($this->db);
+	$usr->id = $args['id'];
+	$usr->delete();
+      } else {
+	$result = 'failure';
+	$error = 'No id provided';
+      }
+    } catch (Exception $e) {
+      return(array('result' => 'failure',
+		   'error'  => $e->getMessage()));
+    }
+    
+    return(array('result' => $result, 'error' => $error, 
+		 'data' => $data));
+  }
+
 }
 
 ?>
