@@ -3,6 +3,7 @@
 DROP TABLE IF EXISTS discovered;
 DROP TABLE IF EXISTS device_outages;
 DROP TABLE IF EXISTS device_group_membership;
+DROP TABLE IF EXISTS security_group_membership;
 DROP TABLE IF EXISTS port_acknowledgments;
 DROP TABLE IF EXISTS ping_acknowledgments;
 DROP TABLE IF EXISTS snmp_acknowledgments;
@@ -13,8 +14,10 @@ DROP TABLE IF EXISTS ping_monitors;
 DROP TABLE IF EXISTS certificate_monitors;
 DROP TABLE IF EXISTS snmp_monitors;
 DROP TABLE IF EXISTS shell_monitors;
+DROP TABLE IF EXISTS security_groups;
 DROP TABLE IF EXISTS device_groups;
 DROP TABLE IF EXISTS devices;
+DROP TABLE IF EXISTS users;
 DROP VIEW monitor_tasks;
 DROP PROCEDURE IF EXISTS get_next_monitor_entry;
 DROP PROCEDURE IF EXISTS update_monitor_entry;
@@ -32,6 +35,29 @@ CREATE TABLE device_groups (
   UNIQUE KEY name (group_name)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
+--
+-- Table structure for table security_groups
+--
+
+CREATE TABLE security_groups (
+  id bigint(20) NOT NULL AUTO_INCREMENT,
+  group_name varchar(50) NOT NULL,
+  PRIMARY KEY (id),
+  UNIQUE KEY name (group_name)
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+--
+-- Table structure for table users
+--
+
+CREATE TABLE users (
+  id bigint(20) NOT NULL AUTO_INCREMENT,
+  name varchar(32) NOT NULL,
+  created_by varchar(32) NOT NULL,
+  modified timestamp NOT NULL,
+  PRIMARY KEY (id),
+  UNIQUE KEY nm (name)
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 --
 -- Table structure for table devices
 --
@@ -72,6 +98,19 @@ CREATE TABLE device_group_membership (
   KEY device_id (device_id),
   CONSTRAINT device_group_membership_ibfk_1 FOREIGN KEY (device_id) REFERENCES devices (id) ON DELETE CASCADE ON UPDATE CASCADE,
   CONSTRAINT device_group_membership_ibfk_2 FOREIGN KEY (group_id) REFERENCES device_groups (id) ON DELETE CASCADE ON UPDATE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+--
+-- Table structure for table security_group_membership
+--
+
+CREATE TABLE security_group_membership (
+  group_id bigint(20) NOT NULL,
+  user_id bigint(20) NOT NULL,
+  KEY group_id (group_id),
+  KEY user_id (user_id),
+  CONSTRAINT security_group_membership_ibfk_1 FOREIGN KEY (user_id) REFERENCES users (id) ON DELETE CASCADE ON UPDATE CASCADE,
+  CONSTRAINT security_group_membership_ibfk_2 FOREIGN KEY (group_id) REFERENCES security_groups (id) ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 --

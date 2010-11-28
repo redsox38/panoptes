@@ -81,7 +81,28 @@ class panoptes
     return($this->config);
   }
 
+  /**
+   * Compare given user to admin list from config file
+   *
+   * @param none
+   * @throws none
+   * @return boolean
+   */
+  public function isAdmin($user) {
+    $admins = explode(',', $this->config()->getConfigValue('web.admins'));
+    
+    $r = false;
 
+    foreach($admins as $a) {
+      if ($a == $user) {
+	$r = true;
+	break;
+      }
+    }
+
+    return($r);
+  }
+  
   /**
    * Return list of available RRDs for a given device
    *
@@ -1416,7 +1437,7 @@ class panoptes
 		array_push($data, array('id' => $count++,
 					'script' => $fname,
 					'param' => $params));
-	      }
+ 	      }
 	    }
 	    closedir($dh);
 	  } else {
@@ -1428,6 +1449,37 @@ class panoptes
 	  $error = 'No script upload directory defined';	  
 	}
       }
+    } catch (Exception $e) {
+      return(array('result' => 'failure',
+		   'error'  => $e->getMessage()));
+    }
+    
+    return(array('result' => $result, 'error' => $error, 
+		 'data' => $data));
+  }
+
+  /**
+   * createSecurityGroup
+   *
+   * @param args json params converted into an array
+   8                  group_name name of group to add
+   * @throws none
+   * @return array containing result and possible error messages
+   */
+  public function ajax_createSecurityGroup($args) {
+    $result = 'success';
+    $error = '';
+    $data = array();
+
+    try {
+      require_once 'securityGroup.php';
+      $grp = new securityGroup($this->db);
+      $grp->name = $args['group_name'];
+      $grp->commit();
+
+      array_push($data, array(
+			      'id'            => $grp->id,
+			      'device_id'     => $grp->name));      
     } catch (Exception $e) {
       return(array('result' => 'failure',
 		   'error'  => $e->getMessage()));

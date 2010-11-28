@@ -22,6 +22,24 @@ function xhrAddPingable(ip_address) {
     dojo.xhrGet(xhrArgs);    
 }
 
+function xhrCreateSecurityGroup(name) {
+    var xhrArgs = {
+	url: '/panoptes/',
+	handleAs: 'json',
+	content: {
+	    action: 'createSecurityGroup',
+	    data: '{ "group_name": "' + name + '" }'
+	},
+	load: function(data) {
+	    if (data && !data.error) {
+		// add to securitygroupstore
+	    }
+	},
+    };
+	
+    dojo.xhrGet(xhrArgs);    
+}
+
 function xhrUploadFile(type, file) {
     file_contents = Base64.encode(file.getAsText(""));
 
@@ -42,6 +60,45 @@ function xhrUploadFile(type, file) {
     };
 	
     dojo.xhrGet(xhrArgs);    
+}
+
+function createSecurityGroup() {
+    tb = new dijit.form.TextBox({
+	    id: 'add_security_group_name',
+	    name: 'add_security_group_name',
+	    style: 'width: 25em;',
+	    placeHolder: 'Group Name'
+	});
+
+    sub = new dijit.form.Button({
+	    id: 'add_security_group_submit',
+	    label: 'Create',
+	    onClick: function() {
+		xhrCreateSecurityGroup(dijit.byId("add_security_group_name").get('displayedValue'));
+		dijit.byId("add_security_group_name").destroy();
+		dijit.byId("add_security_group_reset").destroy();
+                dijit.byId("add_security_group_submit").destroy();
+                document.body.removeChild(document.getElementById("add_security_group"));
+	    }
+	});
+    
+    rst = new dijit.form.Button({
+	    id: 'add_security_group_reset',
+            label: 'Cancel',
+            onClick: function() {
+		dijit.byId("add_security_group_name").destroy();
+                dijit.byId("add_security_group_reset").destroy();
+                dijit.byId("add_security_group_submit").destroy();
+                document.body.removeChild(document.getElementById("add_security_group"));
+            }
+        });
+
+    var items = [ tb.domNode, 
+		  document.createElement("br"),
+		  rst.domNode, sub.domNode ];
+
+    createOverlayWindow("add_security_group", items);
+
 }
 
 function uploadFile() {

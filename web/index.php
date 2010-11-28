@@ -91,6 +91,11 @@ if ($_SERVER["HTTP_X_REQUESTED_WITH"] == 'XMLHttpRequest') {
     <script type="text/javascript" src="js/discovery.js"></script>
     <script type="text/javascript" src="js/devices.js"></script>
     <script type="text/javascript" src="js/tools.js"></script>
+<?php
+	  if ($panoptes->isAdmin($panoptes_current_user)) {
+	    echo '<script type="text/javascript" src="js/users.js"></script>' . "\n";
+	  }
+?>
 
 </head>
 <body class="claro">
@@ -116,7 +121,12 @@ if ($_SERVER["HTTP_X_REQUESTED_WITH"] == 'XMLHttpRequest') {
         <div id="left_nav" region="leading" dojoType="dijit.layout.AccordionContainer" style="width: 15%;" splitter="true">
             <div id="tools" title="Tools" dojoType="dijit.layout.AccordionPane">
 	        <a href="#" onClick="addPingable();">Add Pingable Device</a>
-	        <a href="#" onClick="uploadFile();">Upload Shell Script</a>
+<?php
+	  if ($panoptes->isAdmin($panoptes_current_user)) {
+	    echo '<a href="#" onClick="uploadFile();">Upload Shell Script</a>' . "\n";
+	    echo '<a href="#" onClick="createSecurityGroup();">Create Security Group</a>' . "\n";
+	  }
+?>
             </div>
             <div id="device_list" title="Device List" dojoType="dijit.layout.AccordionPane">
                 <div id="device_tree"></div>
@@ -150,15 +160,22 @@ if ($_SERVER["HTTP_X_REQUESTED_WITH"] == 'XMLHttpRequest') {
             <div id="auto_discovery_tab" title="Auto Discovery" dojoType="dijit.layout.ContentPane" style="height: 100%; width: 100%;">
                 <div id="auto_discovery_grid" style="width: 100%; height: 100%;">
 	            <div dojoType="dijit.Menu" id="autoDiscoveryRowMenu" style="display: none;">
-                    <div dojoType="dijit.MenuItem" iconClass="dijitEditorIcon dijitEditorIconSave" onClick="monitorEntry('dst');">
+                        <div dojoType="dijit.MenuItem" iconClass="dijitEditorIcon dijitEditorIconSave" onClick="monitorEntry('dst');">
                         Monitor Entry
-                    </div>
-                    <div dojoType="dijit.MenuItem" iconClass="dijitIconDelete" onClick="ignoreEntry();">
+                        </div>
+                        <div dojoType="dijit.MenuItem" iconClass="dijitIconDelete" onClick="ignoreEntry();">
                         Ignore Entry
+                        </div>
                     </div>
                 </div>
             </div>
-        </div>
+<?php
+	  if ($panoptes->isAdmin($panoptes_current_user)) {
+            echo '           <div id="user_mgmt_tab" title="Manage Users" dojoType="dijit.layout.ContentPane" onClick="loadUserData();" style="height: 100%; width: 100%;">' . "\n";
+	    echo 'User Data' . "\n";
+	    echo '           </div>' . "\n";
+	  }
+?>
     </div>
 </body>
 </html>
