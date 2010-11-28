@@ -53,7 +53,13 @@ function xhrUploadFile(type, file) {
 	             file_contents + '" }'
 	},
 	load: function(data) {
-	    if (data && data.error) {
+	    if (data && !data.error) {
+		if (type == 'script') {
+		    // upload datastore
+		    item = { 'script': file.fileName, 'params': '' };
+		    availableShellMonitorStore.newItem(item);
+		}
+	    } else {
 		alert(data.error);
 	    }
 	},

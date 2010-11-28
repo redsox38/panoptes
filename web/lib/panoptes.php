@@ -1465,8 +1465,7 @@ class panoptes
 		}
 		fclose($fh);
 
-		array_push($data, array('id' => $count++,
-					'script' => $fname,
+		array_push($data, array('script' => $fname,
 					'param' => $params));
  	      }
 	    }

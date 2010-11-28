@@ -149,7 +149,7 @@ function loadAvailableShellScripts() {
 		// fill in data store
 		all_shell_data = {
 		    label: "all_shell_data",
-		    identifier: "id",
+		    identifier: "script",
 		    items: data.data
 		};
 
