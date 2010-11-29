@@ -938,7 +938,7 @@ function _addMonitor(dataGrid, type, id) {
 		onClick: function() {
 		    prms = dijit.byId('add_monitor_script_param');
 		    if (prms) {
-			scr_parms = prms.getValue(); 
+			scr_parms = Base64.encode(prms.getValue()); 
 		    } else {
 			scr_parms = '';
 		    }

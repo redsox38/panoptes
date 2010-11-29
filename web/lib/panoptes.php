@@ -1335,7 +1335,7 @@ class panoptes
 	$ent = new shellMonitorEntry($this->db);
 	$ent->device_id = $args['id'];
 	$ent->script = $args['params']['script'];
-	$ent->params = $args['params']['params'];
+	$ent->params = base64_decode($args['params']['params']);
 	$ent->commit();
 
 	array_push($data, array (
