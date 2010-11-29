@@ -39,6 +39,7 @@ class panoptes
   protected $_disc_data = null;
   protected $_dev_data = null;
   protected $_dev_group_data = null;
+  protected $_sec_group_data = null;
   protected $db;
 
   public function __get($name) {
@@ -402,7 +403,7 @@ class panoptes
    *        name name of specific group to retrieve
    *
    * @throws Exception 
-   * @return deviceEntry returns the next entry, null if there are no 
+   * @return deviceGroup returns the next entry, null if there are no 
    *                     entries available
    */
   public function getDeviceGroup($id = null, $name = null) {
@@ -467,6 +468,77 @@ class panoptes
     return($grp);
   }
 
+  /**
+   * Retrieve security group entry
+   *
+   * @param id id of specific groupEntry to retrieve
+   *        name name of specific group to retrieve
+   *
+   * @throws Exception 
+   * @return securityGroup returns the next entry, null if there are no 
+   *                     entries available
+   */
+  public function getSecurityGroup($id = null, $name = null) {
+
+    $r = null;
+    
+    if (!is_null($id)) {
+      // update from table
+      $this->_sec_group_data = array();
+      $res = mysql_query("SELECT id, group_name FROM security_groups WHERE id='" . $id ."'", $this->db);
+      
+      if ($res !== false) {
+	$r = mysql_fetch_assoc($res);
+      
+	mysql_free_result($res);
+      } else {
+	throw new Exception(mysql_error());
+      }
+    } else if (!is_null($name)) {
+      // update from table
+      $this->_sec_group_data = array();
+      $res = mysql_query("SELECT id, group_name FROM security_groups WHERE group_name='" . $name ."'", $this->db);
+      
+      if ($res !== false) {
+	$r = mysql_fetch_assoc($res);
+      
+	mysql_free_result($res);
+      } else {
+	throw new Exception(mysql_error());
+      }
+    } else {
+      if (is_null($this->_sec_group_data)) {
+	// update from table
+	$this->_sec_group_data = array();
+
+        $res = mysql_query("SELECT id, group_name FROM security_groups", 
+			   $this->db);
+
+	if ($res !== false) {
+	  while ($row = mysql_fetch_assoc($res)) {
+	    array_push($this->_sec_group_data, $row);
+	  }
+	
+	  mysql_free_result($res);
+	} else {
+	  throw new Exception(mysql_error());
+	}
+      } 
+      
+      $r = array_shift($this->_sec_group_data);
+    }
+
+    if (!is_null($r) && !empty($r)) {
+      require_once 'securityGroup.php';
+      $grp = new securityGroup($this->db);
+      $grp->id = $r['id'];
+      $grp->name = $r['group_name'];      
+    } else {
+      $grp = null;
+    }      
+
+    return($grp);
+  }
 
   /**
    * Retrieve snmp monitior entries
@@ -764,7 +836,7 @@ class panoptes
    * @throws none
    * @return array containing result and possible error messages
    */
-  public function ajax_getGroups($args) {
+  public function ajax_getDeviceGroups($args) {
     try {
       $data = array();
 
@@ -780,6 +852,37 @@ class panoptes
     return(array('result' => 'success', 'data' => $data));
   }
   
+  /**
+   * get security groups
+   *
+   * @param args json params converted into an array
+   *             currently not used
+   * @throws none
+   * @return array containing result and possible error messages
+   */
+  public function ajax_getSecurityGroups($args) {
+    try {
+      $data = array();
+
+      while ($grp = $this->getSecurityGroup()) {
+	$members = array();
+	$mem = $grp->children();
+	foreach ($mem as $m) {
+	  array_push($members, array('_reference' => 'u_' . $m));
+	}
+	array_push($data, array('name'     => $grp->name,
+				'type'     => 'group',
+				'children' => $members,
+				'id'       => 'g_' . $grp->id));
+      }
+    } catch (Exception $e) {
+      return(array('result' => 'failure',
+		   'error'  => $e->getMessage()));
+    }
+
+    return(array('result' => 'success', 'data' => $data));
+  }
+
   /**
    * add group member
    *
@@ -1552,8 +1655,9 @@ class panoptes
 	$r = $this->getAllUsers();
 	foreach ($r as $usr) {
 	  array_push($data, array(
-				  'id'         => $usr->id,
+				  'id'         => 'u_' . $usr->id,
 				  'name'       => $usr->name,
+				  'type'       => 'user',
 				  'created_by' => $usr->created_by,
 				  'modified'   => $usr->modified,
 				  ));
@@ -1587,7 +1691,8 @@ class panoptes
 	$usr = new userEntry($this->db);
 	$usr->name = $args['name'];
 	$usr->commit();
-	$data['id'] = $usr->id;
+	$data['id'] = 'u_' . $usr->id;
+	$data['type'] = 'user';
 	$data['name'] = $usr->name;
 	$data['created_by'] = $usr->created_by;
 	$data['modified'] = $usr->modified;

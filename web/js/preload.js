@@ -21,15 +21,36 @@ function loadUsers() {
 	load: function(data) {
 	    if (data && !data.error) {
 		// fill in data store
-		all_user_data = {
-		    label: "all_users",
-		    identifier: "id",
-		    items: data.data
-		};
-
-		userStore = new dojo.data.ItemFileWriteStore({
-			data: all_user_data
+		dojo.forEach(data.data, function(item) {
+			userStore.newItem(item);
 		    });
+		userStore.save();
+	    } else {
+		alert(data.error);
+	    }
+	},
+    };
+
+    dojo.xhrGet(xhrArgs);    
+}
+
+function loadGroups() {
+    var xhrArgs = {
+	url: '/panoptes/',
+	handleAs: 'json',
+	content: {
+	    action: 'getSecurityGroups',
+	    data: '{ }'
+	},
+	load: function(data) {
+	    if (data && !data.error) {
+		if (data.data) {
+		    // fill in data store
+		    dojo.forEach(data.data, function(item) {
+		        userStore.newItem(item);
+		    	});
+		    userStore.save();
+		}
 	    } else {
 		alert(data.error);
 	    }
@@ -112,7 +133,7 @@ function createDeviceTree(){
 	    url: '/panoptes/',
 	    handleAs: 'json',
 	    content: {
-		action: 'getGroups',
+		action: 'getDeviceGroups',
 		data: '{}'
 	    },
 	    load: function(data) {
@@ -170,6 +191,18 @@ dojo.addOnLoad(function(){
 		     dojo.partial(createDeviceTree));
 
 	loadAvailableShellScripts();
+
+	all_user_data = {
+	    label: "name",
+	    identifier: "id",
+	    items: []
+	};
+
+	userStore = new dojo.data.ItemFileWriteStore({
+		data: all_user_data
+	    });
+
 	loadUsers();
+	loadGroups();
     });
 

@@ -77,6 +77,7 @@ if ($_SERVER["HTTP_X_REQUESTED_WITH"] == 'XMLHttpRequest') {
         dojo.require("dijit.layout.ContentPane");
         dojo.require("dijit.MenuItem");
         dojo.require("dijit.Tree");
+        dojo.require("dijit.tree.dndSource");
         dojo.require("dijit.Menu");
         dojo.require("dijit.form.FilteringSelect");
         dojo.require("dijit.form.NumberSpinner");
