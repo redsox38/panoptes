@@ -838,6 +838,15 @@ class panoptes
 	if ($ent) {
 	  $data['ping_data'] = $ent->status_string;
 	}
+	
+	// see if there's a future/current outage scheduled
+	$out = $dev->getOutage();
+	
+	if (!empty($out)) {
+	  $o = $out[0];
+	  $data['outage_data'] = $o['start'] . " to " .
+	    $o['stop'];
+	}
       } else {
 	$data = array();
       }

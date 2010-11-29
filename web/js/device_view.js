@@ -193,6 +193,10 @@ function addInfoData(id, container) {
 		    new_data += '<b>icmp response : </b>' +
 			data.data.ping_data + '<br/>';
 		}
+		if (data.data.outage_data) {
+		    new_data += '<b>scheduled outage : </b>' +
+			data.data.outage_data + '<br/>';
+		}
 		container.set('content', new_data);
 	    } else {
 		alert(data.error);

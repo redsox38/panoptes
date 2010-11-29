@@ -7,7 +7,6 @@ config option to auto accept auto discovery entries
 
 svc dependencies
 
-display scheduled outages in device view
 display acks in device view
 add group authz
 remove device from group

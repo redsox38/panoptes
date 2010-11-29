@@ -123,7 +123,6 @@ class deviceEntry
     }
   }
 
-
   /**
    * schedule outage window for device
    *
@@ -141,6 +140,39 @@ class deviceEntry
     if ($res === false) {
       throw new Exception($qry);
     }
+  }
+
+  /**
+   * getOutage get future/current scheduled outage(s)
+   *
+   * @param none
+   * @throws Exception
+   * @return array of outage entries
+   */
+  public function getOutage($all = false) {
+    $qry = "SELECT start_date, stop_date FROM device_outages " .
+      "WHERE device_id='" . $this->id . 
+      "' AND (start_date > NOW() OR stop_date > NOW())" .
+      " ORDER BY start_date";
+
+    if (!$all) {
+      $qry .= " LIMIT 1";
+    }
+    
+    $rtn = array();
+
+    $res = mysql_query($qry);
+    if ($res !== false) {
+      while ($r = mysql_fetch_assoc($res)) {
+	array_push($rtn, array('start' => $r['start_date'],
+			       'stop'  => $r['stop_date']));
+      }
+      mysql_free_result($res);
+    } else {
+      throw new Exception($qry);
+    }
+
+    return($rtn);
   }
 }
 ?>
