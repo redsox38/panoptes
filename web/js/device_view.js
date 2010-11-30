@@ -855,9 +855,11 @@ function _addMonitor(dataGrid, type, id) {
 		onClick: function() {
 		    var params = { 
 			type: 'port_monitors',
-			port: dijit.byId('add_monitor_port').getValue() 
+			port: dijit.byId('add_monitor_port').getValue(),
+			proto: dijit.byId('add_monitor_proto').getValue() 
 		    };
 		    xhrAddMonitor(dataGrid, id, params);
+		    dijit.byId("add_monitor_proto").destroy();
 		    dijit.byId("add_monitor_port").destroy();
 		    dijit.byId("add_monitor_reset").destroy();
 		    dijit.byId("add_monitor_submit").destroy();
@@ -869,6 +871,7 @@ function _addMonitor(dataGrid, type, id) {
 		label: 'Cancel',
 		id: 'add_monitor_reset',
 		onClick: function() {
+		    dijit.byId("add_monitor_proto").destroy();
 		    dijit.byId("add_monitor_port").destroy();
 		    dijit.byId("add_monitor_reset").destroy();
 		    dijit.byId("add_monitor_submit").destroy();

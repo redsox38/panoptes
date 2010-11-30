@@ -54,7 +54,7 @@ monitor_result_t *allocate_monitor_result(monitor_result_t *m)
     r->monitor_msg = NULL;
     return(r);
   } else {
-    r->perf_title = NULL;
+    m->perf_title = NULL;
     m->perf_data = NULL;
     m->monitor_msg = NULL;    
     return(m);

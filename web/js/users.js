@@ -100,42 +100,5 @@ function buildUserForm() {
     del_sub.placeAt(user_tab.domNode);
 
     user_tab.domNode.appendChild(document.createElement("br"));
-    user_tab.domNode.appendChild(document.createTextNode("Add Users to Groups"));
-    user_tab.domNode.appendChild(document.createElement("br"));
-    
-    userModel = new dijit.tree.ForestStoreModel({
-	    store: userStore,
-	    query: { type: 'user' },
-	    rootId: "users",
-	    childrenAttrs: ["children"],
-	    rootLabel: "Current Users"
-	});
-
-    userTree = new dijit.Tree({
-	    id: 'user_source_tree',
-	    model: userModel,
-	    dndController: "dijit.tree.dndSource",
-	    copyOnly: true
-	});
-
-    userTree.placeAt(user_tab.domNode);
-
-    groupModel = new dijit.tree.ForestStoreModel({
-	    store: userStore,
-	    query: { type: 'group' },
-	    rootId: "groups",
-	    childrenAttrs: ["children"],
-	    rootLabel: "Current Groups"
-	});
-
-    groupTree = new dijit.Tree({
-	    id: 'user_target_tree',
-	    model: groupModel,
-	    dndController: "dijit.tree.dndSource",
-	    dndParams: { accept: ['user'] },
-	    copyOnly: true
-	});
-
-    groupTree.placeAt(user_tab.domNode);
 }
 
