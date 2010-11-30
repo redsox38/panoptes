@@ -15,4 +15,4 @@ add permissions to objects
 remove device from group
 loading indicator
 reload monitors after interval in device view for open tab
-fix proto not being set when a new monitor is added (maybe ?)
+make right click select elements where there's a context menu

@@ -588,6 +588,45 @@ class panoptes
    *                 monitor data for
    *
    * @throws Exception 
+   * @return array of shellMonitorEntry objects
+   */
+  public function getShellMonitorData($id) {
+    require_once 'shellMonitorEntry.php';
+    $rtndata = array();
+
+    $res = mysql_query("SELECT * FROM shell_monitors WHERE device_id='" . 
+		       $id ."'", $this->db);
+    
+    if ($res !== false) {
+      while ($r = mysql_fetch_assoc($res)) {
+	$ent = new shellMonitorEntry($this->db);
+	$ent->id = $r['id'];
+	$ent->device_id = $id;
+	$ent->script = $r['script'];
+	$ent->params = $r['params'];
+	$ent->last_check = $r['last_check'];
+	$ent->next_check = $r['next_check'];
+	$ent->status = $r['status'];
+	$ent->status_string = $r['status_string'];
+	$ent->disabled = $r['disabled'];
+
+	array_push($rtndata, $ent);
+      }
+      mysql_free_result($res);
+    } else {
+      throw new Exception(mysql_error());
+    }
+
+    return($rtndata);
+  }
+
+  /**
+   * Retrieve monitior entries
+   *
+   * @param id id of specific device to retrieve
+   *                 monitor data for
+   *
+   * @throws Exception 
    * @return array of portMonitorEntry objects
    */
   public function getPortMonitorData($id) {
@@ -1543,6 +1582,10 @@ class panoptes
                     omitted, returns all available monitors
    * @throws none
    * @return array containing result and possible error messages
+   *               if no id it provided it will return an array
+   *               of all available monitors
+   *               otherwise it will reutrn an array of monitors for
+   *               the given device id
    */
   public function ajax_getShellMonitors($args) {
     global $php_errormsg;
@@ -1555,6 +1598,20 @@ class panoptes
       ini_set('track_errors', true);
 
       if (array_key_exists('id', $args)) {
+	// just get shell monitors for the device identified by id
+	$monitors = $this->getShellMonitorData($args['id']);
+	foreach ($monitors as $a) {
+	  array_push($data, array(
+				 'id'            => $a->id,
+				 'device_id'     => $a->device_id,
+				 'script'        => $a->script,
+				 'params'        => $a->params,
+				 'last_check'    => $a->last_check,
+				 'next_check'    => $a->next_check,
+				 'status'        => $a->status,
+				 'status_string' => $a->status_string
+				  ));
+	}
       } else {
 	$count = 0;
 	$script_root = $this->config()->getConfigValue('script.directory'); 

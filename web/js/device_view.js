@@ -120,6 +120,30 @@ function addCertificateMonitorData(id, container) {
 }
 
 function addShellMonitorData(id, container) {
+    var xhrArgs = {
+	url: '/panoptes/',
+	handleAs: 'json',
+	content: {
+	    action: 'getShellMonitors',
+	    data: '{ "id": "' + id + '" }'
+	},
+	load: function(data) {
+	    if (data && !data.error) {          
+		// populate grid
+		dojo.forEach(data.data, function(oneEntry) {
+			shellMonitorStore.newItem(oneEntry);
+		    });
+
+		shellMonitorStore.save();
+		container.setStore(shellMonitorStore);
+		container.update();		
+	    } else {
+		alert(data.error);
+	    }
+	},	
+    };
+       
+    var resp = dojo.xhrGet(xhrArgs);
 }
 
 function addSNMPMonitorData(id, container) {
@@ -327,7 +351,7 @@ function createPortMonitorTab(id) {
 	];
 
     port_monitor_data = {
-	label: "portmon",
+	label: "port",
 	identifier: "id",
 	items: []
     };
@@ -491,19 +515,19 @@ function createShellTab(id) {
 	];
 
     shell_data = {
-	label: "shellmon",
+	label: "script",
 	identifier: "id",
 	items: []
     };
 
-    ShellMonitorStore = new dojo.data.ItemFileWriteStore({ 
+    shellMonitorStore = new dojo.data.ItemFileWriteStore({ 
 	    data: shell_data 
 	});		
 
     var tc_1 = new dojox.grid.EnhancedGrid({
 	    id: id + '_shell_mon_grid',
 	    title: 'Shell Script Monitors',
-	    store: ShellMonitorStore,
+	    store: shellMonitorStore,
 	    structure: shell_layout,
 	    clientSort: true,
 	    rowSelector: '10px',
