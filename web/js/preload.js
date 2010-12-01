@@ -9,6 +9,7 @@ var SNMPMonitorStore;
 var shellMonitorStore;
 var availableShellMonitorStore;
 var userStore;
+var srcUserStore;
 
 function loadUsers() {
     var xhrArgs = {
@@ -23,8 +24,10 @@ function loadUsers() {
 		// fill in data store
 		dojo.forEach(data.data, function(item) {
 			userStore.newItem(item);
+			srcUserStore.newItem(item);
 		    });
 		userStore.save();
+		srcUserStore.save();
 	    } else {
 		alert(data.error);
 	    }
@@ -200,6 +203,16 @@ dojo.addOnLoad(function(){
 
 	userStore = new dojo.data.ItemFileWriteStore({
 		data: all_user_data
+	    });
+
+	all_src_user_data = {
+	    label: "name",
+	    identifier: "id",
+	    items: []
+	};
+
+	srcUserStore = new dojo.data.ItemFileWriteStore({
+		data: all_src_user_data
 	    });
 
 	loadUsers();

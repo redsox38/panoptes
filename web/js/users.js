@@ -1,5 +1,10 @@
 var userFormbuilt = false;
 
+function xhrUpdateSecurityGroups(tree) {
+    alert('saving data store');
+    tree.model.store.save();
+}
+
 function xhrAddUser(name) {
     var xhrArgs = {
         url: '/panoptes/',
@@ -11,6 +16,8 @@ function xhrAddUser(name) {
         load: function(data) {
             if (data && !data.error) {
 		// add to store
+		srcUserStore.newItem(data.data);
+		srcUserStore.save();
 		userStore.newItem(data.data);
 		userStore.save();
 		// update display
@@ -100,5 +107,52 @@ function buildUserForm() {
     del_sub.placeAt(user_tab.domNode);
 
     user_tab.domNode.appendChild(document.createElement("br"));
+
+    // build source tree from copy of user store
+    srcUserModel = new dijit.tree.ForestStoreModel({
+	    store: srcUserStore,
+	    query: { type: 'user' },
+	    rootId: 'users',
+	    childrenAttrs: ["children"],
+	    rootLabel: 'Current Users'
+	});
+
+    srcUserTree = new dijit.Tree({
+	    id: 'src_user_tree',
+	    model: srcUserModel,
+	    dndController: 'dijit.tree.dndSource',
+	    copyOnly: true
+	});
+
+    srcUserTree.placeAt(user_tab.domNode);
+
+    tgtUserModel = new dijit.tree.ForestStoreModel({
+	    store: userStore,
+	    query: { type: 'group' },
+	    rootId: 'groups',
+	    childrenAttrs: ["children"],
+	    rootLabel: 'Current Groups'	    
+	});
+
+    tgtUserTree = new dijit.Tree({
+	    id: 'tgt_user_tree',
+	    model: tgtUserModel,
+	    dndController: 'dijit.tree.dndSource',
+            dndParams: { isSource: false, autoSync: true }
+	});
+
+    tgtUserTree.placeAt(user_tab.domNode);
+
+    user_tab.domNode.appendChild(document.createElement("br"));
+    
+    sub = new dijit.form.Button({
+	    label: 'Save Group Changes',
+	    onClick: function() {
+		xhrUpdateSecurityGroups(dijit.byId('tgt_user_tree'));
+	    }
+	});
+
+    sub.placeAt(user_tab.domNode);
+
 }
 
