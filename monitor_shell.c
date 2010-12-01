@@ -43,7 +43,7 @@ monitor_result_t *monitor_shell(char *addr, char *script,
   int            rc, exit_status, done = 0;
   int            pipe_stdout_fd[2], pipe_stderr_fd[2];
   fd_set         rd_set;
-  int            len, i, nfds = 0, logged = 0;
+  int            ok_to_exec = 1, len, i, nfds = 0, logged = 0;
   struct timeval to, start, stop;
   double         elapsed;
   char           *envp[3];
@@ -60,10 +60,11 @@ monitor_result_t *monitor_shell(char *addr, char *script,
 
   /* fork */
   if (!(pid = fork())) {
+    /* child */
+
+    /* re-assign stdout/stderr to writer end of pipe */
     dup2(pipe_stdout_fd[1], fileno(stdout));
     dup2(pipe_stderr_fd[1], fileno(stderr));
-
-    /* child */
     
     /* set environment variable containing the device address */
     envp[0] = (char *)malloc(sizeof(char) * (2 + strlen(addr) +
@@ -85,50 +86,55 @@ monitor_result_t *monitor_shell(char *addr, char *script,
       pw = (struct passwd *)malloc(sizeof(struct passwd));
       getpwnam_r(user, pw, pwbuf, 256, &pw);
       if (pw == NULL) {
+	ok_to_exec = 0;
 	syslog(LOG_ALERT, "%s does not exist", user);
       } else {
 	/* setuid and exec */
 	if (setuid(pw->pw_uid) < 0) {
 	  /* setuid failed */
+	  ok_to_exec = 0;
 	  strerror_r(errno, errbuf, 1024);
 	  syslog(LOG_NOTICE, "setuid: %s", errbuf);
-	} else {
-	  /* exec... */
-	  if (execle(scrbuf, scrbuf, params, NULL, envp) < 0) {
-	    strerror_r(errno, errbuf, 1024);
-	    syslog(LOG_NOTICE, "execl: %s", errbuf);
-	  }
 	}
       }
       free(pw);
-
-      for (i = 0; i < 3; i++) {
-	if (envp[i] != NULL) {
-	  free(envp[i]);
-	}
-      }
-
-      /* should never get here, but just in case... */
-      exit(-1);
     } else {
       syslog(LOG_ALERT, "No script user defined running as root.  It's your funeral...");
     }
+
+    /* exec... */
+    if (ok_to_exec) {
+      if (execle(scrbuf, scrbuf, params, NULL, envp) < 0) {
+	strerror_r(errno, errbuf, 1024);
+	syslog(LOG_NOTICE, "execl: %s", errbuf);
+      }
+    }
+
+    for (i = 0; i < 3; i++) {
+      if (envp[i] != NULL) {
+	free(envp[i]);
+      }
+    }
+    
+    /* should never get here under normal circumstances, but just in case... */
+    exit(-1);
   } else {
     gettimeofday(&start, NULL);
 
-    while(!done) {
-      /* read from pipe */
-      FD_ZERO(&rd_set);
-      FD_SET(pipe_stdout_fd[0], &rd_set);
-      FD_SET(pipe_stderr_fd[0], &rd_set);
+    /* initialize FD SET */
+    FD_ZERO(&rd_set);
+    FD_SET(pipe_stdout_fd[0], &rd_set);
+    FD_SET(pipe_stderr_fd[0], &rd_set);
 
+    nfds = max(nfds, pipe_stdout_fd[0]);
+    nfds = max(nfds, pipe_stderr_fd[0]);
+    
+    while(!done) {
       /* set how long to wait for output before moving on to see
 	 if the script has terminated */
       to.tv_sec = 5;
       to.tv_usec = 0;
 
-      nfds = max(nfds, pipe_stdout_fd[0]);
-      nfds = max(nfds, pipe_stderr_fd[0]);
       rc = select(++nfds, &rd_set, NULL, NULL, &to);      
       
       if (rc > 0) {
@@ -136,7 +142,7 @@ monitor_result_t *monitor_shell(char *addr, char *script,
 	/* see which fd */
 	if (FD_ISSET(pipe_stdout_fd[0], &rd_set)) {
 	  /* stdout is for perf mon data */
-	  read(pipe_stderr_fd[0], readbuf, 1024);
+	  read(pipe_stdout_fd[0], readbuf, 1024);
 	  /* see if it's setting a title, otherwise append it to perf mon 
 	     output */
 	  if (!strncasecmp(readbuf, "title:", strlen("title:"))) {
@@ -155,7 +161,7 @@ monitor_result_t *monitor_shell(char *addr, char *script,
 	  }
 	} else if (FD_ISSET(pipe_stderr_fd[0], &rd_set)) {
 	  /* stderr is for monitor messages */
-	  read(pipe_stdout_fd[0], readbuf, 1024);
+	  read(pipe_stderr_fd[0], readbuf, 1024);
 	  if (monitor_output == NULL) {
 	    monitor_output = strdup(readbuf);
 	  } else {
@@ -171,15 +177,17 @@ monitor_result_t *monitor_shell(char *addr, char *script,
       }
 
       /* parent, wait for kid */
+      syslog(LOG_DEBUG, "waiting for %d...", pid);
       waited_pid = waitpid(pid, &exit_status, WNOHANG);
+      syslog(LOG_DEBUG, "waiting for %d returned %d", pid, waited_pid);
 
       if (waited_pid < 0) {
 	strerror_r(errno, errbuf, 1024);
 	syslog(LOG_NOTICE, "waitpid: %s", errbuf);
       } else if (waited_pid > 0) {
 	close(pipe_stdout_fd[0]);
-	close(pipe_stdout_fd[1]);
 	close(pipe_stderr_fd[0]);
+	close(pipe_stdout_fd[1]);
 	close(pipe_stderr_fd[1]);
 	done = 1;
 	syslog(LOG_DEBUG, "%s exited with %d", scrbuf, 
@@ -197,15 +205,18 @@ monitor_result_t *monitor_shell(char *addr, char *script,
 
     /* update monitor message */
     if (monitor_output) {
+      syslog(LOG_DEBUG, "copying monitor output");
       r->monitor_msg = strdup(monitor_output);
       free(monitor_output);
     }
  
     /* if script didn't provide timing data, save execution time */
     if (perf_output) {
+      syslog(LOG_DEBUG, "copying perf output");
       r->perf_data = strdup(perf_output);
       free(perf_output);
    } else {
+      syslog(LOG_DEBUG, "generating perf output");
       /* get elapsed time in milliseconds */
       elapsed = (stop.tv_sec - start.tv_sec) * 1000;
       elapsed += (stop.tv_usec - start.tv_usec) / 1000;
@@ -218,6 +229,9 @@ monitor_result_t *monitor_shell(char *addr, char *script,
     }
   }
 
+  syslog(LOG_DEBUG, "freeing scrbuf");
   free(scrbuf);
+  syslog(LOG_DEBUG, "freed scrbuf");
+
   return(r);
 }

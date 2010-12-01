@@ -141,6 +141,7 @@ void panoptes_rrd_xml_create(char *path,
 	     m->table_name);
     }
     fprintf(fh, "</config>\n");
+    fclose(fh);
   } else {
     strerror_r(errno, errbuf, 1024);
     syslog(LOG_NOTICE, "fopen: %s", errbuf);
