@@ -219,6 +219,7 @@ void *monitor_thread(void *arg)
 
     /* see if shutting down */
     if (stop_threads) {
+      syslog(LOG_DEBUG, "exiting");
       pthread_exit(NULL);
     }
   }

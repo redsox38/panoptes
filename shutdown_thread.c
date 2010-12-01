@@ -43,38 +43,42 @@ void *shutdown_thread(void *arg)
   
   (void *)sigwait(&sigs_to_catch, &caught);
 
+  syslog(LOG_DEBUG, "getting working lock");
   /* lock working lock to prevent new threads from starting */
   if ((rc = pthread_mutex_lock(&working_lock)) != 0) {
     strerror_r(errno, errbuf, 1024);
     syslog(LOG_ALERT, "pthread_mutex_lock: %s", errbuf);
   }
+  syslog(LOG_DEBUG, "got working lock");
 
   /* let threads know we're shutting down */
   stop_threads = 1;
 
   /* wait for threads to finish */
   while (working_count != 0) {
+    syslog(LOG_DEBUG, "working_count %d wakeup", working_count);    
     if ((rc = pthread_cond_wait(&working, &working_lock)) != 0) {
       strerror_r(errno, errbuf, 1024);
       syslog(LOG_ALERT, "pthread_cond_wait: %s", errbuf);
     }
+    syslog(LOG_DEBUG, "working_count %d wokeup", working_count);    
   }
 
+  /* monitor threads have terminated */
+  
   /* unlock working lock */
   if ((rc = pthread_mutex_unlock(&working_lock)) != 0) {
     strerror_r(errno, errbuf, 1024);
     syslog(LOG_ALERT, "pthread_mutex_unlock: %s", errbuf);
   }
+
   
   config_term_handler();
   database_term_handler();
 
   if (configfile)
     free(configfile);
-
   
-  /* terminate monitor threads */
-
   closelog();
 
   fprintf(stderr, "Terminated.\n");
