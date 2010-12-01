@@ -1681,8 +1681,10 @@ class panoptes
       $grp->commit();
 
       array_push($data, array(
-			      'id'            => $grp->id,
-			      'device_id'     => $grp->name));      
+			      'id'       => $grp->id,
+			      'type'     => 'group',
+			      'children' => array(),
+			      'name'     => $grp->name));      
     } catch (Exception $e) {
       return(array('result' => 'failure',
 		   'error'  => $e->getMessage()));

@@ -1,8 +1,7 @@
 var userFormbuilt = false;
 
 function xhrUpdateSecurityGroups(tree) {
-    alert('saving data store');
-    tree.model.store.save();
+    alert('Function not yet implemented');
 }
 
 function xhrAddUser(name) {
