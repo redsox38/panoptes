@@ -1,7 +1,30 @@
 var userFormbuilt = false;
 
-function xhrUpdateSecurityGroups(tree) {
-    alert('Function not yet implemented');
+function xhrUpdateSecurityGroups(src, tgt) {
+    var xhrArgs = {
+        url: '/panoptes/',
+        handleAs: 'json',
+        content: {
+            action: 'addSecurityGroupMember',
+            data: '{ "user_id": "' + src.get('value').replace("u_", "") + '", "group_id": "' +
+	           tgt.get('value').replace("g_", "") + '" }'
+        },
+        load: function(data) {
+            if (data && !data.error) {
+		// make a child of group in data store
+
+		// update display
+		src.set('displayedValue', '');
+		src.set('placeHolder', 'Add Successful');		
+		tgt.set('displayedValue', '');
+		tgt.set('placeHolder', 'Add Successful');		
+            } else {
+                alert(data.error);
+            }
+        },
+    };
+        
+    dojo.xhrGet(xhrArgs);    
 }
 
 function xhrAddUser(name) {
@@ -15,10 +38,9 @@ function xhrAddUser(name) {
         load: function(data) {
             if (data && !data.error) {
 		// add to store
-		srcUserStore.newItem(data.data);
-		srcUserStore.save();
 		userStore.newItem(data.data);
 		userStore.save();
+
 		// update display
 		name.set('displayedValue', '');
 		name.set('placeHolder', 'Add Successful');		
@@ -106,52 +128,42 @@ function buildUserForm() {
     del_sub.placeAt(user_tab.domNode);
 
     user_tab.domNode.appendChild(document.createElement("br"));
+    user_tab.domNode.appendChild(document.createTextNode("Add User to Group"));
+    user_tab.domNode.appendChild(document.createElement("br"));
 
-    // build source tree from copy of user store
-    srcUserModel = new dijit.tree.ForestStoreModel({
-	    store: srcUserStore,
+    // put up selects for group/user add
+    add_src_tb = new dijit.form.FilteringSelect({
+	    id: 'add_user_to_group_src',
+	    name: 'add_user_to_group_src',
+	    style: 'width: 15em;',
+	    store: userStore,
 	    query: { type: 'user' },
-	    rootId: 'users',
-	    childrenAttrs: ["children"],
-	    rootLabel: 'Current Users'
+	    serchAttr: 'id',
+	    placeHolder: 'username to add'
 	});
+    add_src_tb.placeAt(user_tab.domNode);    
 
-    srcUserTree = new dijit.Tree({
-	    id: 'src_user_tree',
-	    model: srcUserModel,
-	    dndController: 'dijit.tree.dndSource',
-	    copyOnly: true
-	});
-
-    srcUserTree.placeAt(user_tab.domNode);
-
-    tgtUserModel = new dijit.tree.ForestStoreModel({
+    add_tgt_tb = new dijit.form.FilteringSelect({
+	    id: 'add_user_to_group_tgt',
+	    name: 'add_user_to_group_tgt',
+	    style: 'width: 15em;',
 	    store: userStore,
 	    query: { type: 'group' },
-	    rootId: 'groups',
-	    childrenAttrs: ["children"],
-	    rootLabel: 'Current Groups'	    
+	    serchAttr: 'id',
+	    placeHolder: 'group to add to'
 	});
-
-    tgtUserTree = new dijit.Tree({
-	    id: 'tgt_user_tree',
-	    model: tgtUserModel,
-	    dndController: 'dijit.tree.dndSource',
-            dndParams: { isSource: false, autoSync: true }
-	});
-
-    tgtUserTree.placeAt(user_tab.domNode);
-
-    user_tab.domNode.appendChild(document.createElement("br"));
-    
+    add_tgt_tb.placeAt(user_tab.domNode);    
+        
     sub = new dijit.form.Button({
-	    label: 'Save Group Changes',
+	    label: 'Add User to Group',
 	    onClick: function() {
-		xhrUpdateSecurityGroups(dijit.byId('tgt_user_tree'));
+		xhrUpdateSecurityGroups(dijit.byId('add_user_to_group_src'),
+					dijit.byId('add_user_to_group_tgt'));
 	    }
 	});
 
     sub.placeAt(user_tab.domNode);
+    user_tab.domNode.appendChild(document.createElement("br"));
 
 }
 

@@ -2,7 +2,7 @@
     <monitor threads="2"/>
     <port_monitor timeout="5"/>
     <syslog facility=""/>
-    <lib database="/home/tmerritt/panoptes/database/.libs/libmysqldisc.so"/>
+    <lib database="/usr/local/lib/libmysqldisc.so"/>
     <db name="panoptes" user="db_username" password="db_password" host="localhost" sqlinit="/home/tmerritt/panoptes/dbinit.sql"/>
     <rrd directory="/home/tmerritt/panoptes_rrds"/>
     <script directory="/home/tmerritt/panoptes_scripts" user="apache"/>

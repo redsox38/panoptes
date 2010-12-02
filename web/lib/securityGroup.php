@@ -130,5 +130,22 @@ class securityGroup
       throw new Exception(mysql_error());
     }
   }
+
+ /**
+   * Add member to group
+   *
+   * @param userid suer it to add to group
+   * @throws Exception
+   * @return none
+   */
+  public function addMember($userid) {
+    // insert into security group
+    $res = mysql_query("INSERT INTO security_group_membership VALUES(" .
+		       $this->id . "," . $userid . ")", $this->db);
+    
+    if ($res === false) {
+      throw new Exception(mysql_error());
+    }
+  }
 }
 ?>
