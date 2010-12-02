@@ -47,7 +47,7 @@ void core_term_handler()
   if (configfile)
     free(configfile);
 
-  unlink("/tmp/panoptes_discover.pid");
+  unlink(PIDFILE);
   closelog();
 }
 
@@ -136,13 +136,14 @@ int main(int argc, char *argv[]) {
 
   openlog("panoptes_discover", LOG_PID, facil);
 
-  set_pidfile("/tmp/panoptes_discover.pid");
   disconnect_from_tty();
 
   /* parent terminates */
   if (fork()){
     exit(0);
   }
+
+  set_pidfile(PIDFILE);
 
   if (database_module_init() < 0) {
     exit(-1);

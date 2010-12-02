@@ -110,7 +110,6 @@ int main(int argc, char *argv[]) {
   
   openlog("panoptes_monitor", LOG_PID, facil);
 
-  set_pidfile("/tmp/panoptes_monitor.pid");
   disconnect_from_tty();
   
   syslog(LOG_NOTICE, "monitor starting");
@@ -119,6 +118,8 @@ int main(int argc, char *argv[]) {
   if (fork()){
     exit(0);
   }
+
+  set_pidfile(PIDFILE);
 
   if (database_module_init() < 0) {
     exit(-1);

@@ -81,6 +81,7 @@ void *shutdown_thread(void *arg)
   
   closelog();
 
+  unlink(PIDFILE);
   fprintf(stderr, "Terminated.\n");
   exit(0);
 }

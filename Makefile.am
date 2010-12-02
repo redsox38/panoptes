@@ -11,6 +11,6 @@ LDFLAGS = @LDFLAGS@ -Lutils/.libs -lpanoptes_utils
 SUBDIRS = database utils include
 AUTOMAKE_OPTIONS = no-dependencies
 panoptes_monitor_LDFLAGS = @LDFLAGS@ 
-panoptes_monitor_CPPFLAGS = @CPPFLAGS@ -D_REENTRANT
-panoptes_discover_CPPFLAGS = @CPPFLAGS@ -D_REENTRANT
+panoptes_monitor_CPPFLAGS = @CPPFLAGS@ -D_REENTRANT -DPIDFILE="\"@localstatedir@/run/panoptes_monitor.pid\""
+panoptes_discover_CPPFLAGS = @CPPFLAGS@ -D_REENTRANT -DPIDFILE="\"@localstatedir@/run/panoptes_discover.pid\""
 EXTRA_DIST = web database.h packet.h panoptes.h
