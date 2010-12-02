@@ -629,12 +629,17 @@ class panoptes
    * @throws Exception 
    * @return array of portMonitorEntry objects
    */
-  public function getPortMonitorData($id) {
+  public function getPortMonitorData($id, $ent_id = null) {
     $rtndata = array();
 
-    $res = mysql_query("SELECT * FROM port_monitors WHERE device_id='" . 
-		       $id ."'", $this->db);
-    
+    if (is_null($ent_id)) {
+      $res = mysql_query("SELECT * FROM port_monitors WHERE device_id='" . 
+			 $id ."'", $this->db);
+    } else {
+      $res = mysql_query("SELECT * FROM port_monitors WHERE device_id='" . 
+			 $id . "' AND id='" . $ent_id . "'", $this->db);
+    }
+
     if ($res !== false) {
       while ($r = mysql_fetch_assoc($res)) {
 	$ent = new portMonitorEntry($this->db);
@@ -1063,6 +1068,41 @@ class panoptes
 				 $a->port
 				 ));
       }
+    } catch (Exception $e) {
+      return(array('result' => 'failure',
+		   'error'  => $e->getMessage()));
+    }
+
+    return(array('result' => 'success', 'data' => $data));
+  }
+
+  /**
+   * get availability monitor entry
+   *
+   * return monitor information for given device id
+   *        and entry id
+   *
+   * @param args json params converted into an array
+   *             device_id device id to get data for
+   *             entry_id entry to get data for
+   * @throws none
+   * @return array containing result and possible error messages
+   */
+  public function ajax_getPortMonitorEntry($args) {
+    try {
+      $rst = $this->getPortMonitorData($args['device_id'], $args['entry_id']);
+      $a = $rst[0];
+      $data = array (
+		     'id'            => $a->id,
+		     'device_id'     => $a->device_id,
+		     'port'          => $a->port,
+		     'proto'         => $a->proto,
+		     'last_check'    => $a->last_check,
+		     'next_check'    => $a->next_check,
+		     'status'        => $a->status,
+		     'status_string' => $a->status_string,
+		     'metric'        => $a->proto . '-' . $a->port
+		     );
     } catch (Exception $e) {
       return(array('result' => 'failure',
 		   'error'  => $e->getMessage()));

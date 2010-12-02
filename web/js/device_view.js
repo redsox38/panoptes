@@ -9,6 +9,43 @@ var _dndMibCreator = function(item, hint) {
     return({ node: node, data: item, type: type });
 };
 
+function updatePortMonitorEntry(dev_id, ent_id, container) {
+    var xhrArgs = {
+	url: '/panoptes/',
+	handleAs: 'json',
+	content: {
+	    action: 'getPortMonitorEntry',
+	    data: '{ "device_id": "' + dev_id + '", "entry_id": "' + ent_id + '" }'
+	},
+	load: function(data) {
+	    if (data && !data.error) {          
+		// find this one entry in the data store and update it's values
+		portMonitorStore.fetchItemByIdentity({
+			identity: ent_id,
+			onItem: function(item, req) {
+			    portMonitorStore.setValue(item, 'status', data.data['status']);
+			    portMonitorStore.setValue(item, 'status_string', data.data['status_string']);
+			    portMonitorStore.setValue(item, 'last_check', data.data['last_check']);
+			    portMonitorStore.setValue(item, 'next_check', data.data['next_check']);
+
+			    portMonitorStore.save();
+			    container.setStore(portMonitorStore);
+			    container.update();		
+			}
+		    });
+
+		// schedule reload
+		reloadMonitorEntry(updatePortMonitorEntry, dev_id, ent_id, 
+				   container, data.data['next_check']);
+	    } else {
+		alert(data.error);
+	    }
+	},	
+    };
+       
+    var resp = dojo.xhrGet(xhrArgs);
+}
+ 
 function loadMibs(id, community, dndNode) {
     var xhrArgs = {
 	url: '/panoptes/',
@@ -27,7 +64,7 @@ function loadMibs(id, community, dndNode) {
 	    }
 	},	
     };
-       
+    
     var resp = dojo.xhrGet(xhrArgs);
 }
 
@@ -76,7 +113,7 @@ function addPortMonitorData(id, container) {
 		// populate grid
 		dojo.forEach(data.data, function(oneEntry) {
 			portMonitorStore.newItem(oneEntry);
-			reloadMonitorEntry();
+			reloadMonitorEntry(updatePortMonitorEntry, id, oneEntry['id'], container, oneEntry['next_check']);
 		    });
 
 		portMonitorStore.save();

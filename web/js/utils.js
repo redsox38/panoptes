@@ -1,10 +1,14 @@
-function reloadMonitorEntry(func, args, reload_date) {
-    // countdown now to reload_date, convert to seconds and set timer
-    then = Date(reload_date);
-    now = Date();
+function reloadMonitorEntry(func, dev_id, ent_id, container, reload_date) {
+    // countdown now to reload_date, convert to milliseconds and set timer
+    date_pat = /(^\d{4})\-(\d{2})-(\d{2}) (\d+):(\d+):(\d+)/;
+    date_parts = reload_date.match(date_pat);
 
-    to = (then - now) / 1000;
-    setTimer("func(args)", to);
+    then = new Date(date_parts[1], (date_parts[2] - 1), date_parts[3], date_parts[4], date_parts[5], date_parts[6]);
+    now = new Date();
+
+    to = then.valueOf() - now.valueOf();
+
+    setTimeout(func, to, dev_id, ent_id, container);
 }
 
 function createOverlayWindow(id, objs) {
