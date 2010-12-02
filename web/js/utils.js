@@ -8,7 +8,9 @@ function reloadMonitorEntry(func, dev_id, ent_id, container, reload_date) {
 
     to = then.valueOf() - now.valueOf();
 
-    setTimeout(func, to, dev_id, ent_id, container);
+    var timerId = setTimeout(func, to, dev_id, ent_id, container);
+
+    return(timerId);
 }
 
 function createOverlayWindow(id, objs) {

@@ -13,5 +13,4 @@ device list return objects user has permission on
 add permissions to objects
 remove device from group
 loading indicator
-reload monitors after interval in device view for open tab
 make right click select elements where there's a context menu

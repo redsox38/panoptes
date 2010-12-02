@@ -545,18 +545,23 @@ class panoptes
    *
    * @param id id of specific device to retrieve
    *                 snmp monitor data for
+   * @param ent_id optional specific entry to retrieve
    *
    * @throws Exception 
    * @return array of SNMPMonitorEntry objects
    */
-  public function getSNMPMonitorData($id) {
+  public function getSNMPMonitorData($id, $ent_id = null) {
     require_once 'SNMPMonitorEntry.php';
     $rtndata = array();
 
+    if (is_null($ent_id)) {
+      $res = mysql_query("SELECT * FROM snmp_monitors WHERE device_id='" . 
+			 $id ."'", $this->db);
+    } else {
+      $res = mysql_query("SELECT * FROM snmp_monitors WHERE device_id='" . 
+			 $id ."' AND id='" . $ent_id . "'", $this->db);
+    }
 
-    $res = mysql_query("SELECT * FROM snmp_monitors WHERE device_id='" . 
-		       $id ."'", $this->db);
-    
     if ($res !== false) {
       while ($r = mysql_fetch_assoc($res)) {
 	$ent = new SNMPMonitorEntry($this->db);
@@ -586,17 +591,23 @@ class panoptes
    *
    * @param id id of specific device to retrieve
    *                 monitor data for
+   * @param ent_id optional specific entry to retrieve
    *
    * @throws Exception 
    * @return array of shellMonitorEntry objects
    */
-  public function getShellMonitorData($id) {
+  public function getShellMonitorData($id, $ent_id = null) {
     require_once 'shellMonitorEntry.php';
     $rtndata = array();
 
-    $res = mysql_query("SELECT * FROM shell_monitors WHERE device_id='" . 
-		       $id ."'", $this->db);
-    
+    if (is_null($ent_id)) {
+      $res = mysql_query("SELECT * FROM shell_monitors WHERE device_id='" . 
+			 $id ."'", $this->db);
+    } else {
+      $res = mysql_query("SELECT * FROM shell_monitors WHERE device_id='" . 
+			 $id ."' AND id='" . $ent_id . "'", $this->db);
+    }
+
     if ($res !== false) {
       while ($r = mysql_fetch_assoc($res)) {
 	$ent = new shellMonitorEntry($this->db);
@@ -1036,6 +1047,42 @@ class panoptes
     return(array('result' => 'success', 'data' => $data));
   }
 
+  /**
+   * get availability monitor entry
+   *
+   * return monitor information for given device id
+   *        and entry id
+   *
+   * @param args json params converted into an array
+   *             device_id device id to get data for
+   *             entry_id entry to get data for
+   * @throws none
+   * @return array containing result and possible error messages
+   */
+  public function ajax_getSNMPMonitorEntry($args) {
+    try {
+      $rst = $this->getSNMPMonitorData($args['device_id'], $args['entry_id']);
+      $a = $rst[0];
+      $data = array (
+		     'id'            => $a->id,
+		     'device_id'     => $a->device_id,
+		     'name'          => $a->name,
+		     'community'     => $a->community,
+		     'oid'           => $a->oid_string,
+		     'oids'          => $a->oid_array,
+		     'last_check'    => $a->last_check,
+		     'next_check'    => $a->next_check,
+		     'status'        => $a->status,
+		     'status_string' => $a->status_string,
+		     'metric'        => $a->name
+		     );
+    } catch (Exception $e) {
+      return(array('result' => 'failure',
+		   'error'  => $e->getMessage()));
+    }
+
+    return(array('result' => 'success', 'data' => $data));
+  }
 
   /**
    * get snmp monitor data
@@ -1064,8 +1111,7 @@ class panoptes
 				 'next_check'    => $a->next_check,
 				 'status'        => $a->status,
 				 'status_string' => $a->status_string,
-				 'metric'        => $a->proto . '-' .
-				 $a->port
+				 'metric'        => $a->name
 				 ));
       }
     } catch (Exception $e) {
@@ -1643,6 +1689,40 @@ class panoptes
     
     return(array('result' => $result, 'error' => $error, 
 		 'data' => $data));
+  }
+
+  /**
+   * get availability monitor entry
+   *
+   * return monitor information for given device id
+   *        and entry id
+   *
+   * @param args json params converted into an array
+   *             device_id device id to get data for
+   *             entry_id entry to get data for
+   * @throws none
+   * @return array containing result and possible error messages
+   */
+  public function ajax_getShellMonitorEntry($args) {
+    try {
+      $rst = $this->getShellMonitorData($args['device_id'], $args['entry_id']);
+      $a = $rst[0];
+      $data = array (
+		     'id'            => $a->id,
+		     'device_id'     => $a->device_id,
+		     'script'        => $a->script,
+		     'params'        => $a->params,
+		     'last_check'    => $a->last_check,
+		     'next_check'    => $a->next_check,
+		     'status'        => $a->status,
+		     'status_string' => $a->status_string
+		     );
+    } catch (Exception $e) {
+      return(array('result' => 'failure',
+		   'error'  => $e->getMessage()));
+    }
+
+    return(array('result' => 'success', 'data' => $data));
   }
 
   /**

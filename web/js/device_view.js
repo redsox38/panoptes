@@ -10,6 +10,7 @@ var _dndMibCreator = function(item, hint) {
 };
 
 function updatePortMonitorEntry(dev_id, ent_id, container) {
+    
     var xhrArgs = {
 	url: '/panoptes/',
 	handleAs: 'json',
@@ -35,8 +36,84 @@ function updatePortMonitorEntry(dev_id, ent_id, container) {
 		    });
 
 		// schedule reload
-		reloadMonitorEntry(updatePortMonitorEntry, dev_id, ent_id, 
-				   container, data.data['next_check']);
+		timerId = reloadMonitorEntry(updatePortMonitorEntry, dev_id, ent_id, 
+					     container, data.data['next_check']);
+	    } else {
+		alert(data.error);
+	    }
+	},	
+    };
+       
+    var resp = dojo.xhrGet(xhrArgs);
+}
+
+function updateSNMPMonitorEntry(dev_id, ent_id, container) {
+    
+    var xhrArgs = {
+	url: '/panoptes/',
+	handleAs: 'json',
+	content: {
+	    action: 'getSNMPMonitorEntry',
+	    data: '{ "device_id": "' + dev_id + '", "entry_id": "' + ent_id + '" }'
+	},
+	load: function(data) {
+	    if (data && !data.error) {          
+		// find this one entry in the data store and update it's values
+		SNMPMonitorStore.fetchItemByIdentity({
+			identity: ent_id,
+			onItem: function(item, req) {
+			    SNMPMonitorStore.setValue(item, 'status', data.data['status']);
+			    SNMPMonitorStore.setValue(item, 'status_string', data.data['status_string']);
+			    SNMPMonitorStore.setValue(item, 'last_check', data.data['last_check']);
+			    SNMPMonitorStore.setValue(item, 'next_check', data.data['next_check']);
+
+			    SNMPMonitorStore.save();
+			    container.setStore(SNMPMonitorStore);
+			    container.update();		
+			}
+		    });
+
+		// schedule reload
+		timerId = reloadMonitorEntry(updateSNMPMonitorEntry, dev_id, ent_id, 
+					     container, data.data['next_check']);
+	    } else {
+		alert(data.error);
+	    }
+	},	
+    };
+       
+    var resp = dojo.xhrGet(xhrArgs);
+}
+
+function updateShellMonitorEntry(dev_id, ent_id, container) {
+    
+    var xhrArgs = {
+	url: '/panoptes/',
+	handleAs: 'json',
+	content: {
+	    action: 'getShellMonitorEntry',
+	    data: '{ "device_id": "' + dev_id + '", "entry_id": "' + ent_id + '" }'
+	},
+	load: function(data) {
+	    if (data && !data.error) {          
+		// find this one entry in the data store and update it's values
+		shellMonitorStore.fetchItemByIdentity({
+			identity: ent_id,
+			onItem: function(item, req) {
+			    shellMonitorStore.setValue(item, 'status', data.data['status']);
+			    shellMonitorStore.setValue(item, 'status_string', data.data['status_string']);
+			    shellMonitorStore.setValue(item, 'last_check', data.data['last_check']);
+			    shellMonitorStore.setValue(item, 'next_check', data.data['next_check']);
+
+			    shellMonitorStore.save();
+			    container.setStore(shellMonitorStore);
+			    container.update();		
+			}
+		    });
+
+		// schedule reload
+		timerId = reloadMonitorEntry(updateShellMonitorEntry, dev_id, ent_id, 
+					     container, data.data['next_check']);
 	    } else {
 		alert(data.error);
 	    }
@@ -113,7 +190,8 @@ function addPortMonitorData(id, container) {
 		// populate grid
 		dojo.forEach(data.data, function(oneEntry) {
 			portMonitorStore.newItem(oneEntry);
-			reloadMonitorEntry(updatePortMonitorEntry, id, oneEntry['id'], container, oneEntry['next_check']);
+			timerId = reloadMonitorEntry(updatePortMonitorEntry, id, oneEntry['id'], 
+						     container, oneEntry['next_check']);
 		    });
 
 		portMonitorStore.save();
@@ -170,6 +248,8 @@ function addShellMonitorData(id, container) {
 		// populate grid
 		dojo.forEach(data.data, function(oneEntry) {
 			shellMonitorStore.newItem(oneEntry);
+			timerId = reloadMonitorEntry(updateShellMonitorEntry, id, oneEntry['id'], 
+						     container, oneEntry['next_check']);
 		    });
 
 		shellMonitorStore.save();
@@ -198,6 +278,8 @@ function addSNMPMonitorData(id, container) {
 		    // populate grid		
 		    dojo.forEach(data.data, function(oneEntry) {
 			    SNMPMonitorStore.newItem(oneEntry);
+			    timerId = reloadMonitorEntry(updateSNMPMonitorEntry, id, oneEntry['id'], 
+							 container, oneEntry['next_check']);
 			});
 
 		    SNMPMonitorStore.save();
@@ -683,7 +765,7 @@ function openDevice() {
     var id = deviceStore.getValues(deviceTreeSelectedItem, 'id').toString();
     id = id.replace("d_", "");
     var name = deviceStore.getValues(deviceTreeSelectedItem, 'name');
-						
+
     // border container to hold the content for the tab for this
     // device
     var bc = new dijit.layout.BorderContainer({
