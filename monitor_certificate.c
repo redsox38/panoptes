@@ -18,14 +18,14 @@
  */
 
 #include "panoptes.h"
-#include "utils/configuration.h"
+#include "panoptes/configuration.h"
 #include <signal.h>
 #include <pthread.h>
 #include <errno.h>
 #include <sys/time.h>
 #include <string.h>
 #include <time.h>
-#include "monitor_core.h"
+#include "panoptes/monitor_core.h"
 #include <curl/curl.h>
 #include <curl/types.h>
 #include <curl/easy.h>

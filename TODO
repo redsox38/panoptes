@@ -3,7 +3,6 @@ fork new thread for performance monitor updates
 email/sms notifications
 replace SOURCE... in db init with reading in statements and executing them
 config option to auto accept auto discovery entries
-don't hardcode syslog facility
 
 svc dependencies
 

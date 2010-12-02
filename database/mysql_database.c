@@ -26,13 +26,13 @@
 #undef PACKAGE_TARNAME
 #undef PACKAGE_BUGREPORT
 #ifdef HAVE_LIBMYSQLCLIENT_R
-#include "../utils/configuration.h"
+#include "panoptes/configuration.h"
 #include "mysql_database.h"
 #include <my_global.h>
 #include <mysql.h>
 #include <pwd.h>
 #include <string.h>
-#include "monitor_core.h"
+#include "panoptes/monitor_core.h"
 #include <pthread.h>
 
 pthread_mutex_t sql_mutex = PTHREAD_MUTEX_INITIALIZER;

@@ -18,10 +18,10 @@
  */
 
 #include "panoptes.h"
-#include "utils/configuration.h"
+#include "panoptes/configuration.h"
 #include "database.h"
 #include <dlfcn.h>
-#include "monitor_core.h"
+#include "panoptes/monitor_core.h"
 
 /*
   database container that passes calls off to shared library particular to

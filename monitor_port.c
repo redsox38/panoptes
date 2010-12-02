@@ -18,7 +18,7 @@
  *
  */
 #include "panoptes.h"
-#include "utils/configuration.h"
+#include "panoptes/configuration.h"
 #include <signal.h>
 #include <pthread.h>
 #include <sys/socket.h>
@@ -30,7 +30,7 @@
 #include <unistd.h>
 #include <fcntl.h>
 #include <sys/time.h>
-#include "monitor_core.h"
+#include "panoptes/monitor_core.h"
 
 monitor_result_t *monitor_port(char *addr, char *proto, 
 			       int port, monitor_result_t *r)

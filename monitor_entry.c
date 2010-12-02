@@ -19,7 +19,7 @@
 
 #include "panoptes.h"
 #include <pthread.h>
-#include "monitor_core.h"
+#include "panoptes/monitor_core.h"
 
 monitor_entry_t *allocate_monitor_entry(monitor_entry_t *m)
 {

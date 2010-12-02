@@ -42,4 +42,4 @@ AC_TYPE_SIZE_T
 AC_HEADER_TIME
 AC_STRUCT_TM
 
-AC_OUTPUT(Makefile database/Makefile utils/Makefile)
+AC_OUTPUT(Makefile include/Makefile database/Makefile utils/Makefile)

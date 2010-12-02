@@ -17,8 +17,10 @@
  *
  */
 
+#define SYSLOG_NAMES
+
 #include "panoptes.h"
-#include "utils/configuration.h"
+#include "panoptes/configuration.h"
 #include <getopt.h>
 #include <signal.h>
 
@@ -78,7 +80,8 @@ int main(int argc, char *argv[]) {
   int                c, option_index;
   int                init_db_flag = 0;
   char               *facil_str;
-  int                facil;
+  int                facil = -1;
+  CODE               *cs;
 
   /* process command line */
 
@@ -118,9 +121,18 @@ int main(int argc, char *argv[]) {
 
   /* open syslog */
   facil_str = get_config_value("syslog.facility");
-  /* fixme */
-  facil = LOG_LOCAL0;
+  for(cs = facilitynames; cs->c_name; cs++) {
+    if (!(strcmp(facil_str, cs->c_name))) {
+      facil = cs->c_val;
+      break;
+    }
+  }
   free(facil_str);
+
+  if (facil < 0) {
+    fprintf(stderr, "Invalid syslog facility");
+    exit(-1);
+  }
 
   openlog("panoptes_discover", LOG_PID, facil);
 

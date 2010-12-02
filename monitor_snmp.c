@@ -18,7 +18,7 @@
  */
 
 #include "panoptes.h"
-#include "utils/configuration.h"
+#include "panoptes/configuration.h"
 #include <signal.h>
 #include <pthread.h>
 #include <errno.h>
@@ -26,8 +26,7 @@
 #include <sys/time.h>
 #include <string.h>
 #include <time.h>
-#include <syslog.h>
-#include "monitor_core.h"
+#include "panoptes/monitor_core.h"
 #include <net-snmp/net-snmp-config.h>
 #include <net-snmp/net-snmp-includes.h>
 

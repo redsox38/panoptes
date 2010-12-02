@@ -13379,7 +13379,7 @@ _ACEOF
 fi
 
 
-ac_config_files="$ac_config_files Makefile database/Makefile utils/Makefile"
+ac_config_files="$ac_config_files Makefile include/Makefile database/Makefile utils/Makefile"
 
 cat >confcache <<\_ACEOF
 # This file is a shell script that caches the results of configure
@@ -14274,6 +14274,7 @@ do
     "libtool") CONFIG_COMMANDS="$CONFIG_COMMANDS libtool" ;;
     "config.h") CONFIG_HEADERS="$CONFIG_HEADERS config.h" ;;
     "Makefile") CONFIG_FILES="$CONFIG_FILES Makefile" ;;
+    "include/Makefile") CONFIG_FILES="$CONFIG_FILES include/Makefile" ;;
     "database/Makefile") CONFIG_FILES="$CONFIG_FILES database/Makefile" ;;
     "utils/Makefile") CONFIG_FILES="$CONFIG_FILES utils/Makefile" ;;
 
