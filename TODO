@@ -11,5 +11,4 @@ add group authz
 device list return objects user has permission on
 add permissions to objects
 remove device from group
-loading indicator
 make right click select elements where there's a context menu

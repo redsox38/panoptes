@@ -1,3 +1,18 @@
+function showLoading() {
+    loading_count++;
+
+    var img_div = document.getElementById("loading_img");
+    img_div.style.visibility = "visible";
+}
+
+function hideLoading() {    
+    loading_count--;
+    if (loading_count == 0) {
+	var img_div = document.getElementById("loading_img");
+	img_div.style.visibility = "hidden";
+    }
+}
+
 function reloadMonitorEntry(func, dev_id, ent_id, container, reload_date) {
     // countdown now to reload_date, convert to milliseconds and set timer
     date_pat = /(^\d{4})\-(\d{2})-(\d{2}) (\d+):(\d+):(\d+)/;

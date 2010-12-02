@@ -10,6 +10,8 @@ var shellMonitorStore;
 var availableShellMonitorStore;
 var userStore;
 
+var loading_count = 0;
+
 function loadUsers() {
     var xhrArgs = {
 	url: '/panoptes/',

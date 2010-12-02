@@ -100,6 +100,9 @@ if ($_SERVER["HTTP_X_REQUESTED_WITH"] == 'XMLHttpRequest') {
 
 </head>
 <body class="claro">
+    <div id="loading_img" style="visibility: hidden;">
+        <img src="images/loading.gif"/>
+    </div>
     <div dojoType="dijit.Menu" id="monitorMenu" style="display: none;">
         <div dojoType="dijit.MenuItem" onClick="addMonitor();">
             Add New

@@ -10,7 +10,6 @@ var _dndMibCreator = function(item, hint) {
 };
 
 function updatePortMonitorEntry(dev_id, ent_id, container) {
-    
     var xhrArgs = {
 	url: '/panoptes/',
 	handleAs: 'json',
@@ -47,8 +46,7 @@ function updatePortMonitorEntry(dev_id, ent_id, container) {
     var resp = dojo.xhrGet(xhrArgs);
 }
 
-function updateSNMPMonitorEntry(dev_id, ent_id, container) {
-    
+function updateSNMPMonitorEntry(dev_id, ent_id, container) {    
     var xhrArgs = {
 	url: '/panoptes/',
 	handleAs: 'json',
@@ -86,7 +84,6 @@ function updateSNMPMonitorEntry(dev_id, ent_id, container) {
 }
 
 function updateShellMonitorEntry(dev_id, ent_id, container) {
-    
     var xhrArgs = {
 	url: '/panoptes/',
 	handleAs: 'json',
@@ -139,9 +136,11 @@ function loadMibs(id, community, dndNode) {
 	    } else if (data.error) {
 		alert(data.error);
 	    }
+	    hideLoading();
 	},	
     };
     
+    showLoading();
     var resp = dojo.xhrGet(xhrArgs);
 }
 
@@ -200,9 +199,11 @@ function addPortMonitorData(id, container) {
 	    } else {
 		alert(data.error);
 	    }
+	    hideLoading();
 	},	
     };
        
+    showLoading();
     var resp = dojo.xhrGet(xhrArgs);
 }
 
@@ -229,9 +230,11 @@ function addCertificateMonitorData(id, container) {
 	    } else {
 		alert(data.error);
 	    }
+	    hideLoading();
 	},	
     };
        
+    showLoading();
     var resp = dojo.xhrGet(xhrArgs);
 }
 
@@ -258,9 +261,11 @@ function addShellMonitorData(id, container) {
 	    } else {
 		alert(data.error);
 	    }
+	    hideLoading();
 	},	
     };
        
+    showLoading();
     var resp = dojo.xhrGet(xhrArgs);
 }
 
@@ -289,9 +294,11 @@ function addSNMPMonitorData(id, container) {
 	    } else {
 		alert(data.error);
 	    }
+	    hideLoading();
 	},	
     };
        
+    showLoading();
     var resp = dojo.xhrGet(xhrArgs);
 }
 
@@ -345,10 +352,12 @@ function addInfoData(id, container) {
 	    } else {
 		alert(data.error);
 	    }
+	    hideLoading();
 	},
 
     };
 	
+    showLoading();
     var resp = dojo.xhrGet(xhrArgs);
 }
 
