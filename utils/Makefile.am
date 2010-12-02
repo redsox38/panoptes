@@ -1,3 +1,4 @@
+include_HEADERS = configuration.h
 LIBS =
 lib_LTLIBRARIES = libpanoptes_utils.la
 libpanoptes_utils_la_SOURCES = configuration.c

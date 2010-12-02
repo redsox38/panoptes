@@ -1,3 +1,5 @@
+include_HEADERS = mysql_database.h
+
 LIBS =
 lib_LTLIBRARIES = libmysqldisc.la
 libmysqldisc_la_SOURCES = mysql_database.c

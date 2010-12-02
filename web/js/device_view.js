@@ -76,6 +76,7 @@ function addPortMonitorData(id, container) {
 		// populate grid
 		dojo.forEach(data.data, function(oneEntry) {
 			portMonitorStore.newItem(oneEntry);
+			reloadMonitorEntry();
 		    });
 
 		portMonitorStore.save();

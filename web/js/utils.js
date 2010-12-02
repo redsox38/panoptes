@@ -1,3 +1,12 @@
+function reloadMonitorEntry(func, args, reload_date) {
+    // countdown now to reload_date, convert to seconds and set timer
+    then = Date(reload_date);
+    now = Date();
+
+    to = (then - now) / 1000;
+    setTimer("func(args)", to);
+}
+
 function createOverlayWindow(id, objs) {
     var dv1 = document.createElement("div");
     dv1.id = id;
