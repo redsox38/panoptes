@@ -142,6 +142,8 @@ monitor_result_t *monitor_shell(char *addr, char *script,
 	/* see which fd */
 	if (FD_ISSET(pipe_stdout_fd[0], &rd_set)) {
 	  /* stdout is for perf mon data */
+	  /* erase whatever was in readbuf */
+	  memset(readbuf, 0x0, 1024);
 	  read(pipe_stdout_fd[0], readbuf, 1024);
 	  /* see if it's setting a title, otherwise append it to perf mon 
 	     output */
