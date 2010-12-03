@@ -12,3 +12,4 @@ device list return objects user has permission on
 add permissions to objects
 remove device from group
 make right click select elements where there's a context menu
+user preferences (theme, notifications, etc...)

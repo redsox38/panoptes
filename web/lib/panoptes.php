@@ -1004,6 +1004,37 @@ class panoptes
   }
 
   /**
+   * delete security group member
+   *
+   * add member id to group, creating group if it doesn't already exist
+   *
+   * @param args json params converted into an array
+   *             user_id user id to remove (numeric database id)
+   *             group_id group id to remove from
+   * @throws none
+   * @return array containing result and possible error messages
+   */
+  public function ajax_deleteSecurityGroupMember($args) {
+    try {
+
+      $grp = $this->getSecurityGroup($args['group_id'], null);
+  
+      if (is_null($grp)) {
+	return(array('result' => 'failure',
+		     'error'  => "group " . $args['group_id'] . " does not exist"));
+      }
+
+      // remove member from group
+      $grp->deleteMember($args['user_id']);
+    } catch (Exception $e) {
+      return(array('result' => 'failure',
+		   'error'  => $e->getMessage()));
+    }
+
+    return(array('result' => 'success'));
+  }
+
+  /**
    * get device info
    *
    * return information about given device id

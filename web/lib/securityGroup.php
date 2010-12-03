@@ -134,7 +134,7 @@ class securityGroup
  /**
    * Add member to group
    *
-   * @param userid suer it to add to group
+   * @param userid user to add to group
    * @throws Exception
    * @return none
    */
@@ -142,6 +142,24 @@ class securityGroup
     // insert into security group
     $res = mysql_query("INSERT INTO security_group_membership VALUES(" .
 		       $this->id . "," . $userid . ")", $this->db);
+    
+    if ($res === false) {
+      throw new Exception(mysql_error());
+    }
+  }
+
+
+ /**
+   * Delete member from group
+   *
+   * @param userid user to remove to group
+   * @throws Exception
+   * @return none
+   */
+  public function deleteMember($userid) {
+    // delete from security group
+    $res = mysql_query("DELETE FROM security_group_membership WHERE id=" .
+		       $this->id . " AND user_id=" . $userid, $this->db);
     
     if ($res === false) {
       throw new Exception(mysql_error());
