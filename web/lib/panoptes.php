@@ -2024,6 +2024,44 @@ class panoptes
 		 'data' => $data));
   }
 
+  /**
+   * savePrefs
+   *
+   * @param args json params converted into an array
+   *                  scope scope of preferences being saved
+   *                  prefs name value pairs of preferences to update
+   * @throws none
+   * @return array containing result and possible error messages
+   */
+  public function ajax_savePrefs($args) {
+    global $panoptes_current_user;
+
+    $result = 'success';
+    $error = '';
+    $data = array();
+
+    try {
+      require_once 'userEntry.php';
+      require_once 'userPrefs.php';
+      $user = new userEntry();
+      $user->db = $this->db;
+      $user->getByName($panoptes_current_user);
+
+      $userPrefs = new userPrefs($this->db);
+      $userPrefs->db = $this->db;
+      foreach ($args['prefs'] as $k => $v) {
+	$userPrefs->setPref($user->id, $args['scope'], $k, $v);
+      }
+      
+    } catch (Exception $e) {
+      return(array('result' => 'failure',
+		   'error'  => $e->getMessage()));
+    }
+    
+    return(array('result' => $result, 'error' => $error, 
+		 'data' => $data));
+  }
+
 }
 
 ?>

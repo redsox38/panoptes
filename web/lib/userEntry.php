@@ -92,6 +92,34 @@ class userEntry
   }
 
   /**
+   * Get user by name
+   *
+   * @param name name to look up
+   * @throws Exception
+   * @return none
+   */
+  public function getByName($name) {
+    $res = mysql_query("SELECT * FROM users WHERE name='" .
+		       mysql_real_escape_string($name) . 
+		       "'", $this->db);
+
+    if ($res !== false) {
+      $r = mysql_fetch_assoc($res);
+      if ($r) {
+	$this->id = $r['id'];
+	$this->name = $r['name'];
+	$this->created_by = $r['created_by'];
+	$this->modified = $r['modififed'];
+	mysql_free_result($res);
+      } else {
+	throw new Exception("user " . $name . " does not exist");
+      }
+    } else {
+      throw new Exception(mysql_error());
+    }
+  }
+
+  /**
    * Delete user entry
    *
    * @param none

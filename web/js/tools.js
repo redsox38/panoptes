@@ -1,20 +1,55 @@
-function createPrefTab(name) {
+function createPrefTab(name, dijits, labels) {
 
-    cp = new dijit.layout.ContentPane({
+    var cp = new dijit.layout.ContentPane({
             id: 'pref_tab_' + name,
             title: name,
             content: '',            
         });
 
-    sub = new dijit.form.Button({
+    for (i = 0; i < dijits.length; i++) {
+	l = document.createElement("label");
+	l.htmlFor = dijits[i].id;
+	l.appendChild(document.createTextNode(labels[i]));
+	cp.domNode.appendChild(l);
+
+	dijits[i].placeAt(cp.domNode);
+	cp.domNode.appendChild(document.createElement("br"));
+    }
+
+    var sub = new dijit.form.Button({
 	    id: 'pref_tab_' + name + '_submit',
 	    label: 'Save',
 	    onClick: function() {
-		alert('Function not yet implemented');
+		var params = {};
+		chld = cp.getChildren();
+		dojo.forEach(chld, function(item) {
+			if (item.declaredClass != 'dijit.form.Button') {
+			    // add to params for xhr call
+			    params[item.id] = item.get('value');
+			}
+		    });
+
+		// now that we got all of the values from the form, 
+		// pass them back to the server
+		var xhrArgs = {
+		    url: '/panoptes/',
+		    handleAs: 'json',
+		    content: {
+			action: 'savePrefs',
+			data: '{ "scope": "' + name + '", "prefs": ' +
+			      dojo.toJson(params) + '}'
+		    },
+		    load: function(data) {
+			if (data && data.error) {
+			    alert(data.error);
+			}
+		    },
+		};
+		
+		dojo.xhrGet(xhrArgs);    
 	    }
 	});
 
-    //cp.domNode.appendChild(document.createElement("br"));
     sub.placeAt(cp.domNode);
 
     return(cp);
@@ -37,9 +72,30 @@ function openPrefTab() {
 
     bc.addChild(tc);
 
+    themeStore = new dojo.data.ItemFileReadStore({
+	    data: {
+		identifier: 'theme_name',
+		label: 'theme_name',
+		items: [
+                        {theme_name: 'claro'},
+                        {theme_name: 'tundra'},
+		        {theme_name: 'nihilo'},
+		        {theme_name: 'soria'}
+			]
+	    }
+	});
+
     // add pref tabs
-    tc.addChild(createPrefTab('general'));
-    tc.addChild(createPrefTab('notifications'));
+    sb = new dijit.form.FilteringSelect({
+            id: 'general_prefs_theme',
+            name: 'theme_name',
+            store: themeStore,
+            title: 'Theme',        
+            searchAttr: 'theme_name'
+        });
+    
+    tc.addChild(createPrefTab('general', [sb], ['theme']));
+    tc.addChild(createPrefTab('notifications', [], []));
 
     dijit.byId("panoptes_tab_container").addChild(bc);
     dijit.byId("panoptes_tab_container").selectChild(bc);
