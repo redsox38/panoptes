@@ -521,6 +521,25 @@ function createPortMonitorTab(id) {
 		
 	    }
 	});
+
+    dojo.connect(tc_1, 'onRowMouseOver', function(e) {
+	    var item = tc_1.getItem(e.rowIndex);
+	    var who = tc_1.store.getValue(item, "ack_by", null);
+	    var what = tc_1.store.getValue(item, "ack_msg", null);
+	    var msg = null;
+	    if (who && what) {
+		msg = who + ": " + what;
+	    }
+	    
+	    if (msg) {
+		dijit.showTooltip(msg, e.cellNode);
+	    }
+	});
+
+    dojo.connect(tc_1, 'onRowMouseOut', function(e) {
+	    dijit.hideTooltip(e.cellNode);
+	});
+
     // load data for availability tab
     addPortMonitorData(id, tc_1);
     
@@ -603,6 +622,25 @@ function createSNMPTab(id) {
 		
 	    }
 	});
+
+    dojo.connect(tc_1, 'onRowMouseOver', function(e) {
+	    var item = tc_1.getItem(e.rowIndex);
+	    var who = tc_1.store.getValue(item, "ack_by", null);
+	    var what = tc_1.store.getValue(item, "ack_msg", null);
+	    var msg = null;
+	    if (who && what) {
+		msg = who + ": " + what;
+	    }
+	    
+	    if (msg) {
+		dijit.showTooltip(msg, e.cellNode);
+	    }
+	});
+
+    dojo.connect(tc_1, 'onRowMouseOut', function(e) {
+	    dijit.hideTooltip(e.cellNode);
+	});
+
     // load data for tab
     addSNMPMonitorData(id, tc_1);
     
@@ -686,6 +724,24 @@ function createShellTab(id) {
 	    }
 	});
 
+    dojo.connect(tc_1, 'onRowMouseOver', function(e) {
+	    var item = tc_1.getItem(e.rowIndex);
+	    var who = tc_1.store.getValue(item, "ack_by", null);
+	    var what = tc_1.store.getValue(item, "ack_msg", null);
+	    var msg = null;
+	    if (who && what) {
+		msg = who + ": " + what;
+	    }
+	    
+	    if (msg) {
+		dijit.showTooltip(msg, e.cellNode);
+	    }
+	});
+
+    dojo.connect(tc_1, 'onRowMouseOut', function(e) {
+	    dijit.hideTooltip(e.cellNode);
+	});
+
     // load data for tab
     addShellMonitorData(id, tc_1);
     
@@ -763,6 +819,25 @@ function createCertificateTab(id) {
 		
 	    }
 	});
+
+    dojo.connect(tc_1, 'onRowMouseOver', function(e) {
+	    var item = tc_1.getItem(e.rowIndex);
+	    var who = tc_1.store.getValue(item, "ack_by", null);
+	    var what = tc_1.store.getValue(item, "ack_msg", null);
+	    var msg = null;
+	    if (who && what) {
+		msg = who + ": " + what;
+	    }
+	    
+	    if (msg) {
+		dijit.showTooltip(msg, e.cellNode);
+	    }
+	});
+
+    dojo.connect(tc_1, 'onRowMouseOut', function(e) {
+	    dijit.hideTooltip(e.cellNode);
+	});
+
     // load data for tab
     addCertificateMonitorData(id, tc_1);
     

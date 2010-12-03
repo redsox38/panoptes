@@ -1094,6 +1094,7 @@ class panoptes
     try {
       $rst = $this->getSNMPMonitorData($args['device_id'], $args['entry_id']);
       $a = $rst[0];
+      $ack = $a->getAckInfo();
       $data = array (
 		     'id'            => $a->id,
 		     'device_id'     => $a->device_id,
@@ -1103,6 +1104,8 @@ class panoptes
 		     'oids'          => $a->oid_array,
 		     'last_check'    => $a->last_check,
 		     'next_check'    => $a->next_check,
+		     'ack_by'        => $ack['ack_by'],
+		     'ack_msg'       => $ack['ack_msg'],
 		     'status'        => $a->status,
 		     'status_string' => $a->status_string,
 		     'metric'        => $a->name
@@ -1131,6 +1134,7 @@ class panoptes
     try {
       $rst = $this->getSNMPMonitorData($args['id']);
       foreach ($rst as $a) {
+	$ack = $a->getAckInfo();
 	array_push($data, array (
 				 'id'            => $a->id,
 				 'device_id'     => $a->device_id,
@@ -1140,6 +1144,8 @@ class panoptes
 				 'oids'          => $a->oid_array,
 				 'last_check'    => $a->last_check,
 				 'next_check'    => $a->next_check,
+				 'ack_by'        => $ack['ack_by'],
+				 'ack_msg'       => $ack['ack_msg'],
 				 'status'        => $a->status,
 				 'status_string' => $a->status_string,
 				 'metric'        => $a->name
@@ -1169,6 +1175,7 @@ class panoptes
     try {
       $rst = $this->getPortMonitorData($args['device_id'], $args['entry_id']);
       $a = $rst[0];
+      $ack = $a->getAckInfo();
       $data = array (
 		     'id'            => $a->id,
 		     'device_id'     => $a->device_id,
@@ -1178,6 +1185,8 @@ class panoptes
 		     'next_check'    => $a->next_check,
 		     'status'        => $a->status,
 		     'status_string' => $a->status_string,
+		     'ack_by'        => $ack['ack_by'],
+		     'ack_msg'       => $ack['ack_msg'],
 		     'metric'        => $a->proto . '-' . $a->port
 		     );
     } catch (Exception $e) {
@@ -1204,6 +1213,7 @@ class panoptes
     try {
       $rst = $this->getPortMonitorData($args['id']);
       foreach ($rst as $a) {
+	$ack = $a->getAckInfo();
 	array_push($data, array (
 				 'id'            => $a->id,
 				 'device_id'     => $a->device_id,
@@ -1212,6 +1222,8 @@ class panoptes
 				 'last_check'    => $a->last_check,
 				 'next_check'    => $a->next_check,
 				 'status'        => $a->status,
+				 'ack_by'        => $ack['ack_by'],
+				 'ack_msg'       => $ack['ack_msg'],
 				 'status_string' => $a->status_string,
 				 'metric'        => $a->proto . '-' .
 				 $a->port
@@ -1326,12 +1338,15 @@ class panoptes
     try {
       $rst = $this->getCertificateMonitorData($args['id']);
       foreach ($rst as $a) {
+	$ack = $a->getAckInfo();
 	array_push($data, array (
 				 'id'            => $a->id,
 				 'device_id'     => $a->device_id,
 				 'url'           => $a->url,
 				 'last_check'    => $a->last_check,
 				 'next_check'    => $a->next_check,
+				 'ack_by'        => $ack['ack_by'],
+				 'ack_msg'       => $ack['ack_msg'],
 				 'status'        => $a->status,
 				 'status_string' => $a->status_string
 				 ));
@@ -1374,6 +1389,13 @@ class panoptes
 	foreach ($args['id'] as $v) {	  
 	  require_once 'SNMPMonitorEntry.php';
 	  $ent = new SNMPMonitorEntry($this->db);
+	  $ent->id = $v;
+	  $ent->delete();
+	}
+      } elseif ($args['type'] == 'shell_monitors') {
+	foreach ($args['id'] as $v) {	  
+	  require_once 'shellMonitorEntry.php';
+	  $ent = new shellMonitorEntry($this->db);
 	  $ent->id = $v;
 	  $ent->delete();
 	}
@@ -1429,6 +1451,17 @@ class panoptes
 	require_once 'SNMPMonitorEntry.php';
 	foreach ($args['id'] as $v) {	  
 	  $ent = new SNMPMonitorEntry($this->db);
+	  $ent->id = $v;
+	  if ($flag) {
+	    $ent->enable();
+	  } else {
+	    $ent->disable();
+	  }
+	}
+      } elseif ($args['type'] == 'shell_monitors') {
+	require_once 'shellMonitorEntry.php';
+	foreach ($args['id'] as $v) {	  
+	  $ent = new shellMonitorEntry($this->db);
 	  $ent->id = $v;
 	  if ($flag) {
 	    $ent->enable();
@@ -1570,6 +1603,9 @@ class panoptes
 	} else if ($args['type'] == 'snmp_monitors') {
 	  require_once 'SNMPMonitorEntry.php';
 	  $ent = new SNMPMonitorEntry($this->db);
+	} else if ($args['type'] == 'shell_monitors') {
+	  require_once 'shellMonitorEntry.php';
+	  $ent = new shellMonitorEntry($this->db);
 	}
 
 	$ent->id = $v;
@@ -1738,6 +1774,7 @@ class panoptes
     try {
       $rst = $this->getShellMonitorData($args['device_id'], $args['entry_id']);
       $a = $rst[0];
+      $ack = $a->getAckInfo();
       $data = array (
 		     'id'            => $a->id,
 		     'device_id'     => $a->device_id,
@@ -1745,6 +1782,8 @@ class panoptes
 		     'params'        => $a->params,
 		     'last_check'    => $a->last_check,
 		     'next_check'    => $a->next_check,
+		     'ack_by'        => $ack['ack_by'],
+		     'ack_msg'       => $ack['ack_msg'],
 		     'status'        => $a->status,
 		     'status_string' => $a->status_string
 		     );
@@ -1783,6 +1822,7 @@ class panoptes
 	// just get shell monitors for the device identified by id
 	$monitors = $this->getShellMonitorData($args['id']);
 	foreach ($monitors as $a) {
+	  $ack = $a->getAckInfo();
 	  array_push($data, array(
 				 'id'            => $a->id,
 				 'device_id'     => $a->device_id,
@@ -1790,6 +1830,8 @@ class panoptes
 				 'params'        => $a->params,
 				 'last_check'    => $a->last_check,
 				 'next_check'    => $a->next_check,
+				 'ack_by'        => $ack['ack_by'],
+				 'ack_msg'       => $ack['ack_msg'],
 				 'status'        => $a->status,
 				 'status_string' => $a->status_string
 				  ));

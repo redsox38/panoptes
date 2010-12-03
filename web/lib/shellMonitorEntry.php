@@ -151,5 +151,37 @@ class shellMonitorEntry extends hostEntry
       throw new Exception(mysql_error());
     }
   }
+
+  /**
+   * get ack entry from datbase
+   *
+   * @param msg ack message
+   * @throws Exception
+   * @return none
+   */
+  public function getAckInfo() {
+    
+    $res = mysql_query("SELECT * FROM shell_acknowledgments WHERE monitor_id=" .
+		       $this->id . " ORDER BY ack_time LIMIT 1", $this->db);
+
+    if ($res == false) {
+      throw new Exception(mysql_error());
+    } else {
+      $r = mysql_fetch_assoc($res);
+
+      if ($r) {
+	$rtn['ack_by'] = $r['ack_user'];
+	$rtn['ack_time'] = $r['ack_time'];
+	$rtn['ack_msg'] = $r['ack_msg'];
+      } else {
+	$rtn = array('ack_by'   => '',
+		     'ack_time' => '',
+		     'ack_msg'  => '');
+      }
+      mysql_free_result($res);
+    }
+
+    return($rtn);
+  }
 }
 ?>
