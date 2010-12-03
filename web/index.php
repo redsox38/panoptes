@@ -20,6 +20,8 @@
 
 require_once 'lib/panoptes.php';
 require_once 'lib/autoDiscoveryEntry.php';
+require_once 'lib/userEntry.php';
+require_once 'lib/userPrefs.php';
 
 // set current user global
 if (isset($_SERVER['PHP_AUTH_USER'])) {
@@ -48,17 +50,35 @@ if ((array_key_exists("HTTP_X_REQUESTED_WITH", $_SERVER)) &&
   exit(0);
 }
 
+$user = new userEntry();
+$user->db = $panoptes->getDb();
+$user->getByName($panoptes_current_user);
+
+$userPrefs = new userPrefs();
+$userPrefs->db = $panoptes->getDb();
+$theme = $userPrefs->getPref($user->id, 'general', 'general_prefs_theme');
+if (is_null($theme)) {
+  $theme = $panoptes->config()->getConfigValue('web.default_theme');
+}
+
 ?>
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
 <html dir="ltr">
 <head>
         <title>panoptes</title>
-        <link rel="stylesheet" type="text/css" href="/js/dijit/themes/claro/claro.css"/>
+<?php
+  $theme_css = '/js/dijit/themes/' . $theme . '/' . $theme . '.css';
+  $theme_grid_css = '/js/dojox/grid/resources/' . $theme . 'Grid.css';
+  $theme_ehnanced_grid_css = '/js/dojox/grid/enhanced/resources/' . $theme . 'EnhancedGrid.css';
+  echo '<link rel="stylesheet" type="text/css" href="' . $theme_css . '"/>' . "\n";
+?>        
         <link rel="stylesheet" type="text/css" href="panoptes.css"/>
         <style type="text/css">
             @import "/js/dojox/grid/resources/Grid.css"; 
-            @import "/js/dojox/grid/resources/claroGrid.css";
-            @import "/js/dojox/grid/enhanced/resources/claroEnhancedGrid.css";
+<?php
+  echo '@import "' . $theme_grid_css. '"' . "\n";
+  echo '@import "' . $theme_enhanced_grid_css . '"' . "\n";
+?>
             @import "/js/dojox/grid/enhanced/resources/EnhancedGrid_rtl.css";
         </style>
     <script type="text/javascript" src="/js/dojo/dojo.js" djConfig="parseOnLoad: true">
@@ -101,7 +121,9 @@ if ((array_key_exists("HTTP_X_REQUESTED_WITH", $_SERVER)) &&
 ?>
 
 </head>
-<body class="claro">
+<?php
+echo '<body class="' . $theme . '">' . "\n";
+?>
     <div id="loading_img" style="visibility: hidden;">
         <img src="images/loading.gif"/>
     </div>

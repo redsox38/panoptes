@@ -71,6 +71,10 @@ class panoptes
     mysql_close($this->db);
   }
 
+  public function getDb() {
+    return($this->db);
+  }
+
   /**
    * Retrieve confguration object
    *
