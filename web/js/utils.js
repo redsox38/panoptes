@@ -21,7 +21,7 @@ function reloadMonitorEntry(func, dev_id, ent_id, container, reload_date) {
     then = new Date(date_parts[1], (date_parts[2] - 1), date_parts[3], date_parts[4], date_parts[5], date_parts[6]);
     now = new Date();
 
-    to = then.valueOf() - now.valueOf();
+    to = then.getTime() - now.getTime();
 
     var timerId = setTimeout(func, to, dev_id, ent_id, container);
 

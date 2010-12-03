@@ -78,7 +78,7 @@ if ($_SERVER["HTTP_X_REQUESTED_WITH"] == 'XMLHttpRequest') {
         dojo.require("dijit.MenuItem");
         dojo.require("dijit.Tree");
         dojo.require("dijit.Menu");
-dojo.require("dijit.Tooltip");
+        dojo.require("dijit.Tooltip");
         dojo.require("dijit.form.FilteringSelect");
         dojo.require("dijit.form.NumberSpinner");
         dojo.require("dijit.form.DateTextBox");
@@ -125,11 +125,12 @@ dojo.require("dijit.Tooltip");
     <div id="master_layout" dojoType="dijit.layout.BorderContainer" style="width: 100%; height: 100%;">
         <div id="left_nav" region="leading" dojoType="dijit.layout.AccordionContainer" style="width: 15%;" splitter="true">
             <div id="tools" title="Tools" dojoType="dijit.layout.AccordionPane">
-	        <a href="#" onClick="addPingable();">Add Pingable Device</a>
+	        <a href="#" onClick="openPrefTab();">User Preferences</a><br/>
+	        <a href="#" onClick="addPingable();">Add Pingable Device</a><br/>
 <?php
 	  if ($panoptes->isAdmin($panoptes_current_user)) {
-	    echo '<a href="#" onClick="uploadFile();">Upload Shell Script</a>' . "\n";
-	    echo '<a href="#" onClick="createSecurityGroup();">Create Security Group</a>' . "\n";
+	    echo '<a href="#" onClick="uploadFile();">Upload Shell Script</a></br>' . "\n";
+	    echo '<a href="#" onClick="createSecurityGroup();">Create Security Group</a></br>' . "\n";
 	  }
 ?>
             </div>
@@ -160,7 +161,7 @@ dojo.require("dijit.Tooltip");
 
         <div id="panoptes_tab_container" region="center" dojoType="dijit.layout.TabContainer">
             <div id="dashboard" title="Dashboard" dojoType="dijit.layout.ContentPane">
-                Dashboard
+                Dashboard Coming Soon
             </div>
             <div id="auto_discovery_tab" title="Auto Discovery" dojoType="dijit.layout.ContentPane" style="height: 100%; width: 100%;">
                 <div id="auto_discovery_grid" style="width: 100%; height: 100%;">

@@ -1,3 +1,24 @@
+function openPrefTab() {
+    var bc = new dijit.layout.BorderContainer({
+            id: 'prefs_tab',
+            title: 'User Preferences',
+            style: "width: 100%; height: 100%;",
+            closable: true
+        });
+
+    // tab container for new tab
+    var tc = new dijit.layout.TabContainer({
+            id: 'prefs_tc',
+            region: 'center',
+            style: "height: 100%; width: 100%;"
+        });
+
+    bc.addChild(tc);
+
+    dijit.byId("panoptes_tab_container").addChild(bc);
+    dijit.byId("panoptes_tab_container").selectChild(bc);
+}
+
 // create new device that's only monitored via ping
 function xhrAddPingable(ip_address) {
     var xhrArgs = {
