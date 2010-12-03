@@ -1,3 +1,25 @@
+function createPrefTab(name) {
+
+    cp = new dijit.layout.ContentPane({
+            id: 'pref_tab_' + name,
+            title: name,
+            content: '',            
+        });
+
+    sub = new dijit.form.Button({
+	    id: 'pref_tab_' + name + '_submit',
+	    label: 'Save',
+	    onClick: function() {
+		alert('Function not yet implemented');
+	    }
+	});
+
+    //cp.domNode.appendChild(document.createElement("br"));
+    sub.placeAt(cp.domNode);
+
+    return(cp);
+}
+
 function openPrefTab() {
     var bc = new dijit.layout.BorderContainer({
             id: 'prefs_tab',
@@ -6,7 +28,7 @@ function openPrefTab() {
             closable: true
         });
 
-    // tab container for new tab
+    // tab container for preference tabs
     var tc = new dijit.layout.TabContainer({
             id: 'prefs_tc',
             region: 'center',
@@ -14,6 +36,10 @@ function openPrefTab() {
         });
 
     bc.addChild(tc);
+
+    // add pref tabs
+    tc.addChild(createPrefTab('general'));
+    tc.addChild(createPrefTab('notifications'));
 
     dijit.byId("panoptes_tab_container").addChild(bc);
     dijit.byId("panoptes_tab_container").selectChild(bc);

@@ -1,5 +1,6 @@
 /* drop everything */
 
+DROP TABLE IF EXISTS user_prefs;
 DROP TABLE IF EXISTS discovered;
 DROP TABLE IF EXISTS device_outages;
 DROP TABLE IF EXISTS device_group_membership;
@@ -111,6 +112,20 @@ CREATE TABLE security_group_membership (
   KEY user_id (user_id),
   CONSTRAINT security_group_membership_ibfk_1 FOREIGN KEY (user_id) REFERENCES users (id) ON DELETE CASCADE ON UPDATE CASCADE,
   CONSTRAINT security_group_membership_ibfk_2 FOREIGN KEY (group_id) REFERENCES security_groups (id) ON DELETE CASCADE ON UPDATE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+--
+-- Table structure for table user_prefs
+--
+
+CREATE TABLE user_prefs (
+  user_id bigint(20) NOT NULL,
+  pref_scope varchar(64) NOT NULL,
+  pref_name varchar(64) NOT NULL,
+  pref_value varchar(255) NOT NULL,
+  KEY user_id (user_id),
+  UNIQUE KEY prf (pref_name, pref_scope, user_id),
+  CONSTRAINT user_prefs_ibfk_1 FOREIGN KEY (user_id) REFERENCES users (id) ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 --

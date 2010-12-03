@@ -33,7 +33,8 @@ $panoptes = new panoptes();
 
 // see if it is an ajax request and process it if it is
 // otherwise render form
-if ($_SERVER["HTTP_X_REQUESTED_WITH"] == 'XMLHttpRequest') {
+if ((array_key_exists("HTTP_X_REQUESTED_WITH", $_SERVER)) && 
+    $_SERVER["HTTP_X_REQUESTED_WITH"] == 'XMLHttpRequest') {
   header("Content-type: text/json");
   $action = 'ajax_' . $_REQUEST["action"];
 

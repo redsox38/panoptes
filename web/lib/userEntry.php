@@ -47,7 +47,7 @@ class userEntry
 
   public function __construct($db = null) {
     if (!is_null($db)) {
-      $this->$data['db'] = $db;
+      $this->data['db'] = $db;
     }
   }
   
