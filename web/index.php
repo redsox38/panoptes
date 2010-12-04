@@ -60,24 +60,24 @@ $theme = $userPrefs->getPref($user->id, 'general', 'general_prefs_theme');
 if (is_null($theme)) {
   $theme = $panoptes->config()->getConfigValue('web.default_theme');
 }
-
+$theme_css = '/js/dijit/themes/' . $theme . '/' . $theme . '.css';
+$theme_grid_css = '/js/dojox/grid/resources/' . $theme . 'Grid.css';
+$theme_e_grid_css = '/js/dojox/grid/enhanced/resources/' . $theme . 'EnhancedGrid.css';
 ?>
+
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
 <html dir="ltr">
 <head>
         <title>panoptes</title>
 <?php
-  $theme_css = '/js/dijit/themes/' . $theme . '/' . $theme . '.css';
-  $theme_grid_css = '/js/dojox/grid/resources/' . $theme . 'Grid.css';
-  $theme_ehnanced_grid_css = '/js/dojox/grid/enhanced/resources/' . $theme . 'EnhancedGrid.css';
   echo '<link rel="stylesheet" type="text/css" href="' . $theme_css . '"/>' . "\n";
 ?>        
         <link rel="stylesheet" type="text/css" href="panoptes.css"/>
         <style type="text/css">
             @import "/js/dojox/grid/resources/Grid.css"; 
 <?php
-  echo '@import "' . $theme_grid_css. '"' . "\n";
-  echo '@import "' . $theme_enhanced_grid_css . '"' . "\n";
+  echo '@import "' . $theme_grid_css . '";' . "\n";
+  echo '@import "' . $theme_e_grid_css . '";' . "\n";
 ?>
             @import "/js/dojox/grid/enhanced/resources/EnhancedGrid_rtl.css";
         </style>
