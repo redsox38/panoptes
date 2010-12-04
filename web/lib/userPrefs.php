@@ -45,6 +45,45 @@ class userPrefs
   }
   
   /**
+   * Get all preferences
+   *
+   * @param id user id of owner of preference
+   *        scope scope of preference to retrieve
+   *        pref name of preference to retrieve
+   * @throws Exception
+   * @return var string
+   */
+  public function getAllPrefs($id, $scope = null) {
+
+    $prefs = array();
+
+    if (is_null($scope)) {
+      $res = mysql_query("SELECT * FROM user_prefs WHERE user_id='" .
+		       $id . "'", $this->data['db']);
+    } else {
+      $res = mysql_query("SELECT * FROM user_prefs WHERE pref_scope='" . 
+		       mysql_real_escape_string($scope) . 
+		       "' AND user_id='" .
+		       $id . "'", $this->data['db']);
+    }
+
+    if ($res !== false) {
+      $count = 0;
+      while ($r = mysql_fetch_assoc($res)) {
+	$prefs[] = array('id' => $count++,
+			 'pref_name' => $r['pref_name'],
+			 'pref_scope' => $r['pref_scope'],
+			 'pref_value' => $r['pref_value']);
+      }
+      mysql_free_result($res);
+    } else {
+      throw new Exception(mysql_error());
+    }
+    
+    return($prefs);
+  }
+
+  /**
    * Get preference
    *
    * @param id user id of owner of preference
@@ -74,7 +113,6 @@ class userPrefs
     
     return($pref_val);
   }
-
   
   /**
    * Set preference

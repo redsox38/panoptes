@@ -204,12 +204,6 @@ dojo.addOnLoad(function(){
 		data: all_user_data
 	    });
 
-	all_src_user_data = {
-	    label: "name",
-	    identifier: "id",
-	    items: []
-	};
-
 	loadUsers();
 	loadGroups();
     });

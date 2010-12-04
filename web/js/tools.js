@@ -1,3 +1,29 @@
+var prefStore;
+
+function loadUserPrefs() {
+    var xhrArgs = {
+        url: '/panoptes/',
+        handleAs: 'json',
+        content: {
+            action: 'getAllPrefs',
+            data: '{ }'
+        },
+        load: function(data) {
+            if (data && !data.error) {
+                // fill in data store
+                dojo.forEach(data.data, function(item) {
+                        prefStore.newItem(item);
+                    });
+                prefStore.save();
+            } else {
+                alert(data.error);
+            }
+        },
+    };
+
+    dojo.xhrGet(xhrArgs);        
+}
+
 function createPrefTab(name, dijits, labels) {
 
     var cp = new dijit.layout.ContentPane({
@@ -56,6 +82,18 @@ function createPrefTab(name, dijits, labels) {
 }
 
 function openPrefTab() {
+    
+    pref_data = {
+		 label: 'pref_name',
+		 identifier: 'id',
+		 items: []
+    };
+    prefStore = new dojo.data.ItemFileWriteStore({
+	    data: pref_data
+	});
+
+    loadUserPrefs();
+
     var bc = new dijit.layout.BorderContainer({
             id: 'prefs_tab',
             title: 'User Preferences',
