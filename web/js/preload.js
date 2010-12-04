@@ -113,13 +113,44 @@ function createDeviceTree(){
 			    onClick: getSelectedTreeNode
 			},
 			"device_tree");		    
-		    
-		    // connect context menu to tree
-		    dojo.connect(dijit.byId("device_tree"), "onLoad", function() {
-			    var device_menu = dijit.byId("device_tree_menu");
-			    device_menu.bindDomNode(this.domNode);
+		    		    
+		    // bind  group menu to groups
+		    deviceStore.fetch({
+			    query: { type: 'group' },
+				onItem: function(item, req) {
+				var device_group_menu = dijit.byId('device_tree_group_menu');
+
+				// get group name
+				var name = deviceStore.getValue(item, "name");
+
+				if (name != "ungrouped") {
+				    // set group menu on group nodes
+				    var itemNode = deviceTree.getNodesByItem(deviceTree.model.getIdentity(item));
+				    if (itemNode[0]) {
+					device_group_menu.bindDomNode(itemNode[0].domNode);
+				    }
+				}
+			    }
 			});
 
+		    // bind device menu to devices
+		    deviceStore.fetch({
+			    query: { type: 'device' },
+				onItem: function(item, req) {
+				var device_menu = dijit.byId('device_tree_menu');
+
+				// get device name
+				var name = deviceStore.getValue(item, "name");
+
+				if (name != "") {
+				    // set device menu
+				    var itemNode = deviceTree.getNodesByItem(deviceTree.model.getIdentity(item));
+				    if (itemNode[0]) {
+					device_menu.bindDomNode(itemNode[0].domNode);
+				    }
+				}
+			    }
+			});
 		} else {
 		    alert(data.error);
 		}

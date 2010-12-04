@@ -1,4 +1,12 @@
 
+function manageDeviceGroupAccess() {
+    alert('function not yet implemented');
+}
+
+function deleteDeviceGroup() {
+    alert('function not yet implemented');
+}
+
 var _dndMibCreator = function(item, hint) {
     var type = ['mib'];
     var node = document.createElement("div");

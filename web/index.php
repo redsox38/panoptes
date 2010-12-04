@@ -176,6 +176,14 @@ echo '<body class="' . $theme . '">' . "\n";
                        Delete Device 
                     </div>
                 </div>
+	        <div dojoType="dijit.Menu" id="device_tree_group_menu" style="display: none;">
+                    <div dojoType="dijit.MenuItem" onClick="manageDeviceGroupAccess();">
+                       Manage Access
+                    </div>
+                    <div dojoType="dijit.MenuItem" iconClass="dijitIconDelete" onClick="deleteDeviceGroup();">
+                       Delete Group
+                    </div>
+                </div>
             </div>
             <div id="dashboard_widgets" title="Dashboard Widgets" dojoType="dijit.layout.AccordionPane">
                 Dashboard Widgets
