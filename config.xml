@@ -3,9 +3,9 @@
     <port_monitor timeout="5"/>
     <syslog facility="local0"/>
     <lib database="/usr/local/lib/libmysqldisc.so"/>
-    <db name="panoptes" user="db_username" password="db_password" host="localhost" sqlinit="/home/tmerritt/panoptes/dbinit.sql"/>
-    <rrd directory="/home/tmerritt/panoptes_rrds"/>
-    <script directory="/home/tmerritt/panoptes_scripts" user="apache"/>
+    <db name="panoptes" user="db_username" password="db_password" host="localhost" sqlinit="/usr/local/share/dbinit.sql"/>
+    <rrd directory="/usr/local/share/panoptes_rrds"/>
+    <script directory="/usr/local/libexec/panoptes_scripts" user="apache"/>
     <port_monitors_rrd datasource_type="GAUGE"/>
     <autodiscoveryform displayentries="10"/>
     <web admins="tmerritt" default_theme="claro"/>

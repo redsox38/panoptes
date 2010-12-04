@@ -7,3 +7,4 @@ stamp-h1
 web/js/dojo/*
 web/js/dojox/*
 web/js/dijit/*
+panoptes_config.xml

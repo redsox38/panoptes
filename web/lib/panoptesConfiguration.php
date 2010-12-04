@@ -32,7 +32,7 @@ class panoptesConfiguration
 {
   public function __construct($file = null) {
     if (is_null($file)) {
-      $this->config_file = '/home/tmerritt/panoptes/config.xml';
+      $this->config_file = '/usr/local/etc/panoptes_config.xml';
     } else {
       $this->config_file = $file;
     }

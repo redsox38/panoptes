@@ -1,16 +1,28 @@
 DEFS = @DEFS@
 
-sysconf_DATA = config.xml
 sbin_PROGRAMS = panoptes_discover panoptes_monitor
 
 panoptes_discover_SOURCES = discover_core.c  packet.c database.c panoptes_utils.c
 panoptes_monitor_SOURCES = monitor_core.c database.c monitor_thread.c shutdown_thread.c monitor_entry.c monitor_port.c monitor_icmp.c monitor_certificate.c monitor_snmp.c monitor_shell.c perf_core.c panoptes_utils.c
 
-CPPFLAGS = @CPPFLAGS@ -I./include -DCONFIG_FILE="\"@sysconfdir@/config.xml\""
+CPPFLAGS = @CPPFLAGS@ -I./include -DCONFIG_FILE="\"@sysconfdir@/panoptes_config.xml\""
 LDFLAGS = @LDFLAGS@ -Lutils/.libs -lpanoptes_utils
 SUBDIRS = database utils include
 AUTOMAKE_OPTIONS = no-dependencies
 panoptes_monitor_LDFLAGS = @LDFLAGS@ 
 panoptes_monitor_CPPFLAGS = @CPPFLAGS@ -D_REENTRANT -DPIDFILE="\"@localstatedir@/run/panoptes_monitor.pid\""
 panoptes_discover_CPPFLAGS = @CPPFLAGS@ -D_REENTRANT -DPIDFILE="\"@localstatedir@/run/panoptes_discover.pid\""
-EXTRA_DIST = web database.h packet.h panoptes.h
+EXTRA_DIST = dbinit.sql web panoptes_config.xml.in panoptes_httpd.conf.in database.h packet.h panoptes.h README.shell_monitors
+
+install-data-hook:
+	sed -e "s:LIBDIR:$(libdir):" -e "s:DATAROOTDIR:$(datarootdir):" -e "s:LIBEXECDIR:$(libexecdir):" panoptes_config.xml.in > panoptes_config.xml
+	sed -e "s:LIBDIR:$(libdir):" -e "s:DATAROOTDIR:$(datarootdir):" -e "s:LIBEXECDIR:$(libexecdir):" panoptes_httpd.conf.in > panoptes_httpd.conf
+	$(INSTALL_DATA) $(srcdir)/panoptes_config.xml $(DESTDIR)$(sysconfdir)/panoptes_config.xml
+
+	$(MKDIR_P) $(DESTDIR)$(libexecdir)/panoptes_scripts
+	$(MKDIR_P) $(DESTDIR)$(datarootdir)/panoptes
+	$(MKDIR_P) $(DESTDIR)$(datarootdir)/panoptes_rrds
+
+	/bin/cp -r web $(DESTDIR)$(datarootdir)/panoptes
+	/bin/cp dbinit.sql $(DESTDIR)$(datarootdir)/panoptes
+	/bin/chown apache $(DESTDIR)$(libexecdir)/panoptes_scripts

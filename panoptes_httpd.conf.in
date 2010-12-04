@@ -1,0 +1,16 @@
+Alias /panoptes "DATAROOTDIR/panoptes/web"
+
+DirectoryIndex index.php
+
+<Directory "DATAROOTDIR/panoptes/web">
+    Options Indexes MultiViews FollowSymLinks
+    AllowOverride None
+    Order allow,deny
+    Allow from all
+    Deny from none
+    AuthType basic
+    AuthName pan
+    AuthUserFile DATAROOTDIR/panoptes/htpasswd
+    require valid-user
+    Satisfy all
+</Directory>

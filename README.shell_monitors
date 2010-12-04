@@ -1,0 +1,21 @@
+HOW TO create a shell script monitor
+
+STDOUT:
+Output written to stdout by the shell script will be interpreted as 
+performance monitor data and will have an rrd generated for it.  the format of the output should be 
+<data name 0>|<data value 0>;...;<data name N>|<data value N>
+
+STDERR:
+data written to stderr (ie. echo "blah" >&2) will be interpreted as monitor output
+and will be saved as the monitor_status
+
+Exit value:
+The status of the monitor is determinted by its exit value
+< 0 = critical
+0 = ok
+> 0 = warn
+
+Environment variables:
+PANOPTES_MONITOR_ADDR the ip address of the device being monitored will be set here
+PANOPTES_MONITOR_PARAM if a parameter is defined for the script, it will be set here in addition to being passed on the command line
+
