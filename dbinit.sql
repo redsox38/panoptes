@@ -59,6 +59,8 @@ CREATE TABLE users (
   PRIMARY KEY (id),
   UNIQUE KEY nm (name)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+INSERT INTO users VALUES(0, 'admin', 'install', NOW());
 --
 -- Table structure for table devices
 --

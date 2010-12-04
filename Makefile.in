@@ -938,6 +938,7 @@ install-data-hook:
 	/bin/cp -r web $(DESTDIR)$(datarootdir)/panoptes
 	/bin/cp dbinit.sql $(DESTDIR)$(datarootdir)/panoptes
 	/bin/chown apache $(DESTDIR)$(libexecdir)/panoptes_scripts
+	htpasswd -b -c $(DESTDIR)$(datarootdir)/panoptes/htpasswd admin admin
 
 # Tell versions [3.59,3.63) of GNU make to not export all variables.
 # Otherwise a system limit (for SysV at least) may be exceeded.
