@@ -1,4 +1,16 @@
-var prefStore;
+
+function getPrefValue(scope, name) {
+    var req = prefStore.fetch({ query: { pref_name: name },
+                                onComplete: function(items, req) {
+                // there should only be one item
+                for (var i = 0; i < items.length; i++) {
+		    // set value of dijit
+		    dijit.byId(name).setValue(prefStore.getValue(items[i], 'pref_value'));
+                }
+		hideLoading();
+            }});
+    
+}
 
 function loadUserPrefs() {
     var xhrArgs = {
@@ -83,17 +95,6 @@ function createPrefTab(name, dijits, labels) {
 
 function openPrefTab() {
     
-    pref_data = {
-		 label: 'pref_name',
-		 identifier: 'id',
-		 items: []
-    };
-    prefStore = new dojo.data.ItemFileWriteStore({
-	    data: pref_data
-	});
-
-    loadUserPrefs();
-
     var bc = new dijit.layout.BorderContainer({
             id: 'prefs_tab',
             title: 'User Preferences',
@@ -123,7 +124,6 @@ function openPrefTab() {
 	    }
 	});
 
-    // add pref tabs
     sb = new dijit.form.FilteringSelect({
             id: 'general_prefs_theme',
             name: 'theme_name',
@@ -131,7 +131,11 @@ function openPrefTab() {
             title: 'Theme',        
             searchAttr: 'theme_name'
         });
+
+    showLoading();
+    getPrefValue('general', 'general_prefs_theme');
     
+    // add pref tabs
     tc.addChild(createPrefTab('general', [sb], ['theme']));
     tc.addChild(createPrefTab('notifications', [], []));
 

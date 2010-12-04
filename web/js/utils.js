@@ -1,3 +1,4 @@
+
 function showLoading() {
     loading_count++;
 

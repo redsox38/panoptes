@@ -9,6 +9,7 @@ var SNMPMonitorStore;
 var shellMonitorStore;
 var availableShellMonitorStore;
 var userStore;
+var prefStore;
 
 var loading_count = 0;
 
@@ -204,7 +205,18 @@ dojo.addOnLoad(function(){
 		data: all_user_data
 	    });
 
+	pref_data = {
+	    label: 'pref_name',
+	    identifier: 'id',
+	    items: []
+	};
+
+	prefStore = new dojo.data.ItemFileWriteStore({
+		data: pref_data
+	    });
+
 	loadUsers();
+	loadUserPrefs();
 	loadGroups();
     });
 
