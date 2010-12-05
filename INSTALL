@@ -1,5 +1,7 @@
 PREREQUISITES
 
+mysql with innodb support
+pcap
 rrdtool
 curl
 libxml2
