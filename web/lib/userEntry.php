@@ -120,6 +120,32 @@ class userEntry
   }
 
   /**
+   * Get security groups for this user
+   *
+   * @param none
+   * @throws Exception
+   * @return array of group ids
+   */
+  public function getGroups() {
+    $groups = array();
+
+    $res = mysql_query("SELECT group_id FROM security_group_membership WHERE user_id='" .
+		       $this->id . 
+		       "'", $this->db);
+
+    if ($res !== false) {
+      while ($r = mysql_fetch_assoc($res)) {
+	$groups[] = $r['group_id'];
+      }
+      mysql_free_result($res);
+    } else {
+      throw new Exception(mysql_error());
+    }
+
+    return($groups);
+  }
+
+  /**
    * Delete user entry
    *
    * @param none

@@ -258,6 +258,31 @@ class panoptes
   }
 
   /**
+   * usetPermission
+   *
+   * @param type one or read/write/none
+   * @param sec_grp_id security group id
+   * @param dev_grp_id device group id
+   * @throws Exception
+   * @return none
+   */
+  public function setPermission($type, $sec_grp_id, $dev_grp_id) {
+    if ($type == 'none') {
+      $qry = 'DELETE FROM permissions WHERE security_group_id=' .
+	$sec_grp_id . ' AND device_group_id=' . $dev_grp_id;
+    } else {
+      $qry = 'REPLACE INTO permissions VALUES(' . $sec_grp_id . 
+	',' . $dev_grp_id . ',"' . $type . '")';
+    }
+
+    $res = mysql_query($qry, $this->db);
+
+    if ($res === false) {
+      throw new Exception(mysql_error());
+    }
+  }
+
+  /**
    * Retrieve all users
    *
    * @param none
@@ -398,6 +423,40 @@ class panoptes
     }      
 
     return($dev);
+  }
+
+  /**
+   * Retrieve list of device group ids 
+   * that the given list of security group ids
+   * does not have access to
+   *
+   * @param excl array of security group ids
+   *
+   * @throws Exception 
+   * @return deviceGroup returns the next entry, null if there are no 
+   *                     entries available
+   */
+  public function getRestrictedDeviceGroups($excl) {
+    $groups = array();
+
+    $excl_list = implode(",", $excl);
+
+    $qry = 'SELECT d.id FROM device_groups d, permissions p WHERE p.security_group_id NOT IN (' .
+      $excl_list . ') AND p.device_group_id=d.id';
+
+    $res = mysql_query($qry, $this->db);
+
+    if ($res !== false) {
+      while ($row = mysql_fetch_assoc($res)) {
+	array_push($groups, $row['id']);
+      }
+      
+      mysql_free_result($res);
+    } else {
+      throw new Exception(mysql_error());
+    }
+
+    return($groups);
   }
 
   /**
@@ -843,23 +902,27 @@ class panoptes
    * @return array containing result and possible error messages
    */
   public function ajax_getDeviceList($args) {
+    global $panoptes_current_user;
+
     $data = array();
-    
+    $list = array();
+
     // get group data
     $grouped = array();    
     $ungrouped_children = array();
 
     try {
       while ($grp = $this->getDeviceGroup()) {
+	
 	$chld = array();
 	foreach ($grp->children() as $c) {
 	  $chld[] = array('_reference' => 'd_' . $c);
 	  $grouped[$c] = 1;
 	}
-	array_push($data, array('name'     => $grp->name,
-				'type'     => 'group',
-				'children' => $chld,
-				'id'       => 'g_' . $grp->id));
+	$list[] = array('name'     => $grp->name,
+			'type'     => 'group',
+			'children' => $chld,
+			'id'       => 'g_' . $grp->id);
       }
 
       // get individual devices 
@@ -867,18 +930,46 @@ class panoptes
       // in the ungrouped group for display
       // purposes
       while($dev = $this->getDevice()) {
-	array_push($data, array('name' => $dev->name,
-				'type' => 'device',
-				'id'   => 'd_' . $dev->id));
+	$list[] = array('name' => $dev->name,
+			'type' => 'device',
+			'id'   => 'd_' . $dev->id);
 	if (!array_key_exists($dev->id, $grouped)) {
 	  $ungrouped_children[] = array('_reference' => 'd_' . $dev->id);
 	}
       }
       
-      array_push($data, array('name'     => 'ungrouped',
-			      'type'     => 'group',
-			      'children' => $ungrouped_children,
-			      'id'       => 'g_0'));
+      $list[] = array('name'     => 'ungrouped',
+		      'type'     => 'group',
+		      'children' => $ungrouped_children,
+		      'id'       => 'g_0');
+
+      // go back and remove device groups that none of this users security groups
+      // have permission on (excluding ungrouped devices)
+      require_once 'userEntry.php';
+      $user = new userEntry();
+      $user->db = $this->db;
+      $user->getByName($panoptes_current_user);
+      $sec_groups = $user->getGroups();
+
+      // get device groups to exclude
+      $excl_groups = $this->getRestrictedDeviceGroups($sec_groups);
+
+      // remove those groups
+      foreach ($excl_groups as $e) {
+	$gid = 'g_' . $e;
+	$ct = count($list);
+	for ($i = 0; $i < $ct; $i++) {	 
+	  if ($list[$i]['id'] == $gid) {
+	    unset($list[$i]);
+	    $i = $ct;
+	  }
+	}
+      }
+
+      // build data array
+      foreach ($list as $k => $v) {
+	array_push($data, $v);
+      }
     } catch (Exception $e) {
       return(array('result' => 'failure',
 		   'error'  => $e->getMessage()));
@@ -2116,6 +2207,40 @@ class panoptes
       $userPrefs = new userPrefs($this->db);
       $userPrefs->db = $this->db;
       $data = $userPrefs->getAllPrefs($user->id);
+    } catch (Exception $e) {
+      return(array('result' => 'failure',
+		   'error'  => $e->getMessage()));
+    }
+    
+    return(array('result' => $result, 'error' => $error, 
+		 'data' => $data));
+  }
+
+  /**
+   * updatePermission
+   *
+   * @param args json params converted into an array
+   *                  security_group security group id
+   *                  device_group device group id
+   *                  type request type one of grant or revoke
+   *                  access read or write
+   * @throws none
+   * @return array containing result and possible error messages
+   */
+  public function ajax_updatePermission($args) {
+
+    $result = 'success';
+    $error = '';
+
+    try {
+      if ($args['type'] == 'grant') {
+	$this->setPermission($args['access'], $args['security_group'], $args['device_group']);
+      } else if ($srgs['type'] == 'revoke') {
+	$this->setPermission('none', $args['security_group'], $args['device_group']);
+      } else {
+	$result = 'failure';
+	$error = 'unknown request type: ' . $args['type'];
+      }
     } catch (Exception $e) {
       return(array('result' => 'failure',
 		   'error'  => $e->getMessage()));

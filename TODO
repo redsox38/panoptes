@@ -6,6 +6,4 @@ config option to auto accept auto discovery entries
 
 svc dependencies
 
-add group authz
 remove device from group
-make right click select elements where there's a context menu

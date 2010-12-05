@@ -1,5 +1,6 @@
 /* drop everything */
 
+DROP TABLE IF EXISTS permissions;
 DROP TABLE IF EXISTS user_prefs;
 DROP TABLE IF EXISTS discovered;
 DROP TABLE IF EXISTS device_outages;
@@ -131,6 +132,19 @@ CREATE TABLE user_prefs (
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 --
+-- Table structure for table permissions
+--
+
+CREATE TABLE permissions (
+  security_group_id bigint(20) NOT NULL,
+  device_group_id bigint(20) NOT NULL,
+  access_type ENUM('read', 'write') DEFAULT 'read' NOT NULL,
+  UNIQUE KEY idx (security_group_id, device_group_id),
+  CONSTRAINT permissions_ibfk_1 FOREIGN KEY (security_group_id) REFERENCES security_groups (id) ON DELETE CASCADE ON UPDATE CASCADE,
+  CONSTRAINT permissions_ibfk_2 FOREIGN KEY (device_group_id) REFERENCES device_groups (id) ON DELETE CASCADE ON UPDATE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+--
 -- Table structure for table device_outages
 --
 
@@ -156,7 +170,7 @@ CREATE TABLE port_monitors (
   check_interval smallint(6) NOT NULL DEFAULT '15',
   last_check datetime DEFAULT NULL,
   next_check datetime DEFAULT NULL,
-  status enum('new','ok','pending','warn','critical') DEFAULT NULL,
+  status ENUM('new','ok','pending','warn','critical') DEFAULT NULL,
   status_string VARCHAR(255) DEFAULT NULL,
   disabled smallint(5) unsigned NOT NULL DEFAULT 0,
   PRIMARY KEY (id),

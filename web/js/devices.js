@@ -1,6 +1,148 @@
 
+function xhrUpdatePermissions(type, src, tgt, level) {
+    src = src.replace("g_", "");
+    tgt = tgt.replace("g_", "");
+
+    var xhrArgs = {
+	url: '/panoptes/',
+	handleAs: 'json',
+	content: {
+	    action: 'updatePermission',
+	    data: '{ "type": "' + type + '", "security_group": "' +
+	          src + '", "device_group": "' + tgt +
+	          '", "access": "' + level + 
+	          '" }'
+	},
+	load: function(data) {
+	    if (data && data.error) {
+		alert(data.error);
+	    }
+	},
+    };
+	
+    dojo.xhrGet(xhrArgs);
+}
+
 function manageDeviceGroupAccess() {
-    alert('function not yet implemented');
+    var id = deviceStore.getValues(deviceTreeSelectedItem, 'id').toString();
+    var name = deviceStore.getValues(deviceTreeSelectedItem, 'name').toString();
+
+    typeStore = new dojo.data.ItemFileReadStore({
+            data: {
+                identifier: 'type',
+                label: 'display',
+                items: [
+                        { type: 'grant', display: 'Grant' },
+                        { type: 'revoke', display: 'Revoke' },
+                        ]
+            }
+        });
+
+    type = new dijit.form.FilteringSelect({
+            id: 'security_group_type',
+            name: 'security_group_type',
+            style: 'width: 7em;',
+            store: typeStore,
+            title: 'Type',        
+            searchAttr: 'display',
+	    placeHolder: 'Operation'
+        });
+
+    src = new dijit.form.FilteringSelect({
+            id: 'security_group_src',
+            name: 'security_group_src',
+            style: 'width: 12em;',
+            store: userStore,
+            query: { type: 'group' },
+            serchAttr: 'id',
+            placeHolder: 'group to grant access'
+        });
+
+    opStore = new dojo.data.ItemFileReadStore({
+            data: {
+                identifier: 'level',
+                label: 'display',
+                items: [
+                         { level: 'read', display: 'read access' },
+                         { level: 'write', display: 'write access' },
+                        ]
+            }
+        });
+
+    op = new dijit.form.FilteringSelect({
+            id: 'security_group_op',
+            name: 'security_group_op',
+            style: 'width: 9em;',
+            store: opStore,
+            title: 'Op',        
+            searchAttr: 'display',
+	    placeHolder: 'Access Type'
+        });
+
+    lbl = document.createElement("label");
+    lbl.htmlFor = 'security_group_tgt';
+    lbl.appendChild(document.createTextNode(' access to '));
+
+    tgt = new dijit.form.FilteringSelect({
+            id: 'security_group_tgt',
+            name: 'security_group_tgt',
+            style: 'width: 15em;',
+            store: deviceStore,
+            query: { type: 'group', name: new RegExp("/((?!ungrouped).)/") },
+            serchAttr: 'id',
+            value: id
+        });
+
+    rst = new dijit.form.Button({
+	    label: 'Cancel',
+	    id: 'security_group_reset',
+	    onClick: function() {
+		dijit.byId("security_group_type").destroy();
+		dijit.byId("security_group_src").destroy();
+		dijit.byId("security_group_op").destroy();
+		dijit.byId("security_group_tgt").destroy();
+		dijit.byId("security_group_reset").destroy();
+		dijit.byId("security_group_submit").destroy();
+		// destroy remaining dom nodes
+		win = document.getElementById("manage_device_win");
+		while (win.hasChildNodes() >= 1) {
+		    win.removeChild(win.firstChild);
+		}
+
+		document.body.removeChild(win);
+	    }
+	});
+
+    sub = new dijit.form.Button({
+	    label: 'Update',
+	    id: 'security_group_submit',
+	    onClick: function() {
+		xhrUpdatePermissions(dijit.byId('security_group_type').get('value'), 
+				     dijit.byId('security_group_src').get('value'),
+				     dijit.byId('security_group_tgt').get('value'),
+				     'write');
+		dijit.byId("security_group_type").destroy();
+		dijit.byId("security_group_src").destroy();
+		dijit.byId("security_group_op").destroy();
+		dijit.byId("security_group_tgt").destroy();
+		dijit.byId("security_group_reset").destroy();
+		dijit.byId("security_group_submit").destroy();
+		// destroy remaining dom nodes
+		win = document.getElementById("manage_device_win");
+		while (win.hasChildNodes() >= 1) {
+		    win.removeChild(win.firstChild);
+		}
+
+		document.body.removeChild(win);
+	    }
+	});
+
+    var items = [ type.domNode, src.domNode, 
+		  lbl, tgt.domNode, 
+		  document.createElement("br"),
+		  rst.domNode, sub.domNode ];
+    
+    createOverlayWindow("manage_device_win", items);
 }
 
 function deleteDeviceGroup() {
