@@ -15,8 +15,14 @@ panoptes_discover_CPPFLAGS = @CPPFLAGS@ -D_REENTRANT -DPIDFILE="\"@localstatedir
 EXTRA_DIST = dbinit.sql web panoptes_config.xml.in panoptes_httpd.conf.in database.h packet.h panoptes.h README.shell_monitors
 
 install-data-hook:
-	sed -e "s:LIBDIR:$(libdir):" -e "s:DATAROOTDIR:$(datarootdir):" -e "s:LIBEXECDIR:$(libexecdir):" panoptes_config.xml.in > panoptes_config.xml
-	sed -e "s:LIBDIR:$(libdir):" -e "s:DATAROOTDIR:$(datarootdir):" -e "s:LIBEXECDIR:$(libexecdir):" panoptes_httpd.conf.in > panoptes_httpd.conf
+	sed -e "s:LIBDIR:$(libdir):" \
+	    -e "s:DATAROOTDIR:$(datarootdir):" \
+	    -e "s:LIBEXECDIR:$(libexecdir):" \
+	panoptes_config.xml.in > panoptes_config.xml
+	sed -e "s:LIBDIR:$(libdir):" \
+	    -e "s:DATAROOTDIR:$(datarootdir):" \
+	    -e "s:LIBEXECDIR:$(libexecdir):" \
+	panoptes_httpd.conf.in > panoptes_httpd.conf
 	$(INSTALL_DATA) $(srcdir)/panoptes_config.xml $(DESTDIR)$(sysconfdir)/panoptes_config.xml
 
 	$(MKDIR_P) $(DESTDIR)$(libexecdir)/panoptes_scripts

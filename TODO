@@ -5,5 +5,4 @@ replace SOURCE... in db init with reading in statements and executing them
 config option to auto accept auto discovery entries
 
 svc dependencies
-
-auto updating of device tree 
+templates

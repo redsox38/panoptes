@@ -1,3 +1,34 @@
+PREREQUISITES
+
+rrdtool
+curl
+libxml2
+net-snmp
+php
+php-gd
+rrdtool-php
+php-xml
+php-snmp
+dojo 1.5 installed at /js
+
+
+QUICKSTART
+
+./configure
+make
+make install 
+copy panoptes_httpd.conf into your apache configuration and reload
+echo "create database panoptes" | mysql
+echo "grant all privileges on panoptes.* to 'db_username'@'localhost' identified by 'your passord here'" | mysql
+cat dbinit.sql | mysql
+
+/usr/local/sbin/panoptes_monitor
+/usr/local/sbin/panoptes_discover
+
+login is admin, password is admin
+change the password with:
+htpasswd /usr/local/share/panoptes/htpasswd admin
+
 Installation Instructions
 *************************
 
@@ -363,5 +394,3 @@ operates.
 `configure' also accepts some other, not widely useful, options.  Run
 `configure --help' for more details.
 
-Copy panoptes_httpd.conf into your apache configuration
-Create htpasswd file

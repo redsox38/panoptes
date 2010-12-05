@@ -162,9 +162,14 @@ function deleteDeviceGroup() {
 	    },
 	load: function(data) {
 	    if (data && ! data.error) {
-		// delete children.  If they have no other group, put them in
-		// ungrouped
-		// then remove group from tree
+		// remove from tree
+		var req = deviceStore.fetch({ query: { id: 'g_' + id }, 
+					      onComplete: function(items, req) {
+			    for (var i = 0; i < items.length; i++) {
+				deviceStore.deleteItem(items[i]);
+			    }
+			    deviceStore.save();
+			}});
 	    } else {
 		alert(data.error);
 	    }
@@ -205,8 +210,6 @@ function xhrGroupAdd(attr_name, device_id) {
 
     grp = dijit.byId(attr_name).attr('value');
     
-    // add group to groupStore if it's a new group
-
     var xhrGrpArgs = {
 	url: '/panoptes/',
 	handleAs: 'json',
@@ -219,9 +222,22 @@ function xhrGroupAdd(attr_name, device_id) {
 		// update group store and refresh device tree
 		req = deviceStore.fetch({ query: { name: grp,
 						   type: 'group'}, 
-					  onItem: function (itm) {
-			    // add child item
-			    itm.children.push({'_reference' : 'd_' + device_id });
+					  onComplete: function(items, req) {
+			    if (items.length == 0) {
+				// add group
+				itm = {
+				    type: 'group',
+				    name: grp,
+				    id: data.data['group_id'],
+				    children: []
+				};
+	
+				deviceStore.newItem(itm);
+			    } else {
+				// add device to group
+			    }
+
+			    deviceStore.save();
 			}});
 		deviceStore.save();
 	    } else {

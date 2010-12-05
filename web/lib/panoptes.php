@@ -1070,6 +1070,8 @@ class panoptes
    * @return array containing result and possible error messages
    */
   public function ajax_addGroupMember($args) {
+    $data = array();
+
     try {
       $grp = $this->getDeviceGroup(null, $args['name']);
   
@@ -1080,6 +1082,7 @@ class panoptes
 	$grp->id = 0;
 	$grp->name = $args['name'];      
 	$grp->commit();
+	$data['group_id'] = $grp->id;
       }
 
       // add member to group
@@ -1089,7 +1092,7 @@ class panoptes
 		   'error'  => $e->getMessage()));
     }
 
-    return(array('result' => 'success'));
+    return(array('result' => 'success', 'data' => $data));
   }
 
   /**
