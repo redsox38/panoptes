@@ -140,5 +140,20 @@ class deviceGroup
     if ($res === false)
       throw new Exception(mysql_error());
   }
+
+  /**
+   * Delete group
+   *
+   * @param id id of group to delete
+   * @throws Exception
+   * @return none
+   */
+  public function delete($id) {
+    $res = mysql_query("DELETE FROM device_groups WHERE id='" .
+		       $this->id . "'", $this->db);
+
+    if ($res === false)
+      throw new Exception(mysql_error());
+  }
 }
 ?>

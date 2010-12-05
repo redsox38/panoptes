@@ -910,6 +910,31 @@ class panoptes
 
     return(array('result' => 'success', 'data' => $data));
   }
+
+  /**
+   * get device groups
+   *
+   * @param args json params converted into an array
+   *             id is the id of the group to remove
+   * @throws none
+   * @return array containing result and possible error messages
+   */
+  public function ajax_deleteDeviceGroup($args) {
+    try {
+      $grp = $this->getDeviceGroup($args['id']);
+      if ($grp) { 
+	$grp->delete();
+      } else {
+	return(array('result' => 'failure',
+		     'error'  => 'device group ' . $args['id'] . ' does not exist'));
+      }
+    } catch (Exception $e) {
+      return(array('result' => 'failure',
+		   'error'  => $e->getMessage()));
+    }
+
+    return(array('result' => 'success', 'data' => array()));
+  }
   
   /**
    * get security groups

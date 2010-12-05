@@ -1,4 +1,38 @@
 
+function manageDeviceGroupAccess() {
+    alert('function not yet implemented');
+}
+
+function deleteDeviceGroup() {
+    var id = deviceStore.getValues(deviceTreeSelectedItem, 'id').toString();
+    var name = deviceStore.getValues(deviceTreeSelectedItem, 'name').toString();
+    id = id.replace("g_", "");
+
+    var r = confirm('Are you sure you want to delete ' + name);
+
+    if (r) {
+	var xhrArgs = {
+	    url: '/panoptes/',
+	    handleAs: 'json',
+	    content: {
+		action: 'deleteDeviceGroup',
+		data: '{ "id": "' + id + '" }'
+	    },
+	load: function(data) {
+	    if (data && ! data.error) {
+		// delete children.  If they have no other group, put them in
+		// ungrouped
+		// then remove group from tree
+	    } else {
+		alert(data.error);
+	    }
+	},
+    };
+	
+    dojo.xhrGet(xhrArgs);
+    }
+}
+
 function xhrScheduleOutage(device_id) {
     start_date = dijit.byId("outage_start_date").attr('displayedValue');
     stop_date = dijit.byId("outage_stop_date").attr('displayedValue');
