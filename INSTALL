@@ -22,7 +22,7 @@ make install
 copy panoptes_httpd.conf into your apache configuration and reload
 echo "create database panoptes" | mysql
 echo "grant all privileges on panoptes.* to 'db_username'@'localhost' identified by 'your passord here'" | mysql
-cat dbinit.sql | mysql
+cat /usr/local/share/panoptes/dbinit.sql | mysql
 
 /usr/local/sbin/panoptes_monitor
 /usr/local/sbin/panoptes_discover
