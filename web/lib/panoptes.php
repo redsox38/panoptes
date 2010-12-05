@@ -1093,6 +1093,36 @@ class panoptes
   }
 
   /**
+   * remove group member
+   *
+   * add member id to group, creating group if it doesn't already exist
+   *
+   * @param args json params converted into an array
+   *             group_id group id to emove device from
+   *             device_id device to rm
+   * @throws none
+   * @return array containing result and possible error messages
+   */
+  public function ajax_removeGroupMember($args) {
+    try {
+      $grp = $this->getDeviceGroup($args['group_id']);
+  
+      if (is_null($grp)) {
+	return(array('result' => 'failure',
+		     'error'  => 'group ' . $args['group_id'] . ' does not exist'));
+      }
+
+      // add member to group
+      $grp->removeMember($args['device_id']);
+    } catch (Exception $e) {
+      return(array('result' => 'failure',
+		   'error'  => $e->getMessage()));
+    }
+
+    return(array('result' => 'success'));
+  }
+
+  /**
    * add security group member
    *
    * add member id to group, creating group if it doesn't already exist

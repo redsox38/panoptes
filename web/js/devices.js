@@ -374,6 +374,27 @@ function scheduleOutage() {
     createOverlayWindow("schedule_outage_win", items);
 }
 
+function xhrRemoveGroupMember(group_id, device_id) {
+    var xhrArgs = {
+	url: '/panoptes/',
+	handleAs: 'json',
+	content: {
+	    action: 'removeGroupMember',
+	    data: '{ "group_id": "' + group_id + '", "device_id": "' +
+	    device_id + '" }'
+	},
+	load: function(data) {
+	    if (data && !data.error) {
+		// delete from group
+	    } else {
+		alert(data.error);
+	    }
+	},
+    };
+	
+    dojo.xhrGet(xhrArgs);
+}
+
 function removeFromGroup() {
     var id = deviceStore.getValues(deviceTreeSelectedItem, 'id').toString();
     var name = deviceStore.getValues(deviceTreeSelectedItem, 'name');
@@ -385,15 +406,17 @@ function removeFromGroup() {
 					  dojo.forEach(items, function(chld) { 
 						  if ((chld) && 
 						      (chld == deviceTreeSelectedItem)) {
-						      alert(chld);
+						      // found parent
+						      // send remove request
+						      id = id.replace("d_", "");
+						      g_id = deviceStore.getValue(grp, 'id');
+						      g_id = g_id.replace("g_", "");
+						      xhrRemoveGroupMember(g_id, id);
 						  }
 					      });
 				      });
 	    }
 	});
-
-    id = id.replace("d_", "");
-    alert('Function not yet implemented');
 }
 
 function addToGroup() {

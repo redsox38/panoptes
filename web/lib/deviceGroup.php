@@ -142,6 +142,21 @@ class deviceGroup
   }
 
   /**
+   * remove child from database
+   *
+   * @param device_id id of device entry to remove as child
+   * @throws Exception
+   * @return none
+   */
+  public function removeMember($device_id) {
+    $res = mysql_query("DELETE FROM device_group_membership WHERE device_id=" .
+		       $device_id . " AND group_id=" . $this->id, $this->db);
+
+    if ($res === false)
+      throw new Exception(mysql_error());
+  }
+
+  /**
    * Delete group
    *
    * @param id id of group to delete

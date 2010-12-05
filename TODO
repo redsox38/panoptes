@@ -6,4 +6,4 @@ config option to auto accept auto discovery entries
 
 svc dependencies
 
-remove device from group
+auto updating of device tree 
