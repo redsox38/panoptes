@@ -109,7 +109,7 @@ class userEntry
 	$this->id = $r['id'];
 	$this->name = $r['name'];
 	$this->created_by = $r['created_by'];
-	$this->modified = $r['modififed'];
+	$this->modified = $r['modified'];
 	mysql_free_result($res);
       } else {
 	throw new Exception("user " . $name . " does not exist");
