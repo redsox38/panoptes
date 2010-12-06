@@ -19,8 +19,7 @@
  */
 
 /**
- * abstract class for attributes common to monitorEntry 
- * and autoDiscoveryEntry
+ * abstract class for attributes common to all monitorEntry types
  *
  *
  * @version 0.01
@@ -112,7 +111,7 @@ abstract class monitorEntry
    * @return var integer
    */
   public function _last_insert_id() {
-    $res = mysql_query("SELECT LAST_INSERT_ID() AS id", $this->db);
+    $res = mysql_query("SELECT LAST_INSERT_ID() AS id", $this->db());
 
     $id = false;
 
@@ -177,7 +176,7 @@ abstract class monitorEntry
     } catch (Exception $e) {
       throw($e);
     }
-  } 
+  }
 
   /**
    * Delete entry from database

@@ -30,14 +30,16 @@
  *
  */
 
-require_once 'hostEntry.php';
+require_once 'monitorEntry.php';
 
-class shellMonitorEntry extends hostEntry
+class shellMonitorEntry extends monitorEntry
 {
   public function __construct($db = null) {
     if (!is_null($db)) {
-      $this->db = $db;
+      $this->db($db);
     }
+    $this->monitorTable("shell_monitors");
+    $this->ackTable("shell_acknowledgments");
   }
   
  /**
@@ -48,140 +50,22 @@ class shellMonitorEntry extends hostEntry
    * @return none
    */
   public function commit() {
-    // insert into device table if not there already
-    if (is_null($this->device_id)) {
-      // see if it exists
-      $res = mysql_query("SELECT id from devices WHERE address='" .
-			 $this->srcaddr . "'", $this->db);
-
-      if ($res !== false) {
-	$r = mysql_fetch_assoc($res);
-	if (!$r) {
-	  mysql_free_result($res);
-
-	  // try to get host name
-	  $name = gethostbyaddr($this->srcaddr);
-
-	  // insert new record
-	  mysql_query("INSERT INTO devices VALUES(0, '" .
-		      $this->srcaddr . "','" . 
-		      $name . "')");
-
-	  $this->device_id = $this->_last_insert_id();
-	}
-      } else {
-	throw new Exception(mysql_error());
-      }
+    try {
+      $this->_commit(array(
+                           'id'             => '0',
+                           'device_id'      => $this->device_id,
+                           'script'         => $this->script,
+                           'params'         => $this->params,
+                           'check_interval' => '15',
+                           'last_check'     => 'NOW()',
+                           'next_check'     => 'NOW()',
+                           'status'         => 'new',
+                           'status_string'  => '',
+                           'disabled'       => '0'
+                           ));
+    } catch (Exception $e) {
+      throw($e);
     }
-    
-    $res = mysql_query("INSERT INTO shell_monitors VALUES(0, '" .
-		       $this->device_id . "', '" .
-		       $this->script . "','" .
-		       $this->params . "'," .
-		       "15, NOW(), NOW(), 'new', '', 0)", 
-                       $this->db);
-
-    if ($res === false) {
-      throw new Exception(mysql_error());
-    } else {
-      $this->id = $this->_last_insert_id();
-    }
-  }
-
-  /**
-   * Delete entry from database
-   *
-   * @param none
-   * @throws Exception
-   * @return none
-   */
-  public function delete() {
-    $res = mysql_query("DELETE FROM shell_monitors WHERE id='" . 
-		       $this->id . "'");
-    if ($res == false) {
-      throw new Exception(mysql_error());
-    }
-  }
-
-  /**
-   * Disable entry in database
-   *
-   * @param none
-   * @throws Exception
-   * @return none
-   */
-  public function disable() {
-    $res = mysql_query("UPDATE shell_monitors SET disabled=1 WHERE id='" .
-		       $this->id . "'");
-    if ($res == false) {
-      throw new Exception(mysql_error());
-    }
-  }
-
-  /**
-   * Enable entry in database
-   *
-   * @param none
-   * @throws Exception
-   * @return none
-   */
-  public function enable() {
-    $res = mysql_query("UPDATE shell_monitors SET disabled=0 WHERE id='" .
-		       $this->id . "'");
-    if ($res == false) {
-      throw new Exception(mysql_error());
-    }
-  }
-
-  /**
-   * Ack entry in database
-   *
-   * @param msg ack message
-   * @throws Exception
-   * @return none
-   */
-  public function ack($msg) {
-    global $panoptes_current_user;
-
-    $res = mysql_query("INSERT into shell_acknowledgments VALUES(0, " .
-		       $this->id . ",'" . $panoptes_current_user . 
-		       "',NOW(),'" . 
-		       mysql_real_escape_string($msg) . "')");
-    if ($res == false) {
-      throw new Exception(mysql_error());
-    }
-  }
-
-  /**
-   * get ack entry from datbase
-   *
-   * @param msg ack message
-   * @throws Exception
-   * @return none
-   */
-  public function getAckInfo() {
-    
-    $res = mysql_query("SELECT * FROM shell_acknowledgments WHERE monitor_id=" .
-		       $this->id . " ORDER BY ack_time LIMIT 1", $this->db);
-
-    if ($res == false) {
-      throw new Exception(mysql_error());
-    } else {
-      $r = mysql_fetch_assoc($res);
-
-      if ($r) {
-	$rtn['ack_by'] = $r['ack_user'];
-	$rtn['ack_time'] = $r['ack_time'];
-	$rtn['ack_msg'] = $r['ack_msg'];
-      } else {
-	$rtn = array('ack_by'   => '',
-		     'ack_time' => '',
-		     'ack_msg'  => '');
-      }
-      mysql_free_result($res);
-    }
-
-    return($rtn);
   }
 }
 ?>

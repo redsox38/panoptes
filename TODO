@@ -10,4 +10,3 @@ extensible groups
 other database backends
 look @ dojo charting instead of rrd for graphs
 PDO for front end
-collapse monitor classes
