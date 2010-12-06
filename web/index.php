@@ -50,6 +50,12 @@ if ((array_key_exists("HTTP_X_REQUESTED_WITH", $_SERVER)) &&
   exit(0);
 }
 
+$dojo_url = $panoptes->config()->getConfigValue('web.dojo-url');
+if (!$dojo_url) {
+  echo "No dojo url defined!";
+  exit(-1);
+}
+
 $user = new userEntry();
 $user->db = $panoptes->getDb();
 $user->getByName($panoptes_current_user);
@@ -60,9 +66,9 @@ $theme = $userPrefs->getPref($user->id, 'general', 'general_prefs_theme');
 if (is_null($theme)) {
   $theme = $panoptes->config()->getConfigValue('web.default_theme');
 }
-$theme_css = '/js/dijit/themes/' . $theme . '/' . $theme . '.css';
-$theme_grid_css = '/js/dojox/grid/resources/' . $theme . 'Grid.css';
-$theme_e_grid_css = '/js/dojox/grid/enhanced/resources/' . $theme . 'EnhancedGrid.css';
+$theme_css = $dojo_url . '/dijit/themes/' . $theme . '/' . $theme . '.css';
+$theme_grid_css = $dojo_url . '/dojox/grid/resources/' . $theme . 'Grid.css';
+$theme_e_grid_css = $dojo_url . '/dojox/grid/enhanced/resources/' . $theme . 'EnhancedGrid.css';
 ?>
 
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
@@ -74,14 +80,17 @@ $theme_e_grid_css = '/js/dojox/grid/enhanced/resources/' . $theme . 'EnhancedGri
 ?>        
         <link rel="stylesheet" type="text/css" href="panoptes.css"/>
         <style type="text/css">
-            @import "/js/dojox/grid/resources/Grid.css"; 
 <?php
+  echo '@import "' . $dojo_url . '/dojox/grid/resources/Grid.css";' . "\n"; 
   echo '@import "' . $theme_grid_css . '";' . "\n";
   echo '@import "' . $theme_e_grid_css . '";' . "\n";
+  echo '@import "' . $dojo_url . '/dojox/grid/enhanced/resources/EnhancedGrid_rtl.css";' . "\n";
 ?>
-            @import "/js/dojox/grid/enhanced/resources/EnhancedGrid_rtl.css";
         </style>
-    <script type="text/javascript" src="/js/dojo/dojo.js" djConfig="parseOnLoad: true">
+<?php
+  echo '<script type="text/javascript" src="' . $dojo_url . '/dojo/dojo.js" djConfig="parseOnLoad: true">' .
+	"\n";
+?>
     </script>
     <script type="text/javascript">
         dojo.require("dojox.grid.EnhancedGrid");

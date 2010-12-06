@@ -169,6 +169,7 @@ builddir = @builddir@
 datadir = @datadir@
 datarootdir = @datarootdir@
 docdir = @docdir@
+dojourl = @dojourl@
 dvidir = @dvidir@
 exec_prefix = @exec_prefix@
 host = @host@

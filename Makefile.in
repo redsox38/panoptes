@@ -221,6 +221,7 @@ builddir = @builddir@
 datadir = @datadir@
 datarootdir = @datarootdir@
 docdir = @docdir@
+dojourl = @dojourl@
 dvidir = @dvidir@
 exec_prefix = @exec_prefix@
 host = @host@
@@ -930,6 +931,7 @@ install-data-hook:
 	sed -e "s:LIBDIR:$(libdir):" \
 	    -e "s:DATAROOTDIR:$(datarootdir):" \
 	    -e "s:LIBEXECDIR:$(libexecdir):" \
+	    -e "s^DOJOURL^$(dojourl)^" \
 	panoptes_config.xml.in > panoptes_config.xml
 	sed -e "s:LIBDIR:$(libdir):" \
 	    -e "s:DATAROOTDIR:$(datarootdir):" \

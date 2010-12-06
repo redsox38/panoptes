@@ -18,6 +18,7 @@ install-data-hook:
 	sed -e "s:LIBDIR:$(libdir):" \
 	    -e "s:DATAROOTDIR:$(datarootdir):" \
 	    -e "s:LIBEXECDIR:$(libexecdir):" \
+	    -e "s^DOJOURL^$(dojourl)^" \
 	panoptes_config.xml.in > panoptes_config.xml
 	sed -e "s:LIBDIR:$(libdir):" \
 	    -e "s:DATAROOTDIR:$(datarootdir):" \
