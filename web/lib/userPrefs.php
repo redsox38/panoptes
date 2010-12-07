@@ -50,34 +50,34 @@ class userPrefs
    * @param id user id of owner of preference
    *        scope scope of preference to retrieve
    *        pref name of preference to retrieve
-   * @throws Exception
+   * @throws PDOException
    * @return var string
    */
   public function getAllPrefs($id, $scope = null) {
 
     $prefs = array();
 
-    if (is_null($scope)) {
-      $res = mysql_query("SELECT * FROM user_prefs WHERE user_id='" .
-		       $id . "'", $this->data['db']);
-    } else {
-      $res = mysql_query("SELECT * FROM user_prefs WHERE pref_scope='" . 
-		       mysql_real_escape_string($scope) . 
-		       "' AND user_id='" .
-		       $id . "'", $this->data['db']);
-    }
-
-    if ($res !== false) {
+    try {
+      $qry = "SELECT * FROM user_prefs WHERE user_id=?";
+      if (!is_null($scope)) {
+	$qry .= " AND pref_scope=?";
+      }
+      
+      $stmt = $this->db->prepare($qry);
+      $stmt->bindParam(1, $id, PDO::PARAM_INT);
+      if (!is_null($scope)) {
+	$stmt->bindParam(2, $scope);
+      }
+      
       $count = 0;
-      while ($r = mysql_fetch_assoc($res)) {
+      while ($r = $stmt->fetch(PDO::FETCH_ASSOC)) {
 	$prefs[] = array('id' => $count++,
 			 'pref_name' => $r['pref_name'],
 			 'pref_scope' => $r['pref_scope'],
 			 'pref_value' => $r['pref_value']);
       }
-      mysql_free_result($res);
-    } else {
-      throw new Exception(mysql_error());
+    } catch (PDOException $e) {
+      throw($e);
     }
     
     return($prefs);
@@ -89,26 +89,25 @@ class userPrefs
    * @param id user id of owner of preference
    *        scope scope of preference to retrieve
    *        pref name of preference to retrieve
-   * @throws Exception
+   * @throws PDOException
    * @return var string
    */
   public function getPref($id, $scope, $pref) {
     $pref_val = null;
 
-    $res = mysql_query("SELECT pref_value FROM user_prefs WHERE pref_scope='" . 
-		       mysql_real_escape_string($scope) . 
-		       "' AND pref_name='" .
-		       mysql_real_escape_string($pref) . "' AND user_id='" .
-		       $id . "'", $this->data['db']);
-
-    if ($res !== false) {
-      $r = mysql_fetch_assoc($res);
+    try {
+      $stmt = $this->db->prepare("SELECT pref_value FROM user_prefs WHERE pref_scope=? AND pref_name=? AND user_id=?");
+      $stmt->bindParam(1, $scope);
+      $stmt->bindParam(2, $pref);
+      $stmt->bindParam(3, $id, PDO::PARAM_INT);
+      $stmt->execute();
+      $r = $stmt->fetch(PDO::FETCH_ASSOC);
+      
       if ($r) {
 	$pref_val = $r['pref_value'];
       }
-      mysql_free_result($res);
-    } else {
-      throw new Exception(mysql_error());
+    } catch (PDOException $e) {
+      throw($e);
     }
     
     return($pref_val);
@@ -121,23 +120,21 @@ class userPrefs
    *        scope scope of preference to set
    *        pref name of preference to set
    *        value value to set preference to
-   * @throws Exception
+   * @throws PDOException
    * @return none
    */
   public function setPref($id, $scope, $pref, $value) {
     $pref_val = null;
 
-    $qry = "REPLACE INTO user_prefs VALUES ('" . 
-      $id . "','" .
-      mysql_real_escape_string($scope) . 
-      "','" .
-      mysql_real_escape_string($pref) . "','" .
-      mysql_real_escape_string($value) . "')";
-
-    $res = mysql_query($qry, $this->data['db']);
-
-    if ($res === false) {
-      throw new Exception(mysql_error());
+    try {
+      $stmt = $this->db->prepare("REPLACE INTO user_prefs VALUES(?, ?, ?, ?)");
+      $stmt->bindParam(1, $id, PDO::PARAM_INT);
+      $stmt->bindParam(2, $scope);
+      $stmt->bindParam(3, $pref);
+      $stmt->bindParam(4, $value);
+      $stmt->execute();
+    } catch (PDOException $e) {
+      throw($e);
     }
   }
 }

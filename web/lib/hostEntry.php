@@ -65,26 +65,20 @@ abstract class hostEntry
    * Get if from last insert
    *
    * @param none
-   * @throws Exception
+   * @throws PDOException, Exception
    * @return var integer
    */
   public function _last_insert_id() {
-    $res = mysql_query("SELECT LAST_INSERT_ID() AS id", $this->db);
-
-    $id = false;
-
-    if ($res !== false) {
-      $r = mysql_fetch_assoc($res);
-      if ($r) {
-	$id = $r['id'];
-      } else {
+    
+    try {
+      $id = $this->db->lastInsertId();
+      if (!($id) || ($id < 1)) {
 	throw new Exception("No ID");
       }
-      mysql_free_result($res);
-    } else {
-      throw new Exception(mysql_error());
+    } catch (PDOException $e) {
+      throw($e);
     }
-    
+
     return($id);
   }
 }

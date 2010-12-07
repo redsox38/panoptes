@@ -61,24 +61,18 @@ class securityGroup
    * Get if from last insert
    *
    * @param none
-   * @throws Exception
+   * @throws PDOException
    * @return var integer
    */
   public function _last_insert_id() {
-    $res = mysql_query("SELECT LAST_INSERT_ID() AS id", $this->db);
-
-    $id = false;
-
-    if ($res !== false) {
-      $r = mysql_fetch_assoc($res);
-      if ($r) {
-        $id = $r['id'];
-      } else {
+    try {
+      $id = $this->db->lastInsertId();
+      
+      if (!($id) || ($id < 1)) {
         throw new Exception("No ID");
       }
-      mysql_free_result($res);
-    } else {
-      throw new Exception(mysql_error());
+    } catch (PDOException $e) {
+      throw($e);
     }
 
     return($id);
@@ -95,16 +89,16 @@ class securityGroup
     if (is_null($this->children)) {
       $this->children = array();
       
-      $res = mysql_query("SELECT user_id FROM security_group_membership WHERE group_id='" .
-			 $this->id ."'", $this->db);
-      
-      if ($res) {
-	while ($r = mysql_fetch_assoc($res)) {
+      try {
+	$stmt = $this->db->prepare("SELECT user_id FROM security_group_membership WHERE group_id=?");
+	$stmt->bindParam(1, $this->id, PDO::PARAM_INT);
+	$stmt->execute();
+	
+	while ($r = $stmt->fetch(PDO::FETCH_ASSOC)) {
 	  array_push($this->children, $r['user_id']);
 	}	
-	mysql_free_result($res);
-      } else {
-	throw new Exception(mysql_error());
+      } catch (PDOException $e) {
+	throw($e);
       }
     }
 
@@ -115,19 +109,18 @@ class securityGroup
    * Commit entry into database
    *
    * @param none
-   * @throws Exception
+   * @throws PDOException
    * @return none
    */
   public function commit() {
     // insert into security group
-    $res = mysql_query("INSERT INTO security_groups VALUES(0,'" .
-		       $this->name . "')", $this->db);
-    
-    if ($res !== false) {
-      // retrieve group id and update object
-      $this->id = $this->_last_insert_id();
-    } else {
-      throw new Exception(mysql_error());
+    try {
+      $stmt = $this->db->prepare("INSERT INTO security_groups VALUES (0, ?)");
+      $stmt->bindParam(1, $this->name);
+      $stmt->execute();
+      $this->id = $this->db->lastInsertId();
+    } catch (PDOException $e) {
+      throw($e);
     }
   }
 
@@ -140,11 +133,13 @@ class securityGroup
    */
   public function addMember($userid) {
     // insert into security group
-    $res = mysql_query("INSERT INTO security_group_membership VALUES(" .
-		       $this->id . "," . $userid . ")", $this->db);
-    
-    if ($res === false) {
-      throw new Exception(mysql_error());
+    try {
+      $stmt = $this->db->prepare("INSERT INTO security_group_membership VALUES (?, ?)");
+      $stmt->bindParam(1, $this->id, PDO::PARAM_INT);
+      $stmt->bindParam(2, $userid, PDO::PARAM_INT);
+      $stmt->execute();
+    } catch (PDOException $e) {
+      throw($e);
     }
   }
 
@@ -158,11 +153,13 @@ class securityGroup
    */
   public function deleteMember($userid) {
     // delete from security group
-    $res = mysql_query("DELETE FROM security_group_membership WHERE id=" .
-		       $this->id . " AND user_id=" . $userid, $this->db);
-    
-    if ($res === false) {
-      throw new Exception(mysql_error());
+    try {
+      $stmt = $this->db->prepare("DELETE FROM security_group_membership WHERE id=? AND user_id=?");
+      $stmt->bindParam(1, $this->id, PDO::PARAM_INT);
+      $stmt->bindParam(2, $userid, PDO::PARAM_INT);
+      $stmt->execute();
+    } catch (PDOException $e) {
+      throw($e);
     }
   }
 }

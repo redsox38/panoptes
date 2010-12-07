@@ -57,18 +57,18 @@ class panoptes
   public function __construct() {
     require_once 'panoptesConfiguration.php';
     $this->config = new panoptesConfiguration();
-    $this->db = mysql_connect(
-			      $this->config->getConfigValue('db.host'),
-			      $this->config->getConfigValue('db.user'),
-			      $this->config->getConfigValue('db.password')
-			      );
-    mysql_select_db($this->config->getConfigValue('db.name'),
-		    $this->db);
-
+    $type = $this->config->getConfigValue('db.type');
+    $user = $this->config->getConfigValue('db.user');
+    $pass = $this->config->getConfigValue('db.password');
+    $host = $this->config->getConfigValue('db.host');
+    $name = $this->config->getConfigValue('db.name');
+    $this->db = new PDO($type . ":host=" . $host . ";dbname=" . $name,
+			$user, $pass);
+    $this->db->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
   }
   
   public function __destroy() {
-    mysql_close($this->db);
+    $this->db = NULL;
   }
 
   public function getDb() {
@@ -263,7 +263,7 @@ class panoptes
    * @param type one or read/write/none
    * @param sec_grp_id security group id
    * @param dev_grp_id device group id
-   * @throws Exception
+   * @throws PDOException
    * @return none
    */
   public function setPermission($type, $sec_grp_id, $dev_grp_id) {
@@ -275,10 +275,10 @@ class panoptes
 	',' . $dev_grp_id . ',"' . $type . '")';
     }
 
-    $res = mysql_query($qry, $this->db);
-
-    if ($res === false) {
-      throw new Exception(mysql_error());
+    try {
+      $this->db->exec($qry);
+    } catch (PDOException $e) {
+      throw($e);
     }
   }
 
@@ -286,7 +286,7 @@ class panoptes
    * Retrieve all users
    *
    * @param none
-   * @throws Exception 
+   * @throws PDOException 
    * @return array of user objects
    */
   public function getAllUsers() {
@@ -294,10 +294,11 @@ class panoptes
 
     $rtn = array();
 
-    $res = mysql_query("SELECT * FROM users", $this->db);
-
-    if ($res !== false) {
-      while ($r = mysql_fetch_assoc($res)) {
+    try {
+      $stmt->prepare("SELECT * FROM users");
+      $stmt->execute();
+      
+      while ($r = $stmt->fetch(PDO::FETCH_ASSOC)) {
 	$e = new userEntry($this->db);
 	$e->id = $r['id'];
 	$e->name = $r['name'];
@@ -305,11 +306,10 @@ class panoptes
 	$e->modified = $r['modified'];
 	array_push($rtn, $e);
       }
-      mysql_free_result($res);
-    } else {
-      throw new Exception(mysql_error());
+    } catch (PDOException $e) {
+      throw($e);
     }
-    
+
     return($rtn);
   }
 
@@ -317,7 +317,7 @@ class panoptes
    * Retrieve autoDiscoveryEntry
    *
    * @param id id of specific autoDiscoveryEntry to retrieve
-   * @throws Exception 
+   * @throws PDOException 
    * @return autoDiscoveryEntry returns the next entry, null if there are no 
    *                            entries remaining
    */
@@ -328,27 +328,28 @@ class panoptes
     if (!is_null($id)) {
       // update from table
       $this->_disc_data = array();
-      $res = mysql_query("SELECT id, srcaddr AS src, srcport AS sport, dstaddr AS dst, dstport AS dport, proto FROM discovered WHERE ignored=0 AND proto='tcp' AND id='" . $id ."'", $this->db);
+      try {
+	$stmt = $this->db->prepare("SELECT id, srcaddr AS src, srcport AS sport, dstaddr AS dst, dstport AS dport, proto FROM discovered WHERE ignored=0 AND proto='tcp' AND id=?");
+	$stmt->bindParam(1, $id, PDO::PARAM_INT);
+	$stmt->execute();
 
-      if ($res !== false) {
-	$r = mysql_fetch_assoc($res);      
-	mysql_free_result($res);
-      } else {
-	throw new Exception(mysql_error());
+	$r = $stmt->fetch(PRO::FETCH_ASSOC);
+      } catch (PDOException $e) {
+	throw($e);
       }
     } else {
       if (is_null($this->_disc_data)) {
 	// update from table
 	$this->_disc_data = array();
-	$res = mysql_query("SELECT id, srcaddr AS src, srcport AS sport, dstaddr AS dst, dstport AS dport, proto FROM discovered WHERE ignored=0 AND proto='tcp' GROUP BY dst,dport,proto", $this->db);
+	try {
+	  $stmt = $this->db->prepare("SELECT id, srcaddr AS src, srcport AS sport, dstaddr AS dst, dstport AS dport, proto FROM discovered WHERE ignored=0 AND proto='tcp' GROUP BY dst,dport,proto");
+	  $stmt->execute();
 	
-	if ($res !== false) {
-	  while ($row = mysql_fetch_assoc($res)) {
+	  while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
 	    array_push($this->_disc_data, $row);
 	  }	
-	  mysql_free_result($res);
-	} else {
-	  throw new Exception(mysql_error());
+	} catch (PDOException $e) {
+	  throw($e);
 	}
       } 
       
@@ -384,28 +385,29 @@ class panoptes
     if (!is_null($id)) {
       // update from table
       $this->_dev_data = array();
-      $res = mysql_query("SELECT id, address, name FROM devices WHERE id='" . $id ."'", $this->db);
-      
-      if ($res !== false) {
-	$r = mysql_fetch_assoc($res);      
-	mysql_free_result($res); 
-      } else {
-	throw new Exception(mysql_error());
+      try {
+	$stmt = $this->db->prepare("SELECT id, address, name FROM devices WHERE id=?");
+	$stmt->bindParam(1, $id, PDO::PARAM_INT);
+	$stmt->execute();
+
+	$r = $stmt->fetch(PDO::FETCH_ASSOC);
+      } catch (PDOException $e) {
+	throw($e);
       }
     } else {
       if (is_null($this->_dev_data)) {
 	// update from table
 	$this->_dev_data = array();
 
-        $res = mysql_query("SELECT id, address, name FROM devices", $this->db);
+	try {
+	  $stmt = $this->db->prepare("SELECT id, address, name FROM devices");
+	  $stmt->execute();
 
-	if ($res !== false) {
-	  while ($row = mysql_fetch_assoc($res)) {
+	  while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
 	    array_push($this->_dev_data, $row);
 	  }	
-	  mysql_free_result($res);
-	} else {
-	  throw new Exception(mysql_error());
+	} catch (PDOException $e) {
+	  throw($e);
 	}
       } 
       
@@ -432,7 +434,7 @@ class panoptes
    *
    * @param excl array of security group ids
    *
-   * @throws Exception 
+   * @throws PDOException 
    * @return deviceGroup returns the next entry, null if there are no 
    *                     entries available
    */
@@ -441,19 +443,18 @@ class panoptes
 
     $excl_list = implode(",", $excl);
 
-    $qry = 'SELECT d.id FROM device_groups d, permissions p WHERE p.security_group_id NOT IN (' .
-      $excl_list . ') AND p.device_group_id=d.id';
+    try {
+      $qry = 'SELECT d.id FROM device_groups d, permissions p WHERE p.security_group_id NOT IN (' .
+	$excl_list . ') AND p.device_group_id=d.id';
 
-    $res = mysql_query($qry, $this->db);
+      $stmt = $this->db->prepare($qry);
+      $stmt->execute();
 
-    if ($res !== false) {
-      while ($row = mysql_fetch_assoc($res)) {
+      while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
 	array_push($groups, $row['id']);
       }
-      
-      mysql_free_result($res);
-    } else {
-      throw new Exception(mysql_error());
+    } catch (PDOException $e) {
+      throw($e);
     }
 
     return($groups);
@@ -473,50 +474,42 @@ class panoptes
 
     $r = null;
     
-    if (!is_null($id)) {
-      // update from table
-      $this->_dev_group_data = array();
-      $res = mysql_query("SELECT id, group_name FROM device_groups WHERE id='" . $id ."'", $this->db);
-      
-      if ($res !== false) {
-	$r = mysql_fetch_assoc($res);
-      
-	mysql_free_result($res);
-      } else {
-	throw new Exception(mysql_error());
-      }
-    } else if (!is_null($name)) {
-      // update from table
-      $this->_dev_group_data = array();
-      $res = mysql_query("SELECT id, group_name FROM device_groups WHERE group_name='" . $name ."'", $this->db);
-      
-      if ($res !== false) {
-	$r = mysql_fetch_assoc($res);
-      
-	mysql_free_result($res);
-      } else {
-	throw new Exception(mysql_error());
-      }
-    } else {
-      if (is_null($this->_dev_group_data)) {
+    try {
+      if (!is_null($id)) {
+	// update from table
+	$this->_dev_group_data = array();
+	
+	$stmt = $this->db->prepare("SELECT id, group_name FROM device_groups WHERE id=?");
+	$stmt->bindParam(1, $id, PDO::PARAM_INT);
+	$stmt->execute();
+
+	$r = $stmt->fetch(PDO::FETCH_ASSOC);
+      } else if (!is_null($name)) {
 	// update from table
 	$this->_dev_group_data = array();
 
-        $res = mysql_query("SELECT id, group_name FROM device_groups", 
-			   $this->db);
+	$stmt = $this->db->prepare("SELECT id, group_name FROM device_groups WHERE group_name=?");
+	$stmt->bindParam(1, $name);
+	$stmt->execute();
 
-	if ($res !== false) {
-	  while ($row = mysql_fetch_assoc($res)) {
+	$r = $stmt->fetch(PDO::FETCH_ASSOC);
+      } else {
+	if (is_null($this->_dev_group_data)) {
+	  // update from table
+	  $this->_dev_group_data = array();
+	  
+	  $stmt = $this->db->prepare("SELECT id, group_name FROM device_groups");
+	  $stmt->execute();
+
+	  while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
 	    array_push($this->_dev_group_data, $row);
 	  }
+	} 
 	
-	  mysql_free_result($res);
-	} else {
-	  throw new Exception(mysql_error());
-	}
-      } 
-      
-      $r = array_shift($this->_dev_group_data);
+	$r = array_shift($this->_dev_group_data);
+      }
+    } catch (PDOException $e) {
+      throw($e);
     }
 
     if (!is_null($r) && !empty($r)) {
@@ -537,7 +530,7 @@ class panoptes
    * @param id id of specific groupEntry to retrieve
    *        name name of specific group to retrieve
    *
-   * @throws Exception 
+   * @throws PDOException 
    * @return securityGroup returns the next entry, null if there are no 
    *                     entries available
    */
@@ -545,50 +538,42 @@ class panoptes
 
     $r = null;
     
-    if (!is_null($id)) {
-      // update from table
-      $this->_sec_group_data = array();
-      $res = mysql_query("SELECT id, group_name FROM security_groups WHERE id='" . $id ."'", $this->db);
-      
-      if ($res !== false) {
-	$r = mysql_fetch_assoc($res);
-      
-	mysql_free_result($res);
-      } else {
-	throw new Exception(mysql_error());
-      }
-    } else if (!is_null($name)) {
-      // update from table
-      $this->_sec_group_data = array();
-      $res = mysql_query("SELECT id, group_name FROM security_groups WHERE group_name='" . $name ."'", $this->db);
-      
-      if ($res !== false) {
-	$r = mysql_fetch_assoc($res);
-      
-	mysql_free_result($res);
-      } else {
-	throw new Exception(mysql_error());
-      }
-    } else {
-      if (is_null($this->_sec_group_data)) {
+    try {
+      if (!is_null($id)) {
+	// update from table
+	$this->_sec_group_data = array();
+	
+	$stmt = $this->db->prepare("SELECT id, group_name FROM security_groups WHERE id=?");
+	$stmt->bindParam(1, $id, PDO::PARAM_INT);
+	$stmt->execute();
+
+	$r = $stmt->fetch(PDO::FETCH_ASSOC);
+      } else if (!is_null($name)) {
 	// update from table
 	$this->_sec_group_data = array();
 
-        $res = mysql_query("SELECT id, group_name FROM security_groups", 
-			   $this->db);
+	$stmt = $this->db->prepare("SELECT id, group_name FROM security_groups WHERE group_name=?");
+	$stmt->bindParam(1, $name);
+	$stmt->execute();
 
-	if ($res !== false) {
-	  while ($row = mysql_fetch_assoc($res)) {
+	$r = $stmt->fetch(PDO::FETCH_ASSOC);
+      } else {
+	if (is_null($this->_sec_group_data)) {
+	  // update from table
+	  $this->_sec_group_data = array();
+	  
+	  $stmt = $this->db->prepare("SELECT id, group_name FROM security_groups");
+	  $stmt->execute();
+	  
+	  while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
 	    array_push($this->_sec_group_data, $row);
 	  }
+	} 
 	
-	  mysql_free_result($res);
-	} else {
-	  throw new Exception(mysql_error());
-	}
-      } 
-      
-      $r = array_shift($this->_sec_group_data);
+	$r = array_shift($this->_sec_group_data);
+      }
+    } catch (PDOException $e) {
+      throw($e);
     }
 
     if (!is_null($r) && !empty($r)) {
@@ -610,23 +595,29 @@ class panoptes
    *                 snmp monitor data for
    * @param ent_id optional specific entry to retrieve
    *
-   * @throws Exception 
+   * @throws PDOException 
    * @return array of SNMPMonitorEntry objects
    */
   public function getSNMPMonitorData($id, $ent_id = null) {
     require_once 'SNMPMonitorEntry.php';
     $rtndata = array();
 
-    if (is_null($ent_id)) {
-      $res = mysql_query("SELECT * FROM snmp_monitors WHERE device_id='" . 
-			 $id ."'", $this->db);
-    } else {
-      $res = mysql_query("SELECT * FROM snmp_monitors WHERE device_id='" . 
-			 $id ."' AND id='" . $ent_id . "'", $this->db);
-    }
+    try {
+      $qry = "SELECT * FROM snmp_monitors WHERE device_id=?";
+      if (!is_null($ent_id)) {
+	$qry .= " AND id=?";
+      }
 
-    if ($res !== false) {
-      while ($r = mysql_fetch_assoc($res)) {
+      $stmt = $this->db->prepare($qry);
+      $stmt->bindParam(1, $id, PDO::PARAM_INT);
+
+      if (!is_null($ent_id)) {
+	$stmt->bindParam(2, $ent_id, PDO::PARAM_INT);
+      }
+
+      $stmt->execute();
+
+      while ($r = $stmt->fetch(PDO::FETCH_ASSOC)) {
 	$ent = new SNMPMonitorEntry($this->db);
 	$ent->id = $r['id'];
 	$ent->device_id = $id;
@@ -641,9 +632,8 @@ class panoptes
 	$ent->disabled = $r['disabled'];
 	array_push($rtndata, $ent);
       }
-      mysql_free_result($res);
-    } else {
-      throw new Exception(mysql_error());
+    } catch (PDOException $e) {
+      throw($e);
     }
 
     return($rtndata);
@@ -663,16 +653,21 @@ class panoptes
     require_once 'shellMonitorEntry.php';
     $rtndata = array();
 
-    if (is_null($ent_id)) {
-      $res = mysql_query("SELECT * FROM shell_monitors WHERE device_id='" . 
-			 $id ."'", $this->db);
-    } else {
-      $res = mysql_query("SELECT * FROM shell_monitors WHERE device_id='" . 
-			 $id ."' AND id='" . $ent_id . "'", $this->db);
-    }
+    try {
+      $qry = "SELECT * FROM shell_monitors WHERE device_id=?";
 
-    if ($res !== false) {
-      while ($r = mysql_fetch_assoc($res)) {
+      if (!is_null($ent_id)) {
+	$qry .= " AND id=?";
+      }
+
+      $stmt->bindParam(1, $id, PDO::PARAM_INT);
+
+      if (!is_null($ent_id)) {
+	$stmt->bindParam(2, $ent_id, PDO::PARAM_INT);
+      }
+      $stmt->execute();
+
+      while ($r = $stmt->fetch(PDO::FETCH_ASSOC)) {
 	$ent = new shellMonitorEntry($this->db);
 	$ent->id = $r['id'];
 	$ent->device_id = $id;
@@ -683,12 +678,11 @@ class panoptes
 	$ent->status = $r['status'];
 	$ent->status_string = $r['status_string'];
 	$ent->disabled = $r['disabled'];
-
+	
 	array_push($rtndata, $ent);
       }
-      mysql_free_result($res);
-    } else {
-      throw new Exception(mysql_error());
+    } catch (PDOException $e) {
+      throw($e);
     }
 
     return($rtndata);
@@ -700,22 +694,25 @@ class panoptes
    * @param id id of specific device to retrieve
    *                 monitor data for
    *
-   * @throws Exception 
+   * @throws PDOException 
    * @return array of portMonitorEntry objects
    */
   public function getPortMonitorData($id, $ent_id = null) {
     $rtndata = array();
 
-    if (is_null($ent_id)) {
-      $res = mysql_query("SELECT * FROM port_monitors WHERE device_id='" . 
-			 $id ."'", $this->db);
-    } else {
-      $res = mysql_query("SELECT * FROM port_monitors WHERE device_id='" . 
-			 $id . "' AND id='" . $ent_id . "'", $this->db);
-    }
+    try {
+      $qry = "SELECT * FROM port_monitors WHERE device_id=?";
+      if (!is_null($ent_id)) {
+	$qry .= " AND id=?";
+      }
+      $stmt->bindParam(1, $id, PDO::PARAM_INT);
+      
+      if (!is_null($ent_id)) {
+	$stmt->bindParam(2, $ent_id, PDO::PARAM_INT);
+      }
+      $stmt->execute();
 
-    if ($res !== false) {
-      while ($r = mysql_fetch_assoc($res)) {
+      while ($r = $stmt->fetch(PDO::FETCH_ASSOC)) {
 	$ent = new portMonitorEntry($this->db);
 	$ent->id = $r['id'];
 	$ent->device_id = $id;
@@ -728,9 +725,8 @@ class panoptes
 	$ent->disabled = $r['disabled'];
 	array_push($rtndata, $ent);
       }
-      mysql_free_result($res);
-    } else {
-      throw new Exception(mysql_error());
+    } catch (PDOException $e) {
+      throw($e);
     }
 
     return($rtndata);
@@ -742,18 +738,20 @@ class panoptes
    * @param id id of specific device to retrieve
    *                 monitor data for
    *
-   * @throws Exception 
+   * @throws PDOException 
    * @return pingEntry object
    */
   public function getPingMonitorData($id) {    
     require_once 'pingEntry.php';
     $ent = false;
 
-    $res = mysql_query("SELECT * FROM ping_monitors WHERE device_id='" . 
-		       $id ."'", $this->db);
-    
-    if ($res !== false) {
-      $r = mysql_fetch_assoc($res);
+    try {
+      $stmt = $this->db->prepare("SELECT * FROM ping_monitors WHERE device_id=?");
+      $stmt->bindParam(1, $id, PDO::PARAM_INT);
+      $stmt->execute();
+
+      $r = $stmt->fetch(PDO::FETCH_ASSOC);
+      
       if ($r) {
 	$ent = new pingEntry($this->db);
 	$ent->id = $r['id'];
@@ -764,9 +762,8 @@ class panoptes
 	$ent->status_string = $r['status_string'];
 	$ent->disabled = $r['disabled'];
       }
-      mysql_free_result($res);
-    } else {
-      throw new Exception(mysql_error());
+    } catch (PDOException $e) {
+      throw($e);
     }
 
     return($ent);
@@ -785,11 +782,12 @@ class panoptes
     require_once 'certificateMonitorEntry.php';
     $rtndata = array();
 
-    $res = mysql_query("SELECT * FROM certificate_monitors WHERE device_id='" . 
-		       $id ."'", $this->db);
-    
-    if ($res !== false) {
-      while ($r = mysql_fetch_assoc($res)) {
+    try {
+      $stmt = $this->db->prepare("SELECT * FROM certificate_monitors WHERE device_id=?");
+      $stmt->bindParam(1, $id, PDO::PARAM_INT);
+      $stmt->execute();
+
+      while ($r = $stmt->fetch(PDO::FETCH_ASSOC)) {
 	$ent = new certificateMonitorEntry($this->db);
 	$ent->id = $r['id'];
 	$ent->device_id = $id;
@@ -801,9 +799,8 @@ class panoptes
 	$ent->disabled = $r['disabled'];
 	array_push($rtndata, $ent);
       }
-      mysql_free_result($res);
-    } else {
-      throw new Exception(mysql_error());
+    } catch (PDOException $e) {
+      throw($e);
     }
 
     return($rtndata);

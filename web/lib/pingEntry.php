@@ -76,28 +76,25 @@ class pingEntry
    * Commit entry into database
    *
    * @param none
-   * @throws Exception
+   * @throws PDOException
    * @return none
    */
   public function commit() {
     // insert into ping_monitors table if not there already
     if (is_null($this->id)) {
       // insert new entry 
-      $res = mysql_query("INSERT INTO ping_monitors VALUES(0," .
-			 $this->device->id . ",15, NOW(), NOW(), 'new', 'pending', 0)");
-
-      if ($res !== false) {
-	// go back and select entry to get entry id
-	$res = mysql_query("SELECT id FROM ping_monitors WHERE device_id=" .
-			   $this->device->id);
-	$r = mysql_fetch_assoc($res);
-	$this->id = $r['id'];
-	mysql_free_result($res);	
-      } else {
-	throw new Exception(mysql_error());
+      try {
+	$stmt = $this->db->prepare("INSERT INTO ping_monitors VALUES (0, ?, 15, NOW(), NOW(), ?, ?, 0)");
+	$stmt->bindParam(1, $this->device->id, PDO::PARAM_INT);
+	$stmt->bindParam(2, "new");
+	$stmt->bindParam(3, "pending");
+	$stmt->execute();
+	$this->id = $this->db->lastInsertId();
+      } catch (PDOException $e) {
+	throw($e);
       }
     }
   }
-
+  
 }
 ?>

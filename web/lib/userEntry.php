@@ -58,36 +58,30 @@ class userEntry
    * Commit entry into database
    *
    * @param none
-   * @throws Exception
+   * @throws PDOException
    * @return none
    */
   public function commit() {
     global $panoptes_current_user;
 
-    // insert into user table if not there already
-    if (is_null($this->id)) {      
-      // insert new record
-      mysql_query("INSERT INTO users VALUES(0, '" .
-		  $this->name . "','" .
-		  $panoptes_current_user . "', NOW())");
-
-      $res = mysql_query("SELECT id from users WHERE name='" .
-			 $this->name . "'", $this->db);
-      if ($res !== false) {
-	$r = mysql_fetch_assoc($res);
-	$this->id = $r['id'];
-	mysql_free_result($res);
+    try {
+      // insert into user table if not there already
+      if (is_null($this->id)) {      
+	// insert new record
+	$stmt = $this->db->prepare("INSERT INTO users VALUES(0, ?, ?, NOW())");
+	$stmt->bindParam(1, $this->name);
+	$stmt->bindParam(2, $panoptes_current_user);
+	$stmt->execute();
+	$this->id = $this->db->lastInsertId();
       } else {
-	throw new Exception(mysql_error());
+	// update existing entry
+	$stmt = $this->db->prepare("UPDATE users SET name=? WHERE id=?");
+	$stmt->bindParam(1, $this->name);
+	$stmt->bindParam(2, $this->id, PDO::PARAM_INT);
+	$stmt->execute();
       }
-    } else {
-      // update existing entry
-      $res = mysql_query("UPDATE users SET name='" .
-			 $this->name . "' WHERE id='" .
-			 $this->id . "'");
-      if ($res === false) {
-	throw new Exception(mysql_error());
-      }
+    } catch (PDOException $e) {
+      throw($e);
     }
   }
 
@@ -95,27 +89,27 @@ class userEntry
    * Get user by name
    *
    * @param name name to look up
-   * @throws Exception
+   * @throws PDOException, Exception
    * @return none
    */
   public function getByName($name) {
-    $res = mysql_query("SELECT * FROM users WHERE name='" .
-		       mysql_real_escape_string($name) . 
-		       "'", $this->db);
+    try {
+      $stmt = $this->db->prepare("SELECT * FROM users WHERE name=?");
+      $stmt->bindParam(1, $name);
+      $stmt->execute();
 
-    if ($res !== false) {
-      $r = mysql_fetch_assoc($res);
+      $r = $stmt->fetch(PDO::FETCH_ASSOC);
+
       if ($r) {
 	$this->id = $r['id'];
 	$this->name = $r['name'];
 	$this->created_by = $r['created_by'];
 	$this->modified = $r['modified'];
-	mysql_free_result($res);
       } else {
 	throw new Exception("user " . $name . " does not exist");
       }
-    } else {
-      throw new Exception(mysql_error());
+    } catch (PDOException $e) {
+      throw($e);
     }
   }
 
@@ -123,23 +117,22 @@ class userEntry
    * Get security groups for this user
    *
    * @param none
-   * @throws Exception
+   * @throws PDOException
    * @return array of group ids
    */
   public function getGroups() {
     $groups = array();
 
-    $res = mysql_query("SELECT group_id FROM security_group_membership WHERE user_id='" .
-		       $this->id . 
-		       "'", $this->db);
-
-    if ($res !== false) {
-      while ($r = mysql_fetch_assoc($res)) {
+    try {
+      $stmt = $this->db->prepare("SELECT group_id FROM security_group_membership WHERE user_id=?");
+      $stmt->bindParam(1, $this->id, PDO::PARAM_INT);
+      $stmt->execute();
+      
+      while ($r = $stmt->fetch(PDO::FETCH_ASSOC)) {
 	$groups[] = $r['group_id'];
       }
-      mysql_free_result($res);
-    } else {
-      throw new Exception(mysql_error());
+    } catch (PDOException $e) {
+      throw($e);
     }
 
     return($groups);
@@ -149,13 +142,16 @@ class userEntry
    * Delete user entry
    *
    * @param none
-   * @throws Exception
+   * @throws PDOException
    * @return none
    */
   public function delete() {
-    $res = mysql_query("DELETE FROM users WHERE id='" . $this->id . "'");
-    if ($res === false) {
-      throw new Exception(mysql_error());
+    try {
+      $stmt = $this->db->prepare("DELETE FROM users WHERE id=?");
+      $stmt->bindParam(1, $this->id);
+      $stmt->execute();
+    } catch (PDOException $e) {
+      throw($e);
     }
   }
 }

@@ -47,17 +47,19 @@ class autoDiscoveryEntry extends hostEntry
    * ignore this entry by marking it as ignored in the table
    *
    * @param none
-   * @throws Exception
+   * @throws PDOException
    * @return integer 0 on success
    */
   public function ignore() {
     
-    $res = mysql_query("UPDATE discovered SET ignored=1 WHERE id=" . 
-		       mysql_real_escape_string($this->id, $this->db) . 
-		       "", $this->db);
-    
-    if ($res === false)
-      throw new Exception(mysql_error());
+    try {
+      $stmt = $this->db->prepare("UPDATE discovered SET ignored=1 WHERE id=?");
+      $stmt->bindParam(1, $this->id, PDO::PARAM_INT);
+      $stmt->execute();
+    } catch (PDOException $e) {
+      throw $e;
+    }
+
     return(0);
   }
 

@@ -107,24 +107,18 @@ abstract class monitorEntry
    * Get if from last insert
    *
    * @param none
-   * @throws Exception
+   * @throws PDOException, Exception
    * @return var integer
    */
   public function _last_insert_id() {
-    $res = mysql_query("SELECT LAST_INSERT_ID() AS id", $this->db());
-
-    $id = false;
-
-    if ($res !== false) {
-      $r = mysql_fetch_assoc($res);
-      if ($r) {
-	$id = $r['id'];
-      } else {
+    try {
+      $id = $this->db->lastInsertId();
+      
+      if (!($id) || ($id < 1)) {
 	throw new Exception("No ID");
       }
-      mysql_free_result($res);
-    } else {
-      throw new Exception(mysql_error());
+    } catch (PDOException $e) {
+      throw($e);
     }
     
     return($id);
@@ -134,7 +128,7 @@ abstract class monitorEntry
    * Commit entry into database
    *
    * @param vals array of field names/values
-   * @throws Exception
+   * @throws PDOException, Exception
    * @return none
    */
   public function _commit($vals) {
@@ -163,16 +157,13 @@ abstract class monitorEntry
       $cols_string .= ')';
       $vals_string .= ')';
 
-      $qry = "INSERT INTO " . $this->monitorTable . " " . $cols_string .
+      $qry = "INSERT INTO " . $this->monitorTable() . " " . $cols_string .
 	" VALUES " . $vals_string;
       
-      $res = mysql_query($qry, $this->db());
-      
-      if ($res === false) {
-	throw new Exception(mysql_error());
-      } else {
-	$this->id = $this->_last_insert_id();
-      }
+      $this->db->exec($qry);
+      $this->id = $this->db->lastInsertId();
+    } catch (PDOException $e) {
+      throw($e);
     } catch (Exception $e) {
       throw($e);
     }
@@ -182,14 +173,16 @@ abstract class monitorEntry
    * Delete entry from database
    *
    * @param none
-   * @throws Exception
+   * @throws PDOException
    * @return none
    */
   public function delete() {
-    $res = mysql_query("DELETE FROM " . $this->monitorTable() . " WHERE id='" . 
-                       $this->id . "'", $this->db());
-    if ($res == false) {
-      throw new Exception(mysql_error());
+    try {
+      $stmt = $this->db->prepare("DELETE FROM " . $this->monitorTable() . " WHERE id=?");
+      $stmt->bindParam(1, $this->id, PDO::PARAM_INT);
+      $stmt->execute();
+    } catch (PDOException $e) {
+      throw($e);
     }
   }
 
@@ -197,14 +190,16 @@ abstract class monitorEntry
    * Disable entry in database
    *
    * @param none
-   * @throws Exception
+   * @throws PDOException
    * @return none
    */
   public function disable() {
-    $res = mysql_query("UPDATE " . $this->monitorTable() . " SET disabled=1 WHERE id='" .
-                       $this->id . "'", $this->db());
-    if ($res == false) {
-      throw new Exception(mysql_error());
+    try {
+      $stmt = $this->db->prepare("UPDATE " . $this->monitorTable() . " SET disabled=1 WHERE id=?");
+      $stmt->bindParam(1, $this->id, PDO::PARAM_INT);
+      $stmt->execute();
+    } catch (PDOException $e) {
+      throw($e);
     }
   }
 
@@ -212,14 +207,16 @@ abstract class monitorEntry
    * Enable entry in database
    *
    * @param none
-   * @throws Exception
+   * @throws PDOException
    * @return none
    */
   public function enable() {
-    $res = mysql_query("UPDATE " . $this->monitorTable() . " SET disabled=0 WHERE id='" .
-                       $this->id . "'", $this->db());
-    if ($res == false) {
-      throw new Exception(mysql_error());
+    try {
+      $stmt = $this->db->prepare("UPDATE " . $this->monitorTable() . " SET disabled=0 WHERE id=?");
+      $stmt->bindParam(1, $this->id, PDO::PARAM_INT);
+      $stmt->execute();
+    } catch (PDOException $e) {
+      throw($e);
     }
   }  
 
@@ -227,18 +224,20 @@ abstract class monitorEntry
    * Ack entry in database
    *
    * @param msg ack message
-   * @throws Exception
+   * @throws PDOException
    * @return none
    */
   public function ack($msg) {
     global $panoptes_current_user;
 
-    $res = mysql_query("INSERT into " . $this->ackTable() . " VALUES(0, " .
-                       $this->id . ",'" . $panoptes_current_user . 
-                       "',NOW(),'" . 
-                       mysql_real_escape_string($msg) . "')", $this->db());
-    if ($res == false) {
-      throw new Exception(mysql_error());
+    try {
+      $stmt = $this->db->prepare("INSERT INTO " . $this->ackTable() . " VALUES(0, ?, ?, NOW(), ?)");
+      $stmt->bindParam(1, $this->id, PDO::PARAM_INT);
+      $stmt->bindParam(2, $panoptes_current_user);
+      $stmt->bindParam(3, $msg);
+      $stmt->execute();
+    } catch (PDOException $e) {
+      throw($e);
     }
   }
 
@@ -246,18 +245,18 @@ abstract class monitorEntry
    * get ack entry from datbase
    *
    * @param msg ack message
-   * @throws Exception
+   * @throws PDOException
    * @return array containing most recent ack info
    */
   public function getAckInfo() {
     
-    $res = mysql_query("SELECT * FROM " . $this->ackTable() . " WHERE monitor_id=" .
-                       $this->id . " ORDER BY ack_time LIMIT 1", $this->db());
+    try {
+      $stmt = $this->db->prepare("SELECT * FROM " . $this->ackTable() . 
+				 " WHERE monitor_id=? ORDER BY ack_time LIMIT 1");
+      $stmt->bindParam(1, $this->id, PDO::PARAM_INT);
+      $stmt->execute();
 
-    if ($res == false) {
-      throw new Exception(mysql_error());
-    } else {
-      $r = mysql_fetch_assoc($res);
+      $r = $stmt->fetch(PDO::FETCH_ASSOC);
 
       if ($r) {
         $rtn['ack_by'] = $r['ack_user'];
@@ -268,7 +267,8 @@ abstract class monitorEntry
                      'ack_time' => '',
                      'ack_msg'  => '');
       }
-      mysql_free_result($res);
+    } catch (PDOException $e) {
+      throw($e);
     }
 
     return($rtn);

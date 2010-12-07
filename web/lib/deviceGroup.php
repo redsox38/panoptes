@@ -75,23 +75,21 @@ class deviceGroup
    * Get children (members) of this group
    *
    * @param none
-   * @throws Exception
+   * @throws PDOException
    * @return array containing the device ids of the child devices
    */
   public function children() {
     if (is_null($this->children)) {
       $this->children = array();
-      
-      $res = mysql_query("SELECT device_id FROM device_group_membership WHERE group_id='" .
-			 $this->id ."'", $this->db);
-      
-      if ($res) {
-	while ($r = mysql_fetch_assoc($res)) {
+
+      try {
+	$stmt = $this->db->prepare("SELECT device_id FROM device_group_membership WHERE group_id=?");
+	$stmt->bindParam(1, $this->id, PDO::PARAM_INT);
+	$stmt->execute();
+	
+	while ($r = $stmt->fetch(PDO::FETCH_ASSOC) {
 	  array_push($this->children, $r['device_id']);
 	}	
-	mysql_free_result($res);
-      } else {
-	throw new Exception(mysql_error());
       }
     }
 
@@ -102,27 +100,19 @@ class deviceGroup
    * Commit entry into database
    *
    * @param none
-   * @throws Exception
+   * @throws PDOException
    * @return none
    */
   public function commit() {
     // insert into device table 
-    $res = mysql_query("INSERT INTO device_groups VALUES(" .
-		       $this->id . ",'" .
-		       $this->name . "')", $this->db);
-    
-    if ($res !== false) {
-      // retrieve group id and update object
-      $res = mysql_query("SELECT id FROM device_groups WHERE group_name='" .
-			 $this->name . "'", $this->db);
-      if ($res !== false) {
-	$r = mysql_fetch_assoc($res);
-	$this->id = $r['id'];
-      } else {
-	throw new Exception(mysql_error());
-      }
-    } else {
-      throw new Exception(mysql_error());
+    try {
+      $stmt = $this->db->prepare("INSERT INTO device_groups VALUES(?,?)");
+      $stmt->bindParam(1, $this->id, PDO::PARAM_INT);
+      $stmt->bindParam(2, $this->name);
+      $stmt->execute();
+      $this->id = $this->db->lastInsertId();
+    } catch (PDOException $e) {
+      throw($e);
     }
   }
 
@@ -130,45 +120,53 @@ class deviceGroup
    * Add child to database
    *
    * @param device_id id of device entry to add as child
-   * @throws Exception
+   * @throws PDOException
    * @return none
    */
   public function addMember($device_id) {
-    $res = mysql_query("INSERT INTO device_group_membership VALUES(" .
-		       $this->id . "," . $device_id . ")", $this->db);
-
-    if ($res === false)
-      throw new Exception(mysql_error());
+    try {
+      $stmt = $this->db->prepare("INSERT INTO device_group_membership VALUES(?, ?)");
+      $stmt->bindParam(1, $this->id, PDO::PARAM_INT);
+      $stmt->bindParam(2, $device_id, PDO::PARAM_INT);
+      $stmt->execute();
+    } catch (PDOException $e) {
+      throw($e);
+    }
   }
 
   /**
    * remove child from database
    *
    * @param device_id id of device entry to remove as child
-   * @throws Exception
+   * @throws PDOException
    * @return none
    */
   public function removeMember($device_id) {
-    $res = mysql_query("DELETE FROM device_group_membership WHERE device_id=" .
-		       $device_id . " AND group_id=" . $this->id, $this->db);
-
-    if ($res === false)
-      throw new Exception(mysql_error());
+    try {
+      $stmt = $this->db->prepare("DELETE FROM device_group_membership WHERE group_id=? AND device_id=?");
+      $stmt->bindParam(1, $this->id, PDO::PARAM_INT);
+      $stmt->bindParam(2, $device_id, PDO::PARAM_INT);
+      $stmt->execute();
+    } catch (PDOException $e) {
+      throw($e);
+    }
   }
 
   /**
    * Delete group
    *
-   * @param id id of group to delete
-   * @throws Exception
+   * @param none
+   * @throws PDOException
    * @return none
    */
-  public function delete($id) {
-    $res = mysql_query("DELETE FROM device_groups WHERE id='" .
-		       $this->id . "'", $this->db);
-
-    if ($res === false)
-      throw new Exception(mysql_error());
+  public function delete() {
+    try {
+      $stmt = $this->db->prepare("DELETE FROM device_groups WHERE id=?");
+      $stmt->bindParam(1, $this->id, PDO::PARAM_INT);
+      $stmt->execute();
+    } catch (PDOException $e) {
+      throw($e);
+    }
   }
 }
 ?>

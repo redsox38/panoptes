@@ -74,38 +74,33 @@ class deviceEntry
    * Commit entry into database
    *
    * @param none
-   * @throws Exception
+   * @throws PDOException
    * @return none
    */
   public function commit() {
     // try to get host name
     $this->name = gethostbyaddr($this->srcaddr);
 
-    // insert into device table if not there already
-    if (is_null($this->id)) {      
-      // insert new record
-      mysql_query("INSERT INTO devices VALUES(0, '" .
- 		  $this->srcaddr . "','" . 
-		  $this->name . "')");
-
-      $res = mysql_query("SELECT id from devices WHERE address='" .
-			 $this->srcaddr . "'", $this->db);
-      if ($res !== false) {
-	$r = mysql_fetch_assoc($res);
-	$this->id = $r['id'];
-	mysql_free_result($res);
+    try {
+      // insert into device table if not there already
+      if (is_null($this->id)) {      
+	// insert new record
+	$stmt = $this->db->prepare("INSERT INTO devices VALUES(0, ?, ?)");
+	$stmt->bindParam(1, $this->srcaddr);
+	$stmt->bindParam(2, $this->name);
+	$stmt->execute();
+	
+	$this->id = $this->db->lastInsertId();
       } else {
-	throw new Exception(mysql_error());
+	// update existing entry
+	$stmt = $this->db->prepare("UPDATE devices SET name=?, address=? WHERE id=?");
+	$stmt->bindParam(1, $this->name);
+	$stmt->bindParam(2, $this->srcaddr);
+	$stmt->bindParam(3, $this->id, PDO::PARAM_INT);
+	$stmt->execute();
       }
-    } else {
-      // update existing entry
-      $res = mysql_query("UPDATE devices SET name='" .
-			 $this->name . "', address='" .
-			 $this->srcaddr . "' WHERE id='" .
-			 $this->id . "'");
-      if ($res === false) {
-	throw new Exception(mysql_error());
-      }
+    } catch (PDOException $e) {
+      throw($e);
     }
   }
 
@@ -113,13 +108,16 @@ class deviceEntry
    * Delete device entry
    *
    * @param none
-   * @throws Exception
+   * @throws PDOException
    * @return none
    */
   public function delete() {
-    $res = mysql_query("DELETE FROM devices WHERE id='" . $this->id . "'");
-    if ($res === false) {
-      throw new Exception(mysql_error());
+    try {
+      $stmt = $this->db->prepare("DELETE FROM devices WHERE id=?");
+      $stmt->bindParam(1, $this->id, PDO::PARAM_INT);
+      $stmt->execute();
+    } catch (PDOException $e) {
+      throw($e);
     }
   }
 
@@ -128,17 +126,18 @@ class deviceEntry
    *
    * @param start date string 'yyyy/mm/dd hh:mm'
    *        stop date string 'yyyy/mm/dd hh:mm'
-   * @throws Exception
+   * @throws PDOException
    * @return none
    */
   public function scheduleOutage($start, $stop) {
-    $qry = "INSERT INTO device_outages VALUES(0, '" .
-      $this->id . "','" .
-      $start . "','" .
-      $stop . "')";
-    $res = mysql_query($qry);
-    if ($res === false) {
-      throw new Exception($qry);
+    try {
+      $stmt = $this->db->prepare("INSERT INTO device_outages VALUES(0, ?, ?, ?)");
+      $stmt->bindParam(1, $this->id, PDO::PARAM_INT);
+      $stmt->bindParam(2, $start);
+      $stmt->bindParam(3, $stop);
+      $stmt->execute();
+    } catch (PDOException $e) {
+      throw($e);
     }
   }
 
@@ -151,8 +150,7 @@ class deviceEntry
    */
   public function getOutage($all = false) {
     $qry = "SELECT start_date, stop_date FROM device_outages " .
-      "WHERE device_id='" . $this->id . 
-      "' AND (start_date > NOW() OR stop_date > NOW())" .
+      "WHERE device_id=?  AND (start_date > NOW() OR stop_date > NOW())" .
       " ORDER BY start_date";
 
     if (!$all) {
@@ -161,18 +159,20 @@ class deviceEntry
     
     $rtn = array();
 
-    $res = mysql_query($qry);
-    if ($res !== false) {
-      while ($r = mysql_fetch_assoc($res)) {
+    try {
+      $stmt = $this->db->prepare($qry);
+      $stmt->bindParam(1, $this->id, PDO::PARAM_INT);
+      $stmt->execute();
+
+      while ($r = $stmt->fetch(PDO::FETCH_ASSOC) {
 	array_push($rtn, array('start' => $r['start_date'],
 			       'stop'  => $r['stop_date']));
       }
-      mysql_free_result($res);
-    } else {
-      throw new Exception($qry);
+    } catch (PDOException $e) {
+      throw($e);
     }
-
     return($rtn);
   }
 }
+
 ?>
