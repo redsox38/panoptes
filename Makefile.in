@@ -70,7 +70,9 @@ am_panoptes_monitor_OBJECTS = panoptes_monitor-monitor_core.$(OBJEXT) \
 	panoptes_monitor-monitor_snmp.$(OBJEXT) \
 	panoptes_monitor-monitor_shell.$(OBJEXT) \
 	panoptes_monitor-perf_core.$(OBJEXT) \
-	panoptes_monitor-panoptes_utils.$(OBJEXT)
+	panoptes_monitor-panoptes_utils.$(OBJEXT) \
+	panoptes_monitor-monitor_status.$(OBJEXT) \
+	panoptes_monitor-notification.$(OBJEXT)
 panoptes_monitor_OBJECTS = $(am_panoptes_monitor_OBJECTS)
 panoptes_monitor_LDADD = $(LDADD)
 panoptes_monitor_LINK = $(LIBTOOL) --tag=CC $(AM_LIBTOOLFLAGS) \
@@ -254,7 +256,7 @@ top_build_prefix = @top_build_prefix@
 top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
 panoptes_discover_SOURCES = discover_core.c  packet.c database.c panoptes_utils.c
-panoptes_monitor_SOURCES = monitor_core.c database.c monitor_thread.c shutdown_thread.c monitor_entry.c monitor_port.c monitor_icmp.c monitor_certificate.c monitor_snmp.c monitor_shell.c perf_core.c panoptes_utils.c
+panoptes_monitor_SOURCES = monitor_core.c database.c monitor_thread.c shutdown_thread.c monitor_entry.c monitor_port.c monitor_icmp.c monitor_certificate.c monitor_snmp.c monitor_shell.c perf_core.c panoptes_utils.c monitor_status.c notification.c
 SUBDIRS = database utils include
 AUTOMAKE_OPTIONS = no-dependencies
 panoptes_monitor_LDFLAGS = @LDFLAGS@ 
@@ -477,6 +479,18 @@ panoptes_monitor-panoptes_utils.o: panoptes_utils.c
 
 panoptes_monitor-panoptes_utils.obj: panoptes_utils.c
 	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(panoptes_monitor_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o panoptes_monitor-panoptes_utils.obj `if test -f 'panoptes_utils.c'; then $(CYGPATH_W) 'panoptes_utils.c'; else $(CYGPATH_W) '$(srcdir)/panoptes_utils.c'; fi`
+
+panoptes_monitor-monitor_status.o: monitor_status.c
+	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(panoptes_monitor_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o panoptes_monitor-monitor_status.o `test -f 'monitor_status.c' || echo '$(srcdir)/'`monitor_status.c
+
+panoptes_monitor-monitor_status.obj: monitor_status.c
+	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(panoptes_monitor_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o panoptes_monitor-monitor_status.obj `if test -f 'monitor_status.c'; then $(CYGPATH_W) 'monitor_status.c'; else $(CYGPATH_W) '$(srcdir)/monitor_status.c'; fi`
+
+panoptes_monitor-notification.o: notification.c
+	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(panoptes_monitor_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o panoptes_monitor-notification.o `test -f 'notification.c' || echo '$(srcdir)/'`notification.c
+
+panoptes_monitor-notification.obj: notification.c
+	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(panoptes_monitor_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o panoptes_monitor-notification.obj `if test -f 'notification.c'; then $(CYGPATH_W) 'notification.c'; else $(CYGPATH_W) '$(srcdir)/notification.c'; fi`
 
 mostlyclean-libtool:
 	-rm -f *.lo

@@ -36,7 +36,7 @@ void *monitor_thread(void *arg)
   char             **p, **q;
   monitor_result_t r;
   char             perf_attr[256], errbuf[1024];
-  int              rc;
+  int              rc, current_status;
   char             *addr;
   /* data for port monitoring */
   char             *proto, *port;
@@ -82,6 +82,8 @@ void *monitor_thread(void *arg)
     
     /* make sure we got a result */
     if (m.table_name != NULL) {
+      current_status = get_status_code(get_attr_val(&m, "status"))
+;
       if (allocate_monitor_result(&r) != NULL) {
 	if (!strcmp(m.table_name, "port_monitors")) {
 	  /* open socket if we have all the data needed */
@@ -103,7 +105,11 @@ void *monitor_thread(void *arg)
 	    
 	    monitor_port(addr, proto, portnum, &r);
 	    update_monitor_entry(&m, &r);
-	    
+
+	    if (current_status != r.status) {
+	      send_notification(&m, &r);
+	    }
+
 	    if (r.perf_data != NULL) {
 	      snprintf(perf_attr, 256, "%s-%s", proto, port);
 	      update_performance_data(addr, perf_attr, &m, &r);
@@ -120,6 +126,10 @@ void *monitor_thread(void *arg)
 	    monitor_icmp(addr, &r);
 	    update_monitor_entry(&m, &r);
 	    
+	    if (current_status != r.status) {
+	      send_notification(&m, &r);
+	    }
+
 	    if (r.perf_data != NULL) {
 	      snprintf(perf_attr, 256, "icmp");
 	      update_performance_data(addr, perf_attr, &m, &r);
@@ -137,6 +147,10 @@ void *monitor_thread(void *arg)
 	    monitor_certificate(url, &r);
 	    update_monitor_entry(&m, &r);
 	    
+	    if (current_status != r.status) {
+	      send_notification(&m, &r);
+	    }
+
 	    free_monitor_result(&r, 0);
 	  } else {
 	    syslog(LOG_NOTICE, "Missing data required to monitor: %s %s", 
@@ -155,6 +169,10 @@ void *monitor_thread(void *arg)
 	    monitor_snmp(addr, nm, comm, oid, &r);
 	    update_monitor_entry(&m, &r);
 
+	    if (current_status != r.status) {
+	      send_notification(&m, &r);
+	    }
+
 	    if (r.perf_data != NULL) {
 	      snprintf(perf_attr, 256, nm);
 	      update_performance_data(addr, perf_attr, &m, &r);
@@ -172,6 +190,10 @@ void *monitor_thread(void *arg)
 	  if (script != NULL) {
 	    monitor_shell(addr, script, params, &r);
 	    update_monitor_entry(&m, &r);
+
+	    if (current_status != r.status) {
+	      send_notification(&m, &r);
+	    }
 
 	    if (r.perf_data != NULL) {
 	      snprintf(perf_attr, 256, script);

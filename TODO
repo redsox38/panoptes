@@ -7,6 +7,5 @@ config option to auto accept auto discovery entries
 svc dependencies
 templates
 extensible groups
-other database backends
 look @ dojo charting instead of rrd for graphs
 PDO for front end
