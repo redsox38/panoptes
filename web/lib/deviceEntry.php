@@ -160,11 +160,12 @@ class deviceEntry
     $rtn = array();
 
     try {
+      $id = $this->id;
       $stmt = $this->db->prepare($qry);
-      $stmt->bindParam(1, $this->id, PDO::PARAM_INT);
+      $stmt->bindParam(1, $id, PDO::PARAM_INT);
       $stmt->execute();
 
-      while ($r = $stmt->fetch(PDO::FETCH_ASSOC) {
+      while ($r = $stmt->fetch(PDO::FETCH_ASSOC)) {
 	array_push($rtn, array('start' => $r['start_date'],
 			       'stop'  => $r['stop_date']));
       }

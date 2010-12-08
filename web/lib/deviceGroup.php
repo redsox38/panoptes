@@ -83,13 +83,16 @@ class deviceGroup
       $this->children = array();
 
       try {
+	$id = $this->id;
 	$stmt = $this->db->prepare("SELECT device_id FROM device_group_membership WHERE group_id=?");
-	$stmt->bindParam(1, $this->id, PDO::PARAM_INT);
+	$stmt->bindParam(1, $id, PDO::PARAM_INT);
 	$stmt->execute();
 	
-	while ($r = $stmt->fetch(PDO::FETCH_ASSOC) {
+	while ($r = $stmt->fetch(PDO::FETCH_ASSOC)) {
 	  array_push($this->children, $r['device_id']);
 	}	
+      } catch (PDOException $e) {
+	throw($e);
       }
     }
 

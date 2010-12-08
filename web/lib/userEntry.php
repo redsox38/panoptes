@@ -124,8 +124,9 @@ class userEntry
     $groups = array();
 
     try {
+      $id = $this->id;
       $stmt = $this->db->prepare("SELECT group_id FROM security_group_membership WHERE user_id=?");
-      $stmt->bindParam(1, $this->id, PDO::PARAM_INT);
+      $stmt->bindParam(1, $id, PDO::PARAM_INT);
       $stmt->execute();
       
       while ($r = $stmt->fetch(PDO::FETCH_ASSOC)) {

@@ -88,10 +88,12 @@ class securityGroup
   public function children() {
     if (is_null($this->children)) {
       $this->children = array();
-      
+
+      $id = $this->id;
       try {
 	$stmt = $this->db->prepare("SELECT user_id FROM security_group_membership WHERE group_id=?");
-	$stmt->bindParam(1, $this->id, PDO::PARAM_INT);
+
+	$stmt->bindParam(1, $id);
 	$stmt->execute();
 	
 	while ($r = $stmt->fetch(PDO::FETCH_ASSOC)) {

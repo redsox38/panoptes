@@ -295,7 +295,7 @@ class panoptes
     $rtn = array();
 
     try {
-      $stmt->prepare("SELECT * FROM users");
+      $stmt = $this->db->prepare("SELECT * FROM users");
       $stmt->execute();
       
       while ($r = $stmt->fetch(PDO::FETCH_ASSOC)) {
@@ -660,6 +660,7 @@ class panoptes
 	$qry .= " AND id=?";
       }
 
+      $stmt = $this->db->prepare($qry);
       $stmt->bindParam(1, $id, PDO::PARAM_INT);
 
       if (!is_null($ent_id)) {
@@ -705,6 +706,8 @@ class panoptes
       if (!is_null($ent_id)) {
 	$qry .= " AND id=?";
       }
+      $stmt = $this->db->prepare($qry);
+
       $stmt->bindParam(1, $id, PDO::PARAM_INT);
       
       if (!is_null($ent_id)) {

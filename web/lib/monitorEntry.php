@@ -251,9 +251,10 @@ abstract class monitorEntry
   public function getAckInfo() {
     
     try {
+      $id = $this->id;
       $stmt = $this->db->prepare("SELECT * FROM " . $this->ackTable() . 
 				 " WHERE monitor_id=? ORDER BY ack_time LIMIT 1");
-      $stmt->bindParam(1, $this->id, PDO::PARAM_INT);
+      $stmt->bindParam(1, $id, PDO::PARAM_INT);
       $stmt->execute();
 
       $r = $stmt->fetch(PDO::FETCH_ASSOC);
