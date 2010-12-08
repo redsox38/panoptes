@@ -5,6 +5,7 @@ replace SOURCE... in db init with reading in statements and executing them
 config option to auto accept auto discovery entries
 
 svc dependencies
+dashboard
 templates
 extensible groups
 look @ dojo charting instead of rrd for graphs

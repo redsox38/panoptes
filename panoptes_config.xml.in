@@ -3,6 +3,7 @@
     <port_monitor timeout="5"/>
     <syslog facility="local0"/>
     <lib database="LIBDIR/libmysqldisc.so"/>
+    <notification sendmail="/usr/sbin/sendmail -t" from_address="panoptes@gmail.com"/>
     <db type="mysql" name="panoptes" user="db_username" password="db_password" host="localhost" sqlinit="DATAROOTDIR/dbinit.sql"/>
     <rrd directory="DATAROOTDIR/panoptes_rrds"/>
     <script directory="LIBEXECDIR/panoptes_scripts" user="apache"/>

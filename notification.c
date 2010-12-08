@@ -23,5 +23,18 @@
 
 void send_notification(monitor_entry_t *m, monitor_result_t *r)
 {
+  char *sendmail_cmd, *from_addr;
+  
+  sendmail_cmd = get_config_value("notification.sendmail");
+  from_addr = get_config_value("notification.from_address");
 
+  if (from_addr != NULL) {
+    if (sendmail_cmd != NULL) {
+      /* see if anybody is interested in being notified for this */
+    } else {
+      syslog(LOG_NOTICE, "No notification address is defined");
+    }
+  } else {
+    syslog(LOG_NOTICE, "No notification address is defined");
+  }
 }
