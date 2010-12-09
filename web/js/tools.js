@@ -132,12 +132,20 @@ function openPrefTab() {
             searchAttr: 'theme_name'
         });
 
+    tb = new dijit.form.TextBox({
+	    id: 'notification_prefs_addr',
+	    name: 'notification_prefs_addr',
+	    style: 'width: 25em;',
+	    placeHolder: 'Notification email address'
+	});
+
     showLoading();
     getPrefValue('general', 'general_prefs_theme');
+    getPrefValue('notifications', 'notification_prefs_addr');
     
     // add pref tabs
     tc.addChild(createPrefTab('general', [sb], ['theme']));
-    tc.addChild(createPrefTab('notifications', [], []));
+    tc.addChild(createPrefTab('notifications', [tb], ['address']));
 
     dijit.byId("panoptes_tab_container").addChild(bc);
     dijit.byId("panoptes_tab_container").selectChild(bc);
