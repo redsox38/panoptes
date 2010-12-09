@@ -268,6 +268,19 @@ int _update_monitor_entry(monitor_entry_t *m, monitor_result_t *r)
   pthread_mutex_unlock(&sql_mutex);
 
   free(qry);
+
+  return(1);
+}
+
+char **_get_notify_user_list(monitor_entry_t *m)
+{
+  char **rtn;
+
+  rtn = (char **)malloc(sizeof(char *) * 2);
+  rtn[0] = strdup("redsox38@gmail.com");
+  rtn[1] = NULL;
+
+  return(rtn);
 }
 
 void _add_ssl_monitor(char *dev_id, char *addr, int port)

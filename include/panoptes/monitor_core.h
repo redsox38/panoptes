@@ -45,4 +45,5 @@ void free_monitor_entry(monitor_entry_t *, int);
 void free_monitor_result(monitor_result_t *, int);
 char *get_attr_val(monitor_entry_t *, char *);
 monitor_result_t *monitor_port(char *, char *, int, monitor_result_t *);
+char **get_notify_user_list(monitor_entry_t *);
 #endif

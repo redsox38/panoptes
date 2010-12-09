@@ -213,7 +213,7 @@ void *monitor_thread(void *arg)
       }
     } else {
       /* nothing to monitor, sleep for a minute and check again */
-      sleep(60);
+      sleep(30);
     }
 
     free_monitor_entry(&m, 0);

@@ -135,7 +135,7 @@ monitor_result_t *monitor_shell(char *addr, char *script,
       to.tv_sec = 5;
       to.tv_usec = 0;
 
-      rc = select(++nfds, &rd_set, NULL, NULL, &to);      
+      rc = select(nfds + 1, &rd_set, NULL, NULL, &to);      
       
       if (rc > 0) {
 	/* got output */

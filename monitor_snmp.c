@@ -137,7 +137,6 @@ monitor_result_t *monitor_snmp(char *addr, char *nm, char *comm,
       snprintf(r->monitor_msg, len, "snmp_synch_response: %s", errstr);    
       free(errstr);
       r->status = MONITOR_RESULT_ERR;
-      p = NULL;
     }
   }
 

@@ -41,7 +41,7 @@ void database_term_handler()
     (*close_ptr)();
   }
   
-  (void *)dlclose(lib_handle);
+  dlclose(lib_handle);
 }
 
 /* load database shared library */
@@ -129,6 +129,21 @@ int update_monitor_entry(monitor_entry_t *m, monitor_result_t *r)
   }
 
   return(rc);
+}
+
+/* call library's _get_notify_users function */
+char **get_notify_user_list(monitor_entry_t *m)
+{
+  char **r = NULL;
+  char **(*notify_list_ptr)(monitor_entry_t *);
+
+  if ((notify_list_ptr = (char ** (*)(monitor_entry_t *))dlsym(lib_handle, "_get_notify_user_list")) != NULL) {
+    r = (*notify_list_ptr)(m);
+  } else {
+    syslog(LOG_ALERT, "_get_notify_user_list not defined");
+  }
+  
+  return(r);
 }
 
 /* call library's _add_ssl_monitor routine */
