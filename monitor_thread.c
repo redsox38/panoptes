@@ -85,6 +85,7 @@ void *monitor_thread(void *arg)
       current_status = get_status_code(get_attr_val(&m, "status"))
 ;
       if (allocate_monitor_result(&r) != NULL) {
+	syslog(LOG_DEBUG, "got %s", m.table_name);
 	if (!strcmp(m.table_name, "port_monitors")) {
 	  /* open socket if we have all the data needed */
 	  addr = get_attr_val(&m, "address");
@@ -208,6 +209,7 @@ void *monitor_thread(void *arg)
 	} else {
 	  syslog(LOG_ALERT, "Unknown monitor type: %s", m.table_name);
 	}
+	syslog(LOG_DEBUG, "finished %s", m.table_name);
       } else {
 	syslog(LOG_ALERT, "Unable to allocate result");
       }
