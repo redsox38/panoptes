@@ -9,6 +9,26 @@ var _dndMibCreator = function(item, hint) {
     return({ node: node, data: item, type: type });
 };
 
+function xhrRescheduleMonitor(dataGrid, dev_id, params, monitor_ids) {
+    var xhrArgs = {
+	url: '/panoptes/',
+	handleAs: 'json',
+	content: {
+	    action: 'rescheduleMonitorEntry',
+	    data: '{ "device_id": "' + dev_id + '", "params": ' + dojo.toJson(params) + ', ' +
+	    '"monitor_ids": ' + dojo.toJson(monitor_ids) + ' }'
+	},
+	load: function(data) {
+	    if (data && !data.error) {          
+	    } else {
+		alert(data.error);
+	    }
+	}
+    };
+
+    var resp = dojo.xhrGet(xhrArgs);
+}
+
 function updatePortMonitorEntry(dev_id, ent_id, container) {
     var xhrArgs = {
 	url: '/panoptes/',
@@ -962,6 +982,22 @@ function disableMonitor() {
     }
 }
 
+function rescheduleMonitor() {
+    // figure out which grid we're working with
+    selectedTab = dijit.byId('panoptes_tab_container').selectedChildWidget;
+    id = selectedTab.id.replace("_tab", "");
+
+    if (dijit.byId(id + '_port_mon_grid').selected) {
+	_rescheduleMonitor(dijit.byId(id + '_port_mon_grid'), 'port_monitors', id);
+    } else if (dijit.byId(id + '_cert_mon_grid').selected) {
+	_rescheduleMonitor(dijit.byId(id + '_cert_mon_grid'), 'certificate_monitors', id);
+    } else if (dijit.byId(id + '_snmp_mon_grid').selected) {
+	_rescheduleMonitor(dijit.byId(id + '_snmp_mon_grid'), 'snmp_monitors', id);
+    } else if (dijit.byId(id + '_shell_mon_grid').selected) {
+	_rescheduleMonitor(dijit.byId(id + '_shell_mon_grid'), 'shell_monitors', id);
+    }
+}
+
 function enableMonitor() {
     // figure out which grid we're working with
     selectedTab = dijit.byId('panoptes_tab_container').selectedChildWidget;
@@ -992,6 +1028,98 @@ function deleteMonitor() {
     } else if (dijit.byId(id + '_shell_mon_grid').selected) {
 	_deleteMonitor(dijit.byId(id + '_shell_mon_grid'), 'shell_monitors');
     }
+}
+
+function _rescheduleMonitor(dataGrid, type, device_id) {
+    var items;
+
+    var ids = [];
+    // get row ids
+    var itms = dataGrid.selection.getSelected();
+    dataGrid.selection.clear();
+    
+    if (itms.length) {
+	dojo.forEach(itms, function(selectedItem) {
+		if (selectedItem !== null) {
+		    var ent_id = dataGrid.store.getValue(selectedItem, 
+							 "id", null);
+		    ids.push(ent_id);
+		}
+	    });
+    }
+
+
+    label = document.createElement("label");
+    label.htmlFor = 'resched_date';
+    label.appendChild(document.createTextNode('New Check Time'));
+
+    date = new dijit.form.DateTextBox({
+            id: 'resched_date',
+            name: 'resched_date',
+            closable: true,
+            title: 'New Check Date',
+            constraints: { datePattern:'MM/dd/yyyy'}
+        });
+
+    time = new dijit.form.TimeTextBox({
+            name: 'resched_time',
+            id: 'resched_time',
+            value: new Date(),
+            constraints: {
+                timePattern: 'HH:mm',
+                clickableIncrement: 'T00:15:00',
+                visibleIncrement: 'T00:15:00',
+                visibleRange: 'T01:00:00'
+            }});
+
+    rst = new dijit.form.Button({
+            label: 'Cancel',
+            id: 'resched_reset',
+            onClick: function() {
+                dijit.byId("resched_date").destroy();
+                dijit.byId("resched_reset").destroy();
+                dijit.byId("resched_submit").destroy();
+                dijit.byId("resched_time").destroy();
+                // destroy remaining dom nodes
+                win = document.getElementById("resched_win");
+                while (win.hasChildNodes() >= 1) {
+                    win.removeChild(win.firstChild);
+                }
+
+                document.body.removeChild(win);
+            }
+        });
+
+    sub = new dijit.form.Button({
+            label: 'Reschedule',
+            id: 'resched_submit',
+            onClick: function() {
+		    var params = { 
+			type: type,
+			time: dijit.byId('resched_time').attr('displayedValue'),
+			date: dijit.byId('resched_date').attr('displayedValue'),
+		    };
+		    xhrRescheduleMonitor(dataGrid, device_id, params, ids);
+		    dijit.byId("resched_date").destroy();
+		    dijit.byId("resched_time").destroy();
+		    dijit.byId("resched_reset").destroy();
+		    dijit.byId("resched_submit").destroy();
+		    // destroy remaining dom nodes
+		    win = document.getElementById("resched_win");
+		    while (win.hasChildNodes() >= 1) {
+			win.removeChild(win.firstChild);
+		    }
+		    
+		    document.body.removeChild(win);
+            }
+        });
+
+    items = [ label, date.domNode, time.domNode, 
+	      document.createElement("br"),
+	      rst.domNode, sub.domNode ];
+    
+    createOverlayWindow("resched_win", items);
+
 }
 
 function _addMonitor(dataGrid, type, id) {

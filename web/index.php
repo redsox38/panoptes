@@ -152,6 +152,9 @@ echo '<body class="' . $theme . '">' . "\n";
         <div dojoType="dijit.MenuItem" iconClass="dijitIconDelete" onClick="deleteMonitor();">
             Delete
         </div>
+        <div dojoType="dijit.MenuItem" onClick="rescheduleMonitor();">
+            Reschedule
+        </div>
     </div>
 
     <div id="master_layout" dojoType="dijit.layout.BorderContainer" style="width: 100%; height: 100%;">
