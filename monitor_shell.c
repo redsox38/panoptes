@@ -41,7 +41,7 @@ monitor_result_t *monitor_shell(char *addr, char *script,
   char           *p, *perf_output = NULL;
   struct passwd  *pw;
   int            rc, exit_status, done = 0;
-  int            pipe_stdout_fd[2], pipe_stderr_fd[2];
+  int            pipe_stdin_fd[2], pipe_stdout_fd[2], pipe_stderr_fd[2];
   fd_set         rd_set;
   int            ok_to_exec = 1, len, i, nfds = 0, logged = 0;
   struct timeval to, start, stop;
@@ -52,6 +52,7 @@ monitor_result_t *monitor_shell(char *addr, char *script,
 
   pipe(pipe_stdout_fd);
   pipe(pipe_stderr_fd);
+  pipe(pipe_stdin_fd);
 
   pfx = get_config_value("script.directory");
   scrbuf = (char *)malloc(sizeof(char) * (strlen(pfx) + 
@@ -62,10 +63,6 @@ monitor_result_t *monitor_shell(char *addr, char *script,
   if (!(pid = fork())) {
     /* child */
 
-    /* re-assign stdout/stderr to writer end of pipe */
-    dup2(pipe_stdout_fd[1], fileno(stdout));
-    dup2(pipe_stderr_fd[1], fileno(stderr));
-    
     /* set environment variable containing the device address */
     envp[0] = (char *)malloc(sizeof(char) * (2 + strlen(addr) +
 					     strlen("PANOPTES_MONITOR_ADDR")));
@@ -104,6 +101,15 @@ monitor_result_t *monitor_shell(char *addr, char *script,
 
     /* exec... */
     if (ok_to_exec) {
+      /* re-assign stdout/stderr to writer end of pipe */
+      close(0);
+      close(1);
+      close(2);
+
+      dup(pipe_stdin_fd[0]);
+      dup(pipe_stdout_fd[1]);
+      dup(pipe_stderr_fd[1]);
+    
       if (execle(scrbuf, scrbuf, params, NULL, envp) < 0) {
 	strerror_r(errno, errbuf, 1024);
 	syslog(LOG_NOTICE, "execl: %s", errbuf);
@@ -191,8 +197,10 @@ monitor_result_t *monitor_shell(char *addr, char *script,
       } else if (waited_pid > 0) {
 	close(pipe_stdout_fd[0]);
 	close(pipe_stderr_fd[0]);
+	close(pipe_stdin_fd[0]);
 	close(pipe_stdout_fd[1]);
 	close(pipe_stderr_fd[1]);
+	close(pipe_stdin_fd[1]);
 	done = 1;
 	syslog(LOG_DEBUG, "%s exited with %d", scrbuf, 
 	       WEXITSTATUS(exit_status));
