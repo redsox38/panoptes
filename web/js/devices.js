@@ -1,6 +1,35 @@
 
+function xhrAddNotification(device_id, monitor_ids, type) {
+
+    var args;
+    if (!device_id) { 
+	args  = { "device_id": device_id };
+    } else {
+	args = { "type" : type, "monitor_ids" : monitor_ids };
+    }
+
+    var xhrArgs = {
+	url: '/panoptes/',
+	handleAs: 'json',
+	content: {
+	    action: 'AddNotification',
+	    data: dojo.toJson(args)
+	},
+	load: function(data) {
+	    if (data && ! data.error) {
+		alert("Your notification(s) have been added");
+	    } else {
+		alert(data.error);
+	    }
+	},
+    };
+	
+    dojo.xhrGet(xhrArgs);
+}
+
 function addDeviceNotification() {
-    alert("Function Not yet implemented");
+    var id = deviceStore.getValues(deviceTreeSelectedItem, 'id').toString();
+    xhrAddNotification(id, null, null);
 }
 
 function xhrUpdatePermissions(type, src, tgt, level) {

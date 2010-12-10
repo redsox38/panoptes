@@ -10,7 +10,43 @@ var _dndMibCreator = function(item, hint) {
 };
 
 function addNotification() {
-    alert("Function not yet implemented");
+    // figure out which grid we're working with
+    selectedTab = dijit.byId('panoptes_tab_container').selectedChildWidget;
+    id = selectedTab.id.replace("_tab", "");
+
+    var monitor_ids = [];
+    var table;
+    var dataGrid;
+
+    if (dijit.byId(id + '_port_mon_grid').selected) {
+	table = 'port_monitors';
+	dataGrid = dijit.byId(id + '_port_mon_grid');
+    } else if (dijit.byId(id + '_cert_mon_grid').selected) {
+	table = 'certificate_monitors';
+	dataGrid = dijit.byId(id + '_cert_mon_grid');
+    } else if (dijit.byId(id + '_snmp_mon_grid').selected) {
+	table = 'snmp_monitors';
+	dataGrid = dijit.byId(id + '_snmp_mon_grid');
+    } else if (dijit.byId(id + '_shell_mon_grid').selected) {
+	table = 'shell_monitors';
+	dataGrid = dijit.byId(id + '_shell_mon_grid');
+    }
+
+    // get row ids
+    var itms = dataGrid.selection.getSelected();
+    dataGrid.selection.clear();
+    
+    if (itms.length) {
+	dojo.forEach(itms, function(selectedItem) {
+		if (selectedItem !== null) {
+		    var entry_id = dataGrid.store.getValue(selectedItem, 
+							 "id", null);
+		    monitor_ids.push(entry_id);
+		}
+	    });
+    }
+
+    xhrAddNotification(id, table, monitor_ids);
 }
 
 function xhrRescheduleMonitor(dataGrid, dev_id, params, monitor_ids) {
@@ -1064,7 +1100,6 @@ function _rescheduleMonitor(dataGrid, type, device_id) {
 		}
 	    });
     }
-
 
     label = document.createElement("label");
     label.htmlFor = 'resched_date';

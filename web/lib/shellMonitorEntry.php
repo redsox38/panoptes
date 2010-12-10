@@ -40,6 +40,7 @@ class shellMonitorEntry extends monitorEntry
     }
     $this->monitorTable("shell_monitors");
     $this->ackTable("shell_acknowledgments");
+    $this->notificationTable("shell_notifications");
   }
   
  /**

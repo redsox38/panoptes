@@ -33,6 +33,7 @@ abstract class monitorEntry
   protected $db;
   protected $monitorTable;
   protected $ackTable;
+  protected $notificationTable;
   protected $data = array();
 
   /* 
@@ -86,6 +87,21 @@ abstract class monitorEntry
     }
 
     return($this->monitorTable);
+  }
+
+  /**
+   * Get/Set notification table
+   *
+   * @param val optional string to set table name to
+   * @throws none
+   * @return var current table name
+   */
+  public function notificationTable($val = null) {
+    if (!(is_null($val))) {
+      $this->notificationTable = $val;
+    }
+
+    return($this->notificationTable);
   }
 
   /**
@@ -293,5 +309,26 @@ abstract class monitorEntry
 
     return($rtn);
   }
+
+  /**
+   * add notification for current user
+   *
+   * @param none
+   * @throws PDOException
+   * @return none
+   */
+  public function addNotification() {
+    global $panoptes_current_user;
+
+    try {
+      $stmt = $this->db->prepare("INSERT INTO " . $this->notificationTable() . " VALUES(?, ?)");
+      $stmt->bindParam(1, $this->id, PDO::PARAM_INT);
+      $stmt->bindParam(2, $panoptes_current_user);
+      $stmt->execute();
+    } catch (PDOException $e) {
+      throw($e);
+    }
+  }
+
 }
 ?>

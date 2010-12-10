@@ -40,6 +40,7 @@ class portMonitorEntry extends monitorEntry
     }
     $this->monitorTable("port_monitors");
     $this->ackTable("port_acknowledgments");
+    $this->notificationTable("port_notifications");
   }
   
  /**
