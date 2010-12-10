@@ -313,22 +313,38 @@ abstract class monitorEntry
   /**
    * add notification for current user
    *
-   * @param none
+   * @param user_id user number of current user
    * @throws PDOException
    * @return none
    */
-  public function addNotification() {
-    global $panoptes_current_user;
-
+  public function addNotification($user_id) {
     try {
       $stmt = $this->db->prepare("INSERT INTO " . $this->notificationTable() . " VALUES(?, ?)");
       $stmt->bindParam(1, $this->id, PDO::PARAM_INT);
-      $stmt->bindParam(2, $panoptes_current_user);
+      $stmt->bindParam(2, $user_id);
       $stmt->execute();
     } catch (PDOException $e) {
       throw($e);
     }
   }
 
+  /**
+   * remove notification for current user
+   *
+   * @param user_id user number of current user
+   * @throws PDOException
+   * @return none
+   */
+  public function removeNotification($user_id) {
+    try {
+      $stmt = $this->db->prepare("DELETE FROM " . $this->notificationTable() .
+				 " WHERE monitor_id=? AND user_id= ?)");
+      $stmt->bindParam(1, $this->id, PDO::PARAM_INT);
+      $stmt->bindParam(2, $user_id);
+      $stmt->execute();
+    } catch (PDOException $e) {
+      throw($e);
+    }
+  }
 }
 ?>

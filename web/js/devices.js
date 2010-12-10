@@ -1,11 +1,12 @@
 
 function xhrAddNotification(device_id, monitor_ids, type) {
 
-    var args;
+    var args = {};
     if (!device_id) { 
-	args  = { "device_id": device_id };
+	args.device_id = device_id;
     } else {
-	args = { "type" : type, "monitor_ids" : monitor_ids };
+	args.type = type;
+	args.monitor_ids = monitor_ids;
     }
 
     var xhrArgs = {
@@ -27,9 +28,43 @@ function xhrAddNotification(device_id, monitor_ids, type) {
     dojo.xhrGet(xhrArgs);
 }
 
+function xhrRemoveNotification(device_id, monitor_ids, type) {
+
+    var args = {};
+    if (!device_id) { 
+	args.device_id = device_id;
+    } else {
+	args.type = type;
+	args.monitor_ids = monitor_ids;
+    }
+
+    var xhrArgs = {
+	url: '/panoptes/',
+	handleAs: 'json',
+	content: {
+	    action: 'RemoveNotification',
+	    data: dojo.toJson(args)
+	},
+	load: function(data) {
+	    if (data && ! data.error) {
+		alert("Your notification(s) have been removed");
+	    } else {
+		alert(data.error);
+	    }
+	},
+    };
+	
+    dojo.xhrGet(xhrArgs);
+}
+
 function addDeviceNotification() {
     var id = deviceStore.getValues(deviceTreeSelectedItem, 'id').toString();
     xhrAddNotification(id, null, null);
+}
+
+function removeDeviceNotification() {
+    var id = deviceStore.getValues(deviceTreeSelectedItem, 'id').toString();
+    xhrRemoveNotification(id, null, null);
 }
 
 function xhrUpdatePermissions(type, src, tgt, level) {
