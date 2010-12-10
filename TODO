@@ -9,4 +9,4 @@ templates
 extensible groups
 look @ dojo charting instead of rrd for graphs
 add/remove notification request to server/host
-fix snmp hanging
+fix shell hanging

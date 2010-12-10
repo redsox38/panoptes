@@ -152,7 +152,7 @@ echo '<body class="' . $theme . '">' . "\n";
         <div dojoType="dijit.MenuItem" iconClass="dijitIconDelete" onClick="deleteMonitor();">
             Delete
         </div>
-        <div dojoType="dijit.MenuItem" onClick="rescheduleMonitor();">
+        <div dojoType="dijit.MenuItem" iconClass="dijitIconConfigure" onClick="rescheduleMonitor();">
             Reschedule
         </div>
     </div>
@@ -181,7 +181,7 @@ echo '<body class="' . $theme . '">' . "\n";
                     <div dojoType="dijit.MenuItem" onClick="removeFromGroup();">
                         Remove from Group
                     </div>
-                    <div dojoType="dijit.MenuItem" onClick="scheduleOutage();">
+                    <div dojoType="dijit.MenuItem" iconClass="dijitIconConfigure" onClick="scheduleOutage();">
                         Schedule Outage
                     </div>
                     <div dojoType="dijit.MenuItem" iconClass="dijitIconDelete" onClick="deleteDevice();">
