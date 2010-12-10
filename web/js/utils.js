@@ -19,12 +19,15 @@ function reloadMonitorEntry(func, dev_id, ent_id, container, reload_date) {
     date_pat = /(^\d{4})\-(\d{2})-(\d{2}) (\d+):(\d+):(\d+)/;
     date_parts = reload_date.match(date_pat);
 
+    var timerId = null;
     then = new Date(date_parts[1], (date_parts[2] - 1), date_parts[3], date_parts[4], date_parts[5], date_parts[6]);
     now = new Date();
 
     to = then.getTime() - now.getTime();
 
-    var timerId = setTimeout(func, to, dev_id, ent_id, container);
+    if (then > now) {
+	timerId = setTimeout(func, to, dev_id, ent_id, container);
+    }
 
     return(timerId);
 }

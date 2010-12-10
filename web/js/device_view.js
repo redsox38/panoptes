@@ -20,6 +20,19 @@ function xhrRescheduleMonitor(dataGrid, dev_id, params, monitor_ids) {
 	},
 	load: function(data) {
 	    if (data && !data.error) {          
+		// update items
+		for (i = 0; i < monitor_ids.length; i++) {		    
+		    dataGrid.store.fetchItemByIdentity({
+			identity: monitor_ids[i],
+			onItem: function(item, req) {
+				dataGrid.store.setValue(item, 'next_check', data.data['next_check']);
+
+				dataGrid.store.save();
+				dataGrid.setStore(dataGrid.store);
+				dataGrid.update();		
+			    }
+			});
+		}
 	    } else {
 		alert(data.error);
 	    }

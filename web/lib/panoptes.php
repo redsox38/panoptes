@@ -1734,6 +1734,54 @@ class panoptes
   }
 
   /**
+   * reschedule
+   *
+   * @param args json params converted into an array
+   *             
+   * @throws none
+   * @return array containing result and possible error messages
+   */
+  public function ajax_rescheduleMonitorEntry($args) {
+    try {
+      $data = array();
+
+      $new_tm = $args['params']['date'];
+      $new_tm = preg_replace('/(\d+)\/(\d+)\/(\d+)/', '\3-\1-\2', $new_tm);
+      $new_tm .= ' ' . $args['params']['time'];
+
+      $data['time'] = $new_tm;
+
+      foreach ($args['monitor_ids'] as $v) {	  
+	// table is based on type argument
+	if ($args['params']['type'] == 'port_monitors') {
+	  require_once 'portMonitorEntry.php';
+	  $ent = new portMonitorEntry($this->db);
+	} else if ($args['params']['type'] == 'certificate_monitors') {
+	  require_once 'certificateMonitorEntry.php';
+	  $ent = new certificateMonitorEntry($this->db);
+	} else if ($args['params']['type'] == 'snmp_monitors') {
+	  require_once 'SNMPMonitorEntry.php';
+	  $ent = new SNMPMonitorEntry($this->db);
+	} else if ($args['params']['type'] == 'shell_monitors') {
+	  require_once 'shellMonitorEntry.php';
+	  $ent = new shellMonitorEntry($this->db);
+	} else {
+	  return(array('result' => 'failure',
+		       'error'  => 'unknown type: ' . $args['params']['type']));	
+	}
+	
+	$ent->id = $v;
+	$ent->reschedule($new_tm);
+      }
+    } catch (Exception $e) {
+      return(array('result' => 'failure',
+		   'error'  => $e->getMessage()));
+    }
+
+    return(array('result' => 'success', 'data' => $data));
+  }
+	
+  /**
    * ack monitor entry
    *
    * @param args json params converted into an array

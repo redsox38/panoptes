@@ -242,6 +242,25 @@ abstract class monitorEntry
   }
 
   /**
+   * Reschedule entry in database
+   *
+   * @param time  new time for monitor
+   * @throws PDOException
+   * @return none
+   */
+  public function reschedule($time) {
+
+    try {
+      $stmt = $this->db->prepare("UPDATE " . $this->monitorTable() . " SET next_check=? WHERE id=?");
+      $stmt->bindParam(1, $time);
+      $stmt->bindParam(2, $this->id, PDO::PARAM_INT);
+      $stmt->execute();
+    } catch (PDOException $e) {
+      throw($e);
+    }
+  }
+
+  /**
    * get ack entry from datbase
    *
    * @param msg ack message
