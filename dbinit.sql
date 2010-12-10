@@ -11,6 +11,11 @@ DROP TABLE IF EXISTS ping_acknowledgments;
 DROP TABLE IF EXISTS snmp_acknowledgments;
 DROP TABLE IF EXISTS shell_acknowledgments;
 DROP TABLE IF EXISTS certificate_acknowledgments;
+DROP TABLE IF EXISTS port_notifications;
+DROP TABLE IF EXISTS ping_notifications;
+DROP TABLE IF EXISTS snmp_notifications;
+DROP TABLE IF EXISTS shell_notifications;
+DROP TABLE IF EXISTS certificate_notifications;
 DROP TABLE IF EXISTS port_monitors;
 DROP TABLE IF EXISTS ping_monitors;
 DROP TABLE IF EXISTS certificate_monitors;
@@ -23,6 +28,7 @@ DROP TABLE IF EXISTS users;
 DROP VIEW monitor_tasks;
 DROP PROCEDURE IF EXISTS get_next_monitor_entry;
 DROP PROCEDURE IF EXISTS update_monitor_entry;
+DROP PROCEDURE IF EXISTS get_monitor_notification;
 
 /* tables */
 
@@ -339,6 +345,76 @@ CREATE TABLE shell_acknowledgments (
   CONSTRAINT shell_acknowledgments_ibfk_1 FOREIGN KEY (monitor_id) REFERENCES shell_monitors (id) ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
+--
+-- Table structure for table port_notifications
+--
+
+CREATE TABLE port_notifications (
+  monitor_id bigint(20) NOT NULL,
+  user_id bigint(20) NOT NULL,
+  KEY monitor_id (monitor_id),
+  KEY user_id (monitor_id),
+  UNIQUE KEY idx (monitor_id, user_id),
+  CONSTRAINT port_notifications_ibfk_1 FOREIGN KEY (monitor_id) REFERENCES port_monitors (id) ON DELETE CASCADE ON UPDATE CASCADE,
+  CONSTRAINT port_notifications_ibfk_2 FOREIGN KEY (user_id) REFERENCES users (id) ON DELETE CASCADE ON UPDATE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+--
+-- Table structure for table ping_notifications
+--
+
+CREATE TABLE ping_notifications (
+  monitor_id bigint(20) NOT NULL,
+  user_id bigint(20) NOT NULL,
+  KEY monitor_id (monitor_id),
+  KEY user_id (monitor_id),
+  UNIQUE KEY idx (monitor_id, user_id),
+  CONSTRAINT ping_notifications_ibfk_1 FOREIGN KEY (monitor_id) REFERENCES ping_monitors (id) ON DELETE CASCADE ON UPDATE CASCADE,
+  CONSTRAINT ping_notifications_ibfk_2 FOREIGN KEY (user_id) REFERENCES users (id) ON DELETE CASCADE ON UPDATE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+--
+-- Table structure for table certificate_notifications
+--
+
+CREATE TABLE certificate_notifications (
+  monitor_id bigint(20) NOT NULL,
+  user_id bigint(20) NOT NULL,
+  KEY monitor_id (monitor_id),
+  KEY user_id (monitor_id),
+  UNIQUE KEY idx (monitor_id, user_id),
+  CONSTRAINT certificate_notifications_ibfk_1 FOREIGN KEY (monitor_id) REFERENCES certificate_monitors (id) ON DELETE CASCADE ON UPDATE CASCADE,
+  CONSTRAINT certificate_notifications_ibfk_2 FOREIGN KEY (user_id) REFERENCES users (id) ON DELETE CASCADE ON UPDATE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+--
+-- Table structure for table snmp_notifications
+--
+
+CREATE TABLE snmp_notifications (
+  monitor_id bigint(20) NOT NULL,
+  user_id bigint(20) NOT NULL,
+  KEY monitor_id (monitor_id),
+  KEY user_id (monitor_id),
+  UNIQUE KEY idx (monitor_id, user_id),
+  CONSTRAINT snmp_notifications_ibfk_1 FOREIGN KEY (monitor_id) REFERENCES snmp_monitors (id) ON DELETE CASCADE ON UPDATE CASCADE,
+  CONSTRAINT snmp_notifications_ibfk_2 FOREIGN KEY (user_id) REFERENCES users (id) ON DELETE CASCADE ON UPDATE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+--
+-- Table structure for table shell_notifications
+--
+
+CREATE TABLE shell_notifications (
+  monitor_id bigint(20) NOT NULL,
+  user_id bigint(20) NOT NULL,
+  KEY monitor_id (monitor_id),
+  KEY user_id (monitor_id),
+  UNIQUE KEY idx (monitor_id, user_id),
+  CONSTRAINT shell_notifications_ibfk_1 FOREIGN KEY (monitor_id) REFERENCES shell_monitors (id) ON DELETE CASCADE ON UPDATE CASCADE,
+  CONSTRAINT shell_notifications_ibfk_2 FOREIGN KEY (user_id) REFERENCES users (id) ON DELETE CASCADE ON UPDATE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
 /* views */
 
 CREATE ALGORITHM=UNDEFINED SQL SECURITY INVOKER VIEW monitor_tasks
@@ -579,6 +655,38 @@ BEGIN
 SET @s = CONCAT('UPDATE ', in_table, ' SET status="', in_status,
                 '",status_string="',
 		in_status_string, '" WHERE id=', in_id);
+
+PREPARE stmt FROM @s;
+EXECUTE stmt;
+
+END;
+//
+DELIMITER ;
+
+DELIMITER //
+CREATE PROCEDURE get_monitor_notification(IN in_id BIGINT,
+                                          IN in_table VARCHAR(50))
+READS SQL DATA
+SQL SECURITY INVOKER
+COMMENT 'Retrieve list of addresses to notify for this monitor'
+BEGIN
+
+DECLARE V_notification_table VARCHAR(50);
+
+IF (in_table='port_monitors') THEN
+   SET V_notification_table = 'port_notifications';
+ELSEIF (in_table='certificate_monitors') THEN
+   SET V_notification_table = 'certificate_notifications';
+ELSEIF (in_table='snmp_monitors') THEN
+   SET V_notification_table = 'snmp_notifications';
+ELSEIF (in_table='shell_monitors') THEN
+   SET V_notification_table = 'shell_notifications';
+END IF;
+
+-- read from approprate table
+SET @s = CONCAT('SELECT p.pref_value AS address FROM ', V_notification_table, 
+                ' n, user_prefs p WHERE n.monitor_id=', in_id,
+		' AND n.user_id=p.user_id and p.pref_scope="notifications" AND pref_name="notification_prefs_addr"');
 
 PREPARE stmt FROM @s;
 EXECUTE stmt;

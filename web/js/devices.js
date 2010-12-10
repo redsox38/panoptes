@@ -1,4 +1,8 @@
 
+function addDeviceNotification() {
+    alert("Function Not yet implemented");
+}
+
 function xhrUpdatePermissions(type, src, tgt, level) {
     src = src.replace("g_", "");
     tgt = tgt.replace("g_", "");

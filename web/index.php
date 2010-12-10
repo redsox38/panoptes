@@ -155,6 +155,9 @@ echo '<body class="' . $theme . '">' . "\n";
         <div dojoType="dijit.MenuItem" iconClass="dijitIconConfigure" onClick="rescheduleMonitor();">
             Reschedule
         </div>
+        <div dojoType="dijit.MenuItem" iconClass="dijitIconMail" onClick="addNotification();">
+            Add Notification
+        </div>
     </div>
 
     <div id="master_layout" dojoType="dijit.layout.BorderContainer" style="width: 100%; height: 100%;">
@@ -186,6 +189,9 @@ echo '<body class="' . $theme . '">' . "\n";
                     </div>
                     <div dojoType="dijit.MenuItem" iconClass="dijitIconDelete" onClick="deleteDevice();">
                        Delete Device 
+                    </div>
+                    <div dojoType="dijit.MenuItem" iconClass="dijitIconMail" onClick="addDeviceNotification();">
+                       Add Notification
                     </div>
                 </div>
 	        <div dojoType="dijit.Menu" id="device_tree_group_menu" style="display: none;">

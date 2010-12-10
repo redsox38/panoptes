@@ -9,6 +9,10 @@ var _dndMibCreator = function(item, hint) {
     return({ node: node, data: item, type: type });
 };
 
+function addNotification() {
+    alert("Function not yet implemented");
+}
+
 function xhrRescheduleMonitor(dataGrid, dev_id, params, monitor_ids) {
     var xhrArgs = {
 	url: '/panoptes/',

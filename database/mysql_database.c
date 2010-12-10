@@ -274,11 +274,55 @@ int _update_monitor_entry(monitor_entry_t *m, monitor_result_t *r)
 
 char **_get_notify_user_list(monitor_entry_t *m)
 {
-  char **rtn;
+  char        **rtn = NULL, *qry;
+  int         len, rc, i, num_rows;
+  MYSQL_RES   *result;
+  MYSQL_ROW   row;
+  MYSQL_FIELD *fields;
+  long        *lengths;
 
-  rtn = (char **)malloc(sizeof(char *) * 2);
-  rtn[0] = strdup("redsox38@gmail.com");
-  rtn[1] = NULL;
+  /* 
+     space for query string, 20 digit id (max BIGINT value)     
+   */
+  len = (strlen("CALL get_monitor_notification(") +
+	 20 +
+	 strlen(",'") +
+	 strlen(m->table_name) +
+	 strlen("')"));
+  
+  qry = (char *)malloc(len * sizeof(char));
+  snprintf(qry, len, "CALL get_monitor_notification(%s,'%s')",
+	   m->id, m->table_name);
+
+  pthread_mutex_lock(&sql_mutex);
+
+  rc = mysql_query(mysql, qry);
+
+  do {
+    result = mysql_store_result(mysql);
+    if (result) {
+      num_rows = mysql_num_rows(result);
+      if (num_rows) {
+	rtn = (char **)malloc(sizeof(char *) * (num_rows + 1));
+	i = 0;
+	while((row = mysql_fetch_row(result)) != NULL) {
+	  rtn[i] = strdup((char *)row[0]);	       
+	  i++;
+	}
+	rtn[i] = NULL;
+      }
+      mysql_free_result(result);
+    } else {
+      /* an error occurred or no results */
+      if (mysql_field_count(mysql) != 0)
+	printf("Error: %s\n", mysql_error(mysql));
+    }
+    rc = mysql_next_result(mysql);
+  } while (rc == 0);
+
+  pthread_mutex_unlock(&sql_mutex);
+
+  free(qry);
 
   return(rtn);
 }

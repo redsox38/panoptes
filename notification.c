@@ -67,8 +67,11 @@ void send_notification(monitor_entry_t *m, monitor_result_t *r)
 	    } else {
 	      syslog(LOG_DEBUG, "wrote %d bytes", rc);
 	    }
+	    free(*p);
 	    *p++;
 	  }
+	  free(notify_user_list);
+
 	  memset(writebuf, '\0', 1024);
 	  snprintf(writebuf, 1024, "From: <%s>\n", from_addr);
 	  write(pipe_stdin_fd[1], writebuf, strlen(writebuf));
