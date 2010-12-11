@@ -459,7 +459,7 @@ function addInfoData(id, container) {
 		'<b>IP : </b>' + data.data.address + '<br/>';
 		if (data.data.ping_data) {
 		    new_data += '<b>icmp response : </b>' +
-			data.data.ping_data + '<br/>';
+			data.data.ping_data + ' ms <br/>';
 		}
 		if (data.data.outage_data) {
 		    new_data += '<b>scheduled outage : </b>' +

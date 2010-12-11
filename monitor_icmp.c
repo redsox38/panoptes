@@ -114,8 +114,6 @@ monitor_result_t *monitor_icmp(char *addr, monitor_result_t *r)
   memcpy((void *)packet, (void*)&ip, sizeof(struct iphdr));
   memcpy((void *)(packet + sizeof(struct iphdr)), (void*)&icmp, sizeof(struct icmphdr));
 
-  gettimeofday(&start, NULL);
-
   /* open socket, send packet, wait for response */
   if ((sock = socket(AF_INET, SOCK_RAW, IPPROTO_ICMP)) < 0) {
     /* error */
@@ -133,6 +131,8 @@ monitor_result_t *monitor_icmp(char *addr, monitor_result_t *r)
 
     /* keep kernel from touching the packet */
     setsockopt(sock, IPPROTO_IP, IP_HDRINCL, &optval, sizeof(int));
+
+    gettimeofday(&start, NULL);
 
     sendto(sock, packet, ip.tot_len, 0, 
 	   (struct sockaddr *)&conn, sizeof(struct sockaddr));
