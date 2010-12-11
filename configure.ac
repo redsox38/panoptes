@@ -2,7 +2,7 @@
 # Process this file with autoconf to produce a configure script.
 
 AC_PREREQ([2.63])
-AC_INIT([panoptes], [1.0], [redsox38@gmail.com])
+AC_INIT([panoptes], [1.1], [redsox38@gmail.com])
 AC_CONFIG_SRCDIR([discover_core.c])
 AM_INIT_AUTOMAKE([foreign])
 AC_CONFIG_MACRO_DIR([m4])
