@@ -101,9 +101,6 @@ monitor_result_t *monitor_shell(char *addr, char *script,
 	}
       }
       free(pw);
-    } else if (pid < 0) {
-      strerror_r(errno, errbuf, 1024);
-      syslog(LOG_NOTICE, "fork: %s", errbuf);
     } else {
       syslog(LOG_ALERT, "No script user defined running as root.  It's your funeral...");
     }
@@ -134,6 +131,9 @@ monitor_result_t *monitor_shell(char *addr, char *script,
     }
     
     exit(-1);
+  } else if (pid < 0) {
+    strerror_r(errno, errbuf, 1024);
+    syslog(LOG_NOTICE, "fork: %s", errbuf);
   } else {
     syslog(LOG_DEBUG, "parent starting");
 

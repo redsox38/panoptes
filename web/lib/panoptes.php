@@ -133,7 +133,7 @@ class panoptes
 
 	$t = glob($path . '/*/*.rrd');
 	foreach ($t as $f) {	
-	  $pat = ':' . $path . '/[^/]+/([^\.]+).rrd:';
+	  $pat = ':' . $path . '/[^/]+/(.*)\.rrd$:';
 	  $f = preg_replace($pat, '\1', $f);
 	  $r[] = array('metric' => $f);
 	}
