@@ -124,10 +124,14 @@ monitor_result_t *monitor_port(char *addr, char *proto,
 	} else {
 	  /* select err */
 	  r->status = MONITOR_RESULT_ERR;
-	  strerror_r(errno, errbuf, 1024);
-	  len = strlen("select: ") + strlen(errbuf) + 1;
-	  r->monitor_msg = (char *)malloc(len * sizeof(char));
-	  snprintf(r->monitor_msg, len, "select: %s", errbuf);
+	  if (errno == EINPROGRESS) {
+	    r->monitor_msg = strdup("timed out");
+	  } else {
+	    strerror_r(errno, errbuf, 1024);
+	    len = strlen("select: ") + strlen(errbuf) + 1;
+	    r->monitor_msg = (char *)malloc(len * sizeof(char));
+	    snprintf(r->monitor_msg, len, "select: %s", errbuf);
+	  }
 	}
       }
     }
