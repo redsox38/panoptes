@@ -38,7 +38,7 @@ monitor_result_t *monitor_shell(char *addr, char *script,
   char           *user, *pfx, *scrbuf, pwbuf[256];
   char           readbuf[1024], errbuf[1024];
   char           *monitor_output = NULL;
-  char           *p, *perf_output = NULL;
+  char           *p, *q, *tkn, *perf_output = NULL;
   struct passwd  *pw;
   int            rc, exit_status, done = 0;
   int            pipe_stdin_fd[2], pipe_stdout_fd[2], pipe_stderr_fd[2];
@@ -171,15 +171,26 @@ monitor_result_t *monitor_shell(char *addr, char *script,
 	  if (bytes) {
 	    syslog(LOG_DEBUG, "read '%s' on stdout", readbuf);
 	    /* see if it's setting a title, otherwise append it to perf mon 
-	       output */
+	       output */	    
 	    if (!strncasecmp(readbuf, "title:", strlen("title:"))) {
 	      syslog(LOG_DEBUG, "got title");
 	      if (r->perf_title) {
 		free(r->perf_title);
 	      }
-	      p = &readbuf[strlen("title:")];
+	      q = strtok_r(readbuf, "\n", &tkn);
+	      p = &q[strlen("title:")];
 	      syslog(LOG_DEBUG, "duping title %s", p);
 	      r->perf_title = strdup(p);
+	      q = strtok_r(NULL, "\n", &tkn);
+	      if (q != NULL) {
+		/* append any overflow to perf output */
+		if (perf_output == NULL) {
+		  perf_output = strdup(q);
+		} else {
+		  perf_output = realloc(perf_output, (sizeof(char) * (strlen(perf_output) + strlen(q) + 1)));
+		  sprintf(perf_output, "%s%s", perf_output, q);
+		}
+	      }
 	    } else {
 	      if (perf_output == NULL) {
 		perf_output = strdup(readbuf);
@@ -264,6 +275,12 @@ monitor_result_t *monitor_shell(char *addr, char *script,
       snprintf(r->perf_data, len, "elapsed time|%.4f", 
 	       elapsed);
     }
+
+    if (r->perf_title) {
+      syslog(LOG_DEBUG, "title: %s", r->perf_title);
+    }
+
+    syslog(LOG_DEBUG, "perf data: %s", r->perf_data);
   }
 
   syslog(LOG_DEBUG, "freeing scrbuf");

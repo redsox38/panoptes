@@ -73,8 +73,8 @@ void panoptes_rrd_xml_create(char *path,
 {
   FILE *fh;
   char errbuf[1024];
-  char *oids, *q, *tkn;
-  int  i = 0;
+  char *oids, *p, *q, *tkn;
+  int  i = 0, len;
 
   if ((fh = fopen(path, "w")) != NULL) {
     fprintf(fh, "<config>\n");
@@ -128,14 +128,26 @@ void panoptes_rrd_xml_create(char *path,
 	fprintf(fh, "\t<title>%s Time</title>\n", get_attr_val(m, "script"));
       }
       fprintf(fh, "\t<vertical_label>Seconds</vertical_label>\n");
-      fprintf(fh,"\t<attribute>\n");
-      fprintf(fh, "\t\t<name>ds0</name>\n");
-      fprintf(fh, "\t\t<display_as>ExecutionTime</display_as>\n");
-      fprintf(fh, "\t\t<units>Seconds</units>\n");
-      fprintf(fh, "\t\t<color>#00ffff</color>\n");
-      fprintf(fh, "\t\t<type>LINE1</type>\n");
-      fprintf(fh, "\t\t<legend>AVERAGE:Average execution time\\: %%lf %%Ssecs</legend>\n");
-      fprintf(fh, "\t</attribute>\n");
+
+      p = r->perf_data;  
+
+      p = strtok_r(p, ";", &tkn);
+      while(p != NULL) {
+	len = strcspn(p, "|") + 1;
+	q = (char *)malloc((len + 1) * sizeof(char));
+	snprintf(q, len, "%s", p);
+
+	fprintf(fh,"\t<attribute>\n");
+	fprintf(fh, "\t\t<name>ds0</name>\n");
+	fprintf(fh, "\t\t<display_as>%s</display_as>\n", q);
+	fprintf(fh, "\t\t<units>Seconds</units>\n");
+	fprintf(fh, "\t\t<color>#00ffff</color>\n");
+	fprintf(fh, "\t\t<type>LINE1</type>\n");
+	fprintf(fh, "\t\t<legend>AVERAGE:Average %s\\: %%lf %%Ssecs</legend>\n", q);
+	fprintf(fh, "\t</attribute>\n");
+	
+	p = strtok_r(NULL, ";", &tkn);
+      }
     } else {
       syslog(LOG_NOTICE, "error creating rrd xml: unknown type %s", 
 	     m->table_name);

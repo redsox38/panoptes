@@ -71,12 +71,12 @@ void send_notification(monitor_entry_t *m, monitor_result_t *r)
 	    *p++;
 	  }
 
-	  /*
 	  p = notify_user_list;
 	  while (*p != NULL) {
-	    free(*p);
+	    free(p);
 	    *p++;
 	  }
+	  /*
 	  free(notify_user_list);
 	  */
 
