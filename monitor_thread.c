@@ -189,7 +189,9 @@ void *monitor_thread(void *arg)
 	  script = get_attr_val(&m, "script");
 	  params = get_attr_val(&m, "params");
 	  if (script != NULL) {
+	    syslog(LOG_DEBUG, "running monitor....");
 	    monitor_shell(addr, script, params, &r);
+	    syslog(LOG_DEBUG, "updating monitor....");
 	    update_monitor_entry(&m, &r);
 
 	    if (current_status != r.status) {
@@ -198,7 +200,9 @@ void *monitor_thread(void *arg)
 
 	    if (r.perf_data != NULL) {
 	      snprintf(perf_attr, 256, script);
+	      syslog(LOG_DEBUG, "updating perf_data....");
 	      update_performance_data(addr, perf_attr, &m, &r);
+	      syslog(LOG_DEBUG, "updated perf_data....");
 	    }
 	    
 	    free_monitor_result(&r, 0);
@@ -215,6 +219,7 @@ void *monitor_thread(void *arg)
       }
     } else {
       /* nothing to monitor, sleep for a minute and check again */
+      syslog(LOG_DEBUG, "nothing to check");
       sleep(30);
     }
 

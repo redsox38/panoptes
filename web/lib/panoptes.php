@@ -1747,7 +1747,7 @@ class panoptes
 
       $new_tm = $args['params']['date'];
       $new_tm = preg_replace('/(\d+)\/(\d+)\/(\d+)/', '\3-\1-\2', $new_tm);
-      $new_tm .= ' ' . $args['params']['time'];
+      $new_tm .= ' ' . $args['params']['time'] . ':00';
 
       $data['time'] = $new_tm;
 

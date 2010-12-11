@@ -105,13 +105,17 @@ function xhrRescheduleMonitor(dataGrid, dev_id, params, monitor_ids) {
 		    dataGrid.store.fetchItemByIdentity({
 			identity: monitor_ids[i],
 			onItem: function(item, req) {
-				dataGrid.store.setValue(item, 'next_check', data.data['next_check']);
+				dataGrid.store.setValue(item, 'next_check', data.data['time']);
 
 				dataGrid.store.save();
 				dataGrid.setStore(dataGrid.store);
 				dataGrid.update();		
+
 			    }
 			});
+		    // schedule reload
+		    timerId = reloadMonitorEntry(updateShellMonitorEntry, dev_id, monitor_ids[i], 
+						 dataGrid, data.data['time']);
 		}
 	    } else {
 		alert(data.error);
