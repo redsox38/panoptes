@@ -152,7 +152,7 @@ monitor_result_t *monitor_icmp(char *addr, monitor_result_t *r)
 
       /* get elapsed time in milliseconds */
       elapsed = (stop.tv_sec - start.tv_sec) * 1000;
-      elapsed += (stop.tv_usec - start.tv_usec) / 1000;
+      elapsed += (stop.tv_usec - start.tv_usec);
 
       r->monitor_msg = (char *)malloc(sizeof(char) * 11);
       snprintf(r->monitor_msg, 10, "%.4f", elapsed);
