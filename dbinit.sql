@@ -422,27 +422,27 @@ CREATE ALGORITHM=UNDEFINED SQL SECURITY INVOKER VIEW monitor_tasks
         po.device_id AS device_id,
         po.last_check AS last_check, 
         po.next_check AS next_check FROM
-        port_monitors po WHERE po.disabled=0) 
+        port_monitors po WHERE po.disabled=0 AND po.status <> 'pending') 
         UNION (SELECT 'ping_monitors' AS table_name, pi.id AS id, 
         pi.device_id AS device_id,
         pi.last_check AS last_check, 
         pi.next_check AS next_check FROM ping_monitors pi
-        WHERE pi.disabled=0) 
+        WHERE pi.disabled=0 AND pi.status <> 'pending') 
 	UNION(SELECT 'certificate_monitors' AS table_name, ce.id AS id,
         ce.device_id AS device_id,
         ce.last_check AS last_check, 
         ce.next_check AS next_check FROM certificate_monitors ce
-        WHERE ce.disabled=0)          	
+        WHERE ce.disabled=0 AND ce.status <> 'pending')          	
 	UNION(SELECT 'snmp_monitors' AS table_name, sn.id AS id,
         sn.device_id AS device_id,
         sn.last_check AS last_check, 
         sn.next_check AS next_check FROM snmp_monitors sn
-        WHERE sn.disabled=0)          	
+        WHERE sn.disabled=0 AND sn.status <> 'pending')          	
 	UNION(SELECT 'shell_monitors' AS table_name, sh.id AS id,
         sh.device_id AS device_id,
         sh.last_check AS last_check, 
         sh.next_check AS next_check FROM shell_monitors sh
-        WHERE sh.disabled=0)          	
+        WHERE sh.disabled=0 AND sh.status <> 'pending')          	
         ORDER BY next_check;
 
 /* stored procedures */
