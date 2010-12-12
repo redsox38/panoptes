@@ -90,7 +90,7 @@ void panoptes_rrd_xml_create(char *path,
       fprintf(fh, "\t\t<units>Miliseconds</units>\n");
       fprintf(fh, "\t\t<color>#00ffff</color>\n");
       fprintf(fh, "\t\t<type>LINE1</type>\n");
-      fprintf(fh, "\t\t<legend>AVERAGE:Average connect time\\: %%lf %%Ssecs</legend>\n");
+      fprintf(fh, "\t\t<legend>AVERAGE:Average connect time\\: %%lf %%Sms</legend>\n");
       fprintf(fh, "\t</attribute>\n");
     } else if (!strcmp(m->table_name, "ping_monitors")) {
       fprintf(fh, "\t<title>ICMP Response Time</title>\n");
@@ -101,7 +101,7 @@ void panoptes_rrd_xml_create(char *path,
       fprintf(fh, "\t\t<units>Millieconds</units>\n");
       fprintf(fh, "\t\t<color>#00ffff</color>\n");
       fprintf(fh, "\t\t<type>LINE1</type>\n");
-      fprintf(fh, "\t\t<legend>AVERAGE:Average response time\\: %%lf %%Ssecs</legend>\n");
+      fprintf(fh, "\t\t<legend>AVERAGE:Average response time\\: %%lf %%Sms</legend>\n");
       fprintf(fh, "\t</attribute>\n");
     } else if (!strcmp(m->table_name, "snmp_monitors")) {
       fprintf(fh, "\t<title>%s</title>\n", get_attr_val(m, "name"));
@@ -110,7 +110,7 @@ void panoptes_rrd_xml_create(char *path,
       /* go through oid list */
       oids = get_attr_val(m, "oid");
       q = oids;
-      q = strtok_r(q, ".", &tkn);
+      q = strtok_r(q, ",", &tkn);
       while (q != NULL) {
 	fprintf(fh,"\t<attribute>\n");
 	fprintf(fh, "\t\t<name>ds%d</name>\n", i);
@@ -145,7 +145,7 @@ void panoptes_rrd_xml_create(char *path,
 	fprintf(fh, "\t\t<units>Seconds</units>\n");
 	fprintf(fh, "\t\t<color>#00ffff</color>\n");
 	fprintf(fh, "\t\t<type>LINE1</type>\n");
-	fprintf(fh, "\t\t<legend>AVERAGE:Average %s\\: %%lf %%Ssecs</legend>\n", q);
+	fprintf(fh, "\t\t<legend>AVERAGE:Average %s\\: %%lf %%S</legend>\n", q);
 	fprintf(fh, "\t</attribute>\n");
 	
 	p = strtok_r(NULL, ";", &tkn);
