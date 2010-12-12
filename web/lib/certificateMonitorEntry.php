@@ -67,5 +67,28 @@ class certificateMonitorEntry extends monitorEntry
       throw($e);
     }
   }
+
+ /**
+   * copyToDevice copy monitor from one device to another
+   *
+   * @param target_id target device id
+   * @throws PDOException
+   * @return none
+   */
+  public function copyToDevice($target_id) {
+    try {
+      $this->_copyToDevice($target_id, array(
+					     'url',
+					     'check_interval',
+					     'last_check',
+					     'next_check',
+					     'status',
+					     'status_string',
+					     'disabled'
+					     ));
+    } catch (PDOException $e) {
+      throw($e);
+    }
+  }
 }
 ?>

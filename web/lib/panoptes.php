@@ -2488,7 +2488,10 @@ class panoptes
    * @throws none
    * @return array containing result and possible error messages
    */
-  public function ajax_addNotification($args) {
+  public function ajax_cloneMonitor($args) {
+    $result = 'success';
+    $error = '';
+
     try {
       if (array_key_exists('device_id', $args)) {
       } else {

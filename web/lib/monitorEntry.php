@@ -329,19 +329,27 @@ abstract class monitorEntry
   }
 
   /**
-   * remove notification for current user
+   * copy monitor from one device to another
    *
-   * @param user_id user number of current user
+   * @param target_device_id device id to copy to
+   * @param vals array of column names to select/insert
    * @throws PDOException
    * @return none
    */
-  public function removeNotification($user_id) {
+  public function _copyToDevice($target_device_id, $vals) {
     try {
-      $stmt = $this->db->prepare("DELETE FROM " . $this->notificationTable() .
-				 " WHERE monitor_id=? AND user_id= ?)");
-      $stmt->bindParam(1, $this->id, PDO::PARAM_INT);
-      $stmt->bindParam(2, $user_id);
-      $stmt->execute();
+
+      foreach ($vals as $v) {
+	$cols_string .= $v . ",";
+      }
+      // remove trailing ,
+      $cols_string = trim($cols_string, ",");
+
+      $qry = "INSERT INTO " . $this->monitorTable() . " (id, device_id," . $cols_string .
+	") SELECT '0','" . $target_device_id . "'," . $cols_string . " FROM " . $this->monitorTable() .
+	" WHERE id='" . $this->id . "'";
+      
+      $this->db->exec($qry);
     } catch (PDOException $e) {
       throw($e);
     }

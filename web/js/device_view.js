@@ -9,9 +9,13 @@ var _dndMibCreator = function(item, hint) {
     return({ node: node, data: item, type: type });
 };
 
-function xhrCloneMonitor(device_id, monitor_ids, type) {
+function xhrCloneMonitor(device_id, monitor_ids, type, target_device_id) {
+
+    target_device_id = target_device_id.replace("d_", "");
 
     var args = {};
+    args.target_device_id = target_device_id;
+
     if (!device_id) { 
         args.device_id = device_id;
     } else {
@@ -76,7 +80,65 @@ function cloneMonitor() {
 	    });
     }
 
-    xhrCloneMonitor(id, monitor_ids, table);
+    label = document.createElement("label");
+    label.htmlFor = 'tgt_device';
+    label.appendChild(document.createTextNode('Target Device'));
+
+    tgt_device = new dijit.form.FilteringSelect({
+   	    id: 'tgt_device',
+   	    name: 'tgt_device',
+    	    store: deviceStore,
+	    title: 'Target',
+            autoComplete: true,
+            query: {
+                type: "device"
+            },	    
+	    required: true,
+    	    searchAttr: 'name'
+    	});    
+
+    rst = new dijit.form.Button({
+            label: 'Cancel',
+            id: 'clone_reset',
+            onClick: function() {
+                dijit.byId("tgt_device").destroy();
+                dijit.byId("clone_reset").destroy();
+                dijit.byId("clone_submit").destroy();
+                // destroy remaining dom nodes
+                win = document.getElementById("clone_win");
+                while (win.hasChildNodes() >= 1) {
+                    win.removeChild(win.firstChild);
+                }
+
+                document.body.removeChild(win);
+            }
+        });
+
+    sub = new dijit.form.Button({
+            label: 'Copy',
+            id: 'clone_submit',
+            onClick: function() {
+		    xhrCloneMonitor(id, monitor_ids, table, dijit.byId('tgt_device').attr('value'));
+		    dijit.byId("tgt_device").destroy();
+		    dijit.byId("clone_reset").destroy();
+		    dijit.byId("clone_submit").destroy();
+		    // destroy remaining dom nodes
+		    win = document.getElementById("clone_win");
+		    while (win.hasChildNodes() >= 1) {
+			win.removeChild(win.firstChild);
+		    }
+		    
+		    document.body.removeChild(win);
+            }
+        });
+
+
+    items = [ label, tgt_device.domNode, 
+	      document.createElement("br"),
+	      rst.domNode, sub.domNode ];
+    
+    createOverlayWindow("clone_win", items);
+    
 }
 
 function addNotification() {
@@ -1215,17 +1277,6 @@ function _rescheduleMonitor(dataGrid, type, device_id) {
 	    });
     }
 
-    label = document.createElement("label");
-    label.htmlFor = 'resched_date';
-    label.appendChild(document.createTextNode('New Check Time'));
-
-    date = new dijit.form.DateTextBox({
-            id: 'resched_date',
-            name: 'resched_date',
-            closable: true,
-            title: 'New Check Date',
-            constraints: { datePattern:'MM/dd/yyyy'}
-        });
 
     time = new dijit.form.TimeTextBox({
             name: 'resched_time',
