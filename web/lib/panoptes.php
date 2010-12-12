@@ -2475,6 +2475,50 @@ class panoptes
     return(array('result' => $result, 'error' => $error, 
 		 'data' => $data));
   }
+
+  /**
+   * cloneMonitor
+   *
+   * @param args json params converted into an array
+   *                  device_id optional if not null, then clone
+   *                            every monitor on this device
+   *                  monitor_ids array of monitor ids to clone from type if device_id not given
+   *                  type monitor table
+   *                  target_device_id target id to copy monitor to
+   * @throws none
+   * @return array containing result and possible error messages
+   */
+  public function ajax_addNotification($args) {
+    try {
+      if (array_key_exists('device_id', $args)) {
+      } else {
+	foreach ($args['monitor_ids'] as $v) {
+	  if ($args['type'] == 'port_monitors') {
+	    require_once 'portMonitorEntry.php';
+	    $ent = new portMonitorEntry($this->db);
+	  } else if ($args['type'] == 'certificate_monitors') {
+	    require_once 'certificateMonitorEntry.php';
+	    $ent = new certificateMonitorEntry($this->db);
+	  } else if ($args['type'] == 'snmp_monitors') {
+	    require_once 'SNMPMonitorEntry.php';
+	    $ent = new SNMPMonitorEntry($this->db);
+	  } else if ($args['type'] == 'shell_monitors') {
+	    require_once 'shellMonitorEntry.php';
+	    $ent = new shellMonitorEntry($this->db);
+	  }
+
+	  $ent->id = $v;
+	  $ent->copyToDevice($args['target_device_id']);
+	}
+      }
+    } catch (Exception $e) {
+      return(array('result' => 'failure',
+		   'error'  => $e->getMessage()));
+    }
+    
+    return(array('result' => $result, 'error' => $error, 
+		 'data' => $data));
+  }
 }
 
 ?>

@@ -9,6 +9,76 @@ var _dndMibCreator = function(item, hint) {
     return({ node: node, data: item, type: type });
 };
 
+function xhrCloneMonitor(device_id, monitor_ids, type) {
+
+    var args = {};
+    if (!device_id) { 
+        args.device_id = device_id;
+    } else {
+        args.type = type;
+        args.monitor_ids = monitor_ids;
+    }
+
+    var xhrArgs = {
+        url: '/panoptes/',
+        handleAs: 'json',
+        content: {
+            action: 'cloneMonitor',
+            data: dojo.toJson(args)
+        },
+        load: function(data) {
+            if (data && ! data.error) {
+		// see if there's a tab open for this device
+		// if there is, update its data grid(s)
+            } else {
+                alert(data.error);
+            }
+        },
+    };
+        
+    dojo.xhrGet(xhrArgs);
+}
+
+function cloneMonitor() {
+    // figure out which grid we're working with
+    selectedTab = dijit.byId('panoptes_tab_container').selectedChildWidget;
+    id = selectedTab.id.replace("_tab", "");
+
+    var monitor_ids = [];
+    var table;
+    var dataGrid;
+
+    if (dijit.byId(id + '_port_mon_grid').selected) {
+	table = 'port_monitors';
+	dataGrid = dijit.byId(id + '_port_mon_grid');
+    } else if (dijit.byId(id + '_cert_mon_grid').selected) {
+	table = 'certificate_monitors';
+	dataGrid = dijit.byId(id + '_cert_mon_grid');
+    } else if (dijit.byId(id + '_snmp_mon_grid').selected) {
+	table = 'snmp_monitors';
+	dataGrid = dijit.byId(id + '_snmp_mon_grid');
+    } else if (dijit.byId(id + '_shell_mon_grid').selected) {
+	table = 'shell_monitors';
+	dataGrid = dijit.byId(id + '_shell_mon_grid');
+    }
+
+    // get row ids
+    var itms = dataGrid.selection.getSelected();
+    dataGrid.selection.clear();
+    
+    if (itms.length) {
+	dojo.forEach(itms, function(selectedItem) {
+		if (selectedItem !== null) {
+		    var entry_id = dataGrid.store.getValue(selectedItem, 
+							 "id", null);
+		    monitor_ids.push(entry_id);
+		}
+	    });
+    }
+
+    xhrCloneMonitor(id, monitor_ids, table);
+}
+
 function addNotification() {
     // figure out which grid we're working with
     selectedTab = dijit.byId('panoptes_tab_container').selectedChildWidget;
