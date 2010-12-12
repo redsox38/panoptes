@@ -58,6 +58,8 @@ void panoptes_rrd_update(char *path, monitor_result_t *r)
 
   args[num_args++] = ds_str;
 
+  syslog(LOG_DEBUG, "rrd_update arg %s", ds_str);
+  
   rrd_clear_error();
   rrd_update_r(path, NULL, num_args, (const char **)args);
   if (rrd_test_error()) {
@@ -81,22 +83,22 @@ void panoptes_rrd_xml_create(char *path,
     if (!strcmp(m->table_name, "port_monitors")) {
       fprintf(fh, "\t<title>%s port %s Connect Time</title>\n", 
 	      get_attr_val(m, "proto"), get_attr_val(m, "port"));
-      fprintf(fh, "\t<vertical_label>Seconds</vertical_label>\n");
+      fprintf(fh, "\t<vertical_label>Millieconds</vertical_label>\n");
       fprintf(fh,"\t<attribute>\n");
       fprintf(fh, "\t\t<name>ds0</name>\n");
       fprintf(fh, "\t\t<display_as>ConnectTime</display_as>\n");
-      fprintf(fh, "\t\t<units>Seconds</units>\n");
+      fprintf(fh, "\t\t<units>Miliseconds</units>\n");
       fprintf(fh, "\t\t<color>#00ffff</color>\n");
       fprintf(fh, "\t\t<type>LINE1</type>\n");
       fprintf(fh, "\t\t<legend>AVERAGE:Average connect time\\: %%lf %%Ssecs</legend>\n");
       fprintf(fh, "\t</attribute>\n");
     } else if (!strcmp(m->table_name, "ping_monitors")) {
       fprintf(fh, "\t<title>ICMP Response Time</title>\n");
-      fprintf(fh, "\t<vertical_label>Seconds</vertical_label>\n");
+      fprintf(fh, "\t<vertical_label>Millieconds</vertical_label>\n");
       fprintf(fh,"\t<attribute>\n");
       fprintf(fh, "\t\t<name>ds0</name>\n");
       fprintf(fh, "\t\t<display_as>ResponseTime</display_as>\n");
-      fprintf(fh, "\t\t<units>Seconds</units>\n");
+      fprintf(fh, "\t\t<units>Millieconds</units>\n");
       fprintf(fh, "\t\t<color>#00ffff</color>\n");
       fprintf(fh, "\t\t<type>LINE1</type>\n");
       fprintf(fh, "\t\t<legend>AVERAGE:Average response time\\: %%lf %%Ssecs</legend>\n");
@@ -122,7 +124,7 @@ void panoptes_rrd_xml_create(char *path,
 	i++;
       }
     } else if (!strcmp(m->table_name, "shell_monitors")) {
-      if(r->perf_title) {
+      if (r->perf_title) {
 	fprintf(fh, "\t<title>%s</title>\n", r->perf_title);
       } else {
 	fprintf(fh, "\t<title>%s Time</title>\n", get_attr_val(m, "script"));
@@ -301,6 +303,7 @@ void update_performance_data(char *address,
 
     /* see if we need to create rrd file */
     if (stat(rrd_path, &st) < 0) {
+      err = 1;
       switch (errno) {
       case ENOENT:
 	/* create rrd */
@@ -310,7 +313,6 @@ void update_performance_data(char *address,
       default:
 	strerror_r(errno, errbuf, 1024);
 	syslog(LOG_NOTICE, "stat: %s", errbuf);
-	err = 1;
 	break;
       }
     }

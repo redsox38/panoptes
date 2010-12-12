@@ -62,6 +62,7 @@ monitor_result_t *monitor_shell(char *addr, char *script,
   scrbuf = (char *)malloc(sizeof(char) * (strlen(pfx) + 
 					  strlen(script) + 2));
   sprintf(scrbuf, "%s/%s", pfx, script);
+  syslog(LOG_DEBUG, "got %s", scrbuf);
 
   /* fork */
   pid = fork();

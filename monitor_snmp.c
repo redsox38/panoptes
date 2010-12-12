@@ -98,7 +98,9 @@ monitor_result_t *monitor_snmp(char *addr, char *nm, char *comm,
     
     syslog(LOG_DEBUG, "snmp:status: %d", status);
     if (status == STAT_SUCCESS && resp->errstat == SNMP_ERR_NOERROR) {
-      for (vars = resp->variables; vars; vars = vars->next_variable) {
+      for (vars = resp->variables; vars != NULL; vars = vars->next_variable) {
+	syslog(LOG_DEBUG, "checking variable...");
+    
 	val_buf = (char *)malloc(sizeof(char) * MAX_OID_LEN);
 	name_buf = (char *)malloc(sizeof(char) * MAX_OID_LEN);
 	snprint_objid(name_buf, MAX_OID_LEN, vars->name, vars->name_length);
@@ -110,21 +112,26 @@ monitor_result_t *monitor_snmp(char *addr, char *nm, char *comm,
 
 	sprintf(perf_str, "%s|%s", name_buf, val_buf);
 
-	syslog(LOG_DEBUG, "var_name: %s var_value: %s", name_buf, val_buf);
-
+	syslog(LOG_DEBUG, "perf_str: %s", perf_str);
 
 	if (r->perf_data == NULL) {
 	  r->perf_data = strdup(perf_str);
+	  syslog(LOG_DEBUG, "perf_data is null");
 	} else {
+	  syslog(LOG_DEBUG, "appending to perf data...");
 	  if ((r->perf_data = realloc(r->perf_data, 
 				      (sizeof(char) * (strlen(perf_str) + 
 						       strlen(r->perf_data) + 1)))) != NULL) {
 	    syslog(LOG_DEBUG, "len: %d %s", strlen(r->perf_data),
 		   r->perf_data);
 	    sprintf(r->perf_data, "%s;%s", r->perf_data, perf_str);
+	    syslog(LOG_DEBUG, "perf_data is %s", r->perf_data);
+	  } else {
+	    syslog(LOG_DEBUG, "realloc failed...");
 	  }
 	}
 
+	syslog(LOG_DEBUG, "freeing vars...");
 	free(perf_str);
 	free(val_buf);
 	free(name_buf);
