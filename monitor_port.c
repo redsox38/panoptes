@@ -110,7 +110,7 @@ monitor_result_t *monitor_port(char *addr, char *proto,
 
 	  /* get elapsed time in milliseconds */
 	  elapsed = (stop.tv_sec - start.tv_sec) * 1000;
-	  elapsed += (stop.tv_usec - start.tv_usec);
+	  elapsed += ((stop.tv_usec - start.tv_usec) / 1000);
 
 	  /* space for string and a 10 digit number */
 	  len = strlen("elapsed time|") + 10;

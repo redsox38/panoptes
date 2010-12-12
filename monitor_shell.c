@@ -267,7 +267,7 @@ monitor_result_t *monitor_shell(char *addr, char *script,
       syslog(LOG_DEBUG, "generating perf output");
       /* get elapsed time in milliseconds */
       elapsed = (stop.tv_sec - start.tv_sec) * 1000;
-      elapsed += (stop.tv_usec - start.tv_usec) / 1000;
+      elapsed += ((stop.tv_usec - start.tv_usec) / 1000);
 
       /* space for string and a 10 digit number */
       len = strlen("elapsed time|") + 10;
