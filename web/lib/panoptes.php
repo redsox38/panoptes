@@ -169,7 +169,7 @@ class panoptes
 
 	$rrd_root = $this->config()->getConfigValue('rrd.directory'); 
 	
-	$monitor_types = array('port_monitors','ping_monitors');
+	$monitor_types = array('port_monitors','ping_monitors','snmp_monitors','shell_monitors');
 
 	foreach ($monitor_types as $t) {
 	  $tmp_rrd = $rrd_root . '/' . $dev->address . '/' . 
@@ -220,15 +220,16 @@ class panoptes
 	foreach ($attrs as $a) {
 	  if (array_key_exists("display_as", $a)) {
 	    $disp = $a['display_as'];
+	    $disp = preg_replace('/:/', '\\:', $disp);
 	  } else {
 	    $disp = $a['name'];
 	  }
-	  array_push($defs, 'DEF:' . $disp . '=' . $r['rrd_file'] .
+	  array_push($defs, 'DEF:' . $a['name'] . '=' . $r['rrd_file'] .
 		     ':' . $a['name'] . ':AVERAGE');
-	  array_push($graphs, $a['type'] . ':' . $disp . $a['color'] . ':' .
-		     $a['units']);
+	  array_push($graphs, $a['type'] . ':' . $a['name'] . $a['color'] . ':' .
+		     $disp);
 	  if (array_key_exists("legend", $a)) {
-	    array_push($gprints, 'GPRINT:' . $disp . ':' .
+	    array_push($gprints, 'GPRINT:' . $a['name'] . ':' .
 		       $a['legend']);
 	  }
 	}

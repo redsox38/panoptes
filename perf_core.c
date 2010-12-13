@@ -87,9 +87,8 @@ void panoptes_rrd_xml_create(char *path,
       fprintf(fh,"\t<attribute>\n");
       fprintf(fh, "\t\t<name>ds0</name>\n");
       fprintf(fh, "\t\t<display_as>ConnectTime</display_as>\n");
-      fprintf(fh, "\t\t<units>Miliseconds</units>\n");
       fprintf(fh, "\t\t<color>#00ffff</color>\n");
-      fprintf(fh, "\t\t<type>LINE1</type>\n");
+      fprintf(fh, "\t\t<type>LINE2</type>\n");
       fprintf(fh, "\t\t<legend>AVERAGE:Average connect time\\: %%lf %%Sms</legend>\n");
       fprintf(fh, "\t</attribute>\n");
     } else if (!strcmp(m->table_name, "ping_monitors")) {
@@ -98,9 +97,8 @@ void panoptes_rrd_xml_create(char *path,
       fprintf(fh,"\t<attribute>\n");
       fprintf(fh, "\t\t<name>ds0</name>\n");
       fprintf(fh, "\t\t<display_as>ResponseTime</display_as>\n");
-      fprintf(fh, "\t\t<units>Millieconds</units>\n");
       fprintf(fh, "\t\t<color>#00ffff</color>\n");
-      fprintf(fh, "\t\t<type>LINE1</type>\n");
+      fprintf(fh, "\t\t<type>LINE2</type>\n");
       fprintf(fh, "\t\t<legend>AVERAGE:Average response time\\: %%lf %%Sms</legend>\n");
       fprintf(fh, "\t</attribute>\n");
     } else if (!strcmp(m->table_name, "snmp_monitors")) {
@@ -115,9 +113,8 @@ void panoptes_rrd_xml_create(char *path,
 	fprintf(fh,"\t<attribute>\n");
 	fprintf(fh, "\t\t<name>ds%d</name>\n", i);
 	fprintf(fh, "\t\t<display_as>%s</display_as>\n", q);
-	fprintf(fh, "\t\t<units>v</units>\n");
 	fprintf(fh, "\t\t<color>%s</color>\n", colors[i]);
-	fprintf(fh, "\t\t<type>LINE1</type>\n");
+	fprintf(fh, "\t\t<type>LINE2</type>\n");
 	fprintf(fh, "\t\t<legend>AVERAGE:Average \\: %%lf %%S</legend>\n");
 	fprintf(fh, "\t</attribute>\n");
 	q = strtok_r(NULL, ",", &tkn);
@@ -142,9 +139,8 @@ void panoptes_rrd_xml_create(char *path,
 	fprintf(fh,"\t<attribute>\n");
 	fprintf(fh, "\t\t<name>ds0</name>\n");
 	fprintf(fh, "\t\t<display_as>%s</display_as>\n", q);
-	fprintf(fh, "\t\t<units>Seconds</units>\n");
 	fprintf(fh, "\t\t<color>#00ffff</color>\n");
-	fprintf(fh, "\t\t<type>LINE1</type>\n");
+	fprintf(fh, "\t\t<type>LINE2</type>\n");
 	fprintf(fh, "\t\t<legend>AVERAGE:Average %s\\: %%lf %%S</legend>\n", q);
 	fprintf(fh, "\t</attribute>\n");
 	

@@ -68,7 +68,7 @@ if(!is_array($ret)) {
   $wdt = 500;
 
   $err = rrd_error();
-  $im = imagecreatetruecolor(500, 175);
+  $im = imagecreatetruecolor($wdt, $hgt);
 
   
   // set foreground and background colors
