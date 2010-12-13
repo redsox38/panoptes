@@ -68,7 +68,8 @@ class userPrefs
       if (!is_null($scope)) {
 	$stmt->bindParam(2, $scope);
       }
-      
+      $stmt->execute();
+
       $count = 0;
       while ($r = $stmt->fetch(PDO::FETCH_ASSOC)) {
 	$prefs[] = array('id' => $count++,
