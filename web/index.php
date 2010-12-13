@@ -161,7 +161,7 @@ echo '<body class="' . $theme . '">' . "\n";
         <div dojoType="dijit.MenuItem" onClick="removeNotification();">
             Remove Notification
         </div>
-        <div dojoType="dijit.MenuItem" iconClass="dijitEditorIconCopy" onClick="cloneMonitor();">
+        <div dojoType="dijit.MenuItem" iconClass="dijitEditorIcon dijitEditorIconCopy" onClick="cloneMonitor();">
             Copy to another device
         </div>
     </div>
