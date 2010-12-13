@@ -85,10 +85,6 @@ void panoptes_rrd_xml_create(char *path,
       fprintf(fh,"\t<attribute>\n");
       fprintf(fh, "\t\t<name>ds0</name>\n");
       fprintf(fh, "\t\t<display_as>ConnectTime</display_as>\n");
-<<<<<<< HEAD
-      fprintf(fh, "\t\t<units>Seconds</units>\n");
-=======
->>>>>>> b95a94d... Fix graph display for snmp/shell graphs and clean up rrd xml creation a little
       fprintf(fh, "\t\t<color>#00ffff</color>\n");
       fprintf(fh, "\t\t<type>LINE2</type>\n");
       fprintf(fh, "\t\t<legend>AVERAGE:Average connect time\\: %%lf %%Sms</legend>\n");
@@ -99,10 +95,6 @@ void panoptes_rrd_xml_create(char *path,
       fprintf(fh,"\t<attribute>\n");
       fprintf(fh, "\t\t<name>ds0</name>\n");
       fprintf(fh, "\t\t<display_as>ResponseTime</display_as>\n");
-<<<<<<< HEAD
-      fprintf(fh, "\t\t<units>Seconds</units>\n");
-=======
->>>>>>> b95a94d... Fix graph display for snmp/shell graphs and clean up rrd xml creation a little
       fprintf(fh, "\t\t<color>#00ffff</color>\n");
       fprintf(fh, "\t\t<type>LINE2</type>\n");
       fprintf(fh, "\t\t<legend>AVERAGE:Average response time\\: %%lf %%Sms</legend>\n");
