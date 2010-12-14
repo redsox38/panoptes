@@ -2,7 +2,7 @@
 # Process this file with autoconf to produce a configure script.
 
 AC_PREREQ([2.63])
-AC_INIT([panoptes], [1.1], [redsox38@gmail.com])
+AC_INIT([panoptes], [1.2], [redsox38@gmail.com])
 AC_CONFIG_SRCDIR([discover_core.c])
 AM_INIT_AUTOMAKE([foreign])
 AC_CONFIG_MACRO_DIR([m4])
@@ -10,7 +10,7 @@ AC_CONFIG_MACRO_DIR([m4])
 #libtool 
 LT_INIT
 
-AC_ARG_WITH([dojo-url], [AS_HELP_STRING([-with-dojo-url],[top level url of dojo install default is to use Google's CDN])], AC_SUBST([dojourl], [${withval}]), AC_SUBST([dojourl],[http://ajax.googleapis.com/ajax/libs/dojo/1.5]))
+AC_ARG_WITH([dojo-url], [AS_HELP_STRING([-with-dojo-url],[top level url of dojo install default is to use Google's CDN])], AC_SUBST([dojourl], [${withval}]), AC_MSG_ERROR(Must supply the local dojo url))
 
 AC_CONFIG_HEADERS([config.h])
 

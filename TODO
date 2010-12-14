@@ -10,4 +10,4 @@ dashboard
 extensible groups
 look @ dojo charting instead of rrd for graphs
 reload on theme change ?
-disable menu items when appropriate (ie remove notification if notifications aren't enabled)
+disable menu items when appropriate (ie disable wqremove notification if notifications aren't enabled)
