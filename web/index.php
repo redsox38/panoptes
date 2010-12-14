@@ -137,7 +137,7 @@ echo '<body class="' . $theme . '">' . "\n";
         <img src="images/loading.gif"/>
     </div>
     <div dojoType="dijit.Menu" id="monitorMenu" style="display: none;">
-        <div dojoType="dijit.MenuItem" onClick="addMonitor();">
+        <div dojoType="dijit.MenuItem" iconClass="panoptesIconAdd" onClick="addMonitor();">
             Add New
         </div>  
         <div dojoType="dijit.MenuItem" onClick="ackMonitor();">
@@ -149,16 +149,16 @@ echo '<body class="' . $theme . '">' . "\n";
         <div dojoType="dijit.MenuItem" onClick="enableMonitor();">
             Enable
         </div>
-        <div dojoType="dijit.MenuItem" iconClass="dijitIconDelete" onClick="deleteMonitor();">
+        <div dojoType="dijit.MenuItem" iconClass="panoptesIconDelete" onClick="deleteMonitor();">
             Delete
         </div>
-        <div dojoType="dijit.MenuItem" iconClass="dijitIconConfigure" onClick="rescheduleMonitor();">
+        <div dojoType="dijit.MenuItem" iconClass="panoptesIconReschedule" onClick="rescheduleMonitor();">
             Reschedule
         </div>
-        <div dojoType="dijit.MenuItem" iconClass="dijitIconMail" onClick="addNotification();">
+        <div dojoType="dijit.MenuItem" iconClass="panoptesIconAddNotification" onClick="addNotification();">
             Add Notification
         </div>
-        <div dojoType="dijit.MenuItem" onClick="removeNotification();">
+        <div dojoType="dijit.MenuItem" iconClass="panoptesIconRemoveNotification" onClick="removeNotification();">
             Remove Notification
         </div>
         <div dojoType="dijit.MenuItem" iconClass="dijitEditorIcon dijitEditorIconCopy" onClick="cloneMonitor();">
@@ -184,30 +184,30 @@ echo '<body class="' . $theme . '">' . "\n";
                     <div dojoType="dijit.MenuItem" iconClass="dijitIconTask" onClick="openDevice();">
                         Open Device
                     </div>
-                    <div dojoType="dijit.MenuItem" onClick="addToGroup();">
+                    <div dojoType="dijit.MenuItem" iconClass="panoptesIconAddGroup" onClick="addToGroup();">
                         Add to Group
                     </div>
-                    <div dojoType="dijit.MenuItem" onClick="removeFromGroup();">
+                    <div dojoType="dijit.MenuItem" iconClass="panoptesIconDeleteGroup" onClick="removeFromGroup();">
                         Remove from Group
                     </div>
-                    <div dojoType="dijit.MenuItem" iconClass="dijitIconConfigure" onClick="scheduleOutage();">
+                    <div dojoType="dijit.MenuItem" iconClass="panoptesIconReschedule" onClick="scheduleOutage();">
                         Schedule Outage
                     </div>
-                    <div dojoType="dijit.MenuItem" iconClass="dijitIconDelete" onClick="deleteDevice();">
+                    <div dojoType="dijit.MenuItem" iconClass="panoptesIconDelete" onClick="deleteDevice();">
                        Delete Device 
                     </div>
-                    <div dojoType="dijit.MenuItem" iconClass="dijitIconMail" onClick="addDeviceNotification();">
+                    <div dojoType="dijit.MenuItem" iconClass="panoptesIconAddNotification" onClick="addDeviceNotification();">
                        Add Notification
                     </div>
-                    <div dojoType="dijit.MenuItem" onClick="removeDeviceNotification();">
+                    <div dojoType="dijit.MenuItem" iconClass="panoptesIconRemoveNotification" onClick="removeDeviceNotification();">
                        Remove Notification
                     </div>
                 </div>
 	        <div dojoType="dijit.Menu" id="device_tree_group_menu" style="display: none;">
-                    <div dojoType="dijit.MenuItem" onClick="manageDeviceGroupAccess();">
+                    <div dojoType="dijit.MenuItem" iconClass="panoptesIconAccess" onClick="manageDeviceGroupAccess();">
                        Manage Access
                     </div>
-                    <div dojoType="dijit.MenuItem" iconClass="dijitIconDelete" onClick="deleteDeviceGroup();">
+                    <div dojoType="dijit.MenuItem" iconClass="panoptesIconDelete" onClick="deleteDeviceGroup();">
                        Delete Group
                     </div>
                 </div>

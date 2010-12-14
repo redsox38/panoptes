@@ -2,3 +2,25 @@ body { width: 100%; height: 100%; margin: 0;  font-family:helvetica,arial,sans-s
 html { width: 100%; height: 100%; margin: 0;  font-family:helvetica,arial,sans-serif; font-size:90%; }
 .dojoxGrid table { margin: 0; }
 .overlayWindow { z-index: 50; height: 100%; width: 100%; background-image: url(images/transparent-blue.png); position: absolute; top: 0; left: 0; }
+
+.panoptesIconAddNotification,
+.panoptesIconRemoveNotification,
+.panoptesIconDelete,
+.panoptesIconReschedule,
+.panoptesIconAddGroup,
+.panoptesIconDeleteGroup,
+.panoptesIconAdd,
+.panoptesIconAccess {
+        background-image: url('/panoptes/images/panoptesIcons.png'); 
+        width: 16px;
+        height: 16px;
+}
+
+.panoptesIconAddNotificaiton { background-position: 0px; }
+.panoptesIconRemoveNotification { background-position: -16px; }
+.panoptesIconDelete { background-position: -32px; }
+.panoptesIconReschedule { background-position: -48px; }
+.panoptesIconAddGroup { background-position: -64px; }
+.panoptesIconDeleteGroup { background-position: -80px; }
+.panoptesIconAdd { background-position: -96px; }
+.panoptesIconAccess { background-position: -112px; }
