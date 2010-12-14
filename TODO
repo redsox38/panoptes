@@ -3,6 +3,7 @@ fork new thread for performance monitor updates
 replace SOURCE... in db init with reading in statements and executing them
 config option to auto accept auto discovery entries
 spec file
+jabber notifications?
 
 svc dependencies
 dashboard
