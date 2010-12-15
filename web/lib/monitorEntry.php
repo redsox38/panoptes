@@ -319,8 +319,9 @@ abstract class monitorEntry
    */
   public function addNotification($user_id) {
     try {
+      $id = $this->id;
       $stmt = $this->db->prepare("INSERT INTO " . $this->notificationTable() . " VALUES(?, ?)");
-      $stmt->bindParam(1, $this->id, PDO::PARAM_INT);
+      $stmt->bindParam(1, $id, PDO::PARAM_INT);
       $stmt->bindParam(2, $user_id, PDO::PARAM_INT);
       $stmt->execute();
     } catch (PDOException $e) {
@@ -328,6 +329,24 @@ abstract class monitorEntry
     }
   }
 
+  /**
+   * remove notification for current user
+   *
+   * @param user_id user number of current user
+   * @throws PDOException
+   * @return none
+   */
+  public function removeNotification($user_id) {
+    try {
+      $id = $this->id;
+      $stmt = $this->db->prepare("DELETE FROM " . $this->notificationTable() . " WHERE monitor_id=? AND user_id=?");
+      $stmt->bindParam(1, $id, PDO::PARAM_INT);
+      $stmt->bindParam(2, $user_id, PDO::PARAM_INT);
+      $stmt->execute();
+    } catch (PDOException $e) {
+      throw($e);
+    }
+  }
 
   /**
    * get notification for current user/monitor
@@ -338,9 +357,10 @@ abstract class monitorEntry
    */
   public function getNotification($user_id) {
     try {
+      $id = $this->id;
       $stmt = $this->db->prepare("SELECT COUNT(user_id) AS count FROM " . $this->notificationTable() . 
 				 " WHERE monitor_id=? AND user_id=?");
-      $stmt->bindParam(1, $this->id, PDO::PARAM_INT);
+      $stmt->bindParam(1, $id, PDO::PARAM_INT);
       $stmt->bindParam(2, $user_id, PDO::PARAM_INT);
       $stmt->execute();
 

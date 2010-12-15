@@ -2473,11 +2473,11 @@ class panoptes
     $result = 'success';
     $error = '';
 
-    $user = new userEntry();
-    $user->db = $this->db;
-    $user->getByName($panoptes_current_user);
-
     try {
+      $user = new userEntry();
+      $user->db = $this->db;
+      $user->getByName($panoptes_current_user);
+
       if (array_key_exists('device_id', $args)) {
 	// port monitors
 	$rst = $this->getPortMonitorData($args['device_id']);
