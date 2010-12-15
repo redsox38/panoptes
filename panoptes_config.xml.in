@@ -1,4 +1,5 @@
 <config>
+    <discover auto_monitor_ports="80,443"/>
     <monitor threads="2"/>
     <port_monitor timeout="5"/>
     <syslog facility="local0"/>

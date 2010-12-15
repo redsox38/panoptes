@@ -27,7 +27,6 @@
 /* array of command line options */
 static struct option long_options[] = {
   {"configfile", 1, 0, 'c'},
-  {"initdb", 1, 0, 'd'},
   {"interface", 1, 0, 'i'},
   {"readfile", 1, 0, 'r'},
   {0,0,0,0}
@@ -69,7 +68,6 @@ void usage()
 {
   fprintf(stderr, "Usage:\n");
   fprintf(stderr, "\t-c, --configfile <configuration file>\n");
-  fprintf(stderr, "\t-d, --initdb\n");
   fprintf(stderr, "\t-i, --interface <interface for packet capture>\n");
   fprintf(stderr, "\t-r, --readfile <packet capture file>\n");
 }
@@ -90,9 +88,6 @@ int main(int argc, char *argv[]) {
     switch (c) {
     case 'c':
       configfile = strdup(optarg);
-      break;
-    case 'd':
-      init_db_flag = 1;
       break;
     case 'i':
       dev = strdup(optarg);
