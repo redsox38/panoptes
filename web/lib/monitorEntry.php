@@ -321,8 +321,42 @@ abstract class monitorEntry
     try {
       $stmt = $this->db->prepare("INSERT INTO " . $this->notificationTable() . " VALUES(?, ?)");
       $stmt->bindParam(1, $this->id, PDO::PARAM_INT);
-      $stmt->bindParam(2, $user_id);
+      $stmt->bindParam(2, $user_id, PDO::PARAM_INT);
       $stmt->execute();
+    } catch (PDOException $e) {
+      throw($e);
+    }
+  }
+
+
+  /**
+   * get notification for current user/monitor
+   *
+   * @param user_id user number of current user
+   * @throws PDOException
+   * @return boolean true if this userid has notifications set for this monitor
+   */
+  public function getNotification($user_id) {
+    try {
+      $stmt = $this->db->prepare("SELECT COUNT(user_id) AS count FROM " . $this->notificationTable() . 
+				 " WHERE monitor_id=? AND user_id=?");
+      $stmt->bindParam(1, $this->id, PDO::PARAM_INT);
+      $stmt->bindParam(2, $user_id, PDO::PARAM_INT);
+      $stmt->execute();
+
+      $r = $stmt->fetch(PDO::FETCH_ASSOC);
+
+      if ($r) {
+	if ($r['count'] > 0) {
+	  $rtn = true;
+	} else {
+	  $rtn = false;
+	}
+      } else {
+	$rtn = false;
+      }
+
+      return($rtn);
     } catch (PDOException $e) {
       throw($e);
     }

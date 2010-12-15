@@ -783,6 +783,8 @@ class panoptes
    * @return array of certificateMonitorEntry objects
    */
   public function getCertificateMonitorData($id) {
+    global $panoptes_current_user;
+
     require_once 'certificateMonitorEntry.php';
     $rtndata = array();
 
@@ -1245,7 +1247,13 @@ class panoptes
    * @return array containing result and possible error messages
    */
   public function ajax_getSNMPMonitorEntry($args) {
+    global $panoptes_current_user;
     try {
+      require_once 'userEntry.php';
+      $user = new userEntry();
+      $user->db = $this->db;
+      $user->getByName($panoptes_current_user);
+
       $rst = $this->getSNMPMonitorData($args['device_id'], $args['entry_id']);
       $a = $rst[0];
       $ack = $a->getAckInfo();
@@ -1262,7 +1270,8 @@ class panoptes
 		     'ack_msg'       => $ack['ack_msg'],
 		     'status'        => $a->status,
 		     'status_string' => $a->status_string,
-		     'metric'        => $a->name
+		     'metric'        => $a->name,
+		     'notify'        => $a->getNotification($user->id)
 		     );
     } catch (Exception $e) {
       return(array('result' => 'failure',
@@ -1283,9 +1292,15 @@ class panoptes
    * @return array containing result and possible error messages
    */
   public function ajax_getSNMPMonitorData($args) {
+    global $panoptes_current_user;
     $data = array();
     
     try {
+      require_once 'userEntry.php';
+      $user = new userEntry();
+      $user->db = $this->db;
+      $user->getByName($panoptes_current_user);
+
       $rst = $this->getSNMPMonitorData($args['id']);
       foreach ($rst as $a) {
 	$ack = $a->getAckInfo();
@@ -1302,7 +1317,8 @@ class panoptes
 				 'ack_msg'       => $ack['ack_msg'],
 				 'status'        => $a->status,
 				 'status_string' => $a->status_string,
-				 'metric'        => $a->name
+				 'metric'        => $a->name,
+				 'notify'        => $a->getNotification($user->id)
 				 ));
       }
     } catch (Exception $e) {
@@ -1326,7 +1342,14 @@ class panoptes
    * @return array containing result and possible error messages
    */
   public function ajax_getPortMonitorEntry($args) {
+    global $panoptes_current_user;
+
     try {
+      require_once 'userEntry.php';
+      $user = new userEntry();
+      $user->db = $this->db;
+      $user->getByName($panoptes_current_user);
+
       $rst = $this->getPortMonitorData($args['device_id'], $args['entry_id']);
       $a = $rst[0];
       $ack = $a->getAckInfo();
@@ -1341,7 +1364,8 @@ class panoptes
 		     'status_string' => $a->status_string,
 		     'ack_by'        => $ack['ack_by'],
 		     'ack_msg'       => $ack['ack_msg'],
-		     'metric'        => $a->proto . '-' . $a->port
+		     'metric'        => $a->proto . '-' . $a->port,
+		     'notify'        => $a->getNotification($user->id)
 		     );
     } catch (Exception $e) {
       return(array('result' => 'failure',
@@ -1362,9 +1386,15 @@ class panoptes
    * @return array containing result and possible error messages
    */
   public function ajax_getPortMonitorData($args) {
+    global $panoptes_current_user;
     $data = array();
     
     try {
+      require_once 'userEntry.php';
+      $user = new userEntry();
+      $user->db = $this->db;
+      $user->getByName($panoptes_current_user);
+
       $rst = $this->getPortMonitorData($args['id']);
       foreach ($rst as $a) {
 	$ack = $a->getAckInfo();
@@ -1379,8 +1409,8 @@ class panoptes
 				 'ack_by'        => $ack['ack_by'],
 				 'ack_msg'       => $ack['ack_msg'],
 				 'status_string' => $a->status_string,
-				 'metric'        => $a->proto . '-' .
-				 $a->port
+				 'metric'        => $a->proto . '-' . $a->port,
+				 'notify'        => $a->getNotification($user->id)
 				 ));
       }
     } catch (Exception $e) {
@@ -1487,9 +1517,15 @@ class panoptes
    * @return array containing result and possible error messages
    */
   public function ajax_getCertificateMonitorData($args) {
+    global $panoptes_current_user;
     $data = array();
     
     try {
+      require_once 'userEntry.php';
+      $user = new userEntry();
+      $user->db = $this->db;
+      $user->getByName($panoptes_current_user);
+
       $rst = $this->getCertificateMonitorData($args['id']);
       foreach ($rst as $a) {
 	$ack = $a->getAckInfo();
@@ -1502,7 +1538,8 @@ class panoptes
 				 'ack_by'        => $ack['ack_by'],
 				 'ack_msg'       => $ack['ack_msg'],
 				 'status'        => $a->status,
-				 'status_string' => $a->status_string
+				 'status_string' => $a->status_string,
+				 'notify'        => $a->getNotification($user->id)
 				 ));
       }
     } catch (Exception $e) {
@@ -1973,7 +2010,13 @@ class panoptes
    * @return array containing result and possible error messages
    */
   public function ajax_getShellMonitorEntry($args) {
+    global $panoptes_current_user;
     try {
+      require_once 'userEntry.php';
+      $user = new userEntry();
+      $user->db = $this->db;
+      $user->getByName($panoptes_current_user);
+
       $rst = $this->getShellMonitorData($args['device_id'], $args['entry_id']);
       $a = $rst[0];
       $ack = $a->getAckInfo();
@@ -1987,7 +2030,8 @@ class panoptes
 		     'ack_by'        => $ack['ack_by'],
 		     'ack_msg'       => $ack['ack_msg'],
 		     'status'        => $a->status,
-		     'status_string' => $a->status_string
+		     'status_string' => $a->status_string,
+		     'notify'        => $a->getNotification($user->id)
 		     );
     } catch (Exception $e) {
       return(array('result' => 'failure',
@@ -2012,6 +2056,7 @@ class panoptes
    */
   public function ajax_getShellMonitors($args) {
     global $php_errormsg;
+    global $panoptes_current_user;
 
     $result = 'success';
     $error = '';
@@ -2021,6 +2066,11 @@ class panoptes
       ini_set('track_errors', true);
 
       if (array_key_exists('id', $args)) {
+	require_once 'userEntry.php';
+	$user = new userEntry();
+	$user->db = $this->db;
+	$user->getByName($panoptes_current_user);
+
 	// just get shell monitors for the device identified by id
 	$monitors = $this->getShellMonitorData($args['id']);
 	foreach ($monitors as $a) {
@@ -2035,7 +2085,8 @@ class panoptes
 				 'ack_by'        => $ack['ack_by'],
 				 'ack_msg'       => $ack['ack_msg'],
 				 'status'        => $a->status,
-				 'status_string' => $a->status_string
+				 'status_string' => $a->status_string,
+				 'notify'        => $a->getNotification($user->id)
 				  ));
 	}
       } else {
