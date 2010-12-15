@@ -30,6 +30,28 @@
 pcap_t *pcap_handle;
 char   errbuf[PCAP_ERRBUF_SIZE];
 
+extern disc_port_list_t auto_port_list;
+
+/* search auto_port_list for port */
+int is_auto_port(int port) 
+{
+  int r = 0;
+  disc_port_list_t *p;
+  
+  p = auto_port_list;
+
+  while (p != NULL) {
+    if (p->port == port) {
+      r = 1;
+      p = NULL;
+    } else {
+      p = p->next;
+    }
+  }
+  
+  return(r);
+}
+
 /* 
    function passed to pcap_loop to read processed packets
    that match the filter.
@@ -59,19 +81,23 @@ void read_packet(u_char *args, const struct pcap_pkthdr *hdr,
     tcp = (struct sniff_tcp*)(packet + SIZE_ETHER + size_ip);
     size_tcp = TH_OFF(tcp)*4;
 
-    printf("TCP From %s:%d To %s:%d\n", src, 
+    syslog(LOG_DEBUG, "TCP From %s:%d To %s:%d\n", src, 
 	   ntohs(tcp->th_sport), dst, ntohs(tcp->th_dport));
     /* flip src and dst since our src is the host sending the SYN/ACK */
     /* AKA the host being connected to */
-    add_discovered_connection(dst, ntohs(tcp->th_dport), 
-			      src, ntohs(tcp->th_sport), 
-			      "tcp");
+    if (is_auto_port(ntohs(tcp->th_dport))) {
+      add_monitor_port(dst, ntohs(tcp->th_dport), "tcp");
+    } else {
+      add_discovered_connection(dst, ntohs(tcp->th_dport), 
+				src, ntohs(tcp->th_sport), 
+				"tcp");
+    }
   } else if (ip->ip_p == IPPROTO_UDP) {
     udp = (struct sniff_udp*)(packet + SIZE_ETHER + size_ip);
     size_udp = udp->uh_len;
 
     /* guess client/server based on port number */
-    printf("UDP From %s:%d To %s:%d\n", src, 
+    syslog(LOG_DEBUG, "UDP From %s:%d To %s:%d\n", src, 
 	   ntohs(udp->uh_sport), dst, ntohs(udp->uh_dport));
     if (ntohs(udp->uh_sport < IPPORT_RESERVED)) {
       add_discovered_connection(src, ntohs(udp->uh_sport), 

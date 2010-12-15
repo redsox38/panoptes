@@ -33,10 +33,47 @@ static struct option long_options[] = {
 };
 
 char *dev = NULL, *readfile = NULL, *configfile = NULL;
+disc_port_list_t *auto_port_list = NULL;
+
+/* convert port string into list */
+disc_port_list_t *build_port_list(char *port_str)
+{
+  char *p;
+  disc_port_list_t *r, *last = NULL, *rtn = NULL;
+
+  p = strtok(port_str, ",");
+  while (p != NULL) {
+    r = (disc_port_list_t *)malloc(sizeof(disc_port_list_t));
+    sscanf(p, "%d", &(r->port));
+    r->next = NULL;
+
+    if (rtn == NULL) {
+      rtn = r;
+      last = r;
+    } else {
+      last->next = r;
+      last = r;
+    }
+    p = strtok(NULL, ",");
+  }
+
+  return(rtn);
+}
 
 /* local termination handler for this file */
 void core_term_handler()
 {
+  disc_port_list_t *p, *q;
+
+  if (auto_port_list) {
+    p = auto_port_list;
+    while(p != NULL) { 
+      q = p->next;
+      free(p);
+      p = q;
+    }
+  }
+
   if (dev)
     free(dev);
   
@@ -77,13 +114,13 @@ int main(int argc, char *argv[]) {
   extern int         optind, optopt, opterr;
   int                c, option_index;
   int                init_db_flag = 0;
-  char               *facil_str;
+  char               *facil_str, *auto_ports;
   int                facil = -1;
   CODE               *cs;
-
+  
   /* process command line */
 
-  while ((c = getopt_long(argc, argv, "di:r:c:", long_options, 
+  while ((c = getopt_long(argc, argv, "i:r:c:", long_options, 
                           &option_index)) != -1) {
     switch (c) {
     case 'c':
@@ -113,6 +150,13 @@ int main(int argc, char *argv[]) {
     exit(-1);
   }
 
+  /* check for auto ports */
+  auto_ports = get_config_value("discover.auto_accept_ports");
+  if (auto_ports != NULL) {
+    /* make list */
+    auto_port_list = build_port_list(auto_ports);
+    free(auto_ports);
+  }
 
   /* open syslog */
   facil_str = get_config_value("syslog.facility");

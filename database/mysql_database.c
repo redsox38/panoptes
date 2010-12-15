@@ -127,6 +127,18 @@ int _database_open(int initialize)
   return(0);
 }
 
+/* append pcap entry to database as a monitor object*/
+void _add_monitor_port(char *src, int src_port, char *prot)
+{
+  char *qry;
+
+  qry = (char *)malloc(sizeof(char) * MAX_MYSQL_DISC_QRY_LEN);
+
+  /*mysql_query(mysql, qry); */
+
+  free(qry);
+}
+
 /* append pcap entry to database */
 void _add_discovered_connection(char *src, int src_port, char *dst, 
 				int dst_port, char *prot)
@@ -268,7 +280,7 @@ int _update_monitor_entry(monitor_entry_t *m, monitor_result_t *r)
   pthread_mutex_unlock(&sql_mutex);
 
   free(qry);
-
+  
   return(1);
 }
 

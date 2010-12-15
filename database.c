@@ -114,6 +114,20 @@ void add_discovered_connection(char *src, int src_port, char *dst,
   }
 }
 
+/* call library's _add_monitor_port function */
+void add_monitor_port(char *src, int src_port, char *prot)
+{
+
+  void (*insert_ptr)(char *, int, char *);
+
+  /* load add function */
+  if ((insert_ptr = (void (*)(char *, int, char *))dlsym(lib_handle, "_add_monitor_port")) != NULL) {
+    (*insert_ptr)(src, src_port, prot);
+  } else {
+    syslog(LOG_ALERT, "_add_monitor_port not defined");
+  }
+}
+
 /* call library's _update_monitor_entry function */
 int update_monitor_entry(monitor_entry_t *m, monitor_result_t *r)
 {
