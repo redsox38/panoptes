@@ -137,31 +137,31 @@ echo '<body class="' . $theme . '">' . "\n";
         <img src="images/loading.gif"/>
     </div>
     <div dojoType="dijit.Menu" id="monitorMenu" style="display: none;">
-        <div dojoType="dijit.MenuItem" iconClass="panoptesIconAdd" onClick="addMonitor();">
+        <div dojoType="dijit.MenuItem" id="monitorMenuAdd" iconClass="panoptesIconAdd" onClick="addMonitor();">
             Add New
         </div>  
-        <div dojoType="dijit.MenuItem" onClick="ackMonitor();">
+        <div dojoType="dijit.MenuItem" id="monitorMenuAcknowledge" onClick="ackMonitor();">
             Acknowledge
         </div>
-        <div dojoType="dijit.MenuItem" onClick="disableMonitor();">
+        <div dojoType="dijit.MenuItem" id="monitorMenuDisable" onClick="disableMonitor();">
             Disable
         </div>
-        <div dojoType="dijit.MenuItem" onClick="enableMonitor();">
+        <div dojoType="dijit.MenuItem" id="monitorMenuEnable" onClick="enableMonitor();">
             Enable
         </div>
-        <div dojoType="dijit.MenuItem" iconClass="panoptesIconDelete" onClick="deleteMonitor();">
+        <div dojoType="dijit.MenuItem" id="monitorMenuDelete" iconClass="panoptesIconDelete" onClick="deleteMonitor();">
             Delete
         </div>
-        <div dojoType="dijit.MenuItem" iconClass="panoptesIconReschedule" onClick="rescheduleMonitor();">
+        <div dojoType="dijit.MenuItem" id="monitorMenuReschedule" iconClass="panoptesIconReschedule" onClick="rescheduleMonitor();">
             Reschedule
         </div>
-        <div dojoType="dijit.MenuItem" iconClass="panoptesIconAddNotification" onClick="addNotification();">
+        <div dojoType="dijit.MenuItem" id="monitorMenuAddNotification" iconClass="panoptesIconAddNotification" onClick="addNotification();">
             Add Notification
         </div>
-        <div dojoType="dijit.MenuItem" iconClass="panoptesIconRemoveNotification" onClick="removeNotification();">
+        <div dojoType="dijit.MenuItem" id="monitorMenuRemoveNotification" iconClass="panoptesIconRemoveNotification" onClick="removeNotification();">
             Remove Notification
         </div>
-        <div dojoType="dijit.MenuItem" iconClass="dijitEditorIcon dijitEditorIconCopy" onClick="cloneMonitor();">
+        <div dojoType="dijit.MenuItem" id="monitorMenuCopy" iconClass="dijitEditorIcon dijitEditorIconCopy" onClick="cloneMonitor();">
             Copy to another device
         </div>
     </div>

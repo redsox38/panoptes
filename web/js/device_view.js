@@ -750,7 +750,7 @@ function createPortMonitorTab(id) {
 		nestedSorting: true,
 		menus: { 
 		    rowMenu: 'monitorMenu',
-		    headerMenu: 'monitorMenu',
+		    headerMenu: 'monitorMenu'
 		}
 	    }
 	}, document.createElement('div'));                  
@@ -787,6 +787,28 @@ function createPortMonitorTab(id) {
 
     dojo.connect(tc_1, 'onRowMouseOut', function(e) {
 	    dijit.hideTooltip(e.cellNode);
+	});
+
+    dojo.connect(tc_1, 'onRowContextMenu', function(e) {
+	    var item = tc_1.getItem(e.rowIndex);
+	    var notify = tc_1.store.getValue(item, "notify", null);
+	    var disabled = tc_1.store.getValue(item, "disabled", null);
+
+	    if (notify) {
+		dijit.byId('monitorMenuAddNotification').attr('disabled','true');
+		dijit.byId('monitorMenuRemoveNotification').attr('disabled', null);
+	    } else {
+ 		dijit.byId('monitorMenuAddNotification').attr('disabled', null);
+		dijit.byId('monitorMenuRemoveNotification').attr('disabled','true');
+	    }
+
+	    if (disabled) {
+ 		dijit.byId('monitorMenuEnable').attr('disabled', null);
+		dijit.byId('monitorMenuDisable').attr('disabled','true');
+	    } else {
+ 		dijit.byId('monitorMenuEnable').attr('disabled', 'true');
+		dijit.byId('monitorMenuDisable').attr('disabled', null);
+	    }
 	});
 
     // load data for availability tab
@@ -890,6 +912,28 @@ function createSNMPTab(id) {
 	    dijit.hideTooltip(e.cellNode);
 	});
 
+    dojo.connect(tc_1, 'onRowContextMenu', function(e) {
+	    var item = tc_1.getItem(e.rowIndex);
+	    var notify = tc_1.store.getValue(item, "notify", null);
+	    var disabled = tc_1.store.getValue(item, "disabled", null);
+
+	    if (notify) {
+		dijit.byId('monitorMenuAddNotification').attr('disabled','true');
+		dijit.byId('monitorMenuRemoveNotification').attr('disabled', null);
+	    } else {
+ 		dijit.byId('monitorMenuAddNotification').attr('disabled', null);
+		dijit.byId('monitorMenuRemoveNotification').attr('disabled','true');
+	    }
+
+	    if (disabled) {
+ 		dijit.byId('monitorMenuEnable').attr('disabled', null);
+		dijit.byId('monitorMenuDisable').attr('disabled','true');
+	    } else {
+ 		dijit.byId('monitorMenuEnable').attr('disabled', 'true');
+		dijit.byId('monitorMenuDisable').attr('disabled', null);
+	    }
+	});
+
     // load data for tab
     addSNMPMonitorData(id, tc_1);
     
@@ -991,6 +1035,28 @@ function createShellTab(id) {
 	    dijit.hideTooltip(e.cellNode);
 	});
 
+    dojo.connect(tc_1, 'onRowContextMenu', function(e) {
+	    var item = tc_1.getItem(e.rowIndex);
+	    var notify = tc_1.store.getValue(item, "notify", null);
+	    var disabled = tc_1.store.getValue(item, "disabled", null);
+
+	    if (notify) {
+		dijit.byId('monitorMenuAddNotification').attr('disabled','true');
+		dijit.byId('monitorMenuRemoveNotification').attr('disabled', null);
+	    } else {
+ 		dijit.byId('monitorMenuAddNotification').attr('disabled', null);
+		dijit.byId('monitorMenuRemoveNotification').attr('disabled','true');
+	    }
+
+	    if (disabled) {
+ 		dijit.byId('monitorMenuEnable').attr('disabled', null);
+		dijit.byId('monitorMenuDisable').attr('disabled','true');
+	    } else {
+ 		dijit.byId('monitorMenuEnable').attr('disabled', 'true');
+		dijit.byId('monitorMenuDisable').attr('disabled', null);
+	    }
+	});
+
     // load data for tab
     addShellMonitorData(id, tc_1);
     
@@ -1085,6 +1151,28 @@ function createCertificateTab(id) {
 
     dojo.connect(tc_1, 'onRowMouseOut', function(e) {
 	    dijit.hideTooltip(e.cellNode);
+	});
+
+    dojo.connect(tc_1, 'onRowContextMenu', function(e) {
+	    var item = tc_1.getItem(e.rowIndex);
+	    var notify = tc_1.store.getValue(item, "notify", null);
+	    var disabled = tc_1.store.getValue(item, "disabled", null);
+
+	    if (notify) {
+		dijit.byId('monitorMenuAddNotification').attr('disabled','true');
+		dijit.byId('monitorMenuRemoveNotification').attr('disabled', null);
+	    } else {
+ 		dijit.byId('monitorMenuAddNotification').attr('disabled', null);
+		dijit.byId('monitorMenuRemoveNotification').attr('disabled','true');
+	    }
+
+	    if (disabled) {
+ 		dijit.byId('monitorMenuEnable').attr('disabled', null);
+		dijit.byId('monitorMenuDisable').attr('disabled','true');
+	    } else {
+ 		dijit.byId('monitorMenuEnable').attr('disabled', 'true');
+		dijit.byId('monitorMenuDisable').attr('disabled', null);
+	    }
 	});
 
     // load data for tab
