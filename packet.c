@@ -30,7 +30,7 @@
 pcap_t *pcap_handle;
 char   errbuf[PCAP_ERRBUF_SIZE];
 
-extern disc_port_list_t auto_port_list;
+extern disc_port_list_t *auto_port_list;
 
 /* search auto_port_list for port */
 int is_auto_port(int port) 

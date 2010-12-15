@@ -34,6 +34,7 @@
 #include <string.h>
 #include "panoptes/monitor_core.h"
 #include <pthread.h>
+#include <syslog.h>
 
 pthread_mutex_t sql_mutex = PTHREAD_MUTEX_INITIALIZER;
 MYSQL *mysql = NULL;
@@ -120,7 +121,7 @@ int _database_open(int initialize)
     loader = get_config_value("db.sqlinit");
     snprintf(qry, MAX_MYSQL_DISC_QRY_LEN, "SOURCE %s", loader);
     mysql_query(mysql, qry);
-    printf("Error: %s\n", mysql_error(mysql));
+    syslog(LOG_DEBUG, "Error: %s\n", mysql_error(mysql));
     free(loader);
   }
 
@@ -130,11 +131,44 @@ int _database_open(int initialize)
 /* append pcap entry to database as a monitor object*/
 void _add_monitor_port(char *src, int src_port, char *prot)
 {
-  char *qry;
+  char        *qry;
+  int         len, rc, i, num_rows;
+  MYSQL_RES   *result;
+  MYSQL_ROW   row;
+  MYSQL_FIELD *fields;
+  long        *lengths;
 
   qry = (char *)malloc(sizeof(char) * MAX_MYSQL_DISC_QRY_LEN);
 
-  /*mysql_query(mysql, qry); */
+  len = (strlen("CALL add_port_monitor(") +
+	 20 +
+	 strlen(",'") +
+	 strlen(src) +
+	 strlen("','") +
+	 strlen(prot) +
+	 strlen("')"));
+  
+  qry = (char *)malloc(len * sizeof(char));
+  snprintf(qry, len, "CALL add_port_monitor(%d, '%s','%s')",
+	   src_port, src, prot);
+
+  pthread_mutex_lock(&sql_mutex);
+
+  rc = mysql_query(mysql, qry);
+
+  do {
+    result = mysql_store_result(mysql);
+    if (result) {
+      mysql_free_result(result);
+    } else {
+      /* an error occurred or no results */
+      if (mysql_field_count(mysql) != 0)
+	syslog(LOG_DEBUG, "Error: %s\n", mysql_error(mysql));
+    }
+    rc = mysql_next_result(mysql);
+  } while (rc == 0);
+
+  pthread_mutex_unlock(&sql_mutex);
 
   free(qry);
 }
@@ -214,7 +248,7 @@ void _get_next_monitor_entry(monitor_entry_t *m)
     } else {
       /* an error occurred or no results */
       if (mysql_field_count(mysql) != 0)
-	printf("Error: %s\n", mysql_error(mysql));
+	syslog(LOG_DEBUG, "Error: %s\n", mysql_error(mysql));
     }
     rc = mysql_next_result(mysql);
   } while (rc == 0);
@@ -272,7 +306,7 @@ int _update_monitor_entry(monitor_entry_t *m, monitor_result_t *r)
     } else {
       /* an error occurred or no results */
       if (mysql_field_count(mysql) != 0)
-	printf("Error: %s\n", mysql_error(mysql));
+	syslog(LOG_DEBUG, "Error: %s\n", mysql_error(mysql));
     }
     rc = mysql_next_result(mysql);
   } while (rc == 0);
@@ -327,7 +361,7 @@ char **_get_notify_user_list(monitor_entry_t *m)
     } else {
       /* an error occurred or no results */
       if (mysql_field_count(mysql) != 0)
-	printf("Error: %s\n", mysql_error(mysql));
+	syslog(LOG_DEBUG, "Error: %s\n", mysql_error(mysql));
     }
     rc = mysql_next_result(mysql);
   } while (rc == 0);

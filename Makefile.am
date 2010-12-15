@@ -12,7 +12,7 @@ AUTOMAKE_OPTIONS = no-dependencies
 panoptes_monitor_LDFLAGS = @LDFLAGS@ 
 panoptes_monitor_CPPFLAGS = @CPPFLAGS@ -D_REENTRANT -DPIDFILE="\"@localstatedir@/run/panoptes_monitor.pid\""
 panoptes_discover_CPPFLAGS = @CPPFLAGS@ -D_REENTRANT -DPIDFILE="\"@localstatedir@/run/panoptes_discover.pid\""
-EXTRA_DIST = dbinit.sql web panoptes_config.xml.in panoptes_httpd.conf.in database.h packet.h panoptes.h README.shell_monitors
+EXTRA_DIST = dbinit.sql dbinit-3.sql web panoptes_config.xml.in panoptes_httpd.conf.in database.h packet.h panoptes.h README.shell_monitors
 
 install-data-hook:
 	sed -e "s:LIBDIR:$(libdir):" \
@@ -32,5 +32,6 @@ install-data-hook:
 
 	/bin/cp -r web $(DESTDIR)$(datarootdir)/panoptes
 	/bin/cp dbinit.sql $(DESTDIR)$(datarootdir)/panoptes
+	/bin/cp dbinit-3.sql $(DESTDIR)$(datarootdir)/panoptes
 	/bin/chown apache $(DESTDIR)$(libexecdir)/panoptes_scripts
 	htpasswd -b -c $(DESTDIR)$(datarootdir)/panoptes/htpasswd admin admin
