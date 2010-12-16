@@ -8,7 +8,7 @@ function showLoading() {
 
 function hideLoading() {    
     loading_count--;
-    if (loading_count == 0) {
+    if (loading_count < 1) {
 	var img_div = document.getElementById("loading_img");
 	img_div.style.visibility = "hidden";
     }

@@ -1,5 +1,6 @@
 
 function getPrefValue(scope, name) {
+    showLoading();
     var req = prefStore.fetch({ query: { pref_name: name },
                                 onComplete: function(items, req) {
                 // there should only be one item
@@ -139,7 +140,6 @@ function openPrefTab() {
 	    placeHolder: 'Notification email address'
 	});
 
-    showLoading();
     getPrefValue('general', 'general_prefs_theme');
     getPrefValue('notifications', 'notification_prefs_addr');
     
