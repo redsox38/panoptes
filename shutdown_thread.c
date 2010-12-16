@@ -43,13 +43,11 @@ void *shutdown_thread(void *arg)
   
   (void *)sigwait(&sigs_to_catch, &caught);
 
-  syslog(LOG_DEBUG, "getting working lock");
   /* lock working lock to prevent new threads from starting */
   if ((rc = pthread_mutex_lock(&working_lock)) != 0) {
     strerror_r(errno, errbuf, 1024);
     syslog(LOG_ALERT, "pthread_mutex_lock: %s", errbuf);
   }
-  syslog(LOG_DEBUG, "got working lock");
 
   /* let threads know we're shutting down */
   stop_threads = 1;
@@ -61,8 +59,7 @@ void *shutdown_thread(void *arg)
       strerror_r(errno, errbuf, 1024);
       syslog(LOG_ALERT, "pthread_cond_wait: %s", errbuf);
     }
-    syslog(LOG_DEBUG, "working_count %d wokeup", working_count);    
-  }
+ }
 
   /* monitor threads have terminated */
   

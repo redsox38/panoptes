@@ -57,12 +57,10 @@ monitor_result_t *monitor_shell(char *addr, char *script,
 
   syslog(LOG_DEBUG, "getting script dir");
   pfx = get_config_value("script.directory");
-  syslog(LOG_DEBUG, "got %s", pfx);
 
   scrbuf = (char *)malloc(sizeof(char) * (strlen(pfx) + 
 					  strlen(script) + 2));
   sprintf(scrbuf, "%s/%s", pfx, script);
-  syslog(LOG_DEBUG, "got %s", scrbuf);
 
   /* fork */
   pid = fork();
@@ -229,7 +227,6 @@ monitor_result_t *monitor_shell(char *addr, char *script,
       }
 
       /* parent, wait for kid */
-      syslog(LOG_DEBUG, "waiting for %d...", pid);
       waited_pid = waitpid(pid, &exit_status, WNOHANG);
 
       if (waited_pid < 0) {
@@ -254,18 +251,15 @@ monitor_result_t *monitor_shell(char *addr, char *script,
 
     /* update monitor message */
     if (monitor_output) {
-      syslog(LOG_DEBUG, "copying monitor output");
       r->monitor_msg = strdup(monitor_output);
       free(monitor_output);
     }
  
     /* if script didn't provide timing data, save execution time */
     if (perf_output) {
-      syslog(LOG_DEBUG, "copying perf output");
       r->perf_data = strdup(perf_output);
       free(perf_output);
    } else {
-      syslog(LOG_DEBUG, "generating perf output");
       /* get elapsed time in milliseconds */
       elapsed = (stop.tv_sec - start.tv_sec) * 1000;
       elapsed += ((stop.tv_usec - start.tv_usec) / 1000);
@@ -284,9 +278,7 @@ monitor_result_t *monitor_shell(char *addr, char *script,
     syslog(LOG_DEBUG, "perf data: %s", r->perf_data);
   }
 
-  syslog(LOG_DEBUG, "freeing scrbuf");
   free(scrbuf);
-  syslog(LOG_DEBUG, "freed scrbuf");
 
   return(r);
 }

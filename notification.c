@@ -30,7 +30,6 @@ void send_notification(monitor_entry_t *m, monitor_result_t *r)
   int            rc, pipe_stdin_fd[2], i = 0;
   pid_t          pid;
 
-  syslog(LOG_DEBUG, "Checking notification params...");
   sendmail_cmd = get_config_value("notification.sendmail");
   from_addr = get_config_value("notification.from_address");
 
@@ -39,7 +38,6 @@ void send_notification(monitor_entry_t *m, monitor_result_t *r)
       /* see if anybody is interested in being notified for this */
       notify_user_list = get_notify_user_list(m);
 
-      syslog(LOG_DEBUG, "Got notification list...");
       if (notify_user_list) {
 	pipe(pipe_stdin_fd);
 	if (!(pid = fork())) {
@@ -59,7 +57,6 @@ void send_notification(monitor_entry_t *m, monitor_result_t *r)
 	  while (*p != NULL) {
 	    memset(writebuf, '\0', 1024);
 	    snprintf(writebuf, 1024, "To: <%s>\n", *p);
-	    syslog(LOG_DEBUG, "buf: %s", writebuf);
 	    rc = write(pipe_stdin_fd[1], writebuf, strlen(writebuf));
 	    if (rc < 0) {
 	      strerror_r(errno, errbuf, 1024);

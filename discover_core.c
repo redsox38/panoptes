@@ -68,7 +68,6 @@ void core_term_handler()
   if (auto_port_list) {
     p = auto_port_list;
     while(p != NULL) { 
-      syslog(LOG_DEBUG, "Freeing %d", p->port);
       q = p->next;
       free(p);
       p = q;
@@ -98,11 +97,8 @@ void term_handler(int signum)
 {
   syslog(LOG_DEBUG, "Term handler fired");
   packet_term_handler();
-  syslog(LOG_DEBUG, "starting db term handler");
   database_term_handler();
-  syslog(LOG_DEBUG, "starting config term handler");
   config_term_handler();
-  syslog(LOG_DEBUG, "starting core term handler");
   core_term_handler();
 }
 
