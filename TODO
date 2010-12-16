@@ -2,7 +2,7 @@ web page output monitors
 fork new thread for performance monitor updates
 spec file
 jabber notifications?
-discover not terminating
+clean up syslog debugs
 
 svc dependencies
 network map

@@ -86,6 +86,7 @@ void core_term_handler()
 
   unlink(PIDFILE);
   closelog();
+  exit(0);
 }
 
 /* 
@@ -95,9 +96,13 @@ void core_term_handler()
 */
 void term_handler(int signum)
 {
+  syslog(LOG_DEBUG, "Term handler fired");
   packet_term_handler();
+  syslog(LOG_DEBUG, "starting db term handler");
   database_term_handler();
+  syslog(LOG_DEBUG, "starting config term handler");
   config_term_handler();
+  syslog(LOG_DEBUG, "starting core term handler");
   core_term_handler();
 }
 
