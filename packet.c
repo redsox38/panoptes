@@ -41,6 +41,7 @@ int is_auto_port(int port)
   p = auto_port_list;
 
   while (p != NULL) {
+    syslog(LOG_DEBUG, "port check %d ?= %d", p->port, port);
     if (p->port == port) {
       r = 1;
       p = NULL;
@@ -85,8 +86,9 @@ void read_packet(u_char *args, const struct pcap_pkthdr *hdr,
 	   ntohs(tcp->th_sport), dst, ntohs(tcp->th_dport));
     /* flip src and dst since our src is the host sending the SYN/ACK */
     /* AKA the host being connected to */
-    if (is_auto_port(ntohs(tcp->th_dport))) {
-      add_monitor_port(dst, ntohs(tcp->th_dport), "tcp");
+    if (is_auto_port(ntohs(tcp->th_sport))) {
+      syslog(LOG_DEBUG, "auto accepting %d", ntohs(tcp->th_sport)); 
+      add_monitor_port(src, ntohs(tcp->th_sport), "tcp");
     } else {
       add_discovered_connection(dst, ntohs(tcp->th_dport), 
 				src, ntohs(tcp->th_sport), 

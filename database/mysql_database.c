@@ -152,6 +152,8 @@ void _add_monitor_port(char *src, int src_port, char *prot)
   snprintf(qry, len, "CALL add_port_monitor(%d, '%s','%s')",
 	   src_port, src, prot);
 
+  syslog(LOG_DEBUG, "query: %s", qry);
+
   pthread_mutex_lock(&sql_mutex);
 
   rc = mysql_query(mysql, qry);

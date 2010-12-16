@@ -68,6 +68,7 @@ void core_term_handler()
   if (auto_port_list) {
     p = auto_port_list;
     while(p != NULL) { 
+      syslog(LOG_DEBUG, "Freeing %d", p->port);
       q = p->next;
       free(p);
       p = q;
@@ -150,14 +151,6 @@ int main(int argc, char *argv[]) {
     exit(-1);
   }
 
-  /* check for auto ports */
-  auto_ports = get_config_value("discover.auto_accept_ports");
-  if (auto_ports != NULL) {
-    /* make list */
-    auto_port_list = build_port_list(auto_ports);
-    free(auto_ports);
-  }
-
   /* open syslog */
   facil_str = get_config_value("syslog.facility");
   for(cs = facilitynames; cs->c_name; cs++) {
@@ -174,6 +167,15 @@ int main(int argc, char *argv[]) {
   }
 
   openlog("panoptes_discover", LOG_PID, facil);
+
+  /* check for auto ports */
+  auto_ports = get_config_value("discover.auto_accept_ports");
+  if (auto_ports != NULL) {
+    /* make list */
+    syslog(LOG_DEBUG, "Got port list: %s", auto_ports);
+    auto_port_list = build_port_list(auto_ports);
+    free(auto_ports);
+  }
 
   disconnect_from_tty();
 

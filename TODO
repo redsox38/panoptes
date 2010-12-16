@@ -1,9 +1,8 @@
 web page output monitors 
 fork new thread for performance monitor updates
-replace SOURCE... in db init with reading in statements and executing them
-config option to auto accept auto discovery entries
 spec file
 jabber notifications?
+discover not terminating
 
 svc dependencies
 network map
@@ -11,3 +10,4 @@ dashboard
 extensible groups
 look @ dojo charting instead of rrd for graphs
 reload on theme change ?
+loading image not always going away when it should

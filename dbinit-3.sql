@@ -16,7 +16,7 @@ DECLARE V_device_id BIGINT;
 
 SELECT id INTO V_device_id FROM devices WHERE address=in_addr;
 
-IF V_device_id < 1 THEN
+IF V_device_id IS NULL THEN
     INSERT INTO devices VALUES(0, in_addr, in_addr);
     SELECT LAST_INSERT_ID() INTO V_device_id;
 END IF;
