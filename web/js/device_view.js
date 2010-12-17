@@ -771,7 +771,7 @@ function createPortMonitorTab(id) {
 
     var tc_1 = new dojox.grid.EnhancedGrid({
 	    id: id + '_port_mon_grid',
-	    title: 'Port Monitors',
+	    title: 'Ports',
 	    store: portMonitorStore,
 	    structure: port_monitor_layout,
 	    clientSort: true,
@@ -894,7 +894,7 @@ function createSNMPTab(id) {
 
     var tc_1 = new dojox.grid.EnhancedGrid({
 	    id: id + '_snmp_mon_grid',
-	    title: 'SNMP Monitors',
+	    title: 'SNMP',
 	    store: SNMPMonitorStore,
 	    structure: snmp_layout,
 	    clientSort: true,
@@ -1017,7 +1017,7 @@ function createShellTab(id) {
 
     var tc_1 = new dojox.grid.EnhancedGrid({
 	    id: id + '_shell_mon_grid',
-	    title: 'Shell Script Monitors',
+	    title: 'Shell Scripts',
 	    store: shellMonitorStore,
 	    structure: shell_layout,
 	    clientSort: true,
@@ -1140,7 +1140,7 @@ function createUrlTab(id) {
 
     var tc_1 = new dojox.grid.EnhancedGrid({
 	    id: id + '_url_mon_grid',
-	    title: 'Url Monitors',
+	    title: 'URLs',
 	    store: urlMonitorStore,
 	    structure: url_layout,
 	    clientSort: true,
@@ -1258,7 +1258,7 @@ function createCertificateTab(id) {
 
     var tc_1 = new dojox.grid.EnhancedGrid({
 	    id: id + '_cert_mon_grid',
-	    title: 'SSL Certificate Monitors',
+	    title: 'SSL Certificates',
 	    store: certificateMonitorStore,
 	    structure: certificate_layout,
 	    clientSort: true,
