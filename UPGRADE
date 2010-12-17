@@ -18,16 +18,18 @@ QUICKSTART
 
 ./configure
 make
+pkill panoptes_monitor
+pkill panoptes_discover
+
+Save your panoptes_config.xml if you've customized it so that you can back in your configuration changes
+
 make install 
-copy panoptes_httpd.conf into your apache configuration and reload
-./install_db.sh
+./upgrade_db.sh
+
+Make any needed xml configuration changes
 
 /usr/local/sbin/panoptes_monitor
 /usr/local/sbin/panoptes_discover
-
-login is admin, password is admin
-change the password with:
-htpasswd /usr/local/share/panoptes/htpasswd admin
 
 Installation Instructions
 *************************
