@@ -30,13 +30,16 @@
 #include <curl/types.h>
 #include <curl/easy.h>
 
-monitor_result_t *monitor_url(char *url, monitor_result_t *r)
+monitor_result_t *monitor_url(char *url, char *expect_code, monitor_result_t *r)
 {
 
   CURL                 *curl_handle;
   CURLcode             res;
   char                 errbuf[CURL_ERROR_SIZE];
-  long                 http_code;
+  long                 http_code, expect_http_code;
+
+
+  sscanf(expect_code, "%d", &expect_http_code);
 
   r->status = MONITOR_RESULT_OK;
 
@@ -53,10 +56,15 @@ monitor_result_t *monitor_url(char *url, monitor_result_t *r)
 
     res = curl_easy_perform(curl_handle);
 
-
     if (!res) {
       curl_easy_getinfo(curl_handle, CURLINFO_RESPONSE_CODE, &http_code);
-      
+      if (http_code == expect_http_code) {
+	r->monitor_msg = strdup("Response code: 200");
+      } else {
+	r->status = MONITOR_RESULT_ERR;
+	r->monitor_msg = (char *)malloc((strlen("Response code: ") + 3) * sizeof(char));
+	sprintf(r->monitor_msg, "Response code: %d", http_code);
+      }
     } else {
       r->status = MONITOR_RESULT_ERR;
       r->monitor_msg = strdup(errbuf);

@@ -41,8 +41,8 @@ void *monitor_thread(void *arg)
   /* data for port monitoring */
   char             *proto, *port;
   int              portnum;
-  /* for certificate monitoring */
-  char             *url;
+  /* for certificate/utl monitoring */
+  char             *url, *expect_status;
   /* for snmp monitoring */
   char             *nm, *oid, *comm;
   /* for shell script monitoring */
@@ -208,9 +208,10 @@ void *monitor_thread(void *arg)
 	  }
 	} else if (!strcmp(m.table_name, "url_monitors")) {
 	  url = get_attr_val(&m, "url");
-	  if (url != NULL) {
+	  expect_status = get_attr_val(&m, "expect_http_status");
+	  if ((url != NULL) && (expect_http_status != NULL)) {
 	    
-	    monitor_url(url, &r);
+	    monitor_url(url, expect_http_status, &r);
 	    update_monitor_entry(&m, &r);
 	    
 	    if (current_status != r.status) {

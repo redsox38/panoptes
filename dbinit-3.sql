@@ -17,6 +17,7 @@ CREATE TABLE url_monitors (
   id bigint(20) NOT NULL AUTO_INCREMENT,
   device_id bigint(20) NOT NULL,
   url VARCHAR(255) NOT NULL,
+  expect_http_status smallint(6) NOT NULL DEFAULT '200',
   check_interval smallint(6) NOT NULL DEFAULT '15',
   last_check datetime DEFAULT NULL,
   next_check datetime DEFAULT NULL,
@@ -311,7 +312,7 @@ ELSEIF (V_table_name='shell_monitors') THEN
 ELSEIF (V_table_name='url_monitors') THEN
   -- get row with lock to prevent another monitor
   -- thread from picking up the same row
-  SET @s = CONCAT('SELECT device_id, check_interval, url, status INTO @_dev_id, @_interval, @_url, @_status FROM ', V_table_name, ' WHERE id=', V_id, ' FOR UPDATE');
+  SET @s = CONCAT('SELECT device_id, check_interval, url, expect_http_status, status INTO @_dev_id, @_interval, @_url, @_expect_htp_status, @_status FROM ', V_table_name, ' WHERE id=', V_id, ' FOR UPDATE');
 
   SET autocommit=0;
   START TRANSACTION;
@@ -337,6 +338,7 @@ ELSEIF (V_table_name='url_monitors') THEN
   	 'url_monitors' AS table_name,  
          V_dev_ip AS address,
 	 @_url AS url, 
+	 @_expect_http_status AS expect_http_status, 
          @_status AS status;
 END IF;
 
