@@ -369,6 +369,8 @@ function updateShellMonitorEntry(dev_id, ent_id, container) {
 		// schedule reload
 		timerId = reloadMonitorEntry(updateShellMonitorEntry, dev_id, ent_id, 
 					     container, data.data['next_check']);
+
+
 	    } else {
 		alert(data.error);
 	    }
@@ -538,15 +540,17 @@ function addShellMonitorData(id, container) {
 	load: function(data) {
 	    if (data && !data.error) {          
 		// populate grid
-		dojo.forEach(data.data, function(oneEntry) {
-			shellMonitorStore.newItem(oneEntry);
-			timerId = reloadMonitorEntry(updateShellMonitorEntry, id, oneEntry['id'], 
-						     container, oneEntry['next_check']);
-		    });
+		if (data.data && (data.data.length > 0)) {
+		    dojo.forEach(data.data, function(oneEntry) {
+			    shellMonitorStore.newItem(oneEntry);
+			    timerId = reloadMonitorEntry(updateShellMonitorEntry, id, oneEntry['id'], 
+							 container, oneEntry['next_check']);
+			});
 
-		shellMonitorStore.save();
-		container.setStore(shellMonitorStore);
-		container.update();		
+		    shellMonitorStore.save();
+		    container.setStore(shellMonitorStore);
+		    container.update();		
+		}
 	    } else {
 		alert(data.error);
 	    }
