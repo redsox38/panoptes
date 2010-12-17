@@ -813,6 +813,46 @@ class panoptes
   }
 
   /**
+   * Retrieve url monitior entries
+   *
+   * @param id id of specific device to retrieve
+   *                 url monitor data for
+   *
+   * @throws Exception 
+   * @return array of urlMonitorEntry objects
+   */
+  public function getUrlMonitorData($id) {
+    global $panoptes_current_user;
+
+    require_once 'urlMonitorEntry.php';
+    $rtndata = array();
+
+    try {
+      $stmt = $this->db->prepare("SELECT * FROM url_monitors WHERE device_id=?");
+      $stmt->bindParam(1, $id, PDO::PARAM_INT);
+      $stmt->execute();
+
+      while ($r = $stmt->fetch(PDO::FETCH_ASSOC)) {
+	$ent = new urlMonitorEntry($this->db);
+	$ent->id = $r['id'];
+	$ent->device_id = $id;
+	$ent->last_check = $r['last_check'];
+	$ent->next_check = $r['next_check'];
+	$ent->url = $r['url'];
+	$ent->expect_http_status = $r['expect_http_status'];
+	$ent->status = $r['status'];
+	$ent->status_string = $r['status_string'];
+	$ent->disabled = $r['disabled'];
+	array_push($rtndata, $ent);
+      }
+    } catch (PDOException $e) {
+      throw($e);
+    }
+
+    return($rtndata);
+  }
+
+  /**
    * ignore auto discovery entries for ajax request
    *
    * @param args json params converted into an array
@@ -1551,6 +1591,51 @@ class panoptes
   }
 
   /**
+   * get url monitor data
+   *
+   * return monitor information for given device id
+   *
+   * @param args json params converted into an array
+   *             id device id to get data for
+   * @throws none
+   * @return array containing result and possible error messages
+   */
+  public function ajax_getUrlMonitorData($args) {
+    global $panoptes_current_user;
+    $data = array();
+    
+    try {
+      require_once 'userEntry.php';
+      $user = new userEntry();
+      $user->db = $this->db;
+      $user->getByName($panoptes_current_user);
+
+      $rst = $this->getUrlMonitorData($args['id']);
+      foreach ($rst as $a) {
+	$ack = $a->getAckInfo();
+	array_push($data, array (
+				 'id'                 => $a->id,
+				 'device_id'          => $a->device_id,
+				 'url'                => $a->url,
+				 'expect_http_status' => $a->expect_http_status,
+				 'last_check'         => $a->last_check,
+				 'next_check'         => $a->next_check,
+				 'ack_by'             => $ack['ack_by'],
+				 'ack_msg'            => $ack['ack_msg'],
+				 'status'             => $a->status,
+				 'status_string'      => $a->status_string,
+				 'notify'             => $a->getNotification($user->id)
+				 ));
+      }
+    } catch (Exception $e) {
+      return(array('result' => 'failure',
+                  'error'  => $e->getMessage()));
+    }
+
+    return(array('result' => 'success', 'data' => $data));
+  }
+
+  /**
    * delete monitor entries
    *
    * @param args json params converted into an array
@@ -1587,6 +1672,13 @@ class panoptes
 	foreach ($args['id'] as $v) {	  
 	  require_once 'shellMonitorEntry.php';
 	  $ent = new shellMonitorEntry($this->db);
+	  $ent->id = $v;
+	  $ent->delete();
+	}
+      } elseif ($args['type'] == 'url_monitors') {
+	foreach ($args['id'] as $v) {	  
+	  require_once 'urlMonitorEntry.php';
+	  $ent = new urlMonitorEntry($this->db);
 	  $ent->id = $v;
 	  $ent->delete();
 	}
@@ -1653,6 +1745,17 @@ class panoptes
 	require_once 'shellMonitorEntry.php';
 	foreach ($args['id'] as $v) {	  
 	  $ent = new shellMonitorEntry($this->db);
+	  $ent->id = $v;
+	  if ($flag) {
+	    $ent->enable();
+	  } else {
+	    $ent->disable();
+	  }
+	}
+      } elseif ($args['type'] == 'url_monitors') {
+	require_once 'urlMonitorEntry.php';
+	foreach ($args['id'] as $v) {	  
+	  $ent = new urlMonitorEntry($this->db);
 	  $ent->id = $v;
 	  if ($flag) {
 	    $ent->enable();
@@ -1759,6 +1862,24 @@ class panoptes
 				 'status'        => 'new',
 				 'status_string' => ''
 				 ));
+      } else if ($args['params']['type'] == 'url_monitors') {
+	require_once 'urlMonitorEntry.php';
+	$ent = new urlMonitorEntry($this->db);
+	$ent->device_id = $args['id'];
+	$ent->url = $args['params']['url'];
+	$ent->expect_http_status = $args['params']['expect_http_status'];
+	$ent->commit();
+
+	array_push($data, array (
+				 'id'                 => $ent->id,
+				 'device_id'          => $ent->device_id,
+				 'url'                => $ent->url,
+				 'expect_http_status' => $ent->expect_http_status,
+				 'last_check'         => '0000-00-00 00:00:00',
+				 'next_check'         => '0000-00-00 00:00:00',
+				 'status'             => 'new',
+				 'status_string'      => ''
+				 ));
       } else {
 	return(array('result' => 'failure',
 		     'error'  => 'unknown type: ' . $args['params']['type']));	
@@ -1803,6 +1924,9 @@ class panoptes
 	} else if ($args['params']['type'] == 'shell_monitors') {
 	  require_once 'shellMonitorEntry.php';
 	  $ent = new shellMonitorEntry($this->db);
+	} else if ($args['params']['type'] == 'url_monitors') {
+	  require_once 'urlMonitorEntry.php';
+	  $ent = new urlMonitorEntry($this->db);
 	} else {
 	  return(array('result' => 'failure',
 		       'error'  => 'unknown type: ' . $args['params']['type']));	
@@ -1845,6 +1969,9 @@ class panoptes
 	} else if ($args['type'] == 'shell_monitors') {
 	  require_once 'shellMonitorEntry.php';
 	  $ent = new shellMonitorEntry($this->db);
+	} else if ($args['type'] == 'url_monitors') {
+	  require_once 'urlMonitorEntry.php';
+	  $ent = new urlMonitorEntry($this->db);
 	}
 
 	$ent->id = $v;
@@ -2427,6 +2554,11 @@ class panoptes
 	foreach ($rst as $a) {
 	  $a->addNotification($user->id);
 	}
+	//url monitors
+	$rst = $this->getUrlMonitorData($args['device_id']);
+	foreach ($rst as $a) {
+	  $a->addNotification($user->id);
+	}
       } else {
 	foreach ($args['monitor_ids'] as $v) {
 	  if ($args['type'] == 'port_monitors') {
@@ -2441,6 +2573,9 @@ class panoptes
 	  } else if ($args['type'] == 'shell_monitors') {
 	    require_once 'shellMonitorEntry.php';
 	    $ent = new shellMonitorEntry($this->db);
+	  } else if ($args['type'] == 'url_monitors') {
+	    require_once 'urlMonitorEntry.php';
+	    $ent = new urlMonitorEntry($this->db);
 	  }
 
 	  $ent->id = $v;
@@ -2499,6 +2634,11 @@ class panoptes
 	foreach ($rst as $a) {
 	  $a->removeNotification($user->id);
 	}
+	//url monitors
+	$rst = $this->getUrlMonitorData($args['device_id']);
+	foreach ($rst as $a) {
+	  $a->removeNotification($user->id);
+	}
       } else {
 	foreach ($args['monitor_ids'] as $v) {
 	  if ($args['type'] == 'port_monitors') {
@@ -2513,6 +2653,9 @@ class panoptes
 	  } else if ($args['type'] == 'shell_monitors') {
 	    require_once 'shellMonitorEntry.php';
 	    $ent = new shellMonitorEntry($this->db);
+	  } else if ($args['type'] == 'url_monitors') {
+	    require_once 'urlMonitorEntry.php';
+	    $ent = new urlMonitorEntry($this->db);
 	  }
 
 	  $ent->id = $v;
@@ -2560,6 +2703,9 @@ class panoptes
 	  } else if ($args['type'] == 'shell_monitors') {
 	    require_once 'shellMonitorEntry.php';
 	    $ent = new shellMonitorEntry($this->db);
+	  } else if ($args['type'] == 'url_monitors') {
+	    require_once 'urlMonitorEntry.php';
+	    $ent = new urlMonitorEntry($this->db);
 	  }
 
 	  $ent->id = $v;
