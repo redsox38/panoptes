@@ -146,6 +146,16 @@ void panoptes_rrd_xml_create(char *path,
 	
 	p = strtok_r(NULL, ";", &tkn);
       }
+    } else if (!strcmp(m->table_name, "url_monitors")) {
+      fprintf(fh, "\t<title>%s Response Time</title>\n", get_attr_val(m, "url"));
+      fprintf(fh, "\t<vertical_label>Millieconds</vertical_label>\n");
+      fprintf(fh,"\t<attribute>\n");
+      fprintf(fh, "\t\t<name>ds0</name>\n");
+      fprintf(fh, "\t\t<display_as>ResponseTime</display_as>\n");
+      fprintf(fh, "\t\t<color>#00ffff</color>\n");
+      fprintf(fh, "\t\t<type>LINE2</type>\n");
+      fprintf(fh, "\t\t<legend>AVERAGE:Average response time\\: %%lf %%Sms</legend>\n");
+      fprintf(fh, "\t</attribute>\n");
     } else {
       syslog(LOG_NOTICE, "error creating rrd xml: unknown type %s", 
 	     m->table_name);

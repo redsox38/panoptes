@@ -169,7 +169,7 @@ class panoptes
 
 	$rrd_root = $this->config()->getConfigValue('rrd.directory'); 
 	
-	$monitor_types = array('port_monitors','ping_monitors','snmp_monitors','shell_monitors');
+	$monitor_types = array('port_monitors','ping_monitors','snmp_monitors','shell_monitors', 'url_monitors');
 
 	foreach ($monitor_types as $t) {
 	  $tmp_rrd = $rrd_root . '/' . $dev->address . '/' . 

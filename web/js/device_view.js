@@ -1431,7 +1431,7 @@ function addMonitor() {
 	_addMonitor(dijit.byId(id + '_shell_mon_grid'), 'shell_monitors', 
 		    id);
     } else if (dijit.byId(id + '_url_mon_grid').selected) {
-	_addMonitor(dijit.byId(id + '_urlmon_grid'), 'url_monitors', 
+	_addMonitor(dijit.byId(id + '_url_mon_grid'), 'url_monitors', 
 		    id);
     }
 }

@@ -207,6 +207,7 @@ void *monitor_thread(void *arg)
 		   m.table_name, m.id);
 	  }
 	} else if (!strcmp(m.table_name, "url_monitors")) {
+	  addr = get_attr_val(&m, "address");
 	  url = get_attr_val(&m, "url");
 	  expect_http_status = get_attr_val(&m, "expect_http_status");
 	  if ((url != NULL) && (expect_http_status != NULL)) {
@@ -218,6 +219,11 @@ void *monitor_thread(void *arg)
 	      send_notification(&m, &r);
 	    }
 
+	    if (r.perf_data != NULL) {
+	      snprintf(perf_attr, 256, "url_%d", time(NULL));
+	      update_performance_data(addr, perf_attr, &m, &r);
+	    }
+	    
 	    free_monitor_result(&r, 0);
 	  } else {
 	    syslog(LOG_NOTICE, "Missing data required to monitor: %s %s", 
