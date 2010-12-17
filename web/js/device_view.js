@@ -1544,6 +1544,17 @@ function _rescheduleMonitor(dataGrid, type, device_id) {
 	    });
     }
 
+    label = document.createElement("label");
+    label.htmlFor = 'resched_date';
+    label.appendChild(document.createTextNode('New Check Time'));
+
+    date = new dijit.form.DateTextBox({
+	    id: 'resched_date',
+	    name: 'resched_date',
+	    closable: true,
+	    title: 'New Check Date',
+	    constraints: { datePattern:'MM/dd/yyyy'}
+	    });
 
     time = new dijit.form.TimeTextBox({
             name: 'resched_time',
