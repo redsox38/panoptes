@@ -456,6 +456,37 @@ function addPortMonitorData(id, container) {
     var resp = dojo.xhrGet(xhrArgs);
 }
 
+function addUrlMonitorData(id, container) {
+    var xhrArgs = {
+	url: '/panoptes/',
+	handleAs: 'json',
+	content: {
+	    action: 'getUrlMonitorData',
+	    data: '{ "id": "' + id + '" }'
+	},
+	load: function(data) {
+	    if (data && !data.error) {          
+		if (data.data.length > 0) {
+		    // populate grid		
+		    dojo.forEach(data.data, function(oneEntry) {
+			    urlMonitorStore.newItem(oneEntry);
+			});
+
+		    urlMonitorStore.save();
+		    container.setStore(urlMonitorStore);
+		    container.update();	
+		}
+	    } else {
+		alert(data.error);
+	    }
+	    hideLoading();
+	},	
+    };
+       
+    showLoading();
+    var resp = dojo.xhrGet(xhrArgs);
+}
+
 function addCertificateMonitorData(id, container) {
     var xhrArgs = {
 	url: '/panoptes/',
@@ -1063,6 +1094,129 @@ function createShellTab(id) {
     return(tc_1);
 }
 
+function createUrlTab(id) {
+    // create data  grid 
+    var shell_layout = [{
+	    field: 'url',
+	    name: 'url',
+	    width: '70px'
+	},      
+	{
+	    field: 'expect_http_status',
+	    name: 'expected status code',
+	    width: '150px'
+	},      
+	{            
+	    field: 'last_check', 
+	    name: 'Last Check',
+	    width: '150px'
+	},
+	{            
+	    field: 'next_check', 
+	    name: 'Next Check',
+	    width: '150px'
+	},
+	{            
+	    field: 'status', 
+	    name: 'Status',
+	    width: '80px'
+	},
+	{            
+	    field: 'status_string', 
+	    name: 'Monitor Output',
+	    width: 'auto'
+	},
+	];
+
+    url_data = {
+	label: "url",
+	identifier: "id",
+	items: []
+    };
+
+    urlMonitorStore = new dojo.data.ItemFileWriteStore({ 
+	    data: url_data 
+	});		
+
+    var tc_1 = new dojox.grid.EnhancedGrid({
+	    id: id + '_url_mon_grid',
+	    title: 'Url Monitors',
+	    store: urlMonitorStore,
+	    structure: url_layout,
+	    clientSort: true,
+	    rowSelector: '10px',
+	    selectionMode: 'multiple',
+	    plugins: {
+		nestedSorting: true,
+		menus: { 
+		    rowMenu: 'monitorMenu',
+		    headerMenu: 'monitorMenu',
+		}
+	    }
+	}, document.createElement('div'));                  
+    tc_1.startup();                
+    
+    // set color coding for grid rows based on monitor status
+    dojo.connect(tc_1, 'onStyleRow', function(row) {
+	    var item = tc_1.getItem(row.index);
+	    if (item) {
+		var status = tc_1.store.getValue(item, "status", null);
+
+		if (status == "critical") {
+		    row.customStyles += 'color: #a62434;';
+		} else if (status == "warn") {
+		    row.customStyles += 'color: #b3511d;';
+		}
+		
+	    }
+	});
+
+    dojo.connect(tc_1, 'onRowMouseOver', function(e) {
+	    var item = tc_1.getItem(e.rowIndex);
+	    var who = tc_1.store.getValue(item, "ack_by", null);
+	    var what = tc_1.store.getValue(item, "ack_msg", null);
+	    var msg = null;
+	    if (who && what) {
+		msg = who + ": " + what;
+	    }
+	    
+	    if (msg) {
+		dijit.showTooltip(msg, e.cellNode);
+	    }
+	});
+
+    dojo.connect(tc_1, 'onRowMouseOut', function(e) {
+	    dijit.hideTooltip(e.cellNode);
+	});
+
+    dojo.connect(tc_1, 'onRowContextMenu', function(e) {
+	    var item = tc_1.getItem(e.rowIndex);
+	    var notify = tc_1.store.getValue(item, "notify", null);
+	    var disabled = tc_1.store.getValue(item, "disabled", null);
+
+	    if (notify) {
+		dijit.byId('monitorMenuAddNotification').attr('disabled','true');
+		dijit.byId('monitorMenuRemoveNotification').attr('disabled', null);
+	    } else {
+ 		dijit.byId('monitorMenuAddNotification').attr('disabled', null);
+		dijit.byId('monitorMenuRemoveNotification').attr('disabled','true');
+	    }
+
+	    if (disabled) {
+ 		dijit.byId('monitorMenuEnable').attr('disabled', null);
+		dijit.byId('monitorMenuDisable').attr('disabled','true');
+	    } else {
+ 		dijit.byId('monitorMenuEnable').attr('disabled', 'true');
+		dijit.byId('monitorMenuDisable').attr('disabled', null);
+	    }
+	});
+
+    // load data for tab
+    addUrlMonitorData(id, tc_1);
+    
+    return(tc_1);
+}
+
 function createCertificateTab(id) {
     // create data  grid 
     var certificate_layout = [{
@@ -1229,6 +1383,7 @@ function openDevice() {
     tc_3 = createCertificateTab(id);
     tc_4 = createSNMPTab(id);
     tc_5 = createShellTab(id);
+    tc_6 = createUrlTab(id);
 
     // put all of the components together in border container
     // and append to parent tab
@@ -1237,6 +1392,7 @@ function openDevice() {
     tc.addChild(tc_3);
     tc.addChild(tc_4);
     tc.addChild(tc_5);
+    tc.addChild(tc_6);
     bc.addChild(ic);
     bc.addChild(hc);
     bc.addChild(tc);

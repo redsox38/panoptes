@@ -8,6 +8,7 @@ var certificateMonitorStore;
 var SNMPMonitorStore;
 var shellMonitorStore;
 var availableShellMonitorStore;
+var urlMonitorStore;
 var userStore;
 var prefStore;
 
