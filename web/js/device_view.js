@@ -64,6 +64,9 @@ function cloneMonitor() {
     } else if (dijit.byId(id + '_shell_mon_grid').selected) {
 	table = 'shell_monitors';
 	dataGrid = dijit.byId(id + '_shell_mon_grid');
+    } else if (dijit.byId(id + '_url_mon_grid').selected) {
+	table = 'url_monitors';
+	dataGrid = dijit.byId(id + '_url_mon_grid');
     }
 
     // get row ids
@@ -162,6 +165,9 @@ function addNotification() {
     } else if (dijit.byId(id + '_shell_mon_grid').selected) {
 	table = 'shell_monitors';
 	dataGrid = dijit.byId(id + '_shell_mon_grid');
+    } else if (dijit.byId(id + '_url_mon_grid').selected) {
+	table = 'url_monitors';
+	dataGrid = dijit.byId(id + '_url_mon_grid');
     }
 
     // get row ids
@@ -202,6 +208,9 @@ function removeNotification() {
     } else if (dijit.byId(id + '_shell_mon_grid').selected) {
 	table = 'shell_monitors';
 	dataGrid = dijit.byId(id + '_shell_mon_grid');
+    } else if (dijit.byId(id + '_url_mon_grid').selected) {
+	table = 'url_monitors';
+	dataGrid = dijit.byId(id + '_url_mon_grid');
     }
 
     // get row ids
@@ -1096,10 +1105,10 @@ function createShellTab(id) {
 
 function createUrlTab(id) {
     // create data  grid 
-    var shell_layout = [{
+    var url_layout = [{
 	    field: 'url',
 	    name: 'url',
-	    width: '70px'
+	    width: '200px'
 	},      
 	{
 	    field: 'expect_http_status',
@@ -1417,6 +1426,9 @@ function addMonitor() {
     } else if (dijit.byId(id + '_shell_mon_grid').selected) {
 	_addMonitor(dijit.byId(id + '_shell_mon_grid'), 'shell_monitors', 
 		    id);
+    } else if (dijit.byId(id + '_url_mon_grid').selected) {
+	_addMonitor(dijit.byId(id + '_urlmon_grid'), 'url_monitors', 
+		    id);
     }
 }
 
@@ -1436,6 +1448,9 @@ function ackMonitor() {
     } else if (dijit.byId(id + '_shell_mon_grid').selected) {
 	_ackMonitor(dijit.byId(id + '_shell_mon_grid'), id, 
 		    'shell_monitors');
+    } else if (dijit.byId(id + '_url_mon_grid').selected) {
+	_ackMonitor(dijit.byId(id + '_url_mon_grid'), id, 
+		    'url_monitors');
     }
 }
 
@@ -1451,7 +1466,9 @@ function disableMonitor() {
     } else if (dijit.byId(id + '_snmp_mon_grid').selected) {
 	_disableMonitor(dijit.byId(id + '_snmp_mon_grid'), 'snmp_monitors', 'disable');
     } else if (dijit.byId(id + '_shell_mon_grid').selected) {
-	_disableMonitor(dijit.byId(id + '_shel_mon_grid'), 'shell_monitors', 'disable');
+	_disableMonitor(dijit.byId(id + '_shell_mon_grid'), 'shell_monitors', 'disable');
+    } else if (dijit.byId(id + '_url_mon_grid').selected) {
+	_disableMonitor(dijit.byId(id + '_url_mon_grid'), 'url_monitors', 'disable');
     }
 }
 
@@ -1468,6 +1485,8 @@ function rescheduleMonitor() {
 	_rescheduleMonitor(dijit.byId(id + '_snmp_mon_grid'), 'snmp_monitors', id);
     } else if (dijit.byId(id + '_shell_mon_grid').selected) {
 	_rescheduleMonitor(dijit.byId(id + '_shell_mon_grid'), 'shell_monitors', id);
+    } else if (dijit.byId(id + '_url_mon_grid').selected) {
+	_rescheduleMonitor(dijit.byId(id + '_url_mon_grid'), 'url_monitors', id);
     }
 }
 
@@ -1484,6 +1503,8 @@ function enableMonitor() {
 	_disableMonitor(dijit.byId(id + '_snmp_mon_grid'), 'snmp_monitors', 'enable');
     } else if (dijit.byId(id + '_shell_mon_grid').selected) {
 	_disableMonitor(dijit.byId(id + '_shell_mon_grid'), 'shell_monitors', 'enable');
+    } else if (dijit.byId(id + '_url_mon_grid').selected) {
+	_disableMonitor(dijit.byId(id + '_url_mon_grid'), 'url_monitors', 'enable');
     }
 }
 
@@ -1500,6 +1521,8 @@ function deleteMonitor() {
 	_deleteMonitor(dijit.byId(id + '_snmp_mon_grid'), 'snmp_monitors');
     } else if (dijit.byId(id + '_shell_mon_grid').selected) {
 	_deleteMonitor(dijit.byId(id + '_shell_mon_grid'), 'shell_monitors');
+    } else if (dijit.byId(id + '_url_mon_grid').selected) {
+	_deleteMonitor(dijit.byId(id + '_url_mon_grid'), 'url_monitors');
     }
 }
 
@@ -1595,7 +1618,7 @@ function _addMonitor(dataGrid, type, id) {
 		id: 'add_monitor_url',
 		name: 'add_monitor_url',
 		style: 'width: 25em;',
-		value: 'https://'
+		placeHolder: 'https://'
 	    });
 
 	sub = new dijit.form.Button({
@@ -1626,6 +1649,61 @@ function _addMonitor(dataGrid, type, id) {
 	    });
 
         items = [ tb_label, tb.domNode, rst.domNode, sub.domNode ];
+    } else if (type == "url_monitors") {
+	tb_label = document.createElement("label");
+	tb_label.htmlFor = 'add_monitor_url';
+	tb_label.appendChild(document.createTextNode('URL'));
+
+	tb = new dijit.form.TextBox({
+		id: 'add_monitor_url',
+		name: 'add_monitor_url',
+		style: 'width: 25em;',
+		placeHolder: 'http://'
+	    });
+
+	tb2_label = document.createElement("label");
+	tb2_label.htmlFor = 'add_monitor_status';
+	tb2_label.appendChild(document.createTextNode('Expected HTTP Status Code'));
+
+	tb2 = new dijit.form.TextBox({
+		id: 'add_monitor_code',
+		name: 'add_monitor_code',
+		style: 'width: 5em;',
+		placeHolder: '200'
+	    });
+
+	sub = new dijit.form.Button({
+		label: 'Add',
+		id: 'add_monitor_submit',
+		onClick: function() {
+		    var params = { 
+			type: 'url_monitors',
+			url: dijit.byId('add_monitor_url').getValue(),
+			expect_http_status: dijit.byId('add_monitor_code').getValue()
+		    };
+		    xhrAddMonitor(dataGrid, id, params);
+		    dijit.byId("add_monitor_url").destroy();
+		    dijit.byId("add_monitor_code").destroy();
+		    dijit.byId("add_monitor_reset").destroy();
+		    dijit.byId("add_monitor_submit").destroy();
+		    document.body.removeChild(document.getElementById("add_monitor"));
+	    }
+	});
+    
+	rst = new dijit.form.Button({
+		label: 'Cancel',
+		id: 'add_monitor_reset',
+		onClick: function() {
+		    dijit.byId("add_monitor_url").destroy();
+		    dijit.byId("add_monitor_code").destroy();
+		    dijit.byId("add_monitor_reset").destroy();
+		    dijit.byId("add_monitor_submit").destroy();
+		    document.body.removeChild(document.getElementById("add_monitor"));
+		}
+	    });
+
+        items = [ tb_label, tb.domNode, tb2_label, tb2.domNode,
+		  document.createElement("br"), rst.domNode, sub.domNode ];
     } else if (type == "port_monitors") {
 	tb1_label = document.createElement("label");
 	tb1_label.htmlFor = 'add_monitor_port';

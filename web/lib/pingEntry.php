@@ -84,8 +84,9 @@ class pingEntry
     if (is_null($this->id)) {
       // insert new entry 
       try {
+	$id = $this->device->id;
 	$stmt = $this->db->prepare("INSERT INTO ping_monitors VALUES (0, ?, 15, NOW(), NOW(), ?, ?, 0)");
-	$stmt->bindParam(1, $this->device->id, PDO::PARAM_INT);
+	$stmt->bindParam(1, $id, PDO::PARAM_INT);
 	$stmt->bindParam(2, "new");
 	$stmt->bindParam(3, "pending");
 	$stmt->execute();

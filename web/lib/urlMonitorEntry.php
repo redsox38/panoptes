@@ -54,6 +54,7 @@ class urlMonitorEntry extends monitorEntry
     try {
       $this->_commit(array(
 			   'id'                 => '0',
+                           'device_id'          => $this->device_id,
 			   'url'                => $this->url,
 			   'expect_http_status' => $this->expect_http_status,
 			   'check_interval'     => '15',

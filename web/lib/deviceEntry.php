@@ -82,21 +82,24 @@ class deviceEntry
     $this->name = gethostbyaddr($this->srcaddr);
 
     try {
+      $srcaddr = $this->srcaddr;
+      $name = $this->name;
       // insert into device table if not there already
       if (is_null($this->id)) {      
 	// insert new record
 	$stmt = $this->db->prepare("INSERT INTO devices VALUES(0, ?, ?)");
-	$stmt->bindParam(1, $this->srcaddr);
-	$stmt->bindParam(2, $this->name);
+	$stmt->bindParam(1, $srcaddr);
+	$stmt->bindParam(2, $name);
 	$stmt->execute();
 	
 	$this->id = $this->db->lastInsertId();
       } else {
 	// update existing entry
+	$id = $this->id;
 	$stmt = $this->db->prepare("UPDATE devices SET name=?, address=? WHERE id=?");
-	$stmt->bindParam(1, $this->name);
-	$stmt->bindParam(2, $this->srcaddr);
-	$stmt->bindParam(3, $this->id, PDO::PARAM_INT);
+	$stmt->bindParam(1, $name);
+	$stmt->bindParam(2, $srcaddr);
+	$stmt->bindParam(3, $id, PDO::PARAM_INT);
 	$stmt->execute();
       }
     } catch (PDOException $e) {
