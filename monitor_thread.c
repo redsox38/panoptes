@@ -220,7 +220,7 @@ void *monitor_thread(void *arg)
 	    }
 
 	    if (r.perf_data != NULL) {
-	      snprintf(perf_attr, 256, "url_%d", m.id);
+	      snprintf(perf_attr, 256, "url_%s", m.id);
 	      update_performance_data(addr, perf_attr, &m, &r);
 	    }
 	    

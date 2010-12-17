@@ -134,8 +134,22 @@ class panoptes
 	$t = glob($path . '/*/*.rrd');
 	foreach ($t as $f) {	
 	  $pat = ':' . $path . '/[^/]+/(.*)\.rrd$:';
-	  $f = preg_replace($pat, '\1', $f);
-	  $r[] = array('metric' => $f);
+	  $metric = preg_replace($pat, '\1', $f);
+          
+	  // get title from xml
+	  $xml_file = preg_replace(':(.*)\.rrd$:','\1', $f);
+	  $xml_file .= '.xml';
+
+	  require_once 'panoptesConfiguration.php';
+	  $rrd_cfg = new panoptesConfiguration($xml_file);
+	  $cfg = $rrd_cfg->getConfigArray();
+	  if (array_key_exists("title", $cfg)) {
+	    $lbl = $cfg['title'];
+	  } else {
+	    $lbl = $metric;
+	  }
+	  
+	  $r[] = array('metric' => $metric, 'label' => $lbl);
 	}
       } else {
 	throw new Exception("Device " . $id . " does not exist");

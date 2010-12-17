@@ -657,7 +657,7 @@ function addInfoData(id, container) {
 function createPerformanceHistoryTab(id) {
 
     perf_monitor_data = {
-	label: "perfmon",
+	label: "label",
 	identifier: "metric",
 	items: []
     };
@@ -685,7 +685,8 @@ function createPerformanceHistoryTab(id) {
    	    name: 'perf_metric',
     	    store: perfMonitorStore,
 	    title: 'Metric',	    
-    	    searchAttr: 'metric'
+    	    searchAttr: 'metric',
+	    labelAttr: 'label'
     	}, dijit.byId(id + '_tc_perf'));
 
     sb.placeAt(tc_2.domNode);
