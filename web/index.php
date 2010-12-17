@@ -169,12 +169,19 @@ echo '<body class="' . $theme . '">' . "\n";
     <div id="master_layout" dojoType="dijit.layout.BorderContainer" style="width: 100%; height: 100%;">
         <div id="left_nav" region="leading" dojoType="dijit.layout.AccordionContainer" style="width: 15%;" splitter="true">
             <div id="tools" title="Tools" dojoType="dijit.layout.AccordionPane">
+                <div>
 	        <a href="#" onClick="openPrefTab();">User Preferences</a><br/>
+                </div>
+                <div>
 	        <a href="#" onClick="addPingable();">Add Pingable Device</a><br/>
+                </div>
 <?php
 	  if ($panoptes->isAdmin($panoptes_current_user)) {
+            echo '<div>' . "\n";
 	    echo '<a href="#" onClick="uploadFile();">Upload Shell Script</a></br>' . "\n";
+            echo '</div><div>' . "\n";
 	    echo '<a href="#" onClick="createSecurityGroup();">Create Security Group</a></br>' . "\n";
+            echo '</div>' . "\n";
 	  }
 ?>
             </div>
