@@ -206,6 +206,22 @@ void *monitor_thread(void *arg)
 	    syslog(LOG_NOTICE, "Missing data required to monitor: %s %s", 
 		   m.table_name, m.id);
 	  }
+	} else if (!strcmp(m.table_name, "url_monitors")) {
+	  url = get_attr_val(&m, "url");
+	  if (url != NULL) {
+	    
+	    monitor_url(url, &r);
+	    update_monitor_entry(&m, &r);
+	    
+	    if (current_status != r.status) {
+	      send_notification(&m, &r);
+	    }
+
+	    free_monitor_result(&r, 0);
+	  } else {
+	    syslog(LOG_NOTICE, "Missing data required to monitor: %s %s", 
+		   m.table_name, m.id);
+	  }
 	} else {
 	  syslog(LOG_ALERT, "Unknown monitor type: %s", m.table_name);
 	}

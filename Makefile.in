@@ -72,7 +72,8 @@ am_panoptes_monitor_OBJECTS = panoptes_monitor-monitor_core.$(OBJEXT) \
 	panoptes_monitor-perf_core.$(OBJEXT) \
 	panoptes_monitor-panoptes_utils.$(OBJEXT) \
 	panoptes_monitor-monitor_status.$(OBJEXT) \
-	panoptes_monitor-notification.$(OBJEXT)
+	panoptes_monitor-notification.$(OBJEXT) \
+	panoptes_monitor-monitor_url.$(OBJEXT)
 panoptes_monitor_OBJECTS = $(am_panoptes_monitor_OBJECTS)
 panoptes_monitor_LDADD = $(LDADD)
 panoptes_monitor_LINK = $(LIBTOOL) --tag=CC $(AM_LIBTOOLFLAGS) \
@@ -256,7 +257,7 @@ top_build_prefix = @top_build_prefix@
 top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
 panoptes_discover_SOURCES = discover_core.c  packet.c database.c panoptes_utils.c
-panoptes_monitor_SOURCES = monitor_core.c database.c monitor_thread.c shutdown_thread.c monitor_entry.c monitor_port.c monitor_icmp.c monitor_certificate.c monitor_snmp.c monitor_shell.c perf_core.c panoptes_utils.c monitor_status.c notification.c
+panoptes_monitor_SOURCES = monitor_core.c database.c monitor_thread.c shutdown_thread.c monitor_entry.c monitor_port.c monitor_icmp.c monitor_certificate.c monitor_snmp.c monitor_shell.c perf_core.c panoptes_utils.c monitor_status.c notification.c monitor_url.c
 SUBDIRS = database utils include
 AUTOMAKE_OPTIONS = no-dependencies
 panoptes_monitor_LDFLAGS = @LDFLAGS@ 
@@ -491,6 +492,12 @@ panoptes_monitor-notification.o: notification.c
 
 panoptes_monitor-notification.obj: notification.c
 	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(panoptes_monitor_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o panoptes_monitor-notification.obj `if test -f 'notification.c'; then $(CYGPATH_W) 'notification.c'; else $(CYGPATH_W) '$(srcdir)/notification.c'; fi`
+
+panoptes_monitor-monitor_url.o: monitor_url.c
+	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(panoptes_monitor_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o panoptes_monitor-monitor_url.o `test -f 'monitor_url.c' || echo '$(srcdir)/'`monitor_url.c
+
+panoptes_monitor-monitor_url.obj: monitor_url.c
+	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(panoptes_monitor_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o panoptes_monitor-monitor_url.obj `if test -f 'monitor_url.c'; then $(CYGPATH_W) 'monitor_url.c'; else $(CYGPATH_W) '$(srcdir)/monitor_url.c'; fi`
 
 mostlyclean-libtool:
 	-rm -f *.lo
