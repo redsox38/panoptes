@@ -12,7 +12,7 @@ AUTOMAKE_OPTIONS = no-dependencies
 panoptes_monitor_LDFLAGS = @LDFLAGS@ 
 panoptes_monitor_CPPFLAGS = @CPPFLAGS@ -D_REENTRANT -DPIDFILE="\"@localstatedir@/run/panoptes_monitor.pid\""
 panoptes_discover_CPPFLAGS = @CPPFLAGS@ -D_REENTRANT -DPIDFILE="\"@localstatedir@/run/panoptes_discover.pid\""
-EXTRA_DIST = dbinit.sql dbinit-3.sql web panoptes_config.xml.in panoptes_httpd.conf.in database.h packet.h panoptes.h README.shell_monitors install_db.sh update_db.sh
+EXTRA_DIST = dbinit.sql dbinit-3.sql web panoptes_config.xml.in panoptes_httpd.conf.in database.h packet.h panoptes.h README.shell_monitors install_db.sh update_db.sh panoptes.spec
 
 install-data-hook:
 	sed -e "s:LIBDIR:$(libdir):" \
