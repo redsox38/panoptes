@@ -479,6 +479,24 @@ function xhrRemoveGroupMember(group_id, device_id) {
     dojo.xhrGet(xhrArgs);
 }
 
+function addParentDevice() {
+    var id = deviceStore.getValues(deviceTreeSelectedItem, 'id').toString();
+    var name = deviceStore.getValues(deviceTreeSelectedItem, 'name');
+    
+    parent = new dijit.form.FilteringSelect({
+            id: 'parent_device',
+            name: 'parent_device',
+            style: 'width: 25em;',
+            store: deviceStore,
+            title: 'Parent',        
+            query: { type: 'device' },
+	    labelAttr: 'name',
+            searchAttr: 'id',
+	    placeHolder: 'Parent Device'
+        });
+
+}
+
 function removeFromGroup() {
     var id = deviceStore.getValues(deviceTreeSelectedItem, 'id').toString();
     var name = deviceStore.getValues(deviceTreeSelectedItem, 'name');
