@@ -479,9 +479,32 @@ function xhrRemoveGroupMember(group_id, device_id) {
     dojo.xhrGet(xhrArgs);
 }
 
+function xhrAddParentDevice(child_id, parent_id) {
+    child_id = child_id.replace("d_", "");
+    parent_id = parent_id.replace("d_", "");
+
+    var xhrArgs = {
+	url: '/panoptes/',
+	handleAs: 'json',
+	content: {
+	    action: 'addParentDevice',
+	    data: '{ "child_id": "' + child_id + ', "parent_id": "' +
+	    parent_id + '" }'
+	},
+	load: function(data) {
+	    if (data && ! data.error) {
+		alert("Relationship has been added");
+	    } else {
+		alert(data.error);
+	    }
+	},
+    };
+	
+    dojo.xhrGet(xhrArgs);
+}
+
 function addParentDevice() {
     var id = deviceStore.getValues(deviceTreeSelectedItem, 'id').toString();
-    var name = deviceStore.getValues(deviceTreeSelectedItem, 'name');
     
     parent = new dijit.form.FilteringSelect({
             id: 'parent_device',
@@ -492,9 +515,45 @@ function addParentDevice() {
             query: { type: 'device' },
 	    labelAttr: 'name',
             searchAttr: 'id',
+	    labelFunc: function(itm, str) {
+		var label = str.getValue(itm, 'name');
+		return label;
+	    },
 	    placeHolder: 'Parent Device'
         });
 
+    rst = new dijit.form.Button({
+	    label: 'Cancel',
+	    onClick: function() {
+		dijit.byId("parent_device").destroy();
+		// destroy remaining dom nodes
+		win = document.getElementById("add_parent_device_win");
+		while (win.hasChildNodes() >= 1) {
+		    win.removeChild(win.firstChild);
+		}
+
+		document.body.removeChild(win);
+	    }
+	});
+
+    sub = new dijit.form.Button({
+	    label: 'Add',
+	    onClick: function() {
+		xhrAddParentDevice(id, dijit.byId("parent_device").attr('value'));
+		dijit.byId("parent_device").destroy();
+		// destroy remaining dom nodes
+		win = document.getElementById("add_parent_device_win");
+		while (win.hasChildNodes() >= 1) {
+		    win.removeChild(win.firstChild);
+		}
+
+		document.body.removeChild(win);
+	    }
+	});
+
+    var items = [ parent.domNode, rst.domNode, sub.domNode ];
+    
+    createOverlayWindow("add_parent_device_win", items);
 }
 
 function removeFromGroup() {
