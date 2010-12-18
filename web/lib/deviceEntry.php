@@ -177,6 +177,28 @@ class deviceEntry
     }
     return($rtn);
   }
+
+  /**
+   * addChild add child relationship
+   *
+   * @param child_id device id of child to add
+   * @throws Exception
+   * @return none
+   */
+  public function addChild($child_id) {
+    $qry = "INSERT INTO device_relationships VALUES(?, ?)";
+
+    try {
+      $id = $this->id;
+      $stmt = $this->db->prepare($qry);
+      $stmt->bindParam(1, $id, PDO::PARAM_INT);
+      $stmt->bindParam(2, $child_id, PDO::PARAM_INT);      
+      $stmt->execute();
+    } catch (PDOException $e) {
+      throw($e);
+    }
+    return($rtn);
+  }
 }
 
 ?>

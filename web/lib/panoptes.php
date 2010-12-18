@@ -2734,6 +2734,38 @@ class panoptes
     return(array('result' => $result, 'error' => $error, 
 		 'data' => $data));
   }
+
+  /**
+   * addParentDevice
+   *
+   * @param args json params converted into an array
+   *             child_id device id of child device
+   *             parent_id device id of parent device
+   * @throws none
+   * @return array containing result and possible error messages
+   */
+  public function ajax_addParentDevice($args) {
+    $result = 'success';
+    $error = '';
+
+    try {
+      if (array_key_exists('child_id', $args) &&
+	  array_key_exists('parent_id', $args)) {
+	$dev = $this->getDevice($args['parent_id']);
+	$dev->addChild($args['child_id']);
+      } else {
+	$result = 'failure';
+	$error = 'must supply parent and child ids';
+      }
+    } catch (Exception $e) {
+      return(array('result' => 'failure',
+		   'error'  => $e->getMessage()));
+    }
+    
+    return(array('result' => $result, 'error' => $error, 
+		 'data' => $data));
+  }
+
 }
 
 ?>

@@ -488,7 +488,7 @@ function xhrAddParentDevice(child_id, parent_id) {
 	handleAs: 'json',
 	content: {
 	    action: 'addParentDevice',
-	    data: '{ "child_id": "' + child_id + ', "parent_id": "' +
+	    data: '{ "child_id": "' + child_id + '", "parent_id": "' +
 	    parent_id + '" }'
 	},
 	load: function(data) {
