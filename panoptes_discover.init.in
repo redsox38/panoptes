@@ -1,0 +1,69 @@
+#!/bin/bash
+#
+# panoptes_discover        Startup script for panoptes discovery
+#
+# chkconfig: - 85 15
+# description: The discovery component of panoptes
+# processname: panoptes_discover
+# config: /etc/panoptes_config.xml
+# pidfile: /var/run/panoptes_discover.pid
+#
+### BEGIN INIT INFO
+# Provides: panoptes_discover
+# Required-Start: $local_fs $remote_fs $network $named
+# Required-Stop: $local_fs $remote_fs $network
+# Short-Description: start and stop panoptes_discover
+# Description: The discovery component of panoptes
+### END INIT INFO
+
+# Source function library.
+. /etc/rc.d/init.d/functions
+
+prog=SBINDIR/panoptes_discover
+pidfile=/var/run/panoptes_discover.pid
+RETVAL=0
+
+start() {
+        echo -n $"Starting $prog: "
+        daemon $prog
+        RETVAL=$?
+        echo
+        return $RETVAL
+}
+
+stop() {
+	echo -n $"Stopping $prog: "
+	killproc -p ${pidfile} -d 10 $prog
+	RETVAL=$?
+	echo
+	[ $RETVAL = 0 ] && rm -f ${pidfile}
+}
+
+# See how we were called.
+case "$1" in
+  start)
+	start
+	;;
+  stop)
+	stop
+	;;
+  status)
+        status -p ${pidfile} $prog
+	RETVAL=$?
+	;;
+  restart)
+	stop
+	start
+	;;
+  condrestart|try-restart)
+	if status -p ${pidfile} $prog >&/dev/null; then
+		stop
+		start
+	fi
+	;;
+  *)
+	echo $"Usage: $prog {start|stop|restart|condrestart|try-restart|help}"
+	RETVAL=2
+esac
+
+exit $RETVAL
