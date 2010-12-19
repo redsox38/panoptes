@@ -25,19 +25,40 @@ SQL SECURITY INVOKER
 COMMENT 'Get most relevant status from given device id'
 BEGIN
 
-SELECT DISTINCT GREATEST(u.status, p.status, c.status, n.status, s.status) AS max FROM
-       url_monitors u,
-       port_monitors p,
-       certificate_monitors c,
-       snmp_monitors n,
-       shell_monitors s
-       WHERE 
-       u.device_id = in_id OR
-       p.device_id = in_id OR
-       c.device_id = in_id OR
-       n.device_id = in_id OR
-       s.device_id = in_id;
+DECLARE max_stat VARCHAR(10);
+DECLARE st VARCHAR(10);
+DECLARE no_more_rows BOOLEAN;
+DECLARE stat_cursor CURSOR FOR 
+                    SELECT t1.status FROM 
+                   (SELECT status FROM port_monitors WHERE device_id=in_id
+                    UNION
+                    SELECT status FROM certificate_monitors WHERE device_id=in_id
+                    UNION
+                    SELECT status FROM snmp_monitors WHERE device_id=in_id
+                    UNION
+                    SELECT status FROM shell_monitors WHERE device_id=in_id
+                    UNION
+                    SELECT status FROM url_monitors WHERE device_id=in_id) t1;
+DECLARE CONTINUE HANDLER FOR NOT FOUND SET no_more_rows = 'true';
+SET max_stat = 'ok';
 
+OPEN stat_cursor;
+
+REPEAT
+FETCH stat_cursor INTO st;
+
+IF (st='critical') THEN
+    SET max_stat='critical';
+ELSEIF (st='warn' AND max_stat <> 'critical') THEN
+    SET max_stat='warn';
+END IF;
+
+UNTIL no_more_rows = 'true'
+END REPEAT;
+
+CLOSE stat_cursor;
+
+SELECT max_stat AS max;
 END;
 //
 DELIMITER ;

@@ -631,7 +631,18 @@ function addInfoData(id, container) {
 	},
 	load: function(data) {
 	    if (data && !data.error) {
-		new_data = '<b>name : </b>' + data.data.name + '<br/>' +
+		// color host name
+		var clr = null;
+
+		if (data.data.max_status == "critical") {
+		    new_data = '<font color="#a62434">';
+		} else if (data.data.max_status == "warn") {
+		    new_data = '<font color="#b3511d">';
+		} else {
+		    new_data = '<font color="#000000">';
+		}
+
+		new_data += '<b>name : </b>' + data.data.name + '<br/>' +
 		'<b>IP : </b>' + data.data.address + '<br/>';
 		if (data.data.ping_data) {
 		    new_data += '<b>icmp response : </b>' +
@@ -641,19 +652,9 @@ function addInfoData(id, container) {
 		    new_data += '<b>scheduled outage : </b>' +
 			data.data.outage_data + '<br/>';
 		}
+		new_data += "</font/>";
+
 		container.set('content', new_data);
-
-		// color tab title
-		var clr = null;
-
-		if (data.data.max_status == "critical") {
-		    clr = '#a62434';
-		} else if (data.data.max_status == "warn") {
-		    clr = '#b3511d';
-		}
-		if (clr) {
-		    dojo.style(dijit.byId(id + '_tab').domNode, "color", clr);
-		}
 	    } else {
 		alert(data.error);
 	    }
