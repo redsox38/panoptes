@@ -15,6 +15,12 @@ CREATE TABLE device_relationships (
   CONSTRAINT device_relationships_ibfk_2 FOREIGN KEY (child_id) REFERENCES devices (id) ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
+--
+-- Add OS column(s) to device table
+--
+ALTER TABLE devices ADD COLUMN os_genre VARCHAR(255) NOT NULL DEFAULT 'unknown' AFTER name;
+ALTER TABLE devices ADD COLUMN os_detail VARCHAR(255) NOT NULL DEFAULT 'unknown' AFTER os_genre;
+
 /* stored procedures */
 
 DELIMITER //

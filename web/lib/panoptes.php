@@ -401,7 +401,7 @@ class panoptes
       // update from table
       $this->_dev_data = array();
       try {
-	$stmt = $this->db->prepare("SELECT id, address, name FROM devices WHERE id=?");
+	$stmt = $this->db->prepare("SELECT * FROM devices WHERE id=?");
 	$stmt->bindParam(1, $id, PDO::PARAM_INT);
 	$stmt->execute();
 
@@ -415,7 +415,7 @@ class panoptes
 	$this->_dev_data = array();
 
 	try {
-	  $stmt = $this->db->prepare("SELECT id, address, name FROM devices");
+	  $stmt = $this->db->prepare("SELECT * FROM devices");
 	  $stmt->execute();
 
 	  while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
@@ -435,6 +435,8 @@ class panoptes
       $dev->id = $r['id'];
       $dev->name = $r['name'];
       $dev->address = $r['address'];
+      $dev->os_genre = $r['os_genre'];
+      $dev->os_detail = $r['os_detail'];
     } else {
       $dev = null;
     }      
@@ -1258,10 +1260,12 @@ class panoptes
     try {
       $dev = $this->getDevice($args['id']);
       if ($dev) {
-	$data = array('name'    => $dev->name,
-		      'type'    => 'device',
-		      'address' => $dev->address,
-		      'id'      => $args['id']);
+	$data = array('name'      => $dev->name,
+		      'type'      => 'device',
+		      'os_type'   => $dev->os_genre,
+		      'os_detail' => $dev->os_detail,
+		      'address'   => $dev->address,
+		      'id'        => $args['id']);
 
 	// get worst status string for color codifying tab
 	$data['max_status'] = $dev->maxStatus();

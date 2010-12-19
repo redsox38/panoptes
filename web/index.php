@@ -133,9 +133,6 @@ $theme_e_grid_css = $dojo_url . '/dojox/grid/enhanced/resources/' . $theme . 'En
 <?php
 echo '<body class="' . $theme . '">' . "\n";
 ?>
-    <div id="loading_img" style="visibility: hidden;">
-        <img src="images/loading.gif"/>
-    </div>
     <div dojoType="dijit.Menu" id="monitorMenu" style="display: none;">
         <div dojoType="dijit.MenuItem" id="monitorMenuAdd" iconClass="panoptesIconAdd" onClick="addMonitor();">
             Add New
@@ -167,6 +164,11 @@ echo '<body class="' . $theme . '">' . "\n";
     </div>
 
     <div id="master_layout" dojoType="dijit.layout.BorderContainer" style="width: 100%; height: 100%;">
+        <div id="top_nav" region="top" dojoType="dijit.layout.ContentPane">
+            <div id="loading_img" style="visibility: hidden;">
+                <img src="images/loading.gif"/>
+            </div>
+        </div>
         <div id="left_nav" region="leading" dojoType="dijit.layout.AccordionContainer" style="width: 15%;" splitter="true">
             <div id="tools" title="Tools" dojoType="dijit.layout.AccordionPane">
                 <div>

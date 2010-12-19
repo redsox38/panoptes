@@ -1,10 +1,9 @@
-fork new thread for performance monitor updates
 web page content monitor option
 jabber notifications?
-host fingerprinting, different icons in device tree by host type
+host fingerprinting
 
+different icons in device tree by device type
 network map
 dashboard
 extensible groups
 look @ dojo charting instead of rrd for graphs
-reload on theme change ?

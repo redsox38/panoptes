@@ -642,8 +642,14 @@ function addInfoData(id, container) {
 		    new_data = '<font color="#000000">';
 		}
 
+		// name info
 		new_data += '<b>name : </b>' + data.data.name + '<br/>' +
 		'<b>IP : </b>' + data.data.address + '<br/>';
+
+		// OS info
+		new_data += '<b>OS type : </b>' + data.data.os_type + '<br/>' +
+		'<b>OS details : </b>' + data.data.os_detail + '</br>';
+
 		if (data.data.ping_data) {
 		    new_data += '<b>icmp response : </b>' +
 			data.data.ping_data + ' ms <br/>';
