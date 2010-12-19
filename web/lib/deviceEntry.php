@@ -199,6 +199,33 @@ class deviceEntry
     }
     return($rtn);
   }
+
+  /**
+   * maxStatus get highest status level of any  monitor on this device
+   *
+   * @param none
+   * @throws Exception
+   * @return status status string
+   */
+  public function maxStatus() {
+    $rtn = 'ok';
+    $qry = "CALL get_max_status(?)";
+
+    try {
+      $id = $this->id;
+      $stmt = $this->db->prepare($qry);
+      $stmt->bindParam(1, $id, PDO::PARAM_INT);
+      $stmt->execute();
+      $r = $stmt->fetch(PDO::FETCH_ASSOC);
+
+      if ($r) {
+	$rtn = $r['max'];
+      }
+    } catch (PDOException $e) {
+      throw($e);
+    }
+    return($rtn);
+  }
 }
 
 ?>

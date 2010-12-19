@@ -1263,6 +1263,9 @@ class panoptes
 		      'address' => $dev->address,
 		      'id'      => $args['id']);
 
+	// get worst status string for color codifying tab
+	$data['max_status'] = $dev->maxStatus();
+
 	// get ping data if there is any
 	$ent = $this->getPingMonitorData($args['id']);
 	if ($ent) {

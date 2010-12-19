@@ -642,6 +642,18 @@ function addInfoData(id, container) {
 			data.data.outage_data + '<br/>';
 		}
 		container.set('content', new_data);
+
+		// color tab title
+		var clr = null;
+
+		if (data.data.max_status == "critical") {
+		    clr = '#a62434';
+		} else if (data.data.max_status == "warn") {
+		    clr = '#b3511d';
+		}
+		if (clr) {
+		    dojo.style(dijit.byId(id + '_tab').domNode, "color", clr);
+		}
 	    } else {
 		alert(data.error);
 	    }
