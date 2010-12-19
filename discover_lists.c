@@ -22,6 +22,54 @@
 #include "panoptes/configuration.h"
 
 extern seen_list_t *seen_list;
+extern disc_port_list_t *auto_port_list;
+
+/* search auto_port_list for port */
+int is_auto_port(int port) 
+{
+  int r = 0;
+  disc_port_list_t *p;
+  
+  p = auto_port_list;
+
+  while (p != NULL) {
+    syslog(LOG_DEBUG, "port check %d ?= %d", p->port, port);
+    if (p->port == port) {
+      r = 1;
+      p = NULL;
+    } else {
+      p = p->next;
+    }
+  }
+  
+  return(r);
+}
+
+int seen_entry (long addr, int port)
+{
+  seen_list_t *p;
+  disc_port_list_t *q;
+
+  p = seen_list;
+  
+  while (p != NULL) {
+    if (p->addr == addr) {
+      q = p->ports;
+      while (q != NULL) {
+	if (q->port == port) {
+	  return(1);
+	}
+	q = q->next;
+      }
+      return(0);
+    } else if (p->addr > addr) {
+      return(0);
+    }
+    p = p->next;
+  }
+
+  return(0);
+}
 
 /* convert port string into list */
 disc_port_list_t *build_port_list(char *port_str)
@@ -46,6 +94,22 @@ disc_port_list_t *build_port_list(char *port_str)
   }
 
   return(rtn);
+}
+
+void free_seen_list(seen_list_t *head)
+{
+  seen_list_t *s, *t;
+  
+  if (head) {
+    s = head;
+    while (s != NULL) {
+      t = s->next;
+      free_port_list(s->ports);
+      free(s);
+      s = t;
+    }
+  }
+
 }
 
 /* free port list */

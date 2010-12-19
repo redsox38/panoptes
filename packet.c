@@ -33,27 +33,6 @@ char   errbuf[PCAP_ERRBUF_SIZE];
 
 extern disc_port_list_t *auto_port_list;
 
-/* search auto_port_list for port */
-int is_auto_port(int port) 
-{
-  int r = 0;
-  disc_port_list_t *p;
-  
-  p = auto_port_list;
-
-  while (p != NULL) {
-    syslog(LOG_DEBUG, "port check %d ?= %d", p->port, port);
-    if (p->port == port) {
-      r = 1;
-      p = NULL;
-    } else {
-      p = p->next;
-    }
-  }
-  
-  return(r);
-}
-
 /* 
    function passed to pcap_loop to read processed packets
    that match the filter.
@@ -83,17 +62,22 @@ void read_packet(u_char *args, const struct pcap_pkthdr *hdr,
     tcp = (struct sniff_tcp*)(packet + SIZE_ETHER + size_ip);
     size_tcp = TH_OFF(tcp)*4;
 
-    syslog(LOG_DEBUG, "TCP From %s:%d To %s:%d\n", src, 
-	   ntohs(tcp->th_sport), dst, ntohs(tcp->th_dport));
-    /* flip src and dst since our src is the host sending the SYN/ACK */
-    /* AKA the host being connected to */
-    if (is_auto_port(ntohs(tcp->th_sport))) {
-      syslog(LOG_DEBUG, "auto accepting %d", ntohs(tcp->th_sport)); 
-      add_monitor_port(src, ntohs(tcp->th_sport), "tcp");
-    } else {
-      add_discovered_connection(dst, ntohs(tcp->th_dport), 
-				src, ntohs(tcp->th_sport), 
-				"tcp");
+    /* see if we've already seen this addr/port */
+    if (!seen_entry(ip->ip_src, ntohs(tcp->th_sport))) {
+      insert_seen_node(ip->ip_src, ntohs(tcp->th_sport));
+
+      syslog(LOG_DEBUG, "TCP From %s:%d To %s:%d\n", src, 
+	     ntohs(tcp->th_sport), dst, ntohs(tcp->th_dport));
+      /* flip src and dst since our src is the host sending the SYN/ACK */
+      /* AKA the host being connected to */
+      if (is_auto_port(ntohs(tcp->th_sport))) {
+	syslog(LOG_DEBUG, "auto accepting %d", ntohs(tcp->th_sport)); 
+	add_monitor_port(src, ntohs(tcp->th_sport), "tcp");
+      } else {
+	add_discovered_connection(dst, ntohs(tcp->th_dport), 
+				  src, ntohs(tcp->th_sport), 
+				  "tcp");
+      }
     }
   } else if (ip->ip_p == IPPROTO_UDP) {
     udp = (struct sniff_udp*)(packet + SIZE_ETHER + size_ip);

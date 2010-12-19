@@ -25,7 +25,7 @@ typedef struct seen_list seen_list_t;
 
 void free_port_list(disc_port_list_t *);
 void free_seen_list(seen_list_t *);
-void insert_seen_node(long, int);
-int seen_entry(long, int);
+void insert_seen_node(struct in_addr, int);
+int seen_entry(struct in_addr, int);
 
 #endif

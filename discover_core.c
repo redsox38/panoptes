@@ -41,6 +41,7 @@ seen_list_t *seen_list = NULL;
 void core_term_handler()
 {
   free_port_list(auto_port_list);
+  free_seen_list(seen_list);
 
   if (dev)
     free(dev);
