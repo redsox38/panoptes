@@ -23,6 +23,7 @@ struct seen_list {
 
 typedef struct seen_list seen_list_t;
 
+disc_port_list_t *build_port_list(char *);
 void free_port_list(disc_port_list_t *);
 void free_seen_list(seen_list_t *);
 void insert_seen_node(struct in_addr, int);

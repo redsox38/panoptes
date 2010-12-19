@@ -71,8 +71,8 @@ void read_packet(u_char *args, const struct pcap_pkthdr *hdr,
     if (!seen_entry(ip->ip_src, ntohs(tcp->th_sport))) {
       insert_seen_node(ip->ip_src, ntohs(tcp->th_sport));
 
-      snprintf(os_genre, strlen("unknown"), "unknown");
-      snprintf(os_detail, strlen("unknown"), "unknown");
+      snprintf(os_genre, strlen("unknown") + 1, "unknown");
+      snprintf(os_detail, strlen("unknown") + 1, "unknown");
 #ifdef WITH_P0F
       /* get OS from p0f if needed and a socket is defined */
 

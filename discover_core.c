@@ -19,11 +19,16 @@
 
 #define SYSLOG_NAMES
 
+#include "config.h"
 #include "panoptes.h"
 #include "discover.h"
 #include "panoptes/configuration.h"
 #include <getopt.h>
 #include <signal.h>
+#ifdef WITH_P0F
+#include <sys/un.h>
+#include <sys/socket.h>
+#endif
 
 /* array of command line options */
 static struct option long_options[] = {

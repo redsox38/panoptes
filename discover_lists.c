@@ -45,10 +45,11 @@ int is_auto_port(int port)
   return(r);
 }
 
-int seen_entry (long addr, int port)
+int seen_entry (struct in_addr i_addr, int port)
 {
-  seen_list_t *p;
+  seen_list_t      *p;
   disc_port_list_t *q;
+  long             addr = i_addr.s_addr;
 
   p = seen_list;
   
@@ -127,11 +128,12 @@ void free_port_list (disc_port_list_t *head)
   }
 }
 
-void insert_seen_node(long addr, int port)
+void insert_seen_node(struct in_addr i_addr, int port)
 {
   seen_list_t      *p, *q, *t;
   disc_port_list_t *prt, *s;
   int              append = 1;
+  long             addr = i_addr.s_addr;
 
   if (seen_list == NULL) {
     seen_list = (seen_list_t *)malloc(sizeof(seen_list_t));
