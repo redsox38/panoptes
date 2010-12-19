@@ -27,6 +27,9 @@
 #include <errno.h>
 #include <sys/types.h>
 #include "packet.h"
+#ifdef WITH_P0F
+#include "p0f-query.h"
+#endif
 
 pcap_t *pcap_handle;
 char   errbuf[PCAP_ERRBUF_SIZE];
@@ -35,6 +38,27 @@ extern disc_port_list_t *auto_port_list;
 
 #ifdef WITH_P0F
 extern int p0f_sock;
+
+int run_p0f_query(struct p0f_query *qry, struct p0f_response *resp)
+{
+  write(p0f_sock, qry, sizeof(struct p0f_query));
+  read(p0f_sock, resp, sizeof(struct p0f_response));
+
+  if (resp->magic != QUERY_MAGIC)
+    return(0);
+
+  if (resp->type == RESP_BADQUERY)
+    return(0);
+
+  if (resp->type == RESP_NOMATCH)
+    return(0);
+
+  if (!resp->genre[0]) {
+    return(0);
+  } else {
+    return(1);
+  }
+}
 #endif
 
 /* 
@@ -55,6 +79,10 @@ void read_packet(u_char *args, const struct pcap_pkthdr *hdr,
   char                        os_detail[40];
   int                         size_ip, size_tcp, size_udp, size_payload;
   char                        *src, *dst;
+#ifdef WITH_P0F
+  struct p0f_query            p0f_query;
+  struct p0f_response         p0f_response;
+#endif
 
   eth      = (struct sniff_ethernet*)(packet);
   ip       = (struct sniff_ip *)(packet + SIZE_ETHER);
@@ -71,11 +99,24 @@ void read_packet(u_char *args, const struct pcap_pkthdr *hdr,
     if (!seen_entry(ip->ip_src, ntohs(tcp->th_sport))) {
       insert_seen_node(ip->ip_src, ntohs(tcp->th_sport));
 
-      snprintf(os_genre, strlen("unknown") + 1, "unknown");
-      snprintf(os_detail, strlen("unknown") + 1, "unknown");
+      snprintf(os_genre, strlen("unknown") + 1, "%s", "unknown");
+      snprintf(os_detail, strlen("unknown") + 1, "%s", "unknown");
 #ifdef WITH_P0F
       /* get OS from p0f if needed and a socket is defined */
+      memset(&p0f_query, 0, sizeof(struct p0f_query));
+      memset(&p0f_response, 0, sizeof(struct p0f_response));
+      p0f_query.magic    = QUERY_MAGIC;
+      p0f_query.id       = 0x12345678;
+      p0f_query.type     = QTYPE_FINGERPRINT;
+      p0f_query.src_ad   = ip->ip_src.s_addr;
+      p0f_query.dst_ad   = ip->ip_dst.s_addr;
+      p0f_query.src_port = ntohs(tcp->th_sport);
+      p0f_query.dst_port = ntohs(tcp->th_dport);
 
+      if (run_p0f_query(&p0f_query, &p0f_response)) {
+	snprintf(os_genre, strlen(p0f_response.genre), "%s", p0f_response.genre);
+	snprintf(os_detail, strlen(p0f_response.detail), "%s", p0f_response.detail);
+      }
 #endif      
 
       syslog(LOG_DEBUG, "TCP From %s:%d To %s:%d\n", src, 
