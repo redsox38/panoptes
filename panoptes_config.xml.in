@@ -1,5 +1,5 @@
 <config>
-    <discover auto_accept_ports="80,443"/>
+    <discover auto_accept_ports="80,443" p0f_socket="/var/run/p0f.sock"/>
     <monitor threads="2"/>
     <port_monitor timeout="5"/>
     <syslog facility="local0"/>

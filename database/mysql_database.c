@@ -129,7 +129,7 @@ int _database_open(int initialize)
 }
 
 /* append pcap entry to database as a monitor object*/
-void _add_monitor_port(char *src, int src_port, char *prot)
+void _add_monitor_port(char *src, int src_port, char *prot, char *os_genre, char *os_detail)
 {
   char        *qry;
   int         len, rc, i, num_rows;
@@ -146,11 +146,15 @@ void _add_monitor_port(char *src, int src_port, char *prot)
 	 strlen(src) +
 	 strlen("','") +
 	 strlen(prot) +
+	 strlen("','") +
+	 strlen(os_genre) +
+	 strlen("','") +
+	 strlen(os_detail) +	 
 	 strlen("')"));
   
   qry = (char *)malloc(len * sizeof(char));
-  snprintf(qry, len, "CALL add_port_monitor(%d, '%s','%s')",
-	   src_port, src, prot);
+  snprintf(qry, len, "CALL add_port_monitor(%d,'%s','%s','%s','%s')",
+	   src_port, src, prot, os_genre, os_detail);
 
   syslog(LOG_DEBUG, "query: %s", qry);
 
@@ -177,15 +181,15 @@ void _add_monitor_port(char *src, int src_port, char *prot)
 
 /* append pcap entry to database */
 void _add_discovered_connection(char *src, int src_port, char *dst, 
-				int dst_port, char *prot)
+				int dst_port, char *prot, char *os_genre, char *os_detail)
 {
   char *qry;
 
   qry = (char *)malloc(sizeof(char) * MAX_MYSQL_DISC_QRY_LEN);
 
   snprintf(qry, MAX_MYSQL_DISC_QRY_LEN,
-	   "INSERT INTO discovered VALUES(0, '%s', %d, '%s', %d, '%s', NOW(), 0)",
-	   src, src_port, dst, dst_port, prot);
+	   "INSERT INTO discovered VALUES(0, '%s', %d, '%s', %d, '%s', NOW(), 0, '%s','%s')",
+	   src, src_port, dst, dst_port, prot, os_genre, os_detail);
 
   mysql_query(mysql, qry);
 

@@ -101,28 +101,28 @@ void get_next_monitor_entry(monitor_entry_t *m)
 
 /* call library's _add_discovered_connection function */
 void add_discovered_connection(char *src, int src_port, char *dst, 
-			       int dst_port, char *prot)
+			       int dst_port, char *prot, char *os_genre, char *os_detail)
 {
 
-  void (*insert_ptr)(char *, int, char *, int, char *);
+  void (*insert_ptr)(char *, int, char *, int, char *, char *, char *);
 
   /* load add function */
-  if ((insert_ptr = (void (*)(char *, int, char *, int, char *))dlsym(lib_handle, "_add_discovered_connection")) != NULL) {
-    (*insert_ptr)(src, src_port, dst, dst_port, prot);
+  if ((insert_ptr = (void (*)(char *, int, char *, int, char *, char *, char *))dlsym(lib_handle, "_add_discovered_connection")) != NULL) {
+    (*insert_ptr)(src, src_port, dst, dst_port, prot, os_genre, os_detail);
   } else {
     syslog(LOG_ALERT, "_add_discovered_connection not defined");
   }
 }
 
 /* call library's _add_monitor_port function */
-void add_monitor_port(char *src, int src_port, char *prot)
+void add_monitor_port(char *src, int src_port, char *prot, char *os_genre, char *os_detail)
 {
 
-  void (*insert_ptr)(char *, int, char *);
+  void (*insert_ptr)(char *, int, char *, char *, char *);
 
   /* load add function */
-  if ((insert_ptr = (void (*)(char *, int, char *))dlsym(lib_handle, "_add_monitor_port")) != NULL) {
-    (*insert_ptr)(src, src_port, prot);
+  if ((insert_ptr = (void (*)(char *, int, char *, char *, char *))dlsym(lib_handle, "_add_monitor_port")) != NULL) {
+    (*insert_ptr)(src, src_port, prot, os_genre, os_detail);
   } else {
     syslog(LOG_ALERT, "_add_monitor_port not defined");
   }

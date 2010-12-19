@@ -33,6 +33,10 @@ char   errbuf[PCAP_ERRBUF_SIZE];
 
 extern disc_port_list_t *auto_port_list;
 
+#ifdef WITH_P0F
+extern int p0f_sock;
+#endif
+
 /* 
    function passed to pcap_loop to read processed packets
    that match the filter.
@@ -47,7 +51,8 @@ void read_packet(u_char *args, const struct pcap_pkthdr *hdr,
   const struct sniff_tcp      *tcp;
   const struct sniff_udp      *udp;
   const char                  *payload;
-
+  char                        os_genre[20];
+  char                        os_detail[40];
   int                         size_ip, size_tcp, size_udp, size_payload;
   char                        *src, *dst;
 
@@ -66,24 +71,31 @@ void read_packet(u_char *args, const struct pcap_pkthdr *hdr,
     if (!seen_entry(ip->ip_src, ntohs(tcp->th_sport))) {
       insert_seen_node(ip->ip_src, ntohs(tcp->th_sport));
 
+      snprintf(os_genre, strlen("unknown"), "unknown");
+      snprintf(os_detail, strlen("unknown"), "unknown");
+#ifdef WITH_P0F
+      /* get OS from p0f if needed and a socket is defined */
+
+#endif      
+
       syslog(LOG_DEBUG, "TCP From %s:%d To %s:%d\n", src, 
 	     ntohs(tcp->th_sport), dst, ntohs(tcp->th_dport));
       /* flip src and dst since our src is the host sending the SYN/ACK */
       /* AKA the host being connected to */
       if (is_auto_port(ntohs(tcp->th_sport))) {
 	syslog(LOG_DEBUG, "auto accepting %d", ntohs(tcp->th_sport)); 
-	add_monitor_port(src, ntohs(tcp->th_sport), "tcp");
+	add_monitor_port(src, ntohs(tcp->th_sport), "tcp", os_genre, os_detail);
       } else {
 	add_discovered_connection(dst, ntohs(tcp->th_dport), 
 				  src, ntohs(tcp->th_sport), 
-				  "tcp");
+				  "tcp", os_genre, os_detail);
       }
     }
+    /*
   } else if (ip->ip_p == IPPROTO_UDP) {
     udp = (struct sniff_udp*)(packet + SIZE_ETHER + size_ip);
     size_udp = udp->uh_len;
 
-    /* guess client/server based on port number */
     syslog(LOG_DEBUG, "UDP From %s:%d To %s:%d\n", src, 
 	   ntohs(udp->uh_sport), dst, ntohs(udp->uh_dport));
     if (ntohs(udp->uh_sport < IPPORT_RESERVED)) {
@@ -95,6 +107,7 @@ void read_packet(u_char *args, const struct pcap_pkthdr *hdr,
 				src, ntohs(udp->uh_sport), 
 				"udp");
     }
+    */
   }
 
   free(src);
