@@ -503,6 +503,112 @@ function xhrAddParentDevice(child_id, parent_id) {
     dojo.xhrGet(xhrArgs);
 }
 
+function editDeviceInfo() {
+    var id = deviceStore.getValues(deviceTreeSelectedItem, 'id').toString();
+
+    tb1_label = document.createElement("label");
+    tb1_label.htmlFor = 'edit_device_name';
+    tb1_label.appendChild(document.createTextNode('Name'));
+    
+    tb1 = new dijit.form.TextBox({
+	    id: 'edit_device_name',
+	    name: 'edit_device_name',
+	    style: 'width: 25em;',
+	    placeHolder: 'device name'
+	});
+
+    tb2_label = document.createElement("label");
+    tb2_label.htmlFor = 'edit_device_os_type';
+    tb2_label.appendChild(document.createTextNode('OS Type'));
+    
+    tb2 = new dijit.form.TextBox({
+	    id: 'edit_device_os_type',
+	    name: 'edit_device_os_type',
+	    style: 'width: 25em;',
+	    placeHolder: 'OS Type (ie Linux)'
+	});
+
+    tb3_label = document.createElement("label");
+    tb3_label.htmlFor = 'edit_device_os_detail';
+    tb3_label.appendChild(document.createTextNode('OS Detail'));
+    
+    tb3 = new dijit.form.TextBox({
+	    id: 'edit_device_os_detail',
+	    name: 'edit_device_os_detail',
+	    style: 'width: 25em;',
+	    placeHolder: 'OS Detail (ie 2.6.32)'
+	});
+
+    rst = new dijit.form.Button({
+	    label: 'Cancel',
+	    onClick: function() {
+		dijit.byId("edit_device_name").destroy();
+		dijit.byId("edit_device_os_type").destroy();
+		dijit.byId("edit_device_os_detail").destroy();
+		// destroy remaining dom nodes
+		win = document.getElementById("edit_device_win");
+		while (win.hasChildNodes() >= 1) {
+		    win.removeChild(win.firstChild);
+		}
+
+		document.body.removeChild(win);
+	    }
+	});
+
+    sub = new dijit.form.Button({
+	    label: 'Save',
+	    onClick: function() {
+		var params = {
+		    name: dijit.byId('edit_device_name').get('value'),
+		    os_type: dijit.byId('edit_device_os_type').get('value'),
+		    os_detail: dijit.byId('edit_device_os_detail').get('value'),
+		    device_id: id.replace("d_", "")
+		};
+		xhrEditDeviceInfo(params);
+		dijit.byId("edit_device_name").destroy();
+		dijit.byId("edit_device_os_type").destroy();
+		dijit.byId("edit_device_os_detail").destroy();
+		// destroy remaining dom nodes
+		win = document.getElementById("edit_device_win");
+		while (win.hasChildNodes() >= 1) {
+		    win.removeChild(win.firstChild);
+		}
+
+		document.body.removeChild(win);
+	    }
+	});
+
+    var items = [ tb1_label, tb1.domNode, 
+		  document.createElement("br"),
+		  tb2_label, tb2.domNode,
+		  document.createElement("br"),
+		  tb3_label, tb3.domNode,
+		  document.createElement("br"),		  
+		  rst.domNode, sub.domNode ];
+    
+    createOverlayWindow("edit_device_win", items);
+}
+
+function xhrEditDeviceInfo(params) {
+    var xhrArgs = {
+	url: '/panoptes/',
+	handleAs: 'json',
+	content: {
+	    action: 'editDeviceInfo',
+	    data: dojo.toJson(params)
+	},
+	load: function(data) {
+	    if (data && data.error) {
+		alert(data.error);
+	    }
+	    hideLoading();
+	},
+    };
+	
+    showLoading();
+    dojo.xhrGet(xhrArgs);
+}
+
 function addParentDevice() {
     var id = deviceStore.getValues(deviceTreeSelectedItem, 'id').toString();
     

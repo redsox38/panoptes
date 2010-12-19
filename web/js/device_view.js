@@ -1652,7 +1652,7 @@ function _addMonitor(dataGrid, type, id) {
 	tb = new dijit.form.TextBox({
 		id: 'add_monitor_url',
 		name: 'add_monitor_url',
-		style: 'width: 25em;',
+ 		style: 'width: 25em;',
 		placeHolder: 'https://'
 	    });
 

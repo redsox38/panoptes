@@ -2773,6 +2773,46 @@ class panoptes
 		 'data' => $data));
   }
 
+  /**
+   * editDeviceInfo
+   *
+   * @param args json params converted into an array
+   *             device_id device id to modify
+   *             name optional name to replace
+   *             os_type optional os genre to replace
+   *             os_detail optional os detil to replace
+   * @throws none
+   * @return array containing result and possible error messages
+   */
+  public function ajax_editDeviceInfo($args) {
+    $result = 'success';
+    $error = '';
+
+    try {
+      if (array_key_exists('device_id', $args)) {
+	$dev = $this->getDevice($args['device_id']);	
+	
+	if (array_key_exists('name', $args) && ($args['name'] != '')) {
+	  $dev->name = $args['name'];
+	}
+	if (array_key_exists('os_type', $args) && ($args['os_type'] != '')) {
+	  $dev->os_genre = $args['os_type'];
+	}
+	if (array_key_exists('os_detail', $args) && ($args['os_detail'] != '')) {
+	  $dev->os_detail = $args['os_detail'];
+	}
+	$dev->commit();
+      } else {
+	$result = 'failure';
+	$error = 'must supply device id';
+      }
+    } catch (Exception $e) {
+      return(array('result' => 'failure',
+		   'error'  => $e->getMessage()));
+    }
+    
+    return(array('result' => $result, 'error' => $error));
+  }
 }
 
 ?>

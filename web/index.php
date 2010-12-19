@@ -199,6 +199,9 @@ echo '<body class="' . $theme . '">' . "\n";
                     <div dojoType="dijit.MenuItem" onClick="addParentDevice();">
                         Add Parent Device
                     </div>
+                    <div dojoType="dijit.MenuItem" onClick="editDeviceInfo();">
+                        Edit Device Info
+                    </div>
                     <div dojoType="dijit.MenuItem" iconClass="panoptesIconDeleteGroup" onClick="removeFromGroup();">
                         Remove from Group
                     </div>

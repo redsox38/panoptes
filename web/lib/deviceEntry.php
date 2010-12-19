@@ -78,15 +78,16 @@ class deviceEntry
    * @return none
    */
   public function commit() {
-    // try to get host name
-    $this->name = gethostbyaddr($this->srcaddr);
-
     try {
-      $srcaddr = $this->srcaddr;
-      $name = $this->name;
       // insert into device table if not there already
       if (is_null($this->id)) {      
 	// insert new record
+
+	// try to get host name
+	$srcaddr = $this->srcaddr;
+	$this->name = gethostbyaddr($this->srcaddr);
+	$name = $this->name;
+
 	$stmt = $this->db->prepare("INSERT INTO devices VALUES(0, ?, ?)");
 	$stmt->bindParam(1, $srcaddr);
 	$stmt->bindParam(2, $name);
@@ -96,10 +97,17 @@ class deviceEntry
       } else {
 	// update existing entry
 	$id = $this->id;
-	$stmt = $this->db->prepare("UPDATE devices SET name=?, address=? WHERE id=?");
+	$name = $this->name;
+	$addr = $this->address;
+	$os_genre = $this->os_genre;
+	$os_detail = $this->os_detail;
+
+	$stmt = $this->db->prepare("UPDATE devices SET name=?, address=?, os_genre=?, os_detail=? WHERE id=?");
 	$stmt->bindParam(1, $name);
-	$stmt->bindParam(2, $srcaddr);
-	$stmt->bindParam(3, $id, PDO::PARAM_INT);
+	$stmt->bindParam(2, $addr);
+	$stmt->bindParam(3, $os_genre);
+	$stmt->bindParam(4, $os_detail);
+	$stmt->bindParam(5, $id, PDO::PARAM_INT);
 	$stmt->execute();
       }
     } catch (PDOException $e) {
