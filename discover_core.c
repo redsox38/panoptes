@@ -20,6 +20,7 @@
 #define SYSLOG_NAMES
 
 #include "panoptes.h"
+#include "discover.h"
 #include "panoptes/configuration.h"
 #include <getopt.h>
 #include <signal.h>
@@ -34,45 +35,12 @@ static struct option long_options[] = {
 
 char *dev = NULL, *readfile = NULL, *configfile = NULL;
 disc_port_list_t *auto_port_list = NULL;
-
-/* convert port string into list */
-disc_port_list_t *build_port_list(char *port_str)
-{
-  char *p;
-  disc_port_list_t *r, *last = NULL, *rtn = NULL;
-
-  p = strtok(port_str, ",");
-  while (p != NULL) {
-    r = (disc_port_list_t *)malloc(sizeof(disc_port_list_t));
-    sscanf(p, "%d", &(r->port));
-    r->next = NULL;
-
-    if (rtn == NULL) {
-      rtn = r;
-      last = r;
-    } else {
-      last->next = r;
-      last = r;
-    }
-    p = strtok(NULL, ",");
-  }
-
-  return(rtn);
-}
+seen_list_t *seen_list = NULL;
 
 /* local termination handler for this file */
 void core_term_handler()
 {
-  disc_port_list_t *p, *q;
-
-  if (auto_port_list) {
-    p = auto_port_list;
-    while(p != NULL) { 
-      q = p->next;
-      free(p);
-      p = q;
-    }
-  }
+  free_port_list(auto_port_list);
 
   if (dev)
     free(dev);

@@ -2,7 +2,7 @@ DEFS = @DEFS@
 
 sbin_PROGRAMS = panoptes_discover panoptes_monitor
 
-panoptes_discover_SOURCES = discover_core.c  packet.c database.c panoptes_utils.c
+panoptes_discover_SOURCES = discover_core.c discover_lists.c packet.c database.c panoptes_utils.c
 panoptes_monitor_SOURCES = monitor_core.c database.c monitor_thread.c shutdown_thread.c monitor_entry.c monitor_port.c monitor_icmp.c monitor_certificate.c monitor_snmp.c monitor_shell.c perf_core.c panoptes_utils.c monitor_status.c notification.c monitor_url.c
 
 CPPFLAGS = @CPPFLAGS@ -I./include -DCONFIG_FILE="\"@sysconfdir@/panoptes_config.xml\""
@@ -12,7 +12,7 @@ AUTOMAKE_OPTIONS = no-dependencies
 panoptes_monitor_LDFLAGS = @LDFLAGS@ 
 panoptes_monitor_CPPFLAGS = @CPPFLAGS@ -D_REENTRANT -DPIDFILE="\"@localstatedir@/run/panoptes_monitor.pid\""
 panoptes_discover_CPPFLAGS = @CPPFLAGS@ -D_REENTRANT -DPIDFILE="\"@localstatedir@/run/panoptes_discover.pid\""
-EXTRA_DIST = dbinit.sql dbinit-3.sql dbinit-4.sql web panoptes_config.xml.in panoptes_httpd.conf.in database.h packet.h panoptes.h README.shell_monitors install_db.sh update_db.sh panoptes_discover.init.in panoptes_monitor.init.in
+EXTRA_DIST = dbinit.sql dbinit-3.sql dbinit-4.sql web panoptes_config.xml.in panoptes_httpd.conf.in discover.h database.h packet.h panoptes.h README.shell_monitors install_db.sh update_db.sh panoptes_discover.init.in panoptes_monitor.init.in
 
 install-data-hook:
 	sed -e "s:LIBDIR:$(libdir):" \

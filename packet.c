@@ -18,6 +18,7 @@
  */
 
 #include "panoptes.h"
+#include "discover.h"
 #include <getopt.h>
 #include <string.h>
 #ifdef HAVE_PCAP_H

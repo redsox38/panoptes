@@ -9,11 +9,4 @@
 #include <syslog.h>
 #endif
 
-struct disc_port_list {
-  int port;
-  struct disc_port_list *next;
-};
-
-typedef struct disc_port_list disc_port_list_t;
- 
 #endif

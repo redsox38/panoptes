@@ -54,6 +54,7 @@ am__installdirs = "$(DESTDIR)$(sbindir)"
 PROGRAMS = $(sbin_PROGRAMS)
 am_panoptes_discover_OBJECTS =  \
 	panoptes_discover-discover_core.$(OBJEXT) \
+	panoptes_discover-discover_lists.$(OBJEXT) \
 	panoptes_discover-packet.$(OBJEXT) \
 	panoptes_discover-database.$(OBJEXT) \
 	panoptes_discover-panoptes_utils.$(OBJEXT)
@@ -256,14 +257,14 @@ target_alias = @target_alias@
 top_build_prefix = @top_build_prefix@
 top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
-panoptes_discover_SOURCES = discover_core.c  packet.c database.c panoptes_utils.c
+panoptes_discover_SOURCES = discover_core.c discover_lists.c packet.c database.c panoptes_utils.c
 panoptes_monitor_SOURCES = monitor_core.c database.c monitor_thread.c shutdown_thread.c monitor_entry.c monitor_port.c monitor_icmp.c monitor_certificate.c monitor_snmp.c monitor_shell.c perf_core.c panoptes_utils.c monitor_status.c notification.c monitor_url.c
 SUBDIRS = database utils include
 AUTOMAKE_OPTIONS = no-dependencies
 panoptes_monitor_LDFLAGS = @LDFLAGS@ 
 panoptes_monitor_CPPFLAGS = @CPPFLAGS@ -D_REENTRANT -DPIDFILE="\"@localstatedir@/run/panoptes_monitor.pid\""
 panoptes_discover_CPPFLAGS = @CPPFLAGS@ -D_REENTRANT -DPIDFILE="\"@localstatedir@/run/panoptes_discover.pid\""
-EXTRA_DIST = dbinit.sql dbinit-3.sql dbinit-4.sql web panoptes_config.xml.in panoptes_httpd.conf.in database.h packet.h panoptes.h README.shell_monitors install_db.sh update_db.sh panoptes_discover.init.in panoptes_monitor.init.in
+EXTRA_DIST = dbinit.sql dbinit-3.sql dbinit-4.sql web panoptes_config.xml.in panoptes_httpd.conf.in discover.h database.h packet.h panoptes.h README.shell_monitors install_db.sh update_db.sh panoptes_discover.init.in panoptes_monitor.init.in
 all: config.h
 	$(MAKE) $(AM_MAKEFLAGS) all-recursive
 
@@ -390,6 +391,12 @@ panoptes_discover-discover_core.o: discover_core.c
 
 panoptes_discover-discover_core.obj: discover_core.c
 	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(panoptes_discover_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o panoptes_discover-discover_core.obj `if test -f 'discover_core.c'; then $(CYGPATH_W) 'discover_core.c'; else $(CYGPATH_W) '$(srcdir)/discover_core.c'; fi`
+
+panoptes_discover-discover_lists.o: discover_lists.c
+	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(panoptes_discover_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o panoptes_discover-discover_lists.o `test -f 'discover_lists.c' || echo '$(srcdir)/'`discover_lists.c
+
+panoptes_discover-discover_lists.obj: discover_lists.c
+	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(panoptes_discover_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o panoptes_discover-discover_lists.obj `if test -f 'discover_lists.c'; then $(CYGPATH_W) 'discover_lists.c'; else $(CYGPATH_W) '$(srcdir)/discover_lists.c'; fi`
 
 panoptes_discover-packet.o: packet.c
 	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(panoptes_discover_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o panoptes_discover-packet.o `test -f 'packet.c' || echo '$(srcdir)/'`packet.c
