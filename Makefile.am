@@ -37,6 +37,6 @@ install-data-hook:
 	htpasswd -b -c $(DESTDIR)$(datarootdir)/panoptes/htpasswd admin admin
 
 	sed -e "s:SBINDIR:$(sbindir):" panoptes_discover.init.in > /etc/init.d/panoptes_discover
-        chmod a+rx /etc/init.d/panoptes_discover
+	chmod a+rx /etc/init.d/panoptes_discover
 	sed -e "s:SBINDIR:$(sbindir):" panoptes_monitor.init.in > /etc/init.d/panoptes_monitor
-        chmod a+rx /etc/init.d/panoptes_monitor
+	chmod a+rx /etc/init.d/panoptes_monitor

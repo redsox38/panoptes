@@ -29,7 +29,10 @@
 #include "packet.h"
 #ifdef WITH_P0F
 #include "p0f-query.h"
+#include <sys/un.h>
+#include <sys/socket.h>
 #endif
+#include <errno.h>
 
 pcap_t *pcap_handle;
 char   errbuf[PCAP_ERRBUF_SIZE];
@@ -37,27 +40,61 @@ char   errbuf[PCAP_ERRBUF_SIZE];
 extern disc_port_list_t *auto_port_list;
 
 #ifdef WITH_P0F
-extern int p0f_sock;
+extern char *p0f_sock_path;
 
 int run_p0f_query(struct p0f_query *qry, struct p0f_response *resp)
 {
-  write(p0f_sock, qry, sizeof(struct p0f_query));
-  read(p0f_sock, resp, sizeof(struct p0f_response));
+  int                p0f_sock, rc = 0;
+  struct sockaddr_un x;
 
-  if (resp->magic != QUERY_MAGIC)
-    return(0);
-
-  if (resp->type == RESP_BADQUERY)
-    return(0);
-
-  if (resp->type == RESP_NOMATCH)
-    return(0);
-
-  if (!resp->genre[0]) {
-    return(0);
-  } else {
-    return(1);
+  if (p0f_sock_path != NULL) {
+    if ((p0f_sock = socket(PF_UNIX, SOCK_STREAM, 0)) < 0) {
+      syslog(LOG_NOTICE, "socket: %s", strerror(errno));
+      return(rc);
+    } else {
+      memset(&x, 0, sizeof(x));
+      x.sun_family = AF_UNIX;
+      strncpy(x.sun_path, p0f_sock_path, strlen(p0f_sock_path));
+      syslog(LOG_DEBUG, "Got p0f socket path: %s", x.sun_path);
+      if (connect(p0f_sock, (struct sockaddr*)&x, sizeof(x)) < 0) {
+	syslog(LOG_NOTICE, "connect: %s", strerror(errno));
+	close(p0f_sock);
+	return(rc);
+      }
+    }
   }
+
+  if (write(p0f_sock, qry, sizeof(struct p0f_query)) < 0) {
+    syslog(LOG_NOTICE, "p0f write: magic: %d %d bytes %s", qry->magic, sizeof(struct p0f_query), strerror(errno));
+  } else {
+    if (read(p0f_sock, resp, sizeof(struct p0f_response)) < 0) {
+      syslog(LOG_NOTICE, "p0f read: %s", strerror(errno));
+    } else {
+      if (resp->magic != QUERY_MAGIC) {
+	syslog(LOG_DEBUG, "invalid magic %d", resp->magic);
+      } else {
+	if (resp->type == RESP_BADQUERY) {
+	  syslog(LOG_DEBUG, "bad query");
+	} else {
+	  if (resp->type == RESP_NOMATCH) {
+	    syslog(LOG_DEBUG, "no match in cache");
+	  } else {	  
+	    if (!resp->genre[0]) {
+	      syslog(LOG_DEBUG, "genre is null");
+	    } else {
+	      syslog(LOG_DEBUG, "genre is %s", resp->genre);
+	      rc = 1;
+	    }
+	  }
+	}
+      }
+    }
+  }
+
+  shutdown(p0f_sock, 2);
+  close(p0f_sock);
+
+  return(rc);
 }
 #endif
 
@@ -102,21 +139,23 @@ void read_packet(u_char *args, const struct pcap_pkthdr *hdr,
       snprintf(os_genre, strlen("unknown") + 1, "%s", "unknown");
       snprintf(os_detail, strlen("unknown") + 1, "%s", "unknown");
 #ifdef WITH_P0F
-      /* get OS from p0f if needed and a socket is defined */
-      memset(&p0f_query, 0, sizeof(struct p0f_query));
-      memset(&p0f_response, 0, sizeof(struct p0f_response));
-      p0f_query.magic    = QUERY_MAGIC;
-      p0f_query.id       = 0x12345678;
-      p0f_query.type     = QTYPE_FINGERPRINT;
-      p0f_query.src_ad   = ip->ip_src.s_addr;
-      p0f_query.dst_ad   = ip->ip_dst.s_addr;
-      p0f_query.src_port = ntohs(tcp->th_sport);
-      p0f_query.dst_port = ntohs(tcp->th_dport);
-
-      if (run_p0f_query(&p0f_query, &p0f_response)) {
-	snprintf(os_genre, strlen(p0f_response.genre), "%s", p0f_response.genre);
-	snprintf(os_detail, strlen(p0f_response.detail), "%s", p0f_response.detail);
-      }
+      if (p0f_sock_path != NULL) {
+	/* get OS from p0f if needed and a socket is defined */
+	memset(&p0f_query, 0, sizeof(struct p0f_query));
+	memset(&p0f_response, 0, sizeof(struct p0f_response));
+	p0f_query.magic    = QUERY_MAGIC;
+	p0f_query.id       = 0x12345678;
+	p0f_query.type     = QTYPE_FINGERPRINT;
+	p0f_query.src_ad   = ip->ip_src.s_addr;
+	p0f_query.dst_ad   = ip->ip_dst.s_addr;
+	p0f_query.src_port = ntohs(tcp->th_sport);
+	p0f_query.dst_port = ntohs(tcp->th_dport);
+	
+	if (run_p0f_query(&p0f_query, &p0f_response)) {
+	  snprintf(os_genre, strlen(p0f_response.genre), "%s", p0f_response.genre);
+	  snprintf(os_detail, strlen(p0f_response.detail), "%s", p0f_response.detail);
+	}
+      } 
 #endif      
 
       syslog(LOG_DEBUG, "TCP From %s:%d To %s:%d\n", src, 

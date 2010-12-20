@@ -25,10 +25,7 @@
 #include "panoptes/configuration.h"
 #include <getopt.h>
 #include <signal.h>
-#ifdef WITH_P0F
-#include <sys/un.h>
-#include <sys/socket.h>
-#endif
+#include <errno.h>
 
 /* array of command line options */
 static struct option long_options[] = {
@@ -41,16 +38,16 @@ static struct option long_options[] = {
 char *dev = NULL, *readfile = NULL, *configfile = NULL;
 disc_port_list_t *auto_port_list = NULL;
 seen_list_t *seen_list = NULL;
+
 #ifdef WITH_P0F
-int                p0f_sock;
+char               *p0f_sock_path = NULL;
 #endif
 
 /* local termination handler for this file */
 void core_term_handler()
 {
 #ifdef WITH_P0F
-  shutdown(p0f_sock, 2);
-  close(p0f_sock);
+  free(p0f_sock_path);
 #endif
 
   free_port_list(auto_port_list);
@@ -99,10 +96,6 @@ int main(int argc, char *argv[]) {
   int                c, option_index;
   int                init_db_flag = 0;
   char               *facil_str, *auto_ports;
-#ifdef WITH_P0F
-  char               *p0f_sock_path;
-  struct sockaddr_un x;
-#endif
   int                facil = -1;
   CODE               *cs;
   
@@ -164,6 +157,11 @@ int main(int argc, char *argv[]) {
     free(auto_ports);
   }
 
+#ifdef WITH_P0F
+  /* see of socket path is defined and if so open it up */
+  p0f_sock_path = get_config_value("discover.p0f_socket");
+#endif
+
   disconnect_from_tty();
 
   /* parent terminates */
@@ -181,19 +179,6 @@ int main(int argc, char *argv[]) {
   if (database_open(init_db_flag) < 0) {
     exit(-1);
   }
-
-#ifdef WITH_P0F
-  /* see of socket path is defined and if so open it up */
-  p0f_sock_path = get_config_value("discover.p0f_socket");
-  if (p0f_sock_path != NULL) {
-    p0f_sock = socket(PF_UNIX, SOCK_STREAM, 0);
-    memset(&x, 0, sizeof(x));
-    x.sun_family = AF_UNIX;
-    strcpy(x.sun_path, p0f_sock_path);
-    connect(p0f_sock, (struct sockaddr*)&x, sizeof(x));
-  }
-  free(p0f_sock_path);
-#endif
 
   if (dev) {
     if (init_packet_capture_live(dev) < 0) {
