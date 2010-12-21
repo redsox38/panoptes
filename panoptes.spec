@@ -20,6 +20,7 @@ CPPFLAGS="-I/usr/include/mysql -I/usr/include/libxml2" LDFLAGS="-L/usr/lib64/mys
 ./configure --prefix=/usr \
             --sysconfdir=/etc \
             --localstatedir=/var \
+            --with-p0f \
             --with-dojo-url=/js
 make
 
@@ -31,6 +32,8 @@ cp panoptes_httpd.conf /etc/http/config.d/panoptes_httpd.conf
 %defattr(-,root,root)
 %config /etc/panoptes_config.xml
 %config /etc/httpd/config.d/panoptes_httpd.conf
+%attr(0755,root,root)/etc/init.d/panoptes_discover
+%attr(0755,root,root)/etc/init.d/panoptes_monitor
 /usr/sbin/panoptes_momnitor
 /usr/sbin/panoptes_discover
 %dir /usr/share/panoptes_rrds
