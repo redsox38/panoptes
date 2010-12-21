@@ -8,6 +8,9 @@
 #include <netinet/in.h>
 #include <arpa/inet.h>
 
+/* seconds to cache seen entries in discovery */
+#define SEEN_LIST_PURGE_TIME 21600
+
 struct port_list {
   int port;
   struct port_list *next;
@@ -17,7 +20,8 @@ typedef struct port_list port_list_t;
 
 struct seen_list {
   in_addr_t        addr;
-  port_list_t *ports;
+  port_list_t      *ports;
+  time_t           last_visited;
   struct seen_list *next;
 };
 

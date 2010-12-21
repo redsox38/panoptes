@@ -130,15 +130,19 @@ void free_port_list (port_list_t *head)
 
 void insert_seen_node(struct in_addr i_addr, int port)
 {
-  seen_list_t      *p, *q, *t;
+  seen_list_t *p, *q, *t;
   port_list_t *prt, *s;
-  int              append = 1;
-  long             addr = i_addr.s_addr;
+  int         append = 1;
+  long        addr = i_addr.s_addr;
+  time_t      now;
+
+  now = time(0);
 
   if (seen_list == NULL) {
     seen_list = (seen_list_t *)malloc(sizeof(seen_list_t));
     seen_list->addr = addr;
     seen_list->next = NULL;
+    seen_list->last_visited = time(0);
     prt = (port_list_t *)malloc(sizeof(port_list_t));    
     prt->port = port;
     prt->next = NULL;
@@ -150,6 +154,7 @@ void insert_seen_node(struct in_addr i_addr, int port)
       if (addr < p->addr) {
 	/* insert here */
 	t = (seen_list_t *)malloc(sizeof(seen_list_t));
+	t->last_visited = time(0);
 	t->addr = addr;
 	prt = (port_list_t *)malloc(sizeof(port_list_t));    
 	prt->port = port;
@@ -160,6 +165,9 @@ void insert_seen_node(struct in_addr i_addr, int port)
 	append = 0;
 	p = NULL;
       } else if (addr == p->addr) {
+	/* update last touched time for cache clearing */
+	p->last_visited = time(0);
+
 	/* append to port list */
 	s = p->ports;
 	while(s->next != NULL)
@@ -169,14 +177,23 @@ void insert_seen_node(struct in_addr i_addr, int port)
 	s->next->port = port;
 	s->next->next = NULL;
       } else if (addr > p->addr) {
-	q = p;
-	p = p->next;
+	/* see if this node should be purged */
+	if (p->last_visited < (now - SEEN_LIST_PURGE_TIME)) {
+	  q->next = p->next;
+	  free_port_list(p->ports);
+	  free(p);
+	  p = q->next;
+	} else {
+	  q = p;
+	  p = p->next;
+	}
       }
     }
 
     if (append) {
       t = (seen_list_t *)malloc(sizeof(seen_list_t));
       t->addr = addr;
+      t->last_visited = time(0);
       prt = (port_list_t *)malloc(sizeof(port_list_t));    
       prt->port = port;
       prt->next = NULL;
