@@ -1,7 +1,7 @@
 web page content monitor option
 jabber notifications?
 clean seen list periodically
-host fingerprinting
+give discover a default interface to listen on if -i is not provided, or have init script default to -i eth0
 
 different icons in device tree by device type
 network map

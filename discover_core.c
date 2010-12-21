@@ -36,7 +36,7 @@ static struct option long_options[] = {
 };
 
 char *dev = NULL, *readfile = NULL, *configfile = NULL;
-disc_port_list_t *auto_port_list = NULL;
+port_list_t *auto_port_list = NULL, *ignore_port_list = NULL;
 seen_list_t *seen_list = NULL;
 
 #ifdef WITH_P0F
@@ -51,6 +51,7 @@ void core_term_handler()
 #endif
 
   free_port_list(auto_port_list);
+  free_port_list(ignore_port_list);
   free_seen_list(seen_list);
 
   if (dev)
@@ -95,7 +96,7 @@ int main(int argc, char *argv[]) {
   extern int         optind, optopt, opterr;
   int                c, option_index;
   int                init_db_flag = 0;
-  char               *facil_str, *auto_ports;
+  char               *facil_str, *auto_ports, *ignore_ports;
   int                facil = -1;
   CODE               *cs;
   
@@ -152,9 +153,18 @@ int main(int argc, char *argv[]) {
   auto_ports = get_config_value("discover.auto_accept_ports");
   if (auto_ports != NULL) {
     /* make list */
-    syslog(LOG_DEBUG, "Got port list: %s", auto_ports);
+    syslog(LOG_DEBUG, "Got auto port list: %s", auto_ports);
     auto_port_list = build_port_list(auto_ports);
     free(auto_ports);
+  }
+
+  /* check for ignore ports */
+  ignore_ports = get_config_value("discover.ignore_ports");
+  if (ignore_ports != NULL) {
+    /* make list */
+    syslog(LOG_DEBUG, "Got ignore port list: %s", ignore_ports);
+    ignore_port_list = build_port_list(ignore_ports);
+    free(ignore_ports);
   }
 
 #ifdef WITH_P0F

@@ -37,7 +37,8 @@
 pcap_t *pcap_handle;
 char   errbuf[PCAP_ERRBUF_SIZE];
 
-extern disc_port_list_t *auto_port_list;
+extern port_list_t *auto_port_list;
+extern port_list_t *ignore_port_list;
 
 #ifdef WITH_P0F
 extern char *p0f_sock_path;
@@ -132,45 +133,52 @@ void read_packet(u_char *args, const struct pcap_pkthdr *hdr,
     tcp = (struct sniff_tcp*)(packet + SIZE_ETHER + size_ip);
     size_tcp = TH_OFF(tcp)*4;
 
-    /* see if we've already seen this addr/port */
-    if (!seen_entry(ip->ip_src, ntohs(tcp->th_sport))) {
-      insert_seen_node(ip->ip_src, ntohs(tcp->th_sport));
+    if (is_in_port_list(ntohs(tcp->th_sport), ignore_port_list)) {
+      syslog(LOG_DEBUG, "ignoring %d", ntohs(tcp->th_sport)); 
+    } else {
+      /* see if we've already seen this addr/port */
+      if (!seen_entry(ip->ip_src, ntohs(tcp->th_sport))) {
+	insert_seen_node(ip->ip_src, ntohs(tcp->th_sport));
 
-      snprintf(os_genre, strlen("unknown") + 1, "%s", "unknown");
-      snprintf(os_detail, strlen("unknown") + 1, "%s", "unknown");
+	snprintf(os_genre, strlen("unknown") + 1, "%s", "unknown");
+	snprintf(os_detail, strlen("unknown") + 1, "%s", "unknown");
 #ifdef WITH_P0F
-      if (p0f_sock_path != NULL) {
-	/* get OS from p0f if needed and a socket is defined */
-	memset(&p0f_query, 0, sizeof(struct p0f_query));
-	memset(&p0f_response, 0, sizeof(struct p0f_response));
-	p0f_query.magic    = QUERY_MAGIC;
-	p0f_query.id       = 0x12345678;
-	p0f_query.type     = QTYPE_FINGERPRINT;
-	p0f_query.src_ad   = ip->ip_src.s_addr;
-	p0f_query.dst_ad   = ip->ip_dst.s_addr;
-	p0f_query.src_port = ntohs(tcp->th_sport);
-	p0f_query.dst_port = ntohs(tcp->th_dport);
-	
-	if (run_p0f_query(&p0f_query, &p0f_response)) {
-	  snprintf(os_genre, strlen(p0f_response.genre), "%s", p0f_response.genre);
-	  snprintf(os_detail, strlen(p0f_response.detail), "%s", p0f_response.detail);
-	}
-      } 
+	if (p0f_sock_path != NULL) {
+	  /* get OS from p0f if needed and a socket is defined */
+	  memset(&p0f_query, 0, sizeof(struct p0f_query));
+	  memset(&p0f_response, 0, sizeof(struct p0f_response));
+	  p0f_query.magic    = QUERY_MAGIC;
+	  p0f_query.id       = 0x12345678;
+	  p0f_query.type     = QTYPE_FINGERPRINT;
+	  p0f_query.src_ad   = ip->ip_src.s_addr;
+	  p0f_query.dst_ad   = ip->ip_dst.s_addr;
+	  p0f_query.src_port = ntohs(tcp->th_sport);
+	  p0f_query.dst_port = ntohs(tcp->th_dport);
+	  
+	  if (run_p0f_query(&p0f_query, &p0f_response)) {
+	    snprintf(os_genre, strlen(p0f_response.genre), "%s",
+		     p0f_response.genre);
+	    snprintf(os_detail, strlen(p0f_response.detail), "%s", 
+		     p0f_response.detail);
+	  }
+	} 
 #endif      
-
-      syslog(LOG_DEBUG, "TCP From %s:%d To %s:%d\n", src, 
-	     ntohs(tcp->th_sport), dst, ntohs(tcp->th_dport));
-      /* flip src and dst since our src is the host sending the SYN/ACK */
-      /* AKA the host being connected to */
-      if (is_auto_port(ntohs(tcp->th_sport))) {
-	syslog(LOG_DEBUG, "auto accepting %d", ntohs(tcp->th_sport)); 
-	add_monitor_port(src, ntohs(tcp->th_sport), "tcp", os_genre, os_detail);
-      } else {
-	add_discovered_connection(dst, ntohs(tcp->th_dport), 
-				  src, ntohs(tcp->th_sport), 
-				  "tcp", os_genre, os_detail);
+	syslog(LOG_DEBUG, "TCP From %s:%d To %s:%d\n", src, 
+	       ntohs(tcp->th_sport), dst, ntohs(tcp->th_dport));
+	/* flip src and dst since our src is the host sending the SYN/ACK */
+	/* AKA the host being connected to */
+	if (is_in_port_list(ntohs(tcp->th_sport), auto_port_list)) {
+	  syslog(LOG_DEBUG, "auto accepting %d", ntohs(tcp->th_sport)); 
+	  add_monitor_port(src, ntohs(tcp->th_sport), "tcp", 
+			   os_genre, os_detail);
+	} else {
+	  add_discovered_connection(dst, ntohs(tcp->th_dport), 
+				    src, ntohs(tcp->th_sport), 
+				    "tcp", os_genre, os_detail);
+	}
       }
     }
+  }
     /*
   } else if (ip->ip_p == IPPROTO_UDP) {
     udp = (struct sniff_udp*)(packet + SIZE_ETHER + size_ip);
@@ -188,7 +196,6 @@ void read_packet(u_char *args, const struct pcap_pkthdr *hdr,
 				"udp");
     }
     */
-  }
 
   free(src);
   free(dst);

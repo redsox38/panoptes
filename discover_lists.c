@@ -22,15 +22,15 @@
 #include "panoptes/configuration.h"
 
 extern seen_list_t *seen_list;
-extern disc_port_list_t *auto_port_list;
+extern port_list_t *auto_port_list;
 
-/* search auto_port_list for port */
-int is_auto_port(int port) 
+/* search port_list for port */
+int is_in_port_list(int port, port_list_t *list_head) 
 {
   int r = 0;
-  disc_port_list_t *p;
+  port_list_t *p;
   
-  p = auto_port_list;
+  p = list_head;
 
   while (p != NULL) {
     syslog(LOG_DEBUG, "port check %d ?= %d", p->port, port);
@@ -48,7 +48,7 @@ int is_auto_port(int port)
 int seen_entry (struct in_addr i_addr, int port)
 {
   seen_list_t      *p;
-  disc_port_list_t *q;
+  port_list_t *q;
   long             addr = i_addr.s_addr;
 
   p = seen_list;
@@ -73,14 +73,14 @@ int seen_entry (struct in_addr i_addr, int port)
 }
 
 /* convert port string into list */
-disc_port_list_t *build_port_list(char *port_str)
+port_list_t *build_port_list(char *port_str)
 {
   char *p;
-  disc_port_list_t *r, *last = NULL, *rtn = NULL;
+  port_list_t *r, *last = NULL, *rtn = NULL;
 
   p = strtok(port_str, ",");
   while (p != NULL) {
-    r = (disc_port_list_t *)malloc(sizeof(disc_port_list_t));
+    r = (port_list_t *)malloc(sizeof(port_list_t));
     sscanf(p, "%d", &(r->port));
     r->next = NULL;
 
@@ -114,9 +114,9 @@ void free_seen_list(seen_list_t *head)
 }
 
 /* free port list */
-void free_port_list (disc_port_list_t *head)
+void free_port_list (port_list_t *head)
 {
-  disc_port_list_t *p, *q;
+  port_list_t *p, *q;
   
   if (head) {
     p = head;
@@ -131,7 +131,7 @@ void free_port_list (disc_port_list_t *head)
 void insert_seen_node(struct in_addr i_addr, int port)
 {
   seen_list_t      *p, *q, *t;
-  disc_port_list_t *prt, *s;
+  port_list_t *prt, *s;
   int              append = 1;
   long             addr = i_addr.s_addr;
 
@@ -139,7 +139,7 @@ void insert_seen_node(struct in_addr i_addr, int port)
     seen_list = (seen_list_t *)malloc(sizeof(seen_list_t));
     seen_list->addr = addr;
     seen_list->next = NULL;
-    prt = (disc_port_list_t *)malloc(sizeof(disc_port_list_t));    
+    prt = (port_list_t *)malloc(sizeof(port_list_t));    
     prt->port = port;
     prt->next = NULL;
     seen_list->ports = prt;
@@ -151,7 +151,7 @@ void insert_seen_node(struct in_addr i_addr, int port)
 	/* insert here */
 	t = (seen_list_t *)malloc(sizeof(seen_list_t));
 	t->addr = addr;
-	prt = (disc_port_list_t *)malloc(sizeof(disc_port_list_t));    
+	prt = (port_list_t *)malloc(sizeof(port_list_t));    
 	prt->port = port;
 	prt->next = NULL;
 	t->ports = prt;
@@ -165,7 +165,7 @@ void insert_seen_node(struct in_addr i_addr, int port)
 	while(s->next != NULL)
 	  s = s->next;
 
-	s->next = (disc_port_list_t *)malloc(sizeof(disc_port_list_t));
+	s->next = (port_list_t *)malloc(sizeof(port_list_t));
 	s->next->port = port;
 	s->next->next = NULL;
       } else if (addr > p->addr) {
@@ -177,7 +177,7 @@ void insert_seen_node(struct in_addr i_addr, int port)
     if (append) {
       t = (seen_list_t *)malloc(sizeof(seen_list_t));
       t->addr = addr;
-      prt = (disc_port_list_t *)malloc(sizeof(disc_port_list_t));    
+      prt = (port_list_t *)malloc(sizeof(port_list_t));    
       prt->port = port;
       prt->next = NULL;
       t->ports = prt;
