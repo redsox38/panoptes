@@ -856,6 +856,7 @@ class panoptes
 	$ent->next_check = $r['next_check'];
 	$ent->url = $r['url'];
 	$ent->expect_http_status = $r['expect_http_status'];
+	$ent->expect_http_content = $r['expect_http_content'];
 	$ent->status = $r['status'];
 	$ent->status_string = $r['status_string'];
 	$ent->disabled = $r['disabled'];
@@ -1635,17 +1636,18 @@ class panoptes
       foreach ($rst as $a) {
 	$ack = $a->getAckInfo();
 	array_push($data, array (
-				 'id'                 => $a->id,
-				 'device_id'          => $a->device_id,
-				 'url'                => $a->url,
-				 'expect_http_status' => $a->expect_http_status,
-				 'last_check'         => $a->last_check,
-				 'next_check'         => $a->next_check,
-				 'ack_by'             => $ack['ack_by'],
-				 'ack_msg'            => $ack['ack_msg'],
-				 'status'             => $a->status,
-				 'status_string'      => $a->status_string,
-				 'notify'             => $a->getNotification($user->id)
+				 'id'                  => $a->id,
+				 'device_id'           => $a->device_id,
+				 'url'                 => $a->url,
+				 'expect_http_status'  => $a->expect_http_status,
+				 'expect_http_content' => $a->expect_http_content,
+				 'last_check'          => $a->last_check,
+				 'next_check'          => $a->next_check,
+				 'ack_by'              => $ack['ack_by'],
+				 'ack_msg'             => $ack['ack_msg'],
+				 'status'              => $a->status,
+				 'status_string'       => $a->status_string,
+				 'notify'              => $a->getNotification($user->id)
 				 ));
       }
     } catch (Exception $e) {
@@ -1889,17 +1891,19 @@ class panoptes
 	$ent->device_id = $args['id'];
 	$ent->url = $args['params']['url'];
 	$ent->expect_http_status = $args['params']['expect_http_status'];
+	$ent->expect_http_content = $args['params']['expect_http_content'];
 	$ent->commit();
 
 	array_push($data, array (
-				 'id'                 => $ent->id,
-				 'device_id'          => $ent->device_id,
-				 'url'                => $ent->url,
-				 'expect_http_status' => $ent->expect_http_status,
-				 'last_check'         => '0000-00-00 00:00:00',
-				 'next_check'         => '0000-00-00 00:00:00',
-				 'status'             => 'new',
-				 'status_string'      => ''
+				 'id'                  => $ent->id,
+				 'device_id'           => $ent->device_id,
+				 'url'                 => $ent->url,
+				 'expect_http_status'  => $ent->expect_http_status,
+				 'expect_http_content' => $ent->expect_http_content,
+				 'last_check'          => '0000-00-00 00:00:00',
+				 'next_check'          => '0000-00-00 00:00:00',
+				 'status'              => 'new',
+				 'status_string'       => ''
 				 ));
       } else {
 	return(array('result' => 'failure',

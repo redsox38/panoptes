@@ -53,16 +53,17 @@ class urlMonitorEntry extends monitorEntry
   public function commit() {
     try {
       $this->_commit(array(
-			   'id'                 => '0',
-                           'device_id'          => $this->device_id,
-			   'url'                => $this->url,
-			   'expect_http_status' => $this->expect_http_status,
-			   'check_interval'     => '15',
-			   'last_check'         => 'NOW()',
-			   'next_check'         => 'NOW()',
-			   'status'             => 'new',
-			   'status_string'      => '',
-			   'disabled'           => '0'
+			   'id'                  => '0',
+                           'device_id'           => $this->device_id,
+			   'url'                 => $this->url,
+			   'expect_http_status'  => $this->expect_http_status,
+			   'expect_http_content' => $this->expect_http_content,
+			   'check_interval'      => '15',
+			   'last_check'          => 'NOW()',
+			   'next_check'          => 'NOW()',
+			   'status'              => 'new',
+			   'status_string'       => '',
+			   'disabled'            => '0'
 			   ));
     } catch (Exception $e) {
       throw($e);
@@ -81,6 +82,7 @@ class urlMonitorEntry extends monitorEntry
       $this->_copyToDevice($target_id, array(
 					     'url',
 					     'expect_http_status',
+					     'expect_http_content',
 					     'check_interval',
 					     'last_check',
 					     'next_check',

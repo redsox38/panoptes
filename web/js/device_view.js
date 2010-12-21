@@ -1131,13 +1131,18 @@ function createUrlTab(id) {
     // create data  grid 
     var url_layout = [{
 	    field: 'url',
-	    name: 'url',
-	    width: '200px'
+	    name: 'URL',
+	    width: '190px'
 	},      
 	{
 	    field: 'expect_http_status',
-	    name: 'expected status code',
-	    width: '150px'
+	    name: 'Expect Code',
+	    width: '95px'
+	},      
+	{
+	    field: 'expect_http_content',
+	    name: 'Expect Content',
+	    width: '140px'
 	},      
 	{            
 	    field: 'last_check', 
@@ -1152,7 +1157,7 @@ function createUrlTab(id) {
 	{            
 	    field: 'status', 
 	    name: 'Status',
-	    width: '80px'
+	    width: '70px'
 	},
 	{            
 	    field: 'status_string', 
@@ -1697,14 +1702,27 @@ function _addMonitor(dataGrid, type, id) {
 	    });
 
 	tb2_label = document.createElement("label");
-	tb2_label.htmlFor = 'add_monitor_status';
+	tb2_label.htmlFor = 'add_monitor_code';
 	tb2_label.appendChild(document.createTextNode('Expected HTTP Status Code'));
 
 	tb2 = new dijit.form.TextBox({
 		id: 'add_monitor_code',
 		name: 'add_monitor_code',
 		style: 'width: 5em;',
+		required: true,
 		placeHolder: '200'
+	    });
+
+	tb3_label = document.createElement("label");
+	tb3_label.htmlFor = 'add_monitor_content';
+	tb3_label.appendChild(document.createTextNode('Expected Content'));
+
+	tb3 = new dijit.form.TextBox({
+		id: 'add_monitor_content',
+		name: 'add_monitor_contet',
+		style: 'width: 20em;',
+		required: false,
+		placeHolder: 'optional text in web page'
 	    });
 
 	sub = new dijit.form.Button({
@@ -1714,11 +1732,13 @@ function _addMonitor(dataGrid, type, id) {
 		    var params = { 
 			type: 'url_monitors',
 			url: dijit.byId('add_monitor_url').getValue(),
-			expect_http_status: dijit.byId('add_monitor_code').getValue()
+			expect_http_status: dijit.byId('add_monitor_code').getValue(),
+			expect_http_content: dijit.byId('add_monitor_content').getValue()
 		    };
 		    xhrAddMonitor(dataGrid, id, params);
 		    dijit.byId("add_monitor_url").destroy();
 		    dijit.byId("add_monitor_code").destroy();
+		    dijit.byId("add_monitor_content").destroy();
 		    dijit.byId("add_monitor_reset").destroy();
 		    dijit.byId("add_monitor_submit").destroy();
 		    document.body.removeChild(document.getElementById("add_monitor"));
@@ -1731,6 +1751,7 @@ function _addMonitor(dataGrid, type, id) {
 		onClick: function() {
 		    dijit.byId("add_monitor_url").destroy();
 		    dijit.byId("add_monitor_code").destroy();
+		    dijit.byId("add_monitor_content").destroy();
 		    dijit.byId("add_monitor_reset").destroy();
 		    dijit.byId("add_monitor_submit").destroy();
 		    document.body.removeChild(document.getElementById("add_monitor"));
@@ -1738,6 +1759,8 @@ function _addMonitor(dataGrid, type, id) {
 	    });
 
         items = [ tb_label, tb.domNode, tb2_label, tb2.domNode,
+		  document.createElement("br"),
+		  tb3_label, tb3.domNode, 
 		  document.createElement("br"), rst.domNode, sub.domNode ];
     } else if (type == "port_monitors") {
 	tb1_label = document.createElement("label");

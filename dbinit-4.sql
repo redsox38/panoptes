@@ -24,6 +24,11 @@ ALTER TABLE devices ADD COLUMN os_detail VARCHAR(255) NOT NULL DEFAULT 'unknown'
 ALTER TABLE discovered ADD COLUMN os_genre VARCHAR(255) NOT NULL DEFAULT 'unknown' AFTER ignored;
 ALTER TABLE discovered ADD COLUMN os_detail VARCHAR(255) NOT NULL DEFAULT 'unknown' AFTER os_genre;
 
+--
+-- Add expected content column to url_monitors table
+--
+ALTER TABLE url_monitors ADD COLUMN expect_http_content VARCHAR(255) DEFAULT NULL AFTER expect_http_status;
+
 /* stored procedures */
 
 DELIMITER //
