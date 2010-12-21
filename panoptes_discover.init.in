@@ -20,12 +20,13 @@
 . /etc/rc.d/init.d/functions
 
 prog=SBINDIR/panoptes_discover
+args="-i eth0"
 pidfile=/var/run/panoptes_discover.pid
 RETVAL=0
 
 start() {
         echo -n $"Starting $prog: "
-        daemon $prog
+        daemon $prog $args
         RETVAL=$?
         echo
         return $RETVAL
