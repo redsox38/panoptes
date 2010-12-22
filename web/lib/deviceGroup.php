@@ -109,8 +109,9 @@ class deviceGroup
   public function commit() {
     // insert into device table 
     try {
+      $id = $this->id;
       $stmt = $this->db->prepare("INSERT INTO device_groups VALUES(?,?)");
-      $stmt->bindParam(1, $this->id, PDO::PARAM_INT);
+      $stmt->bindParam(1, $id, PDO::PARAM_INT);
       $stmt->bindParam(2, $this->name);
       $stmt->execute();
       $this->id = $this->db->lastInsertId();
@@ -128,8 +129,9 @@ class deviceGroup
    */
   public function addMember($device_id) {
     try {
+      $id = $this->id;
       $stmt = $this->db->prepare("INSERT INTO device_group_membership VALUES(?, ?)");
-      $stmt->bindParam(1, $this->id, PDO::PARAM_INT);
+      $stmt->bindParam(1, $id, PDO::PARAM_INT);
       $stmt->bindParam(2, $device_id, PDO::PARAM_INT);
       $stmt->execute();
     } catch (PDOException $e) {
@@ -146,8 +148,9 @@ class deviceGroup
    */
   public function removeMember($device_id) {
     try {
+      $id = $this->id;
       $stmt = $this->db->prepare("DELETE FROM device_group_membership WHERE group_id=? AND device_id=?");
-      $stmt->bindParam(1, $this->id, PDO::PARAM_INT);
+      $stmt->bindParam(1, $id, PDO::PARAM_INT);
       $stmt->bindParam(2, $device_id, PDO::PARAM_INT);
       $stmt->execute();
     } catch (PDOException $e) {
@@ -164,8 +167,9 @@ class deviceGroup
    */
   public function delete() {
     try {
+      $id = $this->id;
       $stmt = $this->db->prepare("DELETE FROM device_groups WHERE id=?");
-      $stmt->bindParam(1, $this->id, PDO::PARAM_INT);
+      $stmt->bindParam(1, $id, PDO::PARAM_INT);
       $stmt->execute();
     } catch (PDOException $e) {
       throw($e);

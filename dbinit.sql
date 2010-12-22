@@ -54,6 +54,8 @@ CREATE TABLE security_groups (
   UNIQUE KEY name (group_name)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
+INSERT INTO security_groups VALUES(1,'admin');
+
 --
 -- Table structure for table users
 --
@@ -67,7 +69,7 @@ CREATE TABLE users (
   UNIQUE KEY nm (name)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
-INSERT INTO users VALUES(0, 'admin', 'install', NOW());
+INSERT INTO users VALUES(1, 'admin', 'install', NOW());
 --
 -- Table structure for table devices
 --
@@ -123,6 +125,7 @@ CREATE TABLE security_group_membership (
   CONSTRAINT security_group_membership_ibfk_2 FOREIGN KEY (group_id) REFERENCES security_groups (id) ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
+INSERT INTO security_group_mambership VALUES(1,1);
 --
 -- Table structure for table user_prefs
 --
