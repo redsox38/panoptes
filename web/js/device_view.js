@@ -406,7 +406,7 @@ function loadMibs(id, community, dndNode) {
 
 function updatePerformanceGraph(id) {
     // get selected metic
-    metric = dijit.byId(id + '_perf_metric').get('displayedValue');
+    metric = dijit.byId(id + '_perf_metric').get('value');
     start_dt = dijit.byId(id + '_perf_start_date').get('value');
     stop_dt = dijit.byId(id + '_perf_stop_date').get('value');
 
@@ -705,6 +705,10 @@ function createPerformanceHistoryTab(id) {
     	    store: perfMonitorStore,
 	    title: 'Metric',	    
     	    searchAttr: 'metric',
+	    labelFunc: function(itm, str) {
+		var label = str.getValue(itm, 'label');
+		return label;
+	    },
 	    labelAttr: 'label'
     	}, dijit.byId(id + '_tc_perf'));
 
