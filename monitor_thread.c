@@ -212,7 +212,7 @@ void *monitor_thread(void *arg)
 	  expect_http_status = get_attr_val(&m, "expect_http_status");
 	  if ((url != NULL) && (expect_http_status != NULL)) {
 	    
-	    monitor_url(url, expect_http_status, &r);
+	    monitor_url(url, expect_http_status, get_attr_val(&m, "expect_http_content"), &r);
 	    update_monitor_entry(&m, &r);
 	    
 	    if (current_status != r.status) {

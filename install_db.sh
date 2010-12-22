@@ -7,6 +7,8 @@ stty -echo
 read mysql_password
 stty echo
 
+echo
+
 echo -n "Enter panoptes db user id: "
 read panoptes_user
 echo -n "Enter panoptes db password: "

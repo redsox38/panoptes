@@ -30,7 +30,31 @@
 #include <curl/types.h>
 #include <curl/easy.h>
 
-monitor_result_t *monitor_url(char *url, char *expect_code, monitor_result_t *r)
+typedef struct mem_chunk {
+  char   *mem;
+  size_t size;
+} mem_chunk_t;
+
+static size_t write_mem_callback(void *ptr, size_t size, size_t nmemb, void *data)
+{
+  size_t realsize = size * nmemb;
+  mem_chunk_t *mem = (mem_chunk_t *)data;
+ 
+  mem->mem = realloc(mem->mem, mem->size + realsize + 1);
+  if (mem->mem == NULL) {
+    /* out of memory! */ 
+    syslog(LOG_ALERT, "realloc failed: Out of memory");
+    return(0);
+  }
+ 
+  memcpy(&(mem->mem[mem->size]), ptr, realsize);
+  mem->size += realsize;
+  mem->mem[mem->size] = 0;
+ 
+  return(realsize);
+}
+ 
+monitor_result_t *monitor_url(char *url, char *expect_code, char *expect_content, monitor_result_t *r)
 {
 
   CURL           *curl_handle;
@@ -40,6 +64,7 @@ monitor_result_t *monitor_url(char *url, char *expect_code, monitor_result_t *r)
   double         elapsed;
   struct timeval start, stop;
   int            len;
+  mem_chunk_t    web_content;
 
   sscanf(expect_code, "%d", &expect_http_code);
 
@@ -55,6 +80,14 @@ monitor_result_t *monitor_url(char *url, char *expect_code, monitor_result_t *r)
     curl_easy_setopt(curl_handle, CURLOPT_SSL_VERIFYHOST, 0L);
     curl_easy_setopt(curl_handle, CURLOPT_CERTINFO, 1L);
     curl_easy_setopt(curl_handle, CURLOPT_ERRORBUFFER, errbuf);
+
+    if (expect_content != NULL) {
+      syslog(LOG_DEBUG, "looking for url content: %s", expect_content);
+      web_content.mem = malloc(1);
+      web_content.size = 0;
+      curl_easy_setopt(curl_handle, CURLOPT_WRITEFUNCTION, write_mem_callback);
+      curl_easy_setopt(curl_handle, CURLOPT_WRITEDATA, &web_content);
+    }
 
     gettimeofday(&start, NULL);
     res = curl_easy_perform(curl_handle);
@@ -76,6 +109,16 @@ monitor_result_t *monitor_url(char *url, char *expect_code, monitor_result_t *r)
 	snprintf(r->perf_data, len, "elapsed time|%.4f", 
 		 elapsed);
 	r->status = MONITOR_RESULT_OK;
+
+	/* check content if requested */
+	if (expect_content != NULL) {
+	  if (strstr((char *)web_content.mem, expect_content) != NULL) {
+	    r->status = MONITOR_RESULT_OK;
+	  } else {
+	    r->status = MONITOR_RESULT_ERR;
+	  }
+	  free(web_content.mem);
+	}
       } else {
 	r->status = MONITOR_RESULT_ERR;
       }

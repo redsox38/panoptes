@@ -25,7 +25,7 @@ DROP TABLE IF EXISTS security_groups;
 DROP TABLE IF EXISTS device_groups;
 DROP TABLE IF EXISTS devices;
 DROP TABLE IF EXISTS users;
-DROP VIEW monitor_tasks;
+DROP VIEW IF EXISTS monitor_tasks;
 DROP PROCEDURE IF EXISTS get_next_monitor_entry;
 DROP PROCEDURE IF EXISTS update_monitor_entry;
 DROP PROCEDURE IF EXISTS get_monitor_notification;
