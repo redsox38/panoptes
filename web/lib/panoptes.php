@@ -458,6 +458,10 @@ class panoptes
   public function getRestrictedDeviceGroups($excl) {
     $groups = array();
 
+    if (is_null($excl)) {
+      throw new Exception('No security groups provided');
+    }
+
     $excl_list = implode(",", $excl);
 
     try {
@@ -1501,6 +1505,8 @@ class panoptes
       $dev = new deviceEntry();
       $dev->db($this->db);
       $dev->srcaddr = $args['address'];
+      $dev->os_genre = 'unknown';
+      $dev->os_detail = 'unknown';
       $dev->commit();
 
       $data['id'] = 'd_' . $dev->id;

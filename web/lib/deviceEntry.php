@@ -87,10 +87,14 @@ class deviceEntry
 	$srcaddr = $this->srcaddr;
 	$this->name = gethostbyaddr($this->srcaddr);
 	$name = $this->name;
+	$os_genre = $this->os_genre;
+	$os_detail = $this->os_detail;
 
-	$stmt = $this->db->prepare("INSERT INTO devices VALUES(0, ?, ?)");
+	$stmt = $this->db->prepare("INSERT INTO devices VALUES(0, ?, ?, ?, ?)");
 	$stmt->bindParam(1, $srcaddr);
 	$stmt->bindParam(2, $name);
+	$stmt->bindParam(3, $os_genre);
+	$stmt->bindParam(4, $os_detail);
 	$stmt->execute();
 	
 	$this->id = $this->db->lastInsertId();
@@ -99,8 +103,6 @@ class deviceEntry
 	$id = $this->id;
 	$name = $this->name;
 	$addr = $this->address;
-	$os_genre = $this->os_genre;
-	$os_detail = $this->os_detail;
 
 	$stmt = $this->db->prepare("UPDATE devices SET name=?, address=?, os_genre=?, os_detail=? WHERE id=?");
 	$stmt->bindParam(1, $name);
