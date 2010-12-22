@@ -191,10 +191,8 @@ function xhrCreateSecurityGroup(name) {
 		// add to user store
                 dojo.forEach(data.data, function(item) {
                         userStore.newItem(item);
-                        srcUserStore.newItem(item);
                     });
                 userStore.save();
-                srcUserStore.save();
 	    }
 	},
     };
