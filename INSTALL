@@ -29,6 +29,9 @@ login is admin, password is admin
 change the password with:
 htpasswd /usr/local/share/panoptes/htpasswd admin
 
+If you want errors incurred while generating graphs from rrdtool, you will
+need to install a truetype font and poind gd_font to that file
+
 Installation Instructions
 *************************
 

@@ -10,6 +10,6 @@
     <script directory="LIBEXECDIR/panoptes_scripts" user="apache"/>
     <port_monitors_rrd datasource_type="GAUGE"/>
     <autodiscoveryform displayentries="10"/>
-    <web admins="admin" dojo-url="DOJOURL" default_theme="claro"/>
+    <web admins="admin" gd_conft="/home/tmerritt/fonts/sfd/FreeMono.ttf" dojo-url="DOJOURL" default_theme="claro"/>
     <certificate warndays="10" criticaldays="5"/>
 </config>

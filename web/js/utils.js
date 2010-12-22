@@ -55,6 +55,10 @@ function createOverlayWindow(id, objs) {
     dv2.zIndex = 51;
 
     for (i = 0; i < objs.length; i++) {
+	objs[i].style.marginTop = "5px";
+	objs[i].style.marginBottom = "5px";
+	objs[i].style.marginLeft = "5px";
+	objs[i].style.marginRight = "5px";
 	dv2.appendChild(objs[i]);
     }
 
