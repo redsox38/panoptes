@@ -103,6 +103,8 @@ class deviceEntry
 	$id = $this->id;
 	$name = $this->name;
 	$addr = $this->address;
+	$os_genre = $this->os_genre;
+	$os_detail = $this->os_detail;
 
 	$stmt = $this->db->prepare("UPDATE devices SET name=?, address=?, os_genre=?, os_detail=? WHERE id=?");
 	$stmt->bindParam(1, $name);

@@ -974,6 +974,7 @@ install-data-hook:
 	/bin/cp -r web $(DESTDIR)$(datarootdir)/panoptes
 	/bin/cp dbinit.sql $(DESTDIR)$(datarootdir)/panoptes
 	/bin/cp dbinit-3.sql $(DESTDIR)$(datarootdir)/panoptes
+	/bin/cp dbinit-4.sql $(DESTDIR)$(datarootdir)/panoptes
 	/bin/chown apache $(DESTDIR)$(libexecdir)/panoptes_scripts
 	htpasswd -b -c $(DESTDIR)$(datarootdir)/panoptes/htpasswd admin admin
 
