@@ -125,7 +125,7 @@ CREATE TABLE security_group_membership (
   CONSTRAINT security_group_membership_ibfk_2 FOREIGN KEY (group_id) REFERENCES security_groups (id) ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
-INSERT INTO security_group_mambership VALUES(1,1);
+INSERT INTO security_group_membership VALUES(1,1);
 --
 -- Table structure for table user_prefs
 --

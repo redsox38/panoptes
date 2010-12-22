@@ -11064,6 +11064,12 @@ CC="$lt_save_CC"
 
 
 
+cat >>confdefs.h <<\_ACEOF
+#define WITH_P0F /**/
+_ACEOF
+
+
+
 # Check whether --with-dojo-url was given.
 if test "${with_dojo_url+set}" = set; then
   withval=$with_dojo_url; dojourl=${withval}

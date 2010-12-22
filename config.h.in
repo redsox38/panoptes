@@ -1,7 +1,5 @@
 /* config.h.in.  Generated from configure.ac by autoheader.  */
 
-#undef WITH_P0F
-
 /* Define to 1 if you have the <arpa/inet.h> header file. */
 #undef HAVE_ARPA_INET_H
 
@@ -19,6 +17,9 @@
 
 /* Define to 1 if you have the `curl' library (-lcurl). */
 #undef HAVE_LIBCURL
+
+/* Define to 1 if you have the `dl' library (-ldl). */
+#undef HAVE_LIBDL
 
 /* Define to 1 if you have the `mysqlclient_r' library (-lmysqlclient_r). */
 #undef HAVE_LIBMYSQLCLIENT_R
@@ -122,6 +123,9 @@
 
 /* Version number of package */
 #undef VERSION
+
+/* p0f OS fingerprinting */
+#undef WITH_P0F
 
 /* Define to empty if `const' does not conform to ANSI C. */
 #undef const

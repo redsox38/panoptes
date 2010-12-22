@@ -10,6 +10,8 @@ AC_CONFIG_MACRO_DIR([m4])
 #libtool 
 LT_INIT
 
+AC_DEFINE([WITH_P0F], [], [p0f OS fingerprinting])
+
 AC_ARG_WITH([dojo-url], [AS_HELP_STRING([--with-dojo-url],[top level url of dojo install default is to use Google's CDN])], AC_SUBST([dojourl], [${withval}]), AC_MSG_ERROR(Must supply the local dojo url))
 AC_ARG_WITH([p0f], [AS_HELP_STRING([--with-p0f],[Include suport for OS fingerprinting via p0f])], AC_DEFINE(WITH_P0F))
 
