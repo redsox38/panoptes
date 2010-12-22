@@ -85,10 +85,13 @@ class pingEntry
       // insert new entry 
       try {
 	$id = $this->device->id;
+	$status = "new";
+	$status_string = "pending check";
+
 	$stmt = $this->db->prepare("INSERT INTO ping_monitors VALUES (0, ?, 15, NOW(), NOW(), ?, ?, 0)");
 	$stmt->bindParam(1, $id, PDO::PARAM_INT);
-	$stmt->bindParam(2, "new");
-	$stmt->bindParam(3, "pending");
+	$stmt->bindParam(2, $status);
+	$stmt->bindParam(3, $status_string);
 	$stmt->execute();
 	$this->id = $this->db->lastInsertId();
       } catch (PDOException $e) {
