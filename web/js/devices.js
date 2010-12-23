@@ -297,7 +297,7 @@ function xhrGroupAdd(attr_name, device_id) {
 				    type: 'group',
 				    name: grp,
 				    id: data.data['group_id'],
-				    children: []
+				    children: [{ ' _reference': device_id }]
 				};
 	
 				deviceStore.newItem(itm);
