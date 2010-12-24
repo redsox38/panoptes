@@ -307,7 +307,7 @@ function xhrGroupAdd(attr_name, device_id) {
 				    children: [],
 				};
 	
-				deviceStore.newItem(itm);
+				grpItem = deviceStore.newItem(itm);
 				deviceStore.save();
 
 				// bind group menu to item
@@ -315,8 +315,25 @@ function xhrGroupAdd(attr_name, device_id) {
 				if (itemNode[0]) {
 				    device_group_menu.bindDomNode(itemNode[0].domNode);
 				}
-			    } 
+			    } else {
+				grpItem = items[0];
+			    }
+
 			    // add device to group
+			    req = deviceStore.fetch({ query: { id: 'd_' + device_id,
+							       type: 'device'}, 
+						      onComplete: function(items, req) {
+					if (items && items.length) {
+					    var chldrn = deviceStore.getValues(grpItem, 'children');
+					    if (chldrn && chldrn.length) {
+						chldrn.push(items[0]);
+					    } else {
+						chldrn = [ items[0] ];
+					    }
+					    deviceStore.setValues(grpItem, 'children', chldrn);
+					    deviceStore.save();
+					}
+				    }});
 			    			    
 			}});
 		deviceStore.save();
@@ -729,7 +746,6 @@ function addToGroup() {
     sub = new dijit.form.Button({
 	    label: 'Add',
 	    onClick: function() {
-		alert(id + ' ' + name);
 		xhrGroupAdd("group_to_add", id);
 	    }
 	});
