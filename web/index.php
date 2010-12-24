@@ -168,6 +168,9 @@ echo '<body class="' . $theme . '">' . "\n";
             <div id="loading_img" style="visibility: hidden;">
                 <img src="images/loading.gif"/>
             </div>
+            <div style="display: none;">
+                <img src="images/panoptesIcons.png"/>
+            </div>
         </div>
         <div id="left_nav" region="leading" dojoType="dijit.layout.AccordionContainer" style="width: 15%;" splitter="true">
             <div id="tools" title="Tools" dojoType="dijit.layout.AccordionPane">

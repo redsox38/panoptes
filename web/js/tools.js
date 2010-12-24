@@ -166,7 +166,24 @@ function xhrAddPingable(ip_address) {
 		// if it's already been loaded
 		if (deviceTree) {
 		    // add item to device store
-		    deviceStore.newItem(data.data);
+		    itm = deviceStore.newItem(data.data);
+		    
+		    // add item to ungrouped group
+		    req = deviceStore.fetch({ query: { name: 'ungrouped',
+						       type: 'group'}, 
+					      onComplete: function(items, req) {
+				if (items.length) {
+				    var chldrn = deviceStore.getValues(items[0], 'children');
+				    if (chldrn && chldrn.length) {
+					chldrn.push(itm);				       
+				    } else {
+					chldrn = [ itm ];
+				    }
+				    deviceStore.setValues(items[0], 'children', chldrn);
+				    deviceStore.save();
+				}
+			    }});
+
 		    deviceStore.save();
 		}
 	    } else {

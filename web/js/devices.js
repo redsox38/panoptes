@@ -82,12 +82,14 @@ function xhrUpdatePermissions(type, src, tgt, level) {
 	          '" }'
 	},
 	load: function(data) {
+	    hideLoading();
 	    if (data && data.error) {
 		alert(data.error);
 	    }
 	},
     };
 	
+    showLoading();
     dojo.xhrGet(xhrArgs);
 }
 
@@ -229,6 +231,7 @@ function deleteDeviceGroup() {
 		data: '{ "id": "' + id + '" }'
 	    },
 	load: function(data) {
+		hideLoading();
 	    if (data && ! data.error) {
 		// remove from tree
 		var req = deviceStore.fetch({ query: { id: 'g_' + id }, 
@@ -244,6 +247,7 @@ function deleteDeviceGroup() {
 	},
     };
 	
+    showLoading();
     dojo.xhrGet(xhrArgs);
     }
 }
@@ -265,12 +269,14 @@ function xhrScheduleOutage(device_id) {
 	             stop_date + '", "stop_time": "' + stop_time + '" }'
 	    },
 	load: function(data) {
+	    hideLoading();
 	    if (data && data.error) {
 		alert(data.error);
 	    }
 	},
     };
 	
+    showLoading();
     dojo.xhrGet(xhrArgs);
 }
 
@@ -286,6 +292,7 @@ function xhrGroupAdd(attr_name, device_id) {
 	    data: '{ "id": "' + device_id + '", "name": "' + grp + '" }'
 	    },
 	load: function(data) {
+	    hideLoading();
 	    if (data && !data.error) {
 		// update group store and refresh device tree
 		req = deviceStore.fetch({ query: { name: grp,
@@ -296,16 +303,21 @@ function xhrGroupAdd(attr_name, device_id) {
 				itm = {
 				    type: 'group',
 				    name: grp,
-				    id: data.data['group_id'],
-				    children: [{ ' _reference': device_id }]
+				    id: 'g_' + data.data['group_id'],
+				    children: [],
 				};
 	
 				deviceStore.newItem(itm);
-			    } else {
-				// add device to group
-			    }
+				deviceStore.save();
 
-			    deviceStore.save();
+				// bind group menu to item
+				var itemNode = deviceTree.getNodesByItem(deviceTree.model.getIdentity(itm));
+				if (itemNode[0]) {
+				    device_group_menu.bindDomNode(itemNode[0].domNode);
+				}
+			    } 
+			    // add device to group
+			    			    
 			}});
 		deviceStore.save();
 	    } else {
@@ -314,6 +326,7 @@ function xhrGroupAdd(attr_name, device_id) {
 	},
     };
 	
+    showLoading();
     dojo.xhrGet(xhrGrpArgs);
     
     dijit.byId(attr_name).destroy();
@@ -335,6 +348,7 @@ function deleteDevice() {
 	        data: '{ "id": "' + id + '" }'
 	    },
 	    load: function(data) {
+		hideLoading();
 	        if (data && !data.error) {
                     // update data store
 		    var req = deviceStore.fetch({ query: { id: 'd_' + id }, 
@@ -350,6 +364,7 @@ function deleteDevice() {
 	    },
         };
 	
+	showLoading();
         dojo.xhrGet(xhrArgs);
     }
 }
@@ -468,6 +483,7 @@ function xhrRemoveGroupMember(group_id, device_id) {
 	    device_id + '" }'
 	},
 	load: function(data) {
+	    hideLoading();
 	    if (data && !data.error) {
 		// delete from group
 	    } else {
@@ -476,6 +492,7 @@ function xhrRemoveGroupMember(group_id, device_id) {
 	},
     };
 	
+    showLoading();
     dojo.xhrGet(xhrArgs);
 }
 
@@ -492,6 +509,7 @@ function xhrAddParentDevice(child_id, parent_id) {
 	    parent_id + '" }'
 	},
 	load: function(data) {
+	    hideLoading();
 	    if (data && ! data.error) {
 		alert("Relationship has been added");
 	    } else {
@@ -500,6 +518,7 @@ function xhrAddParentDevice(child_id, parent_id) {
 	},
     };
 	
+    showLoading();
     dojo.xhrGet(xhrArgs);
 }
 
@@ -598,10 +617,10 @@ function xhrEditDeviceInfo(params) {
 	    data: dojo.toJson(params)
 	},
 	load: function(data) {
+	    hideLoading();
 	    if (data && data.error) {
 		alert(data.error);
 	    }
-	    hideLoading();
 	},
     };
 	
@@ -689,7 +708,6 @@ function removeFromGroup() {
 function addToGroup() {
     var id = deviceStore.getValues(deviceTreeSelectedItem, 'id').toString();
     id = id.replace("d_", "");
-    var name = deviceStore.getValues(deviceTreeSelectedItem, 'name');
 
     // create combo box and buttons
     cb = new dijit.form.ComboBox({
@@ -711,6 +729,7 @@ function addToGroup() {
     sub = new dijit.form.Button({
 	    label: 'Add',
 	    onClick: function() {
+		alert(id + ' ' + name);
 		xhrGroupAdd("group_to_add", id);
 	    }
 	});
