@@ -5,3 +5,5 @@ and supplying the path to the p0f socket in panoptes_config.xml.  In order for d
 you must pass the -A flag to p0f, ie:
 
 p0f -qpAQ /var/run/p0f.sock
+
+You can get p0f from http://lcamtuf.coredump.cx/p0f.shtml
