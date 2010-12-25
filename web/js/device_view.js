@@ -2166,7 +2166,7 @@ function _disableMonitor(dataGrid, type, status) {
 	    });
 	dataGrid.store.save();
 
-	// send xml request to actually delete them
+	// send xml request to actually disable them
 	var xhrArgs = {
 	    url: '/panoptes/',
 	    handleAs: 'json',

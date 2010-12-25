@@ -241,6 +241,15 @@ function deleteDeviceGroup() {
 			    }
 			    deviceStore.save();
 			}});
+		// remove from device group store
+		var req = groupStore.fetch({ query: { id: id }, 
+					      onComplete: function(items, req) {
+			    for (var i = 0; i < items.length; i++) {
+				groupStore.deleteItem(items[i]);
+			    }
+			    groupStore.save();
+			}});
+
 	    } else {
 		alert(data.error);
 	    }
@@ -311,9 +320,10 @@ function xhrGroupAdd(attr_name, device_id) {
 				deviceStore.save();
 
 				// bind group menu to item
-				var itemNode = deviceTree.getNodesByItem(deviceTree.model.getIdentity(itm));
-				if (itemNode[0]) {
-				    device_group_menu.bindDomNode(itemNode[0].domNode);
+				var device_group_menu = dijit.byId('device_tree_group_menu');
+				var itemNode = deviceTree.getNodesByItem(deviceTree.model.getIdentity(grpItem));
+				for (i = 0; i < itemNode.length; i++) {
+				    device_group_menu.bindDomNode(itemNode[i].domNode);
 				}
 			    } else {
 				grpItem = items[0];
@@ -332,6 +342,13 @@ function xhrGroupAdd(attr_name, device_id) {
 					    }
 					    deviceStore.setValues(grpItem, 'children', chldrn);
 					    deviceStore.save();
+
+					    // bind device menu to item
+					    var device_menu = dijit.byId('device_tree_menu');
+					    var itemNode = deviceTree.getNodesByItem(deviceTree.model.getIdentity(items[0]));
+					    for (i = 0; i < itemNode.length; i++) {
+						device_menu.bindDomNode(itemNode[0].domNode);
+					    }
 					}
 				    }});
 			    			    
@@ -522,6 +539,20 @@ function xhrRemoveGroupMember(group_id, device_id) {
 	    hideLoading();
 	    if (data && !data.error) {
 		// delete from group
+		var req = deviceStore.fetch({ query: { id: 'g_' + group_id }, 
+					      onComplete: function(items, req) {
+			    if (items && items.length) {
+				var chldrn = deviceStore.getValues(items[0], 'children');
+				for (i = 0; i < childrn.length; i++) {
+				    this_device_id = deviceStore.getValues(chldrn[i], 'id');
+				    if (this_device_id == ('d_' + device_id)) {
+					chldrn.splice(i, 1);
+				    }
+				}
+				deviceStore.setValues(items[0], 'children', chldrn);
+			    }
+			    deviceStore.save();
+			}});
 	    } else {
 		alert(data.error);
 	    }
