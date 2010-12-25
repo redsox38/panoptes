@@ -320,9 +320,9 @@ function xhrGroupAdd(attr_name, device_id) {
 			    }
 
 			    // add device to group
-			    req = deviceStore.fetch({ query: { id: 'd_' + device_id,
+			    req2 = deviceStore.fetch({ query: { id: 'd_' + device_id,
 							       type: 'device'}, 
-						      onComplete: function(items, req) {
+						      onComplete: function(items, req2) {
 					if (items && items.length) {
 					    var chldrn = deviceStore.getValues(grpItem, 'children');
 					    if (chldrn && chldrn.length) {
@@ -336,6 +336,25 @@ function xhrGroupAdd(attr_name, device_id) {
 				    }});
 			    			    
 			}});
+
+		// and remove from ungrouped if it is a member of that group
+		req = deviceStore.fetch({ query: { name: 'ungrouped',
+						   type: 'group'}, 
+					  onComplete: function(items, req) {
+			    if (items && items.length) {
+				var chldrn = deviceStore.getValues(items[0], 'children');
+				for (i = 0; i < chldrn.length; i++) {
+				    // get device id from this child
+				    this_device_id = deviceStore.getValues(chldrn[i], 'id');
+				    if (this_device_id == ('d_' + device_id)) {
+					chldrn.splice(i, 1);
+				    }				    
+				}
+				deviceStore.setValues(items[0], 'children', chldrn);
+				deviceStore.save();
+			    }
+			}});
+		
 		deviceStore.save();
 	    } else {
 		alert(data.error);
