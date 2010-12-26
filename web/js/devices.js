@@ -234,13 +234,44 @@ function deleteDeviceGroup() {
 		hideLoading();
 	    if (data && ! data.error) {
 		// remove from tree
+		var deleted_items = [];
 		var req = deviceStore.fetch({ query: { id: 'g_' + id }, 
 					      onComplete: function(items, req) {
 			    for (var i = 0; i < items.length; i++) {
+				var chldrn = deviceStore.getValues(items[i], 'children');
+				deleted_items = deleted_items.concat(chldrn);
 				deviceStore.deleteItem(items[i]);
 			    }
+
 			    deviceStore.save();
 			}});
+
+		// put any child devices back into ungrouped 
+		// if they aren't already in another group
+		for (a = 0; a < deleted_items.length; a++) {
+		    var device_id = deviceStore.getValue(deleted_items[a], 'id');
+		    var req2 = deviceStore.fetch({ query: { id: device_id, type: 'device' },
+						   onComplete: function(items, req2) {
+				if (items && (items.length < 2)) {
+				    // add to ungrouped
+				    var req3 = deviceStore.fetch({ query: { name: 'ungrouped',
+									    type: 'group'}, 
+								   onComplete: function(inner_items, req3) {
+						if (inner_items && inner_items.length) {	
+						    var chldrn = deviceStore.getValues(inner_items[0], 'children');
+						    if (chldrn && chldrn.length) {
+							chldrn.push(items[0]);
+						    } else {
+							chldrn = [ items[0] ];
+						    }
+		
+						    deviceStore.setValues(inner_items[0], 'children', chldrn);
+						}
+					    }});
+				}
+			    }});	
+		}
+
 		// remove from device group store
 		var req = groupStore.fetch({ query: { id: id }, 
 					      onComplete: function(items, req) {
@@ -249,7 +280,6 @@ function deleteDeviceGroup() {
 			    }
 			    groupStore.save();
 			}});
-
 	    } else {
 		alert(data.error);
 	    }
@@ -373,6 +403,11 @@ function xhrGroupAdd(attr_name, device_id) {
 			}});
 		
 		deviceStore.save();
+
+		// add item to groupStore if a new group was created	       
+		if (data.data && data.data.id) {
+		    groupStore.newItem(data.data);
+		}
 	    } else {
 		alert(data.error);
 	    }
@@ -539,6 +574,7 @@ function xhrRemoveGroupMember(group_id, device_id) {
 	    hideLoading();
 	    if (data && !data.error) {
 		// delete from group
+		var deleted_items = [];
 		var req = deviceStore.fetch({ query: { id: 'g_' + group_id }, 
 					      onComplete: function(items, req) {
 			    if (items && items.length) {
@@ -546,8 +582,8 @@ function xhrRemoveGroupMember(group_id, device_id) {
 				for (i = 0; i < chldrn.length; i++) {
 				    this_device_id = deviceStore.getValues(chldrn[i], 'id');
 				    if (this_device_id == ('d_' + device_id)) {
+					deleted_items.push(chldrn[i]);
 					chldrn.splice(i, 1);
-
 				    }
 				}
 				deviceStore.setValues(items[0], 'children', chldrn);
@@ -558,11 +594,33 @@ function xhrRemoveGroupMember(group_id, device_id) {
 		// add it to ungrouped
 		var req2 = deviceStore.fetch({ query: { id: 'd_' + device_id, type: 'device' },
 					       onComplete: function(items, req2) {
-			    if (items && (items.length == 1)) {
+			    if (items && (items.length < 2)) {
 				// add to ungrouped
+				var req3 = deviceStore.fetch({ query: { name: 'ungrouped', type: 'group' },
+							       onComplete: function(items, req3) {
+					    if (items) {
+						var chldrn = deviceStore.getValues(items[0], 'children');
+						var c;
+						if (chldrn && chldrn.length) {
+						    c = chldrn.concat(deleted_items);
+						} else {
+						    c = deleted_items;
+						}
+						deviceStore.setValues(items[0], 'children', c);
+						deviceStore.save();
+
+						// bind device menu to item(s)
+						var device_menu = dijit.byId('device_tree_menu');
+						for (j = 0; j < deleted_items.length; j++) {
+						    var itemNode = deviceTree.getNodesByItem(deviceTree.model.getIdentity(deleted_items[j]));
+						    for (i = 0; i < itemNode.length; i++) {
+							device_menu.bindDomNode(itemNode[i].domNode);
+						    }	
+						}
+					    }
+					}});
 			    }
-			}});
-					     
+			}});					     
 	    } else {
 		alert(data.error);
 	    }

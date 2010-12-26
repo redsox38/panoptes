@@ -1146,7 +1146,8 @@ class panoptes
 	$grp->id = 0;
 	$grp->name = $args['name'];      
 	$grp->commit();
-	$data['group_id'] = $grp->id;
+	$data['id'] = $grp->id;
+	$data['name'] = $grp->name;
       }
 
       // add member to group
