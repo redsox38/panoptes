@@ -181,6 +181,15 @@ function xhrAddPingable(ip_address) {
 				    }
 				    deviceStore.setValues(items[0], 'children', chldrn);
 				    deviceStore.save();
+			
+				    // bind device menu to tree node
+				    var device_menu = dijit.byId('device_tree_menu');
+				    var itemNode = deviceTree.getNodesByItem(deviceTree.model.getIdentity(itm));
+
+				    for (i = 0; i < itemNode.length; i++) {
+					device_menu.bindDomNode(itemNode[0].domNode);
+				    }
+
 				}
 			    }});
 

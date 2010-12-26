@@ -347,7 +347,7 @@ function xhrGroupAdd(attr_name, device_id) {
 					    var device_menu = dijit.byId('device_tree_menu');
 					    var itemNode = deviceTree.getNodesByItem(deviceTree.model.getIdentity(items[0]));
 					    for (i = 0; i < itemNode.length; i++) {
-						device_menu.bindDomNode(itemNode[0].domNode);
+						device_menu.bindDomNode(itemNode[i].domNode);
 					    }
 					}
 				    }});
@@ -543,16 +543,26 @@ function xhrRemoveGroupMember(group_id, device_id) {
 					      onComplete: function(items, req) {
 			    if (items && items.length) {
 				var chldrn = deviceStore.getValues(items[0], 'children');
-				for (i = 0; i < childrn.length; i++) {
+				for (i = 0; i < chldrn.length; i++) {
 				    this_device_id = deviceStore.getValues(chldrn[i], 'id');
 				    if (this_device_id == ('d_' + device_id)) {
 					chldrn.splice(i, 1);
+
 				    }
 				}
 				deviceStore.setValues(items[0], 'children', chldrn);
 			    }
 			    deviceStore.save();
 			}});
+		// see if it is in another group, if it isn't then
+		// add it to ungrouped
+		var req2 = deviceStore.fetch({ query: { id: 'd_' + device_id, type: 'device' },
+					       onComplete: function(items, req2) {
+			    if (items && (items.length == 1)) {
+				// add to ungrouped
+			    }
+			}});
+					     
 	    } else {
 		alert(data.error);
 	    }
