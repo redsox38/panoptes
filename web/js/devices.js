@@ -264,7 +264,7 @@ function deleteDeviceGroup() {
 						    } else {
 							chldrn = [ items[0] ];
 						    }
-		
+
 						    deviceStore.setValues(inner_items[0], 'children', chldrn);
 						}
 					    }});
@@ -342,7 +342,7 @@ function xhrGroupAdd(attr_name, device_id) {
 				itm = {
 				    type: 'group',
 				    name: grp,
-				    id: 'g_' + data.data['group_id'],
+				    id: 'g_' + data.data['id'],
 				    children: [],
 				};
 	
