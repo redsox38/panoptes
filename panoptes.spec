@@ -1,10 +1,10 @@
 Summary: Network Monitor tool
 Name: panoptes
-Version: 1.3
+Version: 1.4
 Release: 1
-Copyright: GPL
+License: GPL
 Group: Applications/Network
-Source: https://github.com/downloads/redsox38/panoptes/panoptes-1.3.tar.gz
+Source: https://github.com/downloads/redsox38/panoptes/panoptes-1.4.tar.gz
 Packager: Todd Merritt <redsox38@gmail.com>
 Requires: mysql-libs >= 5.0, libxml2, net-snmp-libs, libcurl, php >= 5.0, php-pdo, php-gd, php-snmp, php-xml, rrdtool-php, rrdtool
 BuildRequires: mysql-devel, libxml2-devel, net-snmp-devel, libcurl-devel, rrdtool-devel
@@ -26,15 +26,24 @@ make
 
 %install
 make DESTDIR=%buildroot install
-cp panoptes_httpd.conf /etc/http/config.d/panoptes_httpd.conf
+mkdir -p %buildroot/etc/httpd/conf.d
+mkdir -p %buildroot/etc/init.d
+mkdir -p %buildroot/usr/bin
+cp panoptes_httpd.conf %buildroot/etc/httpd/conf.d/panoptes_httpd.conf
+cp -p panoptes_monitor.init %buildroot/etc/init.d/panoptes_monitor
+cp -p panoptes_discover.init %buildroot/etc/init.d/panoptes_discover
+cp -p install_db.sh %buildroot/usr/bin/panoptes_install_db.sh
+cp -p update_db.sh %buildroot/usr/bin/panoptes_update_db.sh
 
 %files
 %defattr(-,root,root)
 %config /etc/panoptes_config.xml
-%config /etc/httpd/config.d/panoptes_httpd.conf
+%config /etc/httpd/conf.d/panoptes_httpd.conf
 %attr(0755,root,root)/etc/init.d/panoptes_discover
 %attr(0755,root,root)/etc/init.d/panoptes_monitor
-/usr/sbin/panoptes_momnitor
+%attr(0755,root,root)/usr/bin/panoptes_install_db.sh
+%attr(0755,root,root)/usr/bin/panoptes_update_db.sh
+/usr/sbin/panoptes_monitor
 /usr/sbin/panoptes_discover
 %dir /usr/share/panoptes_rrds
 %attr(0755,apache,root) /usr/libexec/panoptes_scripts
@@ -50,8 +59,16 @@ cp panoptes_httpd.conf /etc/http/config.d/panoptes_httpd.conf
 /usr/lib/libpanoptes_utils.so.2.1.12
 /usr/share/panoptes/dbinit.sql
 /usr/share/panoptes/dbinit-3.sql
+/usr/share/panoptes/dbinit-4.sql
 /usr/share/panoptes/htpasswd
 /usr/share/panoptes/web/*
+/usr/share/panoptes/web/.htaccess
+%dir /usr/include/panoptes
+/usr/include/panoptes/*
 
 %post
 ldconfig
+/sbin/chkconfig panoptes_monitor on
+/sbin/chkconfig panoptes_discover on
+/sbin/service httpd reload
+echo "run /usr/bin/panoptes_install_db.sh or /usr/bin/panoptes_update_db.sh"

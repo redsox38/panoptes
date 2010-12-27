@@ -25,6 +25,7 @@ install-data-hook:
 	    -e "s:LIBEXECDIR:$(libexecdir):" \
 	panoptes_httpd.conf.in > panoptes_httpd.conf
 
+	$(MKDIR_P) $(DESTDIR)$(sysconfdir)
 	if test -e $(DESTDIR)$(sysconfdir)/panoptes_config.xml; then \
 		$(INSTALL_DATA) $(srcdir)/panoptes_config.xml $(DESTDIR)$(sysconfdir)/panoptes_config.xml.new; \
 	else \
@@ -42,7 +43,7 @@ install-data-hook:
 	/bin/chown apache $(DESTDIR)$(libexecdir)/panoptes_scripts
 	htpasswd -b -c $(DESTDIR)$(datarootdir)/panoptes/htpasswd admin admin
 
-	sed -e "s:SBINDIR:$(sbindir):" panoptes_discover.init.in > /etc/init.d/panoptes_discover
-	chmod a+rx /etc/init.d/panoptes_discover
-	sed -e "s:SBINDIR:$(sbindir):" panoptes_monitor.init.in > /etc/init.d/panoptes_monitor
-	chmod a+rx /etc/init.d/panoptes_monitor
+	sed -e "s:SBINDIR:$(sbindir):" panoptes_discover.init.in > panoptes_discover.init
+	chmod a+rx panoptes_discover.init
+	sed -e "s:SBINDIR:$(sbindir):" panoptes_monitor.init.in > panoptes_monitor.init
+	chmod a+rx panoptes_monitor.init
