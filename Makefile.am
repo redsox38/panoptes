@@ -12,7 +12,7 @@ AUTOMAKE_OPTIONS = no-dependencies
 panoptes_monitor_LDFLAGS = @LDFLAGS@ 
 panoptes_monitor_CPPFLAGS = @CPPFLAGS@ -D_REENTRANT -DPIDFILE="\"@localstatedir@/run/panoptes_monitor.pid\""
 panoptes_discover_CPPFLAGS = @CPPFLAGS@ -D_REENTRANT -DPIDFILE="\"@localstatedir@/run/panoptes_discover.pid\""
-EXTRA_DIST = dbinit.sql dbinit-3.sql dbinit-4.sql web panoptes_config.xml.in panoptes_httpd.conf.in p0f-query.h discover.h database.h packet.h panoptes.h README.p0f README.shell_monitors install_db.sh update_db.sh panoptes_discover.init.in panoptes_monitor.init.in
+EXTRA_DIST = install-sh dbinit.sql dbinit-3.sql dbinit-4.sql web panoptes_config.xml.in panoptes_httpd.conf.in p0f-query.h discover.h database.h packet.h panoptes.h README.p0f README.shell_monitors install_db.sh update_db.sh panoptes_discover.init.in panoptes_monitor.init.in
 
 install-data-hook:
 	sed -e "s:LIBDIR:$(libdir):" \
@@ -24,16 +24,21 @@ install-data-hook:
 	    -e "s:DATAROOTDIR:$(datarootdir):" \
 	    -e "s:LIBEXECDIR:$(libexecdir):" \
 	panoptes_httpd.conf.in > panoptes_httpd.conf
-	$(INSTALL_DATA) $(srcdir)/panoptes_config.xml $(DESTDIR)$(sysconfdir)/panoptes_config.xml
+
+	if test -e $(DESTDIR)$(sysconfdir)/panoptes_config.xml; then \
+		$(INSTALL_DATA) $(srcdir)/panoptes_config.xml $(DESTDIR)$(sysconfdir)/panoptes_config.xml.new; \
+	else \
+		$(INSTALL_DATA) $(srcdir)/panoptes_config.xml $(DESTDIR)$(sysconfdir)/panoptes_config.xml; \
+	fi
 
 	$(MKDIR_P) $(DESTDIR)$(libexecdir)/panoptes_scripts
 	$(MKDIR_P) $(DESTDIR)$(datarootdir)/panoptes
 	$(MKDIR_P) $(DESTDIR)$(datarootdir)/panoptes_rrds
 
 	/bin/cp -r web $(DESTDIR)$(datarootdir)/panoptes
-	/bin/cp dbinit.sql $(DESTDIR)$(datarootdir)/panoptes
-	/bin/cp dbinit-3.sql $(DESTDIR)$(datarootdir)/panoptes
-	/bin/cp dbinit-4.sql $(DESTDIR)$(datarootdir)/panoptes
+	$(INSTALL) dbinit.sql $(DESTDIR)$(datarootdir)/panoptes
+	$(INSTALL) dbinit-3.sql $(DESTDIR)$(datarootdir)/panoptes
+	$(INSTALL) dbinit-4.sql $(DESTDIR)$(datarootdir)/panoptes
 	/bin/chown apache $(DESTDIR)$(libexecdir)/panoptes_scripts
 	htpasswd -b -c $(DESTDIR)$(datarootdir)/panoptes/htpasswd admin admin
 
