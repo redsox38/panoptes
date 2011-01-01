@@ -70,6 +70,99 @@ function getSelectedTreeNode(item, node, e) {
     deviceTreeSelectedItem = item;
 };
 
+function reloadDeviceTree() {
+
+    if (dijit.byId('device_tree')) {
+	dijit.byId('device_tree').destroy();
+    }
+
+    var xhrArgs = {
+	url: '/panoptes/',
+	handleAs: 'json',
+	content: {
+	    action: 'getDeviceList',
+	    data: '{}'
+	},
+	load: function(data) {
+	    hideLoading();
+	    if (data && !data.error) {
+		var device_data = {
+		    label: "name",
+		    identifier: "id",
+		    items: data.data
+		};
+
+		deviceStore = new dojo.data.ItemFileWriteStore({
+			data: device_data
+		    });
+
+		var treeModel = new dijit.tree.ForestStoreModel({
+			store: deviceStore,
+			query: { "type" : "group" },
+			rootId: "root",
+			rootLabel: "Devices",
+			childrenAttrs: ["children"]
+		    });
+
+		deviceTree = new dijit.Tree({
+			model: treeModel,
+			id: 'device_tree',
+			showRoot: false,			
+			onClick: getSelectedTreeNode
+		    });		    
+		
+		deviceTree.placeAt(document.getElementById('device_tree_container'));
+
+		// bind  group menu to groups
+		deviceStore.fetch({
+			query: { type: 'group' },
+			    onItem: function(item, req) {
+			    var device_group_menu = dijit.byId('device_tree_group_menu');
+			    
+			    // get group name
+			    var name = deviceStore.getValue(item, "name");
+			    
+			    if (name != "ungrouped") {
+				// set group menu on group nodes
+				var itemNode = deviceTree.getNodesByItem(deviceTree.model.getIdentity(item));
+				if (itemNode[0]) {
+				    device_group_menu.bindDomNode(itemNode[0].domNode);
+				}
+			    }
+			}
+		    });
+		
+		// bind device menu to devices
+		deviceStore.fetch({
+			query: { type: 'device' },
+			    onItem: function(item, req) {
+			    var device_menu = dijit.byId('device_tree_menu');
+			    
+			    // get device name
+			    var name = deviceStore.getValue(item, "name");
+			    
+			    if (name != "") {
+				// set device menu
+				var itemNode = deviceTree.getNodesByItem(deviceTree.model.getIdentity(item));
+				if (itemNode[0]) {
+				    device_menu.bindDomNode(itemNode[0].domNode);
+				}
+			    }
+			}
+		    });
+	    } else {
+		alert(data.error);
+	    }
+	},
+    };
+
+    showLoading();
+    var resp = dojo.xhrGet(xhrArgs);
+
+    // run again in 15 minutes in case somebody else has made modifications
+    setTimeout(reloadDeviceTree, 900000);
+}
+
 function createDeviceTree(){
     if (!deviceTree) {
 
@@ -80,85 +173,7 @@ function createDeviceTree(){
 		sync: true
 	    });
 
-	var xhrArgs = {
-	    url: '/panoptes/',
-	    handleAs: 'json',
-	    //sync: 'true',
-	    content: {
-		action: 'getDeviceList',
-		data: '{}'
-	    },
-	    load: function(data) {
-		if (data && !data.error) {
-		    var device_data = {
-			label: "name",
-			identifier: "id",
-			items: data.data
-		    };
-
-		    deviceStore = new dojo.data.ItemFileWriteStore({
-			    data: device_data
-			});
-
-		    var treeModel = new dijit.tree.ForestStoreModel({
-			    store: deviceStore,
-			    query: { "type" : "group" },
-			    rootId: "root",
-			    rootLabel: "Devices",
-			    childrenAttrs: ["children"]
-			});
-
-		    deviceTree = new dijit.Tree({
-			    model: treeModel,
-			    showRoot: false,			
-			    onClick: getSelectedTreeNode
-			},
-			"device_tree");		    
-		    		    
-		    // bind  group menu to groups
-		    deviceStore.fetch({
-			    query: { type: 'group' },
-				onItem: function(item, req) {
-				var device_group_menu = dijit.byId('device_tree_group_menu');
-
-				// get group name
-				var name = deviceStore.getValue(item, "name");
-
-				if (name != "ungrouped") {
-				    // set group menu on group nodes
-				    var itemNode = deviceTree.getNodesByItem(deviceTree.model.getIdentity(item));
-				    if (itemNode[0]) {
-					device_group_menu.bindDomNode(itemNode[0].domNode);
-				    }
-				}
-			    }
-			});
-
-		    // bind device menu to devices
-		    deviceStore.fetch({
-			    query: { type: 'device' },
-				onItem: function(item, req) {
-				var device_menu = dijit.byId('device_tree_menu');
-
-				// get device name
-				var name = deviceStore.getValue(item, "name");
-
-				if (name != "") {
-				    // set device menu
-				    var itemNode = deviceTree.getNodesByItem(deviceTree.model.getIdentity(item));
-				    if (itemNode[0]) {
-					device_menu.bindDomNode(itemNode[0].domNode);
-				    }
-				}
-			    }
-			});
-		} else {
-		    alert(data.error);
-		}
-	    },
-	};
-	
-	var resp = dojo.xhrGet(xhrArgs);
+	reloadDeviceTree();	
     }
 
     // load groups while we're here for combobox later

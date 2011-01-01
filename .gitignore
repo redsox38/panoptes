@@ -9,3 +9,4 @@ web/js/dojox/*
 web/js/dijit/*
 panoptes_config.xml
 panoptes_httpd.conf
+*.init

@@ -191,7 +191,7 @@ echo '<body class="' . $theme . '">' . "\n";
 ?>
             </div>
             <div id="device_list" title="Device List" dojoType="dijit.layout.AccordionPane">
-                <div id="device_tree"></div>
+                <div id="device_tree_container"></div>
 	        <div dojoType="dijit.Menu" id="device_tree_menu" style="display: none;">
                     <div dojoType="dijit.MenuItem" iconClass="dijitIconTask" onClick="openDevice();">
                         Open Device
