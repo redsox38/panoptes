@@ -31,7 +31,14 @@
 /* global variable holding pointed to database library */
 void *lib_handle;
 
-/* function called by discover on sig term */
+/* database_term_handler
+ *
+ * parameters: none
+ * return: void
+ *
+ * called by main program to allow database library to perform and necessary cleanup at
+ * shutdown.  The call is passed to a function in the database library.
+ */
 void database_term_handler()
 {
   void (*close_ptr)();
@@ -44,7 +51,15 @@ void database_term_handler()
   dlclose(lib_handle);
 }
 
-/* load database shared library */
+/*
+ * database_monule_init
+ *
+ * parameters: none
+ * return: int - 0 on success, -1 on failure
+ *
+ * reads the shared library path from the config file and opens it.
+ *
+ */
 int database_module_init()
 {
   char *mod_file = NULL;
@@ -68,7 +83,16 @@ int database_module_init()
 
 }
 
-/* call library's _database_open function */
+/* database_open
+ * 
+ * parameters: int - flag indicating whether or not to initialize the database
+ * return: int - 0 on success, -1 on failure
+ *
+ * Looks for a function named _database_open inside the shared library and passes the call off
+ * to it.  The library should do any preliminary actions that it needs to such as 
+ * connecting to the database.  Returns the result from that call.
+ *
+ */
 int database_open(int initialize)
 {
   int  r = -1;
@@ -85,7 +109,20 @@ int database_open(int initialize)
   return(r);
 }
 
-/* call library's _get_next_monitor_entry function */
+/* get_next_monitor_entry
+ * 
+ * parameters: monitor_entry_t * pointer to monitor entry structure to fill in 
+ *                               with data from database for the next entry
+ *                               memory will be allocated by the library if the result is not
+ *                               null, it must be freed with free_monitor_entry.
+ * return: void
+ *
+ * Looks for a function named _get_next_monitor_entry inside the shared library and passes the call off
+ * to it.  Returns the result from that call.
+ * The function in the library is expected to fill param 1 with the next entry to be polled by the monitor daemon
+ * if there is no entry ready to poll it should leave the value as NULL
+ *
+ */
 void get_next_monitor_entry(monitor_entry_t *m)
 {
 
@@ -99,7 +136,22 @@ void get_next_monitor_entry(monitor_entry_t *m)
   }
 }
 
-/* call library's _add_discovered_connection function */
+/* add_discovered_connection
+ * 
+ * parameters: char * source ip address as a string
+ *             int    source port
+ *             char * destination ip address as a string
+ *             int    destination port
+ *             char * protocol as a string.  One of tcp or udp
+ *             char * os genre as returned by p0f or "unknown"
+ *             char * os detail as returned by p0f or "unknown"
+ * return: void
+ *
+ * Looks for a function named _add_discovered_connection inside the shared library and passes the call off
+ * to it.  The library function is expected to insert that entry into a database table to be
+ * managed later by a user via the web interface.  Returns the result from that call.
+ *
+ */
 void add_discovered_connection(char *src, int src_port, char *dst, 
 			       int dst_port, char *prot, char *os_genre, char *os_detail)
 {
@@ -114,7 +166,20 @@ void add_discovered_connection(char *src, int src_port, char *dst,
   }
 }
 
-/* call library's _add_monitor_port function */
+/* add_monitor_port
+ * 
+ * parameters: char * source ip address as a string
+ *             int    source port
+ *             char * protocol as a string.  One of tcp or udp
+ *             char * os genre as returned by p0f or "unknown"
+ *             char * os detail as returned by p0f or "unknown"
+ * return: void
+ *
+ * Looks for a function named _add_monitor_port inside the shared library and passes the call off
+ * to it.  The library function is expected to add the device to the device table if it is not already
+ * present and add the port to the port monitors table.  Returns the result from that call.
+ *
+ */
 void add_monitor_port(char *src, int src_port, char *prot, char *os_genre, char *os_detail)
 {
 
@@ -128,7 +193,18 @@ void add_monitor_port(char *src, int src_port, char *prot, char *os_genre, char 
   }
 }
 
-/* call library's _update_monitor_entry function */
+/* update_monitor_entry
+ * 
+ * parameters: monitor_entry_t * monitor entry struct holding information on the entry that was monitored
+ *             monitor_result_t * monitor result struct holding information regarding the entry status
+ * return: int 0 on success, -1 on failure
+ *
+ * Looks for a function named _update_monitor_entry inside the shared library and passes the call off
+ * to it.  The library function is expected to update the entry's status and status string from the
+ * result structure if present and update the next check time for the entry.  The value returned by the
+ * library call is passed to the calling program.
+ *
+ */
 int update_monitor_entry(monitor_entry_t *m, monitor_result_t *r)
 {
 
@@ -145,7 +221,18 @@ int update_monitor_entry(monitor_entry_t *m, monitor_result_t *r)
   return(rc);
 }
 
-/* call library's _get_notify_users function */
+/* get_notify_user_list
+ * 
+ * parameters: monitor_entry_t * monitor entry struct holding information on the entry that was monitored
+ * return: char ** an array of character strings containing the email addresses for the users that 
+ *                 want to get notified about status changes for this monitor.
+ *
+ * Looks for a function named _get_notify_user_list inside the shared library and passes the call off
+ * to it.  The library function is expected to see which user ids are set to get notifications for the given
+ * monitor entry and then check the preferences table to get their email addresses.  The return value from 
+ * the library is passed back to the calling program.
+ *
+ */
 char **get_notify_user_list(monitor_entry_t *m)
 {
   char **r = NULL;
@@ -160,7 +247,19 @@ char **get_notify_user_list(monitor_entry_t *m)
   return(r);
 }
 
-/* call library's _add_ssl_monitor routine */
+/* add_ssl_monitor
+ * 
+ * parameters: char * device id from devices table
+ *             char * ip address as a string
+ *             int    port
+ * return: void
+ *
+ * Looks for a function named _add_ssl_monitor inside the shared library and passes the call off
+ * to it.  The library function is expected to formulate a url from the address and port and insert it into
+ * the certificate monitors table.  This function is called by the discovery tool if it finds a server
+ * listening on port 443
+ *
+ */
 void add_ssl_monitor(char *dev_id, char *addr, int port)
 {
   

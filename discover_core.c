@@ -43,11 +43,17 @@ seen_list_t *seen_list = NULL;
 char               *p0f_sock_path = NULL;
 #endif
 
-/* local termination handler for this file */
+/* 
+   local termination handler for this file 
+   called by registered term handler after
+   the registered termination handlers for the
+   other components have been called
+*/
 void core_term_handler()
 {
 #ifdef WITH_P0F
-  free(p0f_sock_path);
+  if (p0f_sock_path)
+    free(p0f_sock_path);
 #endif
 
   free_port_list(auto_port_list);
@@ -168,19 +174,29 @@ int main(int argc, char *argv[]) {
   }
 
 #ifdef WITH_P0F
-  /* see of socket path is defined and if so open it up */
+  /* 
+     see of socket path is defined and if so save it to use when a new
+     connection is discovered
+  */
   p0f_sock_path = get_config_value("discover.p0f_socket");
 #endif
 
+  /* close stdin/stdout/stderr and tell tty we are not a tty */
   disconnect_from_tty();
 
-  /* parent terminates */
+  /* 
+     parent terminates and child continues 
+     so that we do not regain a controlling tty and 
+     happily run in the background
+  */
   if (fork()){
     exit(0);
   }
 
+  /* ceate pid file */
   set_pidfile(PIDFILE);
 
+  /* load database handler */
   if (database_module_init() < 0) {
     exit(-1);
   }
@@ -190,6 +206,9 @@ int main(int argc, char *argv[]) {
     exit(-1);
   }
 
+  /* 
+     start pcap from live interface or pcap file depending on command line settings
+   */
   if (dev) {
     if (init_packet_capture_live(dev) < 0) {
       exit(-1);
@@ -200,6 +219,9 @@ int main(int argc, char *argv[]) {
     }
   }
   
+  /* 
+     loop reading packets.  If run from a live interface, this function will never return     
+  */
   run_packet_capture();
 
   /* invoke term handler */

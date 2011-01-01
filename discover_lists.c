@@ -24,7 +24,16 @@
 extern seen_list_t *seen_list;
 extern port_list_t *auto_port_list;
 
-/* search port_list for port */
+/* is_in_port_list
+ *
+ * parameters: int port to look for
+ *             port_list * sorted linked list of ports to search through for given port
+ *
+ * return: int 0 if not found, 1 if found
+ *
+ * Iterate through the provided list and return true of false if the port appears in the list.  Called
+ * by discover to look through auto/ignore port lists or port lists on seen ip entries
+ */
 int is_in_port_list(int port, port_list_t *list_head) 
 {
   int r = 0;
@@ -45,6 +54,17 @@ int is_in_port_list(int port, port_list_t *list_head)
   return(r);
 }
 
+/* seen_entry
+ *
+ * parameters: in_addr ip address of entry to look for
+ *             int     port to look for
+ *
+ * return: int 0 if not found, 1 if found
+ *
+ * Iterate through the list of seen ip/port entries looking for the given entry and return
+ * true or false depending on whether or not it is found.  The list is a list of ip address entries
+ * as longs each of which contain a list of port entries.  Both sets of lists are sorted at insertion time.
+ */
 int seen_entry (struct in_addr i_addr, int port)
 {
   seen_list_t      *p;
@@ -72,7 +92,9 @@ int seen_entry (struct in_addr i_addr, int port)
   return(0);
 }
 
-/* convert port string into list */
+/* convert port string from configuration fileinto list
+ * called for both the auto port list and the ignore port list configuration parameters
+ */
 port_list_t *build_port_list(char *port_str)
 {
   char *p;
@@ -97,6 +119,9 @@ port_list_t *build_port_list(char *port_str)
   return(rtn);
 }
 
+/*
+  Free seen list
+ */
 void free_seen_list(seen_list_t *head)
 {
   seen_list_t *s, *t;
@@ -128,6 +153,18 @@ void free_port_list (port_list_t *head)
   }
 }
 
+/* 
+ * insert_seen_node
+ *
+ * parameters: in_addr ip address of entry to add
+ *             int     port of entry to add
+ *
+ * return: void
+ *
+ * iterate through seen list and add port entry to that list.  If there is not already a node in the list
+ * for the given address then a new one will be allocated.
+ *
+ */
 void insert_seen_node(struct in_addr i_addr, int port)
 {
   seen_list_t *p, *q, *t;
