@@ -1398,6 +1398,7 @@ function openDevice() {
 	    title: ' Device Info',
 	    region: 'leading',
 	    style: 'width: 15%',
+	    closable: true,
 	    content: 'info',	    
 	});
 
@@ -1409,6 +1410,7 @@ function openDevice() {
 	    id: id + '_hdr',
 	    region: 'top',
 	    title: 'Device Header',
+	    closable: true,
 	    content: '<b>' + name + '</b>'
 	});
 
@@ -1416,6 +1418,7 @@ function openDevice() {
     var tc = new dijit.layout.TabContainer({
             id: id + '_tc',
 	    region: 'center',
+	    closable: true,
 	    style: "height: 100%; width: 100%;"
 	});
 
