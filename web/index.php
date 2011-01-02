@@ -133,6 +133,10 @@ $theme_e_grid_css = $dojo_url . '/dojox/grid/enhanced/resources/' . $theme . 'En
 <?php
 echo '<body class="' . $theme . '">' . "\n";
 ?>
+<!-- 
+Context menus
+//-->
+    <!-- Context menu for monitor grid //-->
     <div dojoType="dijit.Menu" id="monitorMenu" style="display: none;">
         <div dojoType="dijit.MenuItem" id="monitorMenuAdd" iconClass="panoptesIconAdd" onClick="addMonitor();">
             Add New
@@ -140,7 +144,7 @@ echo '<body class="' . $theme . '">' . "\n";
         <div dojoType="dijit.MenuItem" id="monitorMenuAcknowledge" onClick="ackMonitor();">
             Acknowledge
         </div>
-        <div dojoType="dijit.MenuItem" id="monitorMenuDisable" onClick="disableMonitor();">
+        <div dojoType="dijit.MenuItem" id="monitorMenuDisable" iconClass="panoptesIconDisable" onClick="disableMonitor();">
             Disable
         </div>
         <div dojoType="dijit.MenuItem" id="monitorMenuEnable" onClick="enableMonitor();">
@@ -163,6 +167,57 @@ echo '<body class="' . $theme . '">' . "\n";
         </div>
     </div>
 
+    <!-- Context menu for device objects in device tree //-->
+    <div dojoType="dijit.Menu" id="device_tree_menu" style="display: none;">
+        <div dojoType="dijit.MenuItem" iconClass="dijitIconTask" onClick="openDevice();">
+            Open Device
+        </div>
+        <div dojoType="dijit.MenuItem" iconClass="panoptesIconAddGroup" onClick="addToGroup();">
+	    Add to Group
+        </div>
+        <div dojoType="dijit.MenuItem" onClick="addParentDevice();">
+            Add Parent Device
+        </div>
+        <div dojoType="dijit.MenuItem" iconClass="dijitIconEdit" onClick="editDeviceInfo();">
+            Edit Device Info
+        </div>
+        <div dojoType="dijit.MenuItem" iconClass="panoptesIconDeleteGroup" onClick="removeFromGroup();">
+            Remove from Group
+        </div>
+        <div dojoType="dijit.MenuItem" iconClass="panoptesIconReschedule" onClick="scheduleOutage();">
+            Schedule Outage
+        </div>
+        <div dojoType="dijit.MenuItem" iconClass="panoptesIconDelete" onClick="deleteDevice();">
+            Delete Device 
+        </div>
+        <div dojoType="dijit.MenuItem" iconClass="panoptesIconAddNotification" onClick="addDeviceNotification();">
+            Add Notification
+        </div>
+        <div dojoType="dijit.MenuItem" iconClass="panoptesIconRemoveNotification" onClick="removeDeviceNotification();">
+            Remove Notification
+        </div>
+    </div>
+
+    <!-- Context menu for group objects in device tree //-->
+    <div dojoType="dijit.Menu" id="device_tree_group_menu" style="display: none;">
+        <div dojoType="dijit.MenuItem" iconClass="panoptesIconAccess" onClick="manageDeviceGroupAccess();">
+            Manage Access
+        </div>
+        <div dojoType="dijit.MenuItem" iconClass="panoptesIconDelete" onClick="deleteDeviceGroup();">
+            Delete Group
+        </div>
+    </div>
+
+    <!-- Context menu for auto discovery grid grid //-->
+    <div dojoType="dijit.Menu" id="autoDiscoveryRowMenu" style="display: none;">
+        <div dojoType="dijit.MenuItem" iconClass="dijitEditorIcon dijitEditorIconSave" onClick="monitorEntry('dst');">
+            Monitor Entry
+        </div>
+        <div dojoType="dijit.MenuItem" iconClass="dijitIconDelete" onClick="ignoreEntry();">
+            Ignore Entry
+        </div>
+    </div>
+
     <div id="master_layout" dojoType="dijit.layout.BorderContainer" style="width: 100%; height: 100%;">
         <div id="top_nav" region="top" dojoType="dijit.layout.ContentPane">
             <div id="loading_img" style="visibility: hidden;">
@@ -180,6 +235,9 @@ echo '<body class="' . $theme . '">' . "\n";
                 <div>
 	        <a href="#" onClick="addPingable();">Add Pingable Device</a><br/>
                 </div>
+                <div>
+	        <a href="#" onClick="openAutoDiscoveryTab();">Auto Discovery</a><br/>
+                </div>
 <?php
 	  if ($panoptes->isAdmin($panoptes_current_user)) {
             echo '<div>' . "\n";
@@ -192,43 +250,6 @@ echo '<body class="' . $theme . '">' . "\n";
             </div>
             <div id="device_list" title="Device List" dojoType="dijit.layout.AccordionPane">
                 <div id="device_tree_container"></div>
-	        <div dojoType="dijit.Menu" id="device_tree_menu" style="display: none;">
-                    <div dojoType="dijit.MenuItem" iconClass="dijitIconTask" onClick="openDevice();">
-                        Open Device
-                    </div>
-                    <div dojoType="dijit.MenuItem" iconClass="panoptesIconAddGroup" onClick="addToGroup();">
-                        Add to Group
-                    </div>
-                    <div dojoType="dijit.MenuItem" onClick="addParentDevice();">
-                        Add Parent Device
-                    </div>
-                    <div dojoType="dijit.MenuItem" iconClass="dijitIconEdit" onClick="editDeviceInfo();">
-                        Edit Device Info
-                    </div>
-                    <div dojoType="dijit.MenuItem" iconClass="panoptesIconDeleteGroup" onClick="removeFromGroup();">
-                        Remove from Group
-                    </div>
-                    <div dojoType="dijit.MenuItem" iconClass="panoptesIconReschedule" onClick="scheduleOutage();">
-                        Schedule Outage
-                    </div>
-                    <div dojoType="dijit.MenuItem" iconClass="panoptesIconDelete" onClick="deleteDevice();">
-                       Delete Device 
-                    </div>
-                    <div dojoType="dijit.MenuItem" iconClass="panoptesIconAddNotification" onClick="addDeviceNotification();">
-                       Add Notification
-                    </div>
-                    <div dojoType="dijit.MenuItem" iconClass="panoptesIconRemoveNotification" onClick="removeDeviceNotification();">
-                       Remove Notification
-                    </div>
-                </div>
-	        <div dojoType="dijit.Menu" id="device_tree_group_menu" style="display: none;">
-                    <div dojoType="dijit.MenuItem" iconClass="panoptesIconAccess" onClick="manageDeviceGroupAccess();">
-                       Manage Access
-                    </div>
-                    <div dojoType="dijit.MenuItem" iconClass="panoptesIconDelete" onClick="deleteDeviceGroup();">
-                       Delete Group
-                    </div>
-                </div>
             </div>
             <div id="dashboard_widgets" title="Dashboard Widgets" dojoType="dijit.layout.AccordionPane">
                 Dashboard Widgets
@@ -238,18 +259,6 @@ echo '<body class="' . $theme . '">' . "\n";
         <div id="panoptes_tab_container" region="center" dojoType="dijit.layout.TabContainer">
             <div id="dashboard" title="Dashboard" dojoType="dijit.layout.ContentPane">
                 Dashboard Coming Soon
-            </div>
-            <div id="auto_discovery_tab" title="Auto Discovery" dojoType="dijit.layout.ContentPane" style="height: 100%; width: 100%;">
-                <div id="auto_discovery_grid" style="width: 100%; height: 100%;">
-	            <div dojoType="dijit.Menu" id="autoDiscoveryRowMenu" style="display: none;">
-                        <div dojoType="dijit.MenuItem" iconClass="dijitEditorIcon dijitEditorIconSave" onClick="monitorEntry('dst');">
-                        Monitor Entry
-                        </div>
-                        <div dojoType="dijit.MenuItem" iconClass="dijitIconDelete" onClick="ignoreEntry();">
-                        Ignore Entry
-                        </div>
-                    </div>
-                </div>
             </div>
 <?php
 	  if ($panoptes->isAdmin($panoptes_current_user)) {

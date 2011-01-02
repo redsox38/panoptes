@@ -2,61 +2,59 @@ var discoveryGrid;
 var discoveryStore;
 
 function createAutoDiscoveryGrid(){
-    if (!discoveryGrid) {
-	var xhrArgs = {
-	    url: '/panoptes/',
-	    handleAs: 'json',
-	    //sync: 'true',
-	    content: {
-		action: 'populateAutoDiscoveryForm',
-		data: '{ }'
-	    },
-	    load: function(data) {
-		if (data && !data.error) {
-		    var auto_discovery_data = {
-			label: "dstaddr",
-			identifier: "id",
-			items: data.data
-		    };
+    var xhrArgs = {
+	url: '/panoptes/',
+	handleAs: 'json',
+	content: {
+	    action: 'populateAutoDiscoveryForm',
+	    data: '{ }'
+	},
+	load: function(data) {
+	    hideLoading();
+	    if (data && !data.error) {
+		var auto_discovery_data = {
+		    label: "dstaddr",
+		    identifier: "id",
+		    items: data.data
+		};
+		
+		var layout = [{
+			field: 'dstaddr',
+			name: 'Destination Address',
+			width: '200px'
+		    }, {   
+			field: 'proto', 
+			name: 'Protocol',
+			width: '100px'
+		    }, {            
+			field: 'dport', 
+			name: 'Destination Port',
+			width: 'auto'
+		    }];
 
-		    var layout = [{
-			    field: 'dstaddr',
-			    name: 'Destination Address',
-			    width: '200px'
-			},      
-	                {   
-			    field: 'proto', 
-			    name: 'Protocol',
-			    width: '100px'
-			},
-	                {            
-			    field: 'dport', 
-			    name: 'Destination Port',
-			    width: 'auto'
-	                }];
-
-		    discoveryStore = new dojo.data.ItemFileWriteStore({
-			    data: auto_discovery_data
-			});
-		    discoveryGrid = new dojox.grid.EnhancedGrid({
-			    store: discoveryStore,
-			    structure: layout,
-			    clientSort: true,
-			    rowSelector: '20px',
-			    selectionMode: 'multiple',
-			    plugins: {
-				nestedSorting: true,
-				menus: { rowMenu: 'autoDiscoveryRowMenu' }
-			    }
-			}, document.createElement('div'));		    
-		    dojo.byId('auto_discovery_grid').appendChild(discoveryGrid.domNode);
-		    discoveryGrid.startup();		    
-		}
-	    },
-	};
+		discoveryStore = new dojo.data.ItemFileWriteStore({
+			data: auto_discovery_data
+		    });
+		discoveryGrid = new dojox.grid.EnhancedGrid({
+			store: discoveryStore,
+			structure: layout,
+			clientSort: true,
+			rowSelector: '20px',
+			selectionMode: 'multiple',
+			closable: true,
+			plugins: {
+			    nestedSorting: true,
+			    menus: { rowMenu: 'autoDiscoveryRowMenu' }
+			}
+		    }, document.createElement('div'));		    
+		dojo.byId('auto_discovery_tab').appendChild(discoveryGrid.domNode);
+		discoveryGrid.startup();		    
+	    }
+	},
+    };
 	
-	var resp = dojo.xhrGet(xhrArgs);
-    }
+    showLoading();
+    var resp = dojo.xhrGet(xhrArgs);
 }
 
 function monitorEntry(type) {
@@ -126,9 +124,4 @@ function ignoreEntry() {
     
    var deferred = dojo.xhrGet(xhrArgs);
 }
-
-dojo.addOnLoad(function(){
-	dojo.connect(dijit.byId("auto_discovery_tab"), "onShow", 
-		     dojo.partial(createAutoDiscoveryGrid));
-    });
 

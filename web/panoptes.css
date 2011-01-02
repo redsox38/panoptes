@@ -1,7 +1,15 @@
 body { width: 100%; height: 100%; margin: 0;  font-family:helvetica,arial,sans-serif; font-size:90%; }
 html { width: 100%; height: 100%; margin: 0;  font-family:helvetica,arial,sans-serif; font-size:90%; }
 .dojoxGrid table { margin: 0; }
-.overlayWindow { z-index: 50; height: 100%; width: 100%; background-image: url(images/transparent-blue.png); position: absolute; top: 0; left: 0; }
+.overlayWindow { 
+    z-index: 50; 
+    height: 100%; 
+    width: 100%; 
+    background-image: url(images/transparent-blue.png); 
+    position: absolute; 
+    top: 0; 
+    left: 0; 
+}
 
 .panoptesIconAddNotification,
 .panoptesIconRemoveNotification,
@@ -10,7 +18,8 @@ html { width: 100%; height: 100%; margin: 0;  font-family:helvetica,arial,sans-s
 .panoptesIconAddGroup,
 .panoptesIconDeleteGroup,
 .panoptesIconAdd,
-.panoptesIconAccess {
+.panoptesIconAccess,
+.panoptesIconDisable {
         background-image: url('/panoptes/images/panoptesIcons.png'); 
         width: 16px;
         height: 16px;
@@ -24,3 +33,4 @@ html { width: 100%; height: 100%; margin: 0;  font-family:helvetica,arial,sans-s
 .panoptesIconDeleteGroup { background-position: -80px; }
 .panoptesIconAdd { background-position: -96px; }
 .panoptesIconAccess { background-position: -112px; }
+.panoptesIconDisable { background-position: -128px; }

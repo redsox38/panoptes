@@ -1,4 +1,21 @@
 
+function openAutoDiscoveryTab() {
+    // create tab
+    var cp = new dijit.layout.ContentPane({
+            id: 'auto_discovery_tab',
+            title: 'Auto Discovery',
+	    closable: true,
+            style: "width: 100%; height: 100%;"
+        });
+
+    dijit.byId("panoptes_tab_container").addChild(cp);
+    dijit.byId("panoptes_tab_container").selectChild(cp);
+
+    // create grid
+    createAutoDiscoveryGrid();
+
+}
+
 function getPrefValue(scope, name) {
     showLoading();
     var req = prefStore.fetch({ query: { pref_name: name },
