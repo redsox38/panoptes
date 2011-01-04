@@ -19,7 +19,8 @@ html { width: 100%; height: 100%; margin: 0;  font-family:helvetica,arial,sans-s
 .panoptesIconDeleteGroup,
 .panoptesIconAdd,
 .panoptesIconAccess,
-.panoptesIconDisable {
+.panoptesIconDisable,
+.panoptesIconEnable {
         background-image: url('/panoptes/images/panoptesIcons.png'); 
         width: 16px;
         height: 16px;
@@ -34,3 +35,4 @@ html { width: 100%; height: 100%; margin: 0;  font-family:helvetica,arial,sans-s
 .panoptesIconAdd { background-position: -96px; }
 .panoptesIconAccess { background-position: -112px; }
 .panoptesIconDisable { background-position: -128px; }
+.panoptesIconEnable { background-position: -144px; }

@@ -147,7 +147,7 @@ Context menus
         <div dojoType="dijit.MenuItem" id="monitorMenuDisable" iconClass="panoptesIconDisable" onClick="disableMonitor();">
             Disable
         </div>
-        <div dojoType="dijit.MenuItem" id="monitorMenuEnable" onClick="enableMonitor();">
+        <div dojoType="dijit.MenuItem" id="monitorMenuEnable" iconClass="panoptesIconEnable" onClick="enableMonitor();">
             Enable
         </div>
         <div dojoType="dijit.MenuItem" id="monitorMenuDelete" iconClass="panoptesIconDelete" onClick="deleteMonitor();">

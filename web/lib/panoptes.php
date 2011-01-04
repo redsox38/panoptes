@@ -1338,6 +1338,7 @@ class panoptes
 		     'status'        => $a->status,
 		     'status_string' => $a->status_string,
 		     'metric'        => $a->name,
+		     'disabled'      => $a->disabled,
 		     'notify'        => $a->getNotification($user->id)
 		     );
     } catch (Exception $e) {
@@ -1385,6 +1386,7 @@ class panoptes
 				 'status'        => $a->status,
 				 'status_string' => $a->status_string,
 				 'metric'        => $a->name,
+				 'disabled'      => $a->disabled,
 				 'notify'        => $a->getNotification($user->id)
 				 ));
       }
@@ -1432,6 +1434,7 @@ class panoptes
 		     'ack_by'        => $ack['ack_by'],
 		     'ack_msg'       => $ack['ack_msg'],
 		     'metric'        => $a->proto . '-' . $a->port,
+		     'disabled'      => $a->disabled,
 		     'notify'        => $a->getNotification($user->id)
 		     );
     } catch (Exception $e) {
@@ -1477,6 +1480,7 @@ class panoptes
 				 'ack_msg'       => $ack['ack_msg'],
 				 'status_string' => $a->status_string,
 				 'metric'        => $a->proto . '-' . $a->port,
+				 'disabled'      => $a->disabled,
 				 'notify'        => $a->getNotification($user->id)
 				 ));
       }
@@ -1608,6 +1612,7 @@ class panoptes
 				 'ack_msg'       => $ack['ack_msg'],
 				 'status'        => $a->status,
 				 'status_string' => $a->status_string,
+				 'disabled'      => $a->disabled,
 				 'notify'        => $a->getNotification($user->id)
 				 ));
       }
@@ -1654,6 +1659,7 @@ class panoptes
 				 'ack_msg'             => $ack['ack_msg'],
 				 'status'              => $a->status,
 				 'status_string'       => $a->status_string,
+				 'disabled'            => $a->disabled,
 				 'notify'              => $a->getNotification($user->id)
 				 ));
       }
@@ -2190,6 +2196,7 @@ class panoptes
 		     'ack_msg'       => $ack['ack_msg'],
 		     'status'        => $a->status,
 		     'status_string' => $a->status_string,
+		     'disabled'      => $a->disabled,
 		     'notify'        => $a->getNotification($user->id)
 		     );
     } catch (Exception $e) {

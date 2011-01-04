@@ -870,7 +870,7 @@ function createPortMonitorTab(id) {
 		dijit.byId('monitorMenuRemoveNotification').attr('disabled','true');
 	    }
 
-	    if (disabled) {
+	    if (disabled && (disabled == 1)) {
  		dijit.byId('monitorMenuEnable').attr('disabled', null);
 		dijit.byId('monitorMenuDisable').attr('disabled','true');
 	    } else {
@@ -993,7 +993,7 @@ function createSNMPTab(id) {
 		dijit.byId('monitorMenuRemoveNotification').attr('disabled','true');
 	    }
 
-	    if (disabled) {
+	    if (disabled && (disabled == 1)) {
  		dijit.byId('monitorMenuEnable').attr('disabled', null);
 		dijit.byId('monitorMenuDisable').attr('disabled','true');
 	    } else {
@@ -1116,7 +1116,7 @@ function createShellTab(id) {
 		dijit.byId('monitorMenuRemoveNotification').attr('disabled','true');
 	    }
 
-	    if (disabled) {
+	    if (disabled && (disabled == 1)) {
  		dijit.byId('monitorMenuEnable').attr('disabled', null);
 		dijit.byId('monitorMenuDisable').attr('disabled','true');
 	    } else {
@@ -1244,7 +1244,7 @@ function createUrlTab(id) {
 		dijit.byId('monitorMenuRemoveNotification').attr('disabled','true');
 	    }
 
-	    if (disabled) {
+	    if (disabled && (disabled == 1)) {
  		dijit.byId('monitorMenuEnable').attr('disabled', null);
 		dijit.byId('monitorMenuDisable').attr('disabled','true');
 	    } else {
@@ -1362,7 +1362,7 @@ function createCertificateTab(id) {
 		dijit.byId('monitorMenuRemoveNotification').attr('disabled','true');
 	    }
 
-	    if (disabled) {
+	    if (disabled && (disabled == 1)) {
  		dijit.byId('monitorMenuEnable').attr('disabled', null);
 		dijit.byId('monitorMenuDisable').attr('disabled','true');
 	    } else {
@@ -2164,7 +2164,12 @@ function _disableMonitor(dataGrid, type, status) {
 		if (selectedItem !== null) {
 		    var id = dataGrid.store.getValues(selectedItem, 'id');
 		    ids.push(id);
-		    dataGrid.store.deleteItem(selectedItem);
+		    // update device status for context menu
+		    if (status == 'disable') {
+			dataGrid.store.setValue(selectedItem, 'disabled', 1);
+		    } else {
+			dataGrid.store.setValue(selectedItem, 'disabled', 0);
+		    }
 		}
 	    });
 	dataGrid.store.save();
