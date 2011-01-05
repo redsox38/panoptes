@@ -242,8 +242,12 @@ Context menus
 	  if ($panoptes->isAdmin($panoptes_current_user)) {
             echo '<div>' . "\n";
 	    echo '<a href="#" onClick="uploadFile();">Upload Shell Script</a></br>' . "\n";
-            echo '</div><div>' . "\n";
+            echo '</div>' . "\n";
+            echo '<div>' . "\n";
 	    echo '<a href="#" onClick="createSecurityGroup();">Create Security Group</a></br>' . "\n";
+            echo '</div>' . "\n";
+            echo '<div>' . "\n";
+	    echo '<a href="#" onClick="deleteSecurityGroup();">Delete Security Group</a></br>' . "\n";
             echo '</div>' . "\n";
 	  }
 ?>

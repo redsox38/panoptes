@@ -1,10 +1,8 @@
 jabber notifications
-different icons in device tree by device type
+different icons in device tree by device type ?
 network map
 dashboard
-extensible groups
+alternate group sources
 look @ dojo charting instead of rrd for graphs
 snmp templates
 delete rrds on delete device ?
-remaining icons for menu
-delete security group

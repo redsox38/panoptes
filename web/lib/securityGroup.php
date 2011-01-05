@@ -145,6 +145,24 @@ class securityGroup
     }
   }
 
+ /**
+   * Delete group
+   *
+   * @param none
+   * @throws Exception
+   * @return none
+   */
+  public function delete() {
+    // delete security group
+    try {
+      $id = $this->id;
+      $stmt = $this->db->prepare("DELETE FROM security_groups WHERE id=?");
+      $stmt->bindParam(1, $id, PDO::PARAM_INT);
+      $stmt->execute();
+    } catch (PDOException $e) {
+      throw($e);
+    }
+  }
 
  /**
    * Delete member from group

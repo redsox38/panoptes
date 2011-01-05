@@ -243,6 +243,35 @@ function xhrCreateSecurityGroup(name) {
     dojo.xhrGet(xhrArgs);    
 }
 
+
+function xhrDeleteSecurityGroup(id) {
+    
+    var g_id = id.replace('g_', '');
+
+    var xhrArgs = {
+	url: '/panoptes/',
+	handleAs: 'json',
+	content: {
+	    action: 'deleteSecurityGroup',
+	    data: '{ "group_id": "' + g_id + '" }'
+	},
+	load: function(data) {
+	    if (data && !data.error) {
+		// delete item from store
+		userStore.fetchItemByIdentity({
+			identity: id,
+			onItem: function(item, req) {
+			    userStore.deleteItem(item);
+			    userStore.save();
+			}
+		    });
+	    }
+	},
+    };
+	
+    dojo.xhrGet(xhrArgs);    
+}
+
 function xhrUploadFile(type, file) {
     file_contents = Base64.encode(file.getAsText(""));
 
@@ -269,6 +298,47 @@ function xhrUploadFile(type, file) {
     };
 	
     dojo.xhrGet(xhrArgs);    
+}
+
+function deleteSecurityGroup() {
+    tb = new dijit.form.FilteringSelect({
+	    id: 'del_security_group_name',
+	    name: 'del_security_group_name',
+	    style: 'width: 15em;',
+	    store: userStore,
+	    query: { type: 'group' },
+	    searchAttr: 'name',
+	    placeHolder: 'group to delete'
+	});
+
+    sub = new dijit.form.Button({
+	    id: 'del_security_group_submit',
+	    label: 'Delete',
+	    onClick: function() {
+		xhrDeleteSecurityGroup(dijit.byId("del_security_group_name").get('value'));
+		dijit.byId("del_security_group_name").destroy();
+		dijit.byId("del_security_group_reset").destroy();
+                dijit.byId("del_security_group_submit").destroy();
+                document.body.removeChild(document.getElementById("del_security_group"));
+	    }
+	});
+    
+    rst = new dijit.form.Button({
+	    id: 'del_security_group_reset',
+            label: 'Cancel',
+            onClick: function() {
+		dijit.byId("del_security_group_name").destroy();
+                dijit.byId("del_security_group_reset").destroy();
+                dijit.byId("del_security_group_submit").destroy();
+                document.body.removeChild(document.getElementById("del_security_group"));
+            }
+        });
+
+    var items = [ tb.domNode,
+		  document.createElement("br"),
+		  rst.domNode, sub.domNode ];
+
+    createOverlayWindow("del_security_group", items);
 }
 
 function createSecurityGroup() {

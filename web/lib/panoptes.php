@@ -2337,6 +2337,37 @@ class panoptes
 		 'data' => $data));
   }
 
+
+  /**
+   * deleteSecurityGroup
+   *
+   * @param args json params converted into an array
+   8                  group_id id of group to delete
+   * @throws none
+   * @return array containing result and possible error messages
+   */
+  public function ajax_deleteSecurityGroup($args) {
+    $result = 'success';
+    $error = '';
+
+    try {				       
+      if (array_key_exists('group_id', $args)) {
+	require_once 'securityGroup.php';
+	$grp = new securityGroup($this->db);
+	$grp->id = $args['group_id'];
+	$grp->delete();
+      } else {
+	$result = 'failure';
+	$error = 'no group id supplied';
+      }
+    } catch (Exception $e) {
+      return(array('result' => 'failure',
+		   'error'  => $e->getMessage()));
+    }
+    
+    return(array('result' => $result, 'error' => $error));
+  }
+
   /**
    * get individual or all users
    *

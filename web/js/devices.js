@@ -124,7 +124,7 @@ function manageDeviceGroupAccess() {
             style: 'width: 12em;',
             store: userStore,
             query: { type: 'group' },
-            serchAttr: 'id',
+            searchAttr: 'id',
             placeHolder: 'group to grant access'
         });
 
@@ -159,7 +159,7 @@ function manageDeviceGroupAccess() {
             style: 'width: 15em;',
             store: deviceStore,
             query: { type: 'group', name: new RegExp("/((?!ungrouped).)/") },
-            serchAttr: 'id',
+            searchAttr: 'id',
             value: id
         });
 

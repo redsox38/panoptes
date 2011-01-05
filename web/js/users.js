@@ -122,7 +122,7 @@ function buildUserForm() {
 	    style: 'width: 15em;',
 	    store: userStore,
 	    query: { type: 'user' },
-	    serchAttr: 'id',
+	    searchAttr: 'id',
 	    placeHolder: 'username to delete'
 	});
     del_tb.placeAt(user_tab.domNode);
@@ -146,7 +146,7 @@ function buildUserForm() {
 	    style: 'width: 15em;',
 	    store: userStore,
 	    query: { type: 'user' },
-	    serchAttr: 'id',
+	    searchAttr: 'id',
 	    placeHolder: 'username to add'
 	});
     add_src_tb.placeAt(user_tab.domNode);    
@@ -157,7 +157,7 @@ function buildUserForm() {
 	    style: 'width: 15em;',
 	    store: userStore,
 	    query: { type: 'group' },
-	    serchAttr: 'id',
+	    searchAttr: 'id',
 	    placeHolder: 'group to add to'
 	});
     add_tgt_tb.placeAt(user_tab.domNode);    
@@ -183,7 +183,7 @@ function buildUserForm() {
 	    style: 'width: 15em;',
 	    store: userStore,
 	    query: { type: 'user' },
-	    serchAttr: 'id',
+	    searchAttr: 'id',
 	    placeHolder: 'username to delete'
 	});
     del_src_tb.placeAt(user_tab.domNode);    
@@ -194,7 +194,7 @@ function buildUserForm() {
 	    style: 'width: 15em;',
 	    store: userStore,
 	    query: { type: 'group' },
-	    serchAttr: 'id',
+	    searchAttr: 'id',
 	    placeHolder: 'group to remove from'
 	});
     del_tgt_tb.placeAt(user_tab.domNode);    
