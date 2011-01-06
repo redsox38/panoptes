@@ -71,6 +71,34 @@ class panoptes
     $this->db = NULL;
   }
 
+  /**
+   * Recursively delete a directory and its contents
+   *
+   * @param string dir directory name to delete
+   * @throws none
+   * @return none
+   */     
+  private function _deleteDirectory($dir) {
+    if (!$dh = @opendir($dir)) {
+        return;
+    }
+
+    while (false !== ($obj = readdir($dh))) {
+      if($obj == '.' || $obj == '..') {
+	continue;
+      }
+
+      if (!@unlink($dir . '/' . $obj)) {
+	$this->_deleteDirectory($dir . '/' . $obj);
+      }
+    }
+
+    closedir($dh);   
+    @rmdir($dir);
+   
+    return; 
+  }
+
   public function getDb() {
     return($this->db);
   }
@@ -1565,9 +1593,16 @@ class panoptes
     try {
       // get device object and call delete
       $dev = $this->getDevice($args['id']);
-
+      $rrd_root = $this->config()->getConfigValue('rrd.directory'); 
+	
       if ($dev) {
+	$rrd_path = $rrd_root . '/' . $dev->address;
 	$dev->delete();
+
+	// delete rrd files if there are any
+	if (file_exists($rrd_path)) {
+	  $this->_deleteDirectory($rrd_path);
+	}
       } else {
 	throw new Exception("Device " . $id . " does not exist");
       }
