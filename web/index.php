@@ -238,6 +238,9 @@ Context menus
                 <div>
 	        <a href="#" onClick="openAutoDiscoveryTab();">Auto Discovery</a><br/>
                 </div>
+                <div>
+	        <a href="#" onClick="openEditDashboardTab();">Edit Dashboard</a><br/>
+                </div>
 <?php
 	  if ($panoptes->isAdmin($panoptes_current_user)) {
             echo '<div>' . "\n";
@@ -255,14 +258,10 @@ Context menus
             <div id="device_list" title="Device List" dojoType="dijit.layout.AccordionPane">
                 <div id="device_tree_container"></div>
             </div>
-            <div id="dashboard_widgets" title="Dashboard Widgets" dojoType="dijit.layout.AccordionPane">
-                Dashboard Widgets
-            </div>
         </div>
 
         <div id="panoptes_tab_container" region="center" dojoType="dijit.layout.TabContainer">
-            <div id="dashboard" title="Dashboard" dojoType="dijit.layout.ContentPane">
-                Dashboard Coming Soon
+            <div id="dashboard_tab" title="Dashboard" dojoType="dijit.layout.ContentPane">
             </div>
 <?php
 	  if ($panoptes->isAdmin($panoptes_current_user)) {

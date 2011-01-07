@@ -12,6 +12,7 @@ var urlMonitorStore;
 var userStore;
 var prefStore;
 
+var dashboard_edit_mode = false;
 var loading_count = 0;
 
 function loadUsers() {

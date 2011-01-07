@@ -1,4 +1,9 @@
 
+function openEditDashboardTab() {
+    dashboard_edit_mode = true;
+    dijit.byId("panoptes_tab_container").selectChild(dijit.byId("dashboard_tab"));
+}
+
 function openAutoDiscoveryTab() {
     // create tab
     var cp = new dijit.layout.ContentPane({
@@ -13,7 +18,6 @@ function openAutoDiscoveryTab() {
 
     // create grid
     createAutoDiscoveryGrid();
-
 }
 
 function getPrefValue(scope, name) {
@@ -27,7 +31,6 @@ function getPrefValue(scope, name) {
                 }
 		hideLoading();
             }});
-    
 }
 
 function loadUserPrefs() {
