@@ -301,7 +301,7 @@ class panoptes
   }
 
   /**
-   * usetPermission
+   * setPermission
    *
    * @param type one or read/write/none
    * @param sec_grp_id security group id
@@ -376,7 +376,7 @@ class panoptes
 	$stmt->bindParam(1, $id, PDO::PARAM_INT);
 	$stmt->execute();
 
-	$r = $stmt->fetch(PRO::FETCH_ASSOC);
+	$r = $stmt->fetch(PDO::FETCH_ASSOC);
       } catch (PDOException $e) {
 	throw($e);
       }

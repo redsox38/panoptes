@@ -1,4 +1,5 @@
 var dashboards_loaded = false;
+var dashboardWidgetStore = null;
 
 function openEditDashboardTab() {
     if (!dashboards_loaded) {
@@ -11,6 +12,38 @@ function openEditDashboardTab() {
     }
 
     dashboard_edit_mode = true;
+
+    if (!dashboardWidgetStore) {
+	dashboardWidgetStore = new dojo.data.ItemFileWriteStore({
+		data: {
+		    identifier: 'id',
+		    label: 'name',
+		    items: []
+		}
+	    });
+
+	var xhrArgs = {
+	    url: '/panoptes/dashboardWidget.php',
+	    handleAs: 'json',
+	    content: {
+		action: 'getDashboardWidgets',
+		data: '{ }'
+	    },
+	    load: function(data) {
+		if (data && !data.error) {
+		    // fill in data store
+		    dojo.forEach(data.data, function(item) {
+			    dashboardWidgetStore.newItem(item);
+			});
+		    dashboardWidgetStore.save();
+		} else {
+		    alert(data.error);
+		}
+	    },
+	};
+	
+	dojo.xhrGet(xhrArgs);       
+    }
 
     // add cancel, save, and add new buttons to top of tab
     var cncl_btn = new dijit.form.Button({

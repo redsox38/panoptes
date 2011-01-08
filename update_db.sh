@@ -11,22 +11,29 @@ stty echo
 echo
 
 case $vers in
+    1.4 )
+        cat dbinit-5.sql | mysql -u $mysql_user -p$mysql_password panoptes
+        ;;
     1.3 )
         cat dbinit-4.sql | mysql -u $mysql_user -p$mysql_password panoptes
+        cat dbinit-5.sql | mysql -u $mysql_user -p$mysql_password panoptes
         ;;
     1.2 )
         cat dbinit-3.sql | mysql -u $mysql_user -p$mysql_password panoptes
         cat dbinit-4.sql | mysql -u $mysql_user -p$mysql_password panoptes
+        cat dbinit-5.sql | mysql -u $mysql_user -p$mysql_password panoptes
         echo "Database updated."
         ;;
     1.1 )
         cat dbinit-3.sql | mysql -u $mysql_user -p$mysql_password panoptes
         cat dbinit-4.sql | mysql -u $mysql_user -p$mysql_password panoptes
+        cat dbinit-5.sql | mysql -u $mysql_user -p$mysql_password panoptes
         echo "Database updated."
         ;;
     1.0 )
         cat dbinit-3.sql | mysql -u $mysql_user -p$mysql_password panoptes
         cat dbinit-4.sql | mysql -u $mysql_user -p$mysql_password panoptes
+        cat dbinit-5.sql | mysql -u $mysql_user -p$mysql_password panoptes
         echo "Database updated."
         ;;
     * )

@@ -29,7 +29,6 @@
  *
  */
 
-
 class panoptesDashboard
 {
   protected $config;
@@ -66,6 +65,66 @@ class panoptesDashboard
     $this->db = NULL;
   }
 
+  /**
+   * getWidgets
+   *
+   * @param none
+   * @throws none
+   * @return array containing result and possible error messages
+   */
+  public function getWidgets() {
+    require_once 'dashboardWidget.php';
+
+    $rtn = array();
+
+    try {
+      $stmt = $this->db->prepare("SELECT * FROM dashboard_widgets");
+      $stmt->execute();
+      
+      while ($r = $stmt->fetch(PDO::FETCH_ASSOC)) {
+	$ent = new dashboardWidget($this->db);
+	$ent->name = $r['name'];
+	$ent->id = $r['id'];
+	$ent->description = $r['description'];
+	$ent->php_class = $r['php_class'];
+	array_push($rtn, $ent);
+      }
+    } catch (PDOException $e) {
+      throw($e);
+    }
+
+    return($rtn);
+  }
+
+  /**
+   * getDashboardWidgets
+   *
+   * @param args json params converted into an array
+   *             not used
+   * @throws none
+   * @return array containing result and possible error messages
+   */
+  public function ajax_getDashboardWidgets($args) {
+    $result = 'success';
+    $error = '';
+    $data = array();
+    
+    try {
+      $rst = $this->getWidgets();
+      foreach ($rst as $a) {
+	array_push($data, array(
+				'description' => $a->description,
+				'id'          => $a->id,
+				'name'        => $a->name			       
+				));
+      }
+    } catch (Exception $e) {
+      return(array('result' => 'failure',
+		   'error'  => $e->getMessage()));
+    }
+    
+    return(array('result' => $result, 'error' => $error, 'data' => $data));
+  }
 }
 
 ?>
