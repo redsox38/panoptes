@@ -2218,22 +2218,26 @@ class panoptes
       $user->getByName($panoptes_current_user);
 
       $rst = $this->getShellMonitorData($args['device_id'], $args['entry_id']);
-      $a = $rst[0];
-      $ack = $a->getAckInfo();
-      $data = array (
-		     'id'            => $a->id,
-		     'device_id'     => $a->device_id,
-		     'script'        => $a->script,
-		     'params'        => $a->params,
-		     'last_check'    => $a->last_check,
-		     'next_check'    => $a->next_check,
-		     'ack_by'        => $ack['ack_by'],
-		     'ack_msg'       => $ack['ack_msg'],
-		     'status'        => $a->status,
-		     'status_string' => $a->status_string,
-		     'disabled'      => $a->disabled,
-		     'notify'        => $a->getNotification($user->id)
-		     );
+      if ($rst) {
+	$a = $rst[0];
+	$ack = $a->getAckInfo();
+	$data = array (
+		       'id'            => $a->id,
+		       'device_id'     => $a->device_id,
+		       'script'        => $a->script,
+		       'params'        => $a->params,
+		       'last_check'    => $a->last_check,
+		       'next_check'    => $a->next_check,
+		       'ack_by'        => $ack['ack_by'],
+		       'ack_msg'       => $ack['ack_msg'],
+		       'status'        => $a->status,
+		       'status_string' => $a->status_string,
+		       'disabled'      => $a->disabled,
+		       'notify'        => $a->getNotification($user->id)
+		       );
+      } else {
+	$data = array();
+      }
     } catch (Exception $e) {
       return(array('result' => 'failure',
 		   'error'  => $e->getMessage()));

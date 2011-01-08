@@ -1,6 +1,47 @@
+var dashboards_loaded = false;
 
 function openEditDashboardTab() {
+    if (!dashboards_loaded) {
+	//load functions for dashboard    
+	var handle = dojo.xhrGet({
+		url: '/panoptes/js/dashboards.js',
+		handleAs: 'javascript'
+	    });
+	dashboards_loaded = true;
+    }
+
     dashboard_edit_mode = true;
+
+    // add cancel, save, and add new buttons to top of tab
+    var cncl_btn = new dijit.form.Button({
+	    id: 'dashboard_cancel',
+	    label: 'Cancel',
+	    onClick: function() {
+		dashboard_edit_mode = false;
+		dijit.byId("dashboard_add").destroy();
+		dijit.byId("dashboard_save").destroy();
+		dijit.byId("dashboard_cancel").destroy();
+	    }
+	}).placeAt("dashboard_tab", "first");
+
+    var sv_btn = new dijit.form.Button({
+	    id: 'dashboard_save',
+	    label: 'Save',
+	    onClick: function() {
+		dashboard_edit_mode = false;
+		alert('saved');
+	    }
+	}).placeAt("dashboard_tab", "first");
+
+    var add_btn = new dijit.form.Button({
+	    id: 'dashboard_add',
+	    label: 'Add New',
+	    onClick: function() {
+		addDashboardWidget();
+	    }
+	}).placeAt("dashboard_tab", "first");
+
+    // move focus to dashboard tab
     dijit.byId("panoptes_tab_container").selectChild(dijit.byId("dashboard_tab"));
 }
 

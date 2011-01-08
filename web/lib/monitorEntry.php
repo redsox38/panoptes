@@ -267,9 +267,10 @@ abstract class monitorEntry
   public function reschedule($time) {
 
     try {
+      $id = $this->id;
       $stmt = $this->db->prepare("UPDATE " . $this->monitorTable() . " SET next_check=? WHERE id=?");
       $stmt->bindParam(1, $time);
-      $stmt->bindParam(2, $this->id, PDO::PARAM_INT);
+      $stmt->bindParam(2, $id, PDO::PARAM_INT);
       $stmt->execute();
     } catch (PDOException $e) {
       throw($e);
