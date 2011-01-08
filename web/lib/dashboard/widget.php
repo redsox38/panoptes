@@ -28,7 +28,6 @@
  * @project panoptes
  *
  */
-
 class dashboardWidget
 {
   protected $data = array();

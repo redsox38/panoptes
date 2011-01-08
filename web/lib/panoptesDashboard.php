@@ -73,7 +73,7 @@ class panoptesDashboard
    * @return array containing result and possible error messages
    */
   public function getWidgets() {
-    require_once 'dashboardWidget.php';
+    require_once 'dashboard/widget.php';
 
     $rtn = array();
 
