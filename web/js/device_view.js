@@ -255,8 +255,16 @@ function xhrRescheduleMonitor(dataGrid, dev_id, params, monitor_ids) {
 			    }
 			});
 		    // schedule reload
-		    timerId = reloadMonitorEntry(updateShellMonitorEntry, dev_id, monitor_ids[i], 
-						 dataGrid, data.data['time']);
+		    if (params.type == "port_monitors") {
+			timerId = reloadMonitorEntry(updatePortMonitorEntry, dev_id, monitor_ids[i], 
+						     dataGrid, data.data['time']);
+		    } else if (params.type == "snmp_monitors") {
+			timerId = reloadMonitorEntry(updateSNMPMonitorEntry, dev_id, monitor_ids[i], 
+						     dataGrid, data.data['time']);
+		    } else if (params.type == "shell_monitors") {
+			timerId = reloadMonitorEntry(updateShellMonitorEntry, dev_id, monitor_ids[i], 
+						     dataGrid, data.data['time']);
+		    }
 		}
 	    } else {
 		alert(data.error);
