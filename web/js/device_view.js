@@ -261,6 +261,9 @@ function xhrRescheduleMonitor(dataGrid, dev_id, params, monitor_ids) {
 		    } else if (params.type == "snmp_monitors") {
 			timerId = reloadMonitorEntry(updateSNMPMonitorEntry, dev_id, monitor_ids[i], 
 						     dataGrid, data.data['time']);
+		    } else if (params.type == "url_monitors") {
+			timerId = reloadMonitorEntry(updateUrlMonitorEntry, dev_id, monitor_ids[i], 
+						     dataGrid, data.data['time']);
 		    } else if (params.type == "shell_monitors") {
 			timerId = reloadMonitorEntry(updateShellMonitorEntry, dev_id, monitor_ids[i], 
 						     dataGrid, data.data['time']);
@@ -302,6 +305,43 @@ function updatePortMonitorEntry(dev_id, ent_id, container) {
 
 		// schedule reload
 		timerId = reloadMonitorEntry(updatePortMonitorEntry, dev_id, ent_id, 
+					     container, data.data['next_check']);
+	    } else {
+		alert(data.error);
+	    }
+	},	
+    };
+       
+    var resp = dojo.xhrGet(xhrArgs);
+}
+
+function updateUrlMonitorEntry(dev_id, ent_id, container) {    
+    var xhrArgs = {
+	url: '/panoptes/',
+	handleAs: 'json',
+	content: {
+	    action: 'getUrlMonitorEntry',
+	    data: '{ "device_id": "' + dev_id + '", "entry_id": "' + ent_id + '" }'
+	},
+	load: function(data) {
+	    if (data && !data.error) {          
+		// find this one entry in the data store and update it's values
+		urlMonitorStore.fetchItemByIdentity({
+			identity: ent_id,
+			onItem: function(item, req) {
+			    urlMonitorStore.setValue(item, 'status', data.data['status']);
+			    urlMonitorStore.setValue(item, 'status_string', data.data['status_string']);
+			    urlMonitorStore.setValue(item, 'last_check', data.data['last_check']);
+			    urlMonitorStore.setValue(item, 'next_check', data.data['next_check']);
+
+			    urlMonitorStore.save();
+			    container.setStore(urlMonitorStore);
+			    container.update();		
+			}
+		    });
+
+		// schedule reload
+		timerId = reloadMonitorEntry(updateUrlMonitorEntry, dev_id, ent_id, 
 					     container, data.data['next_check']);
 	    } else {
 		alert(data.error);
@@ -489,7 +529,9 @@ function addUrlMonitorData(id, container) {
 		    // populate grid		
 		    dojo.forEach(data.data, function(oneEntry) {
 			    urlMonitorStore.newItem(oneEntry);
-			});
+			    timerId = reloadMonitorEntry(updateUrlMonitorEntry, id, oneEntry['id'], 
+							 container, oneEntry['next_check']);
+ 			});
 
 		    urlMonitorStore.save();
 		    container.setStore(urlMonitorStore);

@@ -1707,6 +1707,53 @@ class panoptes
   }
 
   /**
+   * get availability monitor entry
+   *
+   * return monitor information for given device id
+   *        and entry id
+   *
+   * @param args json params converted into an array
+   *             device_id device id to get data for
+   *             entry_id entry to get data for
+   * @throws none
+   * @return array containing result and possible error messages
+   */
+  public function ajax_getUrlMonitorEntry($args) {
+    global $panoptes_current_user;
+    try {
+      require_once 'userEntry.php';
+      $user = new userEntry();
+      $user->db = $this->db;
+      $user->getByName($panoptes_current_user);
+
+      $rst = $this->getUrlMonitorData($args['device_id'], $args['entry_id']);
+      $a = $rst[0];
+      $ack = $a->getAckInfo();
+      $data = array (
+		     'id'                  => $a->id,
+		     'device_id'           => $a->device_id,
+		     'url'                 => $a->url,
+		     'expect_http_status'  => $a->expect_http_status,
+		     'expect_http_content' => $a->expect_http_content,
+		     'last_check'          => $a->last_check,
+		     'next_check'          => $a->next_check,
+		     'ack_by'              => $ack['ack_by'],
+		     'ack_msg'             => $ack['ack_msg'],
+		     'status'              => $a->status,
+		     'status_string'       => $a->status_string,
+		     'metric'              => $a->name,
+		     'disabled'            => $a->disabled,
+		     'notify'              => $a->getNotification($user->id)
+		     );
+    } catch (Exception $e) {
+      return(array('result' => 'failure',
+		   'error'  => $e->getMessage()));
+    }
+
+    return(array('result' => 'success', 'data' => $data));
+  }
+
+  /**
    * delete monitor entries
    *
    * @param args json params converted into an array
