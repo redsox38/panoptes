@@ -266,5 +266,6 @@ dojo.addOnLoad(function(){
 	loadUsers();
 	loadUserPrefs();
 	loadGroups();
+	loadDashboard();
     });
 

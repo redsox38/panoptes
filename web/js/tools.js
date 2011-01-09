@@ -2,6 +2,38 @@ var dashboards_loaded = false;
 var dashboardWidgetStore = null;
 var widget_counter;
 
+function loadDashboard() {
+    if (!dashboards_loaded) {
+	//load functions for dashboard    
+	var handle = dojo.xhrGet({
+		url: '/panoptes/js/dashboards.js',
+		handleAs: 'javascript'
+	    });
+	dashboards_loaded = true;
+    }
+
+    // get list of widgets this user has added
+    var xhrArgs = {
+	url: '/panoptes/dashboardWidget.php',
+	handleAs: 'json',
+	content: {
+	    action: 'getUserWidgets',
+	    data: '{ }'
+	},
+	load: function(data) {
+	    if (data && !data.error) {
+		dojo.forEach(data.data, function(widget) {
+			// render widget
+		    });
+	    } else {
+		alert(data.error);
+	    }
+	},
+    };
+    
+    dojo.xhrGet(xhrArgs);       
+}
+
 function openEditDashboardTab() {
     if (!dashboards_loaded) {
 	//load functions for dashboard    

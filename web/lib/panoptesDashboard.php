@@ -259,6 +259,37 @@ class panoptesDashboard
     
     return(array('result' => $result, 'error' => $error, 'data' => $data));
   }
+
+  /**
+   * getUserWidgets
+   *
+   * @param args json params converted into an array
+   *             not used currently
+   * @throws none
+   * @return array containing result and possible error messages
+   */
+  public function ajax_getUserWidgets($args) {
+    global $panoptes_current_user;
+
+    $result = 'success';
+    $error = '';
+    $data = array();
+
+    require_once 'userEntry.php';
+    $user = new userEntry();
+    $user->db = $this->db;
+    $user->getByName($panoptes_current_user);
+    
+    try {
+      // get a list of widgets that this user has added
+    } catch (Exception $e) {
+      return(array('result' => 'failure',
+		   'error'  => $e->getMessage()));
+    }
+    
+    return(array('result' => $result, 'error' => $error, 'data' => $data));
+  }
+
 }
 
 ?>
