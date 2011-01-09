@@ -1,5 +1,6 @@
 var dashboards_loaded = false;
 var dashboardWidgetStore = null;
+var widget_counter;
 
 function openEditDashboardTab() {
     if (!dashboards_loaded) {
@@ -12,6 +13,7 @@ function openEditDashboardTab() {
     }
 
     dashboard_edit_mode = true;
+    widget_counter = 0;
 
     if (!dashboardWidgetStore) {
 	dashboardWidgetStore = new dojo.data.ItemFileWriteStore({
@@ -54,6 +56,35 @@ function openEditDashboardTab() {
 		dijit.byId("dashboard_add").destroy();
 		dijit.byId("dashboard_save").destroy();
 		dijit.byId("dashboard_cancel").destroy();
+
+		var type_val = dijit.byId('new_widget_type').get('value');
+		if (type_val) {
+		    var xhrArgs = {
+			url: '/panoptes/dashboardWidget.php',
+			handleAs: 'json',
+			content: {
+			    action: 'getWidgetFormCleanup',
+			    data: '{ "widget_id": "' + type_val + '" }'
+			},
+			load: function(data) {
+			    if (data && !data.error) {
+				eval(data.data);
+			    } else {
+				alert(data.error);
+			    }
+			},
+		    };
+		    
+		    dojo.xhrGet(xhrArgs);       
+		}
+		
+                // destroy remaining dom nodes/dijits if present
+                win = document.getElementById("new_widget_box");
+		if (win) {
+		    dijit.byId('new_widget_type').destroy();
+		    var prnt = document.getElementById("dashboard_tab");
+		    prnt.removeChild(win);
+		}
 	    }
 	}).placeAt("dashboard_tab", "first");
 

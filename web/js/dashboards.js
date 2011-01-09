@@ -9,7 +9,6 @@ function addDashboardWidget() {
     // append widget selector
     sb = new dijit.form.FilteringSelect({
    	    id: 'new_widget_type',
-   	    name: 'new_widget_type',
     	    store: dashboardWidgetStore,
 	    style: 'width: 120px;',
     	    searchAttr: 'name',
@@ -43,4 +42,5 @@ function addDashboardWidget() {
     	});
 
     sb.placeAt(node);
+    widget_counter++;
 }

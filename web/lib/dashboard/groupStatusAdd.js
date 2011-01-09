@@ -2,7 +2,6 @@
 
 grp_sel = new dijit.form.FilteringSelect({
 	id: 'new_widget_grp',
-	name: 'new_widget_grp',
 	store: deviceStore,
 	query: { type: 'group' },
 	style: 'width: 120px;',

@@ -61,7 +61,19 @@ class groupStatusWidget implements widgetInterface
    * @return val javascript to be passed back to client
    */
   public function getNewFormInterface() {
-    $val = file_get_contents(dirname(realpath(__FILE__)) . '/groupStatus.js');
+    $val = file_get_contents(dirname(realpath(__FILE__)) . '/groupStatusAdd.js');
+    return($val);
+  }
+
+  /**
+   * getNewFormCleanup
+   *
+   * @param none
+   * @throws none
+   * @return val javascript to be passed back to client
+   */
+  public function getNewFormCleanup() {
+    $val = file_get_contents(dirname(realpath(__FILE__)) . '/groupStatusRemove.js');
     return($val);
   }
 }
