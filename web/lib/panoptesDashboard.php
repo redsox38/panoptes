@@ -153,7 +153,7 @@ class panoptesDashboard
 	  require_once 'dashboard/' . $ent->php_file;
 
 	  $class_name = $ent->php_class;
-	  $obj = new $class_name();
+	  $obj = new $class_name($this->db);
 
 	  $data = $obj->getNewFormInterface();
 	} else {
@@ -193,7 +193,7 @@ class panoptesDashboard
 	  require_once 'dashboard/' . $ent->php_file;
 
 	  $class_name = $ent->php_class;
-	  $obj = new $class_name();
+	  $obj = new $class_name($this->db);
 
 	  $data = $obj->getNewFormCleanup();
 	} else {
@@ -241,7 +241,7 @@ class panoptesDashboard
 	  require_once 'dashboard/' . $ent->php_file;
 
 	  $class_name = $ent->php_class;
-	  $obj = new $class_name();
+	  $obj = new $class_name($this->db);
 
 	  $data = $obj->saveWidget($ent->id, $user->id, $args['params']);
 	} else {

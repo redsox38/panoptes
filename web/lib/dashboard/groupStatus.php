@@ -83,13 +83,24 @@ class groupStatusWidget implements widgetInterface
    * @param widget_id widget id
    * @param user_id user_id from database
    * @param args params array passed in from client
-   * @throws Exception
+   * @throws PDOException
    * @return none
    */
   public function saveWidget($widget_id, $user_id, $args) {
     $save_params = array();
 
-    $save_params['group_id'] = preg_replace('/g_(\d+)/', '\1', $args['new_widget_group']);
+    $save_params['group_id'] = preg_replace('/g_(\d+)/', '\1', $args['new_widget_grp']);
+    
+    try {
+      $stmt = $this->db->prepare("INSERT INTO user_dashboard_widgets VALUES(0, ?, ?, ?)");
+      $stmt->bindParam(1, $widget_id);
+      $stmt->bindParam(2, $user_id);
+      $stmt->bindParam(3, serialize($save_params));
+      $stmt->execute();
+      $this->id = $this->db->lastInsertId();
+    } catch (PDOException $e) {
+      throw($e);
+    } 
   }
 }
 ?>
