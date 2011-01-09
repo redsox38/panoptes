@@ -72,13 +72,18 @@ class panoptesDashboard
    * @throws none
    * @return array containing result and possible error messages
    */
-  public function getWidgets() {
+  public function getWidget($id = null) {
     require_once 'dashboard/widget.php';
 
     $rtn = array();
 
     try {
-      $stmt = $this->db->prepare("SELECT * FROM dashboard_widgets");
+      if ($id) {
+	$stmt = $this->db->prepare("SELECT * FROM dashboard_widgets WHERE id=?");
+	$stmt->bindParam(1, $id, PDO::PARAM_INT);
+      } else {
+	$stmt = $this->db->prepare("SELECT * FROM dashboard_widgets");
+      }
       $stmt->execute();
       
       while ($r = $stmt->fetch(PDO::FETCH_ASSOC)) {
@@ -87,6 +92,7 @@ class panoptesDashboard
 	$ent->id = $r['id'];
 	$ent->description = $r['description'];
 	$ent->php_class = $r['php_class'];
+	$ent->php_file = $r['php_file'];
 	array_push($rtn, $ent);
       }
     } catch (PDOException $e) {
@@ -110,13 +116,53 @@ class panoptesDashboard
     $data = array();
     
     try {
-      $rst = $this->getWidgets();
+      $rst = $this->getWidget();
       foreach ($rst as $a) {
 	array_push($data, array(
 				'description' => $a->description,
 				'id'          => $a->id,
 				'name'        => $a->name			       
 				));
+      }
+    } catch (Exception $e) {
+      return(array('result' => 'failure',
+		   'error'  => $e->getMessage()));
+    }
+    
+    return(array('result' => $result, 'error' => $error, 'data' => $data));
+  }
+
+  /**
+   * getWidgetForm
+   *
+   * @param args json params converted into an array
+   *             widget_id widget id to get form elements for
+   * @throws none
+   * @return array containing result and possible error messages
+   */
+  public function ajax_getWidgetForm($args) {
+    $result = 'success';
+    $error = '';
+    $data = '';
+    
+    try {
+      if (array_key_exists('widget_id', $args)) {
+	$rst = $this->getWidget();
+	if ($rst) {
+	  $ent = $rst[0];
+	  require_once 'dashboard/' . $ent->php_file;
+
+	  $class_name = $ent->php_class;
+	  $obj = new $class_name();
+
+	  $data = $obj->getNewFormInterface();
+	} else {
+	  $result = 'failure';
+	  $error = 'invalid widget id supplied';
+	}
+      } else {
+	$result = 'failure';
+	$error = 'no widget id supplied';
       }
     } catch (Exception $e) {
       return(array('result' => 'failure',

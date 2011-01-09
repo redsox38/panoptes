@@ -11,15 +11,36 @@ function addDashboardWidget() {
    	    id: 'new_widget_type',
    	    name: 'new_widget_type',
     	    store: dashboardWidgetStore,
-	    style: 'width: 125px;',
+	    style: 'width: 120px;',
     	    searchAttr: 'name',
 	    labelAttr: 'name',
 	    onChange: function(e) {
-		alert(dijit.byId('new_widget_type').get('value'));
+		// get request parameters for widget
+		var id = dijit.byId('new_widget_type').get('value');
+
+		var xhrArgs = {
+		    url: '/panoptes/dashboardWidget.php',
+		    handleAs: 'json',
+		    content: {
+			action: 'getWidgetForm',
+			data: '{ "widget_id": "' + id + '" }'
+		    },
+		    load: function(data) {
+			hideLoading();
+			if (data && !data.error) {
+			    eval(data.data);
+			} else {
+			    alert(data.error);
+			}
+		    },
+		};
+	
+		showLoading();
+		dojo.xhrGet(xhrArgs);       
+
 	    },
 	    placeHolder: 'select a widget'
     	});
 
     sb.placeAt(node);
-
 }
