@@ -93,7 +93,40 @@ function openEditDashboardTab() {
 	    label: 'Save',
 	    onClick: function() {
 		dashboard_edit_mode = false;
-		alert('saved');
+                win = document.getElementById("new_widget_box");
+		var params = {};
+		if (win) {
+		    for (i = 0; i < win.childNodes.length; i++) {
+			var item_id = win.childNodes[i].id.replace("widget_","");
+			var thisDijit = dijit.byId(item_id);
+			if (thisDijit) {
+			    params[item_id] = thisDijit.get('value');
+			}
+		    }
+		}
+
+		// call save function
+		var type_val = dijit.byId('new_widget_type').get('value');
+		if (type_val) {
+		    var xhrArgs = {
+			url: '/panoptes/dashboardWidget.php',
+			handleAs: 'json',
+			content: {
+			    action: 'saveWidget',
+			    data: '{ "widget_id": "' + type_val + '", "params": ' +
+			    dojo.toJson(params) + ' }'
+			},
+			load: function(data) {
+			    if (data && !data.error) {
+				// reneder widget
+			    } else {
+				alert(data.error);
+			    }
+			},
+		    };
+		    
+		    dojo.xhrGet(xhrArgs);       
+		}		
 	    }
 	}).placeAt("dashboard_tab", "first");
 

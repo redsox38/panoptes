@@ -33,5 +33,6 @@ interface widgetInterface
 {
   function getNewFormInterface();
   function getNewFormCleanup();
+  function saveWidget();
 }
 ?>

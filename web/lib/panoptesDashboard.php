@@ -211,6 +211,54 @@ class panoptesDashboard
     
     return(array('result' => $result, 'error' => $error, 'data' => $data));
   }
+
+  /**
+   * saveWidget
+   *
+   * @param args json params converted into an array
+   *             widget_id widget id to save
+   *             params parameter map to pass to widget class
+   * @throws none
+   * @return array containing result and possible error messages
+   */
+  public function ajax_saveWidget($args) {
+    global $panoptes_current_user;
+
+    $result = 'success';
+    $error = '';
+    $data = '';
+
+    require_once 'userEntry.php';
+    $user = new userEntry();
+    $user->db = $this->db;
+    $user->getByName($panoptes_current_user);
+    
+    try {
+      if (array_key_exists('widget_id', $args)) {
+	$rst = $this->getWidget();
+	if ($rst) {
+	  $ent = $rst[0];
+	  require_once 'dashboard/' . $ent->php_file;
+
+	  $class_name = $ent->php_class;
+	  $obj = new $class_name();
+
+	  $data = $obj->saveWidget($ent->id, $user->id, $args['params']);
+	} else {
+	  $result = 'failure';
+	  $error = 'invalid widget id supplied';
+	}
+      } else {
+	$result = 'failure';
+	$error = 'no widget id supplied';
+      }
+    } catch (Exception $e) {
+      return(array('result' => 'failure',
+		   'error'  => $e->getMessage()));
+    }
+    
+    return(array('result' => $result, 'error' => $error, 'data' => $data));
+  }
 }
 
 ?>

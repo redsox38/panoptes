@@ -76,5 +76,20 @@ class groupStatusWidget implements widgetInterface
     $val = file_get_contents(dirname(realpath(__FILE__)) . '/groupStatusRemove.js');
     return($val);
   }
+
+  /**
+   * saveWidget
+   *
+   * @param widget_id widget id
+   * @param user_id user_id from database
+   * @param args params array passed in from client
+   * @throws Exception
+   * @return none
+   */
+  public function saveWidget($widget_id, $user_id, $args) {
+    $save_params = array();
+
+    $save_params['group_id'] = preg_replace('/g_(\d+)/', '\1', $args['new_widget_group']);
+  }
 }
 ?>

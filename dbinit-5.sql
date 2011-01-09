@@ -1,5 +1,6 @@
 /* drop everything */
 DROP TABLE IF EXISTS dashboard_widgets;
+DROP TABLE IF EXISTS user_dashboard_widgets;
 
 /* tables */
 
@@ -14,6 +15,22 @@ CREATE TABLE dashboard_widgets (
   php_file VARCHAR(128) NOT NULL,
   description VARCHAR(255) NOT NULL,
   PRIMARY KEY (id)
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+--
+-- Table structure for table user_dashboard_widgets
+--
+
+CREATE TABLE user_dashboard_widgets (
+  id bigint(20) NOT NULL AUTO_INCREMENT,
+  widget_id bigint(20) NOT NULL,
+  user_id bigint(20) NOT NULL,
+  params VARCHAR(255) NOT NULL,
+  PRIMARY KEY (id),
+  KEY usr_idx (user_id),
+  UNIQUE KEY idx (widget_id, user_id, params),
+  CONSTRAINT user_dashboard_widgets_ibfk_1 FOREIGN KEY (widget_id) REFERENCES dashboard_widgets (id) ON DELETE CASCADE ON UPDATE CASCADE,
+  CONSTRAINT user_dashboard_widgets_ibfk_2 FOREIGN KEY (user_id) REFERENCES users (id) ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 
