@@ -7,7 +7,8 @@ function loadDashboard() {
 	//load functions for dashboard    
 	var handle = dojo.xhrGet({
 		url: '/panoptes/js/dashboards.js',
-		handleAs: 'javascript'
+		handleAs: 'javascript',
+		sync: true
 	    });
 	dashboards_loaded = true;
     }

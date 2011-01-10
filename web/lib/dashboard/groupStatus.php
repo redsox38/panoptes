@@ -115,14 +115,44 @@ class groupStatusWidget implements widgetInterface
       $rtn = array();
       $rtn['type'] = 'html';
 
-      // get group name from id
-      $stmt = $this->db->prepare("SELECT group_name FROM device_groups WHERE id=?");
-      $prms = $entry->params;
-      $stmt->bindParam(1, $prms['group_id'], PDO::PARAM_INT);
-      $stmt->execute();
-      $r = $stmt->fetch(PDO::FETCH_ASSOC);
+      require_once dirname(realpath(__FILE__)) . '/../deviceGroup.php';
+      require_once dirname(realpath(__FILE__)) . '/../deviceEntry.php';
 
-      $rtn['value'] = '<center>' . $r['group_name'] . ' summary</center>';
+      // get group name from id
+      $prms = $entry->params;
+      $grp = new deviceGroup($this->db);
+      $grp->getById($prms['group_id']);
+      if ($grp) {
+	$counts = array();
+	$counts['ok'] = 0;
+	$counts['warn'] = 0;
+	$counts['critical'] = 0;
+
+	$rtn['value'] = '<center>' . $grp->name . ' summary</center>';
+	// get status for children
+	foreach ($grp->children() as $c) {
+	  $dev = new deviceEntry($this->db);
+	  $dev->getById($c);
+	  if ($dev->id) {
+	    $status = $dev->maxStatus();
+	    if (array_key_exists($status, $counts)) {
+	      $counts[$status]++;
+	    } else {
+	      $counts[$status] = 1;
+	    }
+	  }
+	}
+
+	// add to output
+	$rtn['value'] .= '<span style="font-align: left;">ok</span><span style="float: right;">' . 
+	                 $counts['ok'] . '</span><br/>' . "\n";
+	$rtn['value'] .= '<span style="font-align: left;">warn</span><span style="float: right;">' . 
+	                 $counts['warn'] . '</span><br/>' . "\n";
+	$rtn['value'] .= '<span style="font-align: left;">critical</span><span style="float: right;">' . 
+	                 $counts['critical'] . '</span><br/>' . "\n";
+      } else {
+	$rtn['value'] = '<center>unknown group id</center>';
+      }
     } catch (PDOException $e) {
       throw($e);
     }

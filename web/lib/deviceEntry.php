@@ -187,6 +187,7 @@ class deviceEntry
     } catch (PDOException $e) {
       throw($e);
     }
+
     return($rtn);
   }
 
@@ -236,7 +237,32 @@ class deviceEntry
     } catch (PDOException $e) {
       throw($e);
     }
+  
     return($rtn);
+  }
+
+  /**
+   * getById
+   *
+   * @param id device id to populate with
+   * @throws Exception
+   * @return none
+   */
+  public function getById($id) {
+    try {
+      $stmt = $this->db->prepare("SELECT * FROM devices WHERE id=?");
+      $stmt->bindParam(1, $id, PDO::PARAM_INT);
+      $stmt->execute();
+      
+      $r = $stmt->fetch(PDO::FETCH_ASSOC);
+      $this->id = $r['id'];
+      $this->name = $r['name'];
+      $this->address = $r['address'];
+      $this->os_genre = $r['os_genre'];
+      $this->os_detail = $r['os_detail'];	
+    } catch (PDOException $e) {
+      throw($e);
+    }
   }
 }
 

@@ -175,5 +175,26 @@ class deviceGroup
       throw($e);
     }
   }
+
+  /**
+   * getById
+   *
+   * @param id device id to populate with
+   * @throws Exception
+   * @return none
+   */
+  public function getById($id) {
+    try {
+      $stmt = $this->db->prepare("SELECT * FROM device_groups WHERE id=?");
+      $stmt->bindParam(1, $id, PDO::PARAM_INT);
+      $stmt->execute();
+      
+      $r = $stmt->fetch(PDO::FETCH_ASSOC);
+      $this->id = $r['id'];
+      $this->name = $r['group_name'];      
+    } catch (PDOException $e) {
+      throw($e);
+    }
+  }
 }
 ?>
