@@ -103,6 +103,53 @@ class panoptesDashboard
   }
 
   /**
+   * getWidgets
+   *
+   * @param none
+   * @throws none
+   * @return array containing result and possible error messages
+   */
+  public function getUserWidget($id = null) {
+    global $panoptes_current_user;
+
+    require_once 'userEntry.php';
+    $user = new userEntry();
+    $user->db = $this->db;
+    $user->getByName($panoptes_current_user);
+    
+    require_once 'dashboard/userWidget.php';
+
+    $rtn = array();
+
+    try {
+      $usr_id = $user->id;
+      if ($id) {
+	$stmt = $this->db->prepare("SELECT * FROM user_dashboard_widgets WHERE user_id=? AND id=?");
+	$stmt->bindParam(1, $usr_id, PDO::PARAM_INT);
+	$stmt->bindParam(2, $id, PDO::PARAM_INT);
+      } else {
+	$stmt = $this->db->prepare("SELECT * FROM user_dashboard_widgets WHERE user_id=?");
+	$stmt->bindParam(1, $usr_id, PDO::PARAM_INT);
+      }
+      $stmt->execute();
+      
+      while ($r = $stmt->fetch(PDO::FETCH_ASSOC)) {
+	$ent = new dashboardUserWidget($this->db);
+	$ent->id = $r['id'];
+	$ent->widget_id = $r['widget_id'];
+	$ent->user_id = $r['user_id'];
+	$ent->params = unserialize($r['params']);
+
+	array_push($rtn, $ent);
+      }
+    } catch (PDOException $e) {
+      throw($e);
+    }
+
+    return($rtn);
+  }
+
+  /**
    * getDashboardWidgets
    *
    * @param args json params converted into an array
@@ -269,19 +316,21 @@ class panoptesDashboard
    * @return array containing result and possible error messages
    */
   public function ajax_getUserWidgets($args) {
-    global $panoptes_current_user;
-
     $result = 'success';
     $error = '';
     $data = array();
 
-    require_once 'userEntry.php';
-    $user = new userEntry();
-    $user->db = $this->db;
-    $user->getByName($panoptes_current_user);
-    
     try {
       // get a list of widgets that this user has added
+      $rst = $this->getUserWidget();
+      foreach ($rst as $a) {
+	array_push($data, array(
+				'id'        => $a->id,
+				'widget_id' => $a->widget_id,
+				'user_id'   => $a->user_id,
+				'params'    => $a->params
+				));
+      }
     } catch (Exception $e) {
       return(array('result' => 'failure',
 		   'error'  => $e->getMessage()));
@@ -290,6 +339,54 @@ class panoptesDashboard
     return(array('result' => $result, 'error' => $error, 'data' => $data));
   }
 
+  /**
+   * renderUserWidget
+   *
+   * @param args json params converted into an array
+   *             id user dashbaord widget id to render
+   * @throws none
+   * @return array containing result and possible error messages
+   */
+  public function ajax_renderUserWidget($args) {
+    global $panoptes_current_user;
+
+    $result = 'success';
+    $error = '';
+    $data = '';
+
+    require_once 'userEntry.php';
+    $user = new userEntry();
+    $user->db = $this->db;
+    $user->getByName($panoptes_current_user);
+    
+    try {
+      if (array_key_exists('id', $args)) {
+	$rst = $this->getUserWidget($args['id']);
+	if ($rst) {
+	  $ent = $rst[0];
+
+	  $widgets = $this->getWidget($ent->widget_id);
+	  require_once 'dashboard/' . $widgets[0]->php_file;
+
+	  $class_name = $widgets[0]->php_class;
+	  $obj = new $class_name($this->db);
+
+	  $data = $obj->renderUserWidget($ent);
+	} else {
+	  $result = 'failure';
+	  $error = 'invalid widget id supplied';
+	}
+      } else {
+	$result = 'failure';
+	$error = 'no widget id supplied';
+      }
+    } catch (Exception $e) {
+      return(array('result' => 'failure',
+		   'error'  => $e->getMessage()));
+    }
+    
+    return(array('result' => $result, 'error' => $error, 'data' => $data));
+  }
 }
 
 ?>

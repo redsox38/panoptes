@@ -102,5 +102,15 @@ class groupStatusWidget implements widgetInterface
       throw($e);
     } 
   }
+
+  /**
+   * renderUserWidget
+   *
+   * @param entry dashboardUserWidget object
+   * @throws PDOException
+   * @return none
+   */
+  public function renderUserWidget(dashboardUserWidget $entry) {
+  }
 }
 ?>

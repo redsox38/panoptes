@@ -24,6 +24,7 @@ function loadDashboard() {
 	    if (data && !data.error) {
 		dojo.forEach(data.data, function(widget) {
 			// render widget
+			renderWidget(widget);
 		    });
 	    } else {
 		alert(data.error);

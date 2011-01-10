@@ -19,22 +19,35 @@
  */
 
 /**
- * widgetInterface
+ * dashboardUserWidget class
  *
- * interface definition for widgets
+ * class for interacting with dashboardWidgets
  *
  * @version 0.01
  * @author Todd Merritt <redsox38@gmail.com>
  * @project panoptes
  *
  */
-require_once 'userWidget.php';
-
-interface widgetInterface
+class dashboardUserWidget
 {
-  function getNewFormInterface();
-  function getNewFormCleanup();
-  function saveWidget($widget_id, $user_id, $args);
-  function renderUserWidget(dashboardUserWidget $entry);
+  protected $data = array();
+
+  public function __get($name) {
+    if (array_key_exists($name, $this->data)) {
+      return($this->data[$name]);
+    } else {
+      return(null);
+    }
+  }
+  
+  public function __set($name, $val) {
+    $this->data[$name] = $val;
+  }
+
+  public function __construct($db = null) {
+    if (!is_null($db)) {
+      $this->data['db'] = $db;
+    }
+  }
 }
 ?>

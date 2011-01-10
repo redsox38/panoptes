@@ -1,3 +1,24 @@
+function renderWidget(params) {
+    var xhrArgs = {
+	url: '/panoptes/dashboardWidget.php',
+	handleAs: 'json',
+	content: {
+	    action: 'renderUserWidget',
+	    data: '{ "id": "' + params.id + '" }'
+	},
+	load: function(data) {
+	    hideLoading();
+	    if (data && !data.error) {
+		eval(data.data);
+	    } else {
+		alert(data.error);
+	    }
+	},
+    };
+	
+    showLoading();
+    dojo.xhrGet(xhrArgs);       
+}
 
 function addDashboardWidget() {
     // append selector box to end of dashboard
