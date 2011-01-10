@@ -10,6 +10,10 @@ function renderWidget(params) {
 	    hideLoading();
 	    if (data && !data.error) {
 		eval(data.data);
+		var node = document.createElement("div");
+		node.className = "dashboardWidget";
+		node.id = "widget_box_" + widget_counter;    
+		dojo.place(node, "dashboard_tab", "last");
 	    } else {
 		alert(data.error);
 	    }
@@ -23,7 +27,7 @@ function renderWidget(params) {
 function addDashboardWidget() {
     // append selector box to end of dashboard
     var node = document.createElement("div");
-    node.className = "newWidget";
+    node.className = "newDashboardWidget";
     node.id = "new_widget_box";    
     dojo.place(node, "dashboard_tab", "last");
 
