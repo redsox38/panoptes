@@ -111,10 +111,21 @@ class groupStatusWidget implements widgetInterface
    * @return none
    */
   public function renderUserWidget(dashboardUserWidget $entry) {
-    $rtn = array();
-    $rtn['type'] = 'html';
+    try {
+      $rtn = array();
+      $rtn['type'] = 'html';
 
-    $rtn['value'] = 'foobar';
+      // get group name from id
+      $stmt = $this->db->prepare("SELECT group_name FROM device_groups WHERE id=?");
+      $prms = $entry->params;
+      $stmt->bindParam(1, $prms['group_id'], PDO::PARAM_INT);
+      $stmt->execute();
+      $r = $stmt->fetch(PDO::FETCH_ASSOC);
+
+      $rtn['value'] = '<center>' . $r['group_name'] . ' summary</center>';
+    } catch (PDOException $e) {
+      throw($e);
+    }
 
     return($rtn);
   }
