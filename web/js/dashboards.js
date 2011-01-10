@@ -9,11 +9,13 @@ function renderWidget(params) {
 	load: function(data) {
 	    hideLoading();
 	    if (data && !data.error) {
-		eval(data.data);
-		var node = document.createElement("div");
-		node.className = "dashboardWidget";
-		node.id = "widget_box_" + widget_counter;    
-		dojo.place(node, "dashboard_tab", "last");
+		if (data.data.type == 'html') {
+		    var node = document.createElement("div");
+		    node.innerHTML = data.data.value;
+		    node.className = "dashboardWidget";
+		    node.id = "widget_box_" + widget_counter;    
+		    dojo.place(node, "dashboard_tab", "last");
+		}
 	    } else {
 		alert(data.error);
 	    }

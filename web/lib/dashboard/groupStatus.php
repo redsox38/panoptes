@@ -111,6 +111,12 @@ class groupStatusWidget implements widgetInterface
    * @return none
    */
   public function renderUserWidget(dashboardUserWidget $entry) {
+    $rtn = array();
+    $rtn['type'] = 'html';
+
+    $rtn['value'] = 'foobar';
+
+    return($rtn);
   }
 }
 ?>
