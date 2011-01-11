@@ -78,6 +78,30 @@ class groupStatusWidget implements widgetInterface
   }
 
   /**
+   * maxPosition
+   *
+   * @param user_id user_id from database
+   * @throws PDOException
+   * @return max position in this users dashboard
+   */
+  public function maxPosition($user_id) {
+    try {
+      $stmt = $this->db->prepare("SELECT MAX(position) AS max FROM user_dashboard_widgets WHERE user_id=?");
+      $stmt->bindParam(1, $user_id, PDO::PARAM_INT);
+      $stmt->execute();
+      
+      $r = $stmt->fetch(PDO::FETCH_ASSOC);
+      if ($r) {
+	return($r['max']);
+      } else {
+	return(-1);
+      }
+    } catch (PDOException $e) {
+      throw($e);
+    } 
+  }
+  
+  /**
    * saveWidget
    *
    * @param widget_id widget id
@@ -92,10 +116,14 @@ class groupStatusWidget implements widgetInterface
     $save_params['group_id'] = preg_replace('/g_(\d+)/', '\1', $args['new_widget_grp']);
     
     try {
-      $stmt = $this->db->prepare("INSERT INTO user_dashboard_widgets VALUES(0, ?, ?, ?)");
-      $stmt->bindParam(1, $widget_id);
-      $stmt->bindParam(2, $user_id);
+      $next_pos = $this->maxPosition($user_id);
+      $next_pos++;
+
+      $stmt = $this->db->prepare("INSERT INTO user_dashboard_widgets VALUES(0, ?, ?, ?, ?)");
+      $stmt->bindParam(1, $widget_id, PDO::PARAM_INT);
+      $stmt->bindParam(2, $user_id, PDO::PARAM_INT);
       $stmt->bindParam(3, serialize($save_params));
+      $stmt->bindParam(4, $next_pos, PDO::PARAM_INT);
       $stmt->execute();
       $this->id = $this->db->lastInsertId();
     } catch (PDOException $e) {

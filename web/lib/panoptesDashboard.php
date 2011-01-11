@@ -138,6 +138,7 @@ class panoptesDashboard
 	$ent->id = $r['id'];
 	$ent->widget_id = $r['widget_id'];
 	$ent->user_id = $r['user_id'];
+	$ent->position = $r['position'];
 	$ent->params = unserialize($r['params']);
 
 	array_push($rtn, $ent);

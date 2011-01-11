@@ -91,14 +91,14 @@ function openEditDashboardTab() {
 		dijit.byId("dashboard_save").destroy();
 		dijit.byId("dashboard_cancel").destroy();
 
-		var type_val = dijit.byId('new_widget_type').get('value');
-		if (type_val) {
+		var type_val = dijit.byId('new_widget_type');
+		if (type_val && type_val.get('value')) {
 		    var xhrArgs = {
 			url: '/panoptes/dashboardWidget.php',
 			handleAs: 'json',
 			content: {
 			    action: 'getWidgetFormCleanup',
-			    data: '{ "widget_id": "' + type_val + '" }'
+			    data: '{ "widget_id": "' + type_val.get('value') + '" }'
 			},
 			load: function(data) {
 			    if (data && !data.error) {

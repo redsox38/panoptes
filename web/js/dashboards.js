@@ -14,6 +14,8 @@ function renderWidget(params) {
 		    node.innerHTML = data.data.value;
 		    node.className = "dashboardWidget";
 		    node.id = "widget_box_" + widget_counter;    
+		    dashboard_tab_info = dojo.position(dijit.byId("dashboard_tab").domNode, true);
+		    alert(dashboard_tab_info.x + " " + dashboard_tab_info.y);
 		    dojo.place(node, "dashboard_tab", "last");
 		}
 	    } else {
