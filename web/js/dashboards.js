@@ -1,3 +1,7 @@
+var widget_width = 150;
+var dashboard_tab_info = dojo.position(dijit.byId("dashboard_tab").domNode, true);
+var ncols = Math.floor(dashboard_tab_info.x / widget_width);
+
 function renderWidget(params) {
     var xhrArgs = {
 	url: '/panoptes/dashboardWidget.php',
@@ -13,10 +17,21 @@ function renderWidget(params) {
 		    var node = document.createElement("div");
 		    node.innerHTML = data.data.value;
 		    node.className = "dashboardWidget";
-		    node.id = "widget_box_" + widget_counter;    
-		    dashboard_tab_info = dojo.position(dijit.byId("dashboard_tab").domNode, true);
-		    alert(dashboard_tab_info.x + " " + dashboard_tab_info.y);
-		    dojo.place(node, "dashboard_tab", "last");
+		    node.id = "widget_box_" + widget_counter;
+
+		    var y_offset = (params.position % ncols) * widget_width;
+		    var x_offset = Math.floor(params.position / ncols) * widget_width;
+		    
+		    var xpos = dashboard_tab_info.x + x_offset;
+		    var ypos = dashboard_tab_info.y + y_offset;
+
+		    alert(dashboard_tab_info.x + " " + dashboard_tab_info.y + " " + params.position + " " + x_offset + " " + y_offset);
+
+		    dojo.style(node, {
+			    left: xpos + "px",
+			    top: ypos + "px"
+			});
+		    dijit.byId('dashboard_tab').domNode.appendChild(node);
 		}
 	    } else {
 		alert(data.error);

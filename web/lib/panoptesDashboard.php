@@ -329,6 +329,7 @@ class panoptesDashboard
 				'id'        => $a->id,
 				'widget_id' => $a->widget_id,
 				'user_id'   => $a->user_id,
+				'position'  => $a->position,
 				'params'    => $a->params
 				));
       }
