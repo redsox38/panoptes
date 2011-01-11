@@ -1,6 +1,6 @@
 var dashboards_loaded = false;
 var dashboardWidgetStore = null;
-var widget_counter;
+var widget_counter = 0;
 
 function loadDashboard() {
     if (!dashboards_loaded) {
@@ -26,6 +26,7 @@ function loadDashboard() {
 		dojo.forEach(data.data, function(widget) {
 			// render widget
 			renderWidget(widget);
+			widget_counter++;
 		    });
 	    } else {
 		alert(data.error);
@@ -47,7 +48,6 @@ function openEditDashboardTab() {
     }
 
     dashboard_edit_mode = true;
-    widget_counter = 0;
 
     if (!dashboardWidgetStore) {
 	dashboardWidgetStore = new dojo.data.ItemFileWriteStore({
@@ -93,6 +93,7 @@ function openEditDashboardTab() {
 
 		var type_val = dijit.byId('new_widget_type');
 		if (type_val && type_val.get('value')) {
+		    widget_counter--;
 		    var xhrArgs = {
 			url: '/panoptes/dashboardWidget.php',
 			handleAs: 'json',

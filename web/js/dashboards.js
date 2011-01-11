@@ -1,6 +1,8 @@
-var widget_width = 150;
+var widget_width = 156; // width + (border width + margin + padding / 2)
+var dashboard_x_padding = 5;
+var dashboard_y_padding = 55;
 var dashboard_tab_info = dojo.position(dijit.byId("dashboard_tab").domNode, true);
-var ncols = Math.floor(dashboard_tab_info.x / widget_width);
+var ncols = Math.floor((dashboard_tab_info.w - dashboard_tab_info.x - dashboard_x_padding) / widget_width);
 
 function renderWidget(params) {
     var xhrArgs = {
@@ -19,13 +21,11 @@ function renderWidget(params) {
 		    node.className = "dashboardWidget";
 		    node.id = "widget_box_" + widget_counter;
 
-		    var y_offset = (params.position % ncols) * widget_width;
-		    var x_offset = Math.floor(params.position / ncols) * widget_width;
+		    var x_offset = (params.position % ncols) * widget_width;
+		    var y_offset = Math.floor(params.position / ncols) * widget_width;
 		    
-		    var xpos = dashboard_tab_info.x + x_offset;
-		    var ypos = dashboard_tab_info.y + y_offset;
-
-		    alert(dashboard_tab_info.x + " " + dashboard_tab_info.y + " " + params.position + " " + x_offset + " " + y_offset);
+		    var xpos = dashboard_x_padding + x_offset;
+		    var ypos = dashboard_y_padding + y_offset;
 
 		    dojo.style(node, {
 			    left: xpos + "px",
@@ -48,7 +48,18 @@ function addDashboardWidget() {
     var node = document.createElement("div");
     node.className = "newDashboardWidget";
     node.id = "new_widget_box";    
-    dojo.place(node, "dashboard_tab", "last");
+
+    var x_offset = (widget_counter % ncols) * widget_width;
+    var y_offset = Math.floor(widget_counter / ncols) * widget_width;
+		    
+    var xpos = dashboard_x_padding + x_offset;
+    var ypos = dashboard_y_padding + y_offset;
+
+    dojo.style(node, {
+	    left: xpos + "px",
+		top: ypos + "px"
+		});
+    dijit.byId('dashboard_tab').domNode.appendChild(node);
 
     // append widget selector
     sb = new dijit.form.FilteringSelect({
