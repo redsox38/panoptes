@@ -153,7 +153,11 @@ function openEditDashboardTab() {
 			},
 			load: function(data) {
 			    if (data && !data.error) {
-				// reneder widget
+				dojo.forEach(data.data, function(widget) {
+					// render widget
+					renderWidget(widget);
+					widget_counter++;
+				    });
 			    } else {
 				alert(data.error);
 			    }
@@ -161,6 +165,15 @@ function openEditDashboardTab() {
 		    };
 		    
 		    dojo.xhrGet(xhrArgs);       
+
+		    // destroy remaining dom nodes/dijits if present
+		    win = document.getElementById("new_widget_box");
+		    if (win) {
+			widget_counter--;
+			dijit.byId('new_widget_type').destroy();
+			var prnt = document.getElementById("dashboard_tab");
+			prnt.removeChild(win);
+		    }
 		}		
 	    }
 	}).placeAt("dashboard_tab", "first");

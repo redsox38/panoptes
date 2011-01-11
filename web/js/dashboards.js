@@ -57,7 +57,7 @@ function addDashboardWidget() {
 
     dojo.style(node, {
 	    left: xpos + "px",
-		top: ypos + "px"
+	    top: ypos + "px"
 		});
     dijit.byId('dashboard_tab').domNode.appendChild(node);
 

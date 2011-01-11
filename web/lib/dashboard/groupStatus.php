@@ -156,7 +156,7 @@ class groupStatusWidget implements widgetInterface
 	$counts['warn'] = 0;
 	$counts['critical'] = 0;
 
-	$rtn['value'] = '<center>' . $grp->name . ' summary</center>';
+	$rtn['value'] = '<div style="font-weight: bold; font-size: larger; text-align: center;">' . $grp->name . ' summary</div/>';
 	// get status for children
 	foreach ($grp->children() as $c) {
 	  $dev = new deviceEntry($this->db);
@@ -172,11 +172,11 @@ class groupStatusWidget implements widgetInterface
 	}
 
 	// add to output
-	$rtn['value'] .= '<span style="font-align: left;">ok</span><span style="float: right;">' . 
+	$rtn['value'] .= '<span style="font-align: left; font-weight: bold;">ok</span><span style="float: right;">' . 
 	                 $counts['ok'] . '</span><br/>' . "\n";
-	$rtn['value'] .= '<span style="font-align: left;">warn</span><span style="float: right;">' . 
+	$rtn['value'] .= '<span style="font-align: left; font-weight: bold; color: #b3511d;">warn</span><span style="float: right; color: #b3511d;">' . 
 	                 $counts['warn'] . '</span><br/>' . "\n";
-	$rtn['value'] .= '<span style="font-align: left;">critical</span><span style="float: right;">' . 
+	$rtn['value'] .= '<span style="font-align: left; font-weight: bold; color: #a62434;">critical</span><span style="float: right; color: #a62434;">' . 
 	                 $counts['critical'] . '</span><br/>' . "\n";
       } else {
 	$rtn['value'] = '<center>unknown group id</center>';

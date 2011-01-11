@@ -274,7 +274,7 @@ class panoptesDashboard
 
     $result = 'success';
     $error = '';
-    $data = '';
+    $data = array();
 
     require_once 'userEntry.php';
     $user = new userEntry();
@@ -291,7 +291,15 @@ class panoptesDashboard
 	  $class_name = $ent->php_class;
 	  $obj = new $class_name($this->db);
 
-	  $data = $obj->saveWidget($ent->id, $user->id, $args['params']);
+	  $obj->saveWidget($ent->id, $user->id, $args['params']);
+	  $widgets = $this->getUserWidget($obj->id);
+	  $data[] = array(
+			  'id'        => $widgets[0]->id,
+			  'widget_id' => $widgets[0]->widget_id,
+			  'user_id'   => $widgets[0]->user_id,
+			  'position'  => $widgets[0]->position,
+			  'params'    => $widgets[0]->params
+			  );
 	} else {
 	  $result = 'failure';
 	  $error = 'invalid widget id supplied';
