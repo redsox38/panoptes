@@ -470,7 +470,7 @@ class panoptesDashboard
 	  $class_name = $widgets[0]->php_class;
 	  $obj = new $class_name($this->db);
 
-	  $obj->deleteWidget($rst->id, $user->id);
+	  $obj->deleteWidget($rst->position, $rst->id, $user->id);
 	} else {
 	  $result = 'failure';
 	  $error = 'invalid widget id supplied';

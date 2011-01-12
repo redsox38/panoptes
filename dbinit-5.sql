@@ -35,4 +35,5 @@ CREATE TABLE user_dashboard_widgets (
   CONSTRAINT user_dashboard_widgets_ibfk_2 FOREIGN KEY (user_id) REFERENCES users (id) ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
+INSERT INTO dashboard_widgets VALUES(0,'group status summary','groupStatusWidget','groupStatus.php','Display Summary Status of a Device Group');
 

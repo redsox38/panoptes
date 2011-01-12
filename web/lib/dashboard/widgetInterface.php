@@ -35,7 +35,7 @@ interface widgetInterface
   function getNewFormInterface();
   function getNewFormCleanup();
   function saveWidget($widget_id, $user_id, $args);
-  function deleteWidget($id, $user_id);
+  function deleteWidget($pos, $id, $user_id);
   function renderUserWidget(dashboardUserWidget $entry);
 }
 ?>

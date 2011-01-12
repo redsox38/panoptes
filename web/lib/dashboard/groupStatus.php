@@ -134,16 +134,48 @@ class groupStatusWidget implements widgetInterface
   /**
    * deleteWidget
    *
+   * @param pos position of this widget
    * @param id widget id for this user
    * @param user_id user id for this dashbaord
    * @throws PDOException
    * @return none
    */
-  function deleteWidget($id, $user_id) {
+  function deleteWidget($pos, $id, $user_id) {
     try {
       $stmt = $this->db->prepare("DELETE FROM user_dashboard_widgets WHERE id=? AND user_id=?");
       $stmt->bindParam(1, $id, PDO::PARAM_INT);
       $stmt->bindParam(2, $user_id, PDO::PARAM_INT);
+      $stmt->execute();
+
+      $last = $this->maxPosition($user_id);
+
+      if ($last > $pos) {
+	// reindex everything between the deleted widget and the last widget
+	$pos++;
+	for ($i = $pos; $i <= $last; $i++) {
+	  $this->reindexWidget($user_id, $i, ($i - 1));
+	}
+      }
+    } catch (PDOException $e) {
+      throw($e);
+    }
+  }
+
+  /**
+   * reindexWidget
+   *
+   * @param user_id user id for this dashbaord
+   * @param pos position of this widget
+   * @param new_pos new position of this widget
+   * @throws PDOException
+   * @return none
+   */
+  function reindexWidget($user_id, $pos, $new_pos) {
+    try {
+      $stmt = $this->db->prepare("UPDATE user_dashboard_widgets SET position=? WHERE user_id=? AND position=?");
+      $stmt->bindParam(1, $new_pos, PDO::PARAM_INT);
+      $stmt->bindParam(2, $user_id, PDO::PARAM_INT);
+      $stmt->bindParam(3, $pos, PDO::PARAM_INT);
       $stmt->execute();
     } catch (PDOException $e) {
       throw($e);
