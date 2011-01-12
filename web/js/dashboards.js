@@ -19,7 +19,7 @@ function renderWidget(params) {
 		    var node = document.createElement("div");
 		    node.innerHTML = data.data.value;
 		    node.className = "dashboardWidget";
-		    node.id = "widget_box_" + widget_counter;
+		    node.id = "widget_box_" + params.position;
 
 		    var x_offset = (params.position % ncols) * widget_width;
 		    var y_offset = Math.floor(params.position / ncols) * widget_width;

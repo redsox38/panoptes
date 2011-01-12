@@ -1,4 +1,4 @@
-var dashboards_loaded = false;
+ var dashboards_loaded = false;
 var dashboardWidgetStore = null;
 var widget_counter = 0;
 
@@ -113,12 +113,20 @@ function openEditDashboardTab() {
 		    dojo.xhrGet(xhrArgs);       
 		}
 		
+		var prnt = document.getElementById("dashboard_tab");
                 // destroy remaining dom nodes/dijits if present
                 win = document.getElementById("new_widget_box");
 		if (win) {
 		    dijit.byId('new_widget_type').destroy();
-		    var prnt = document.getElementById("dashboard_tab");
 		    prnt.removeChild(win);
+		}
+		
+		// delete delete icons
+		for (i = 0; i < widget_counter; i++) {
+		    img = dojo.byId('widget_delete_icon_' + i);
+		    if (img) {
+			prnt.removeChild(img);
+		    }
 		}
 	    }
 	}).placeAt("dashboard_tab", "first");
@@ -185,6 +193,26 @@ function openEditDashboardTab() {
 		addDashboardWidget();
 	    }
 	}).placeAt("dashboard_tab", "first");
+
+    // add overlay to widgets with delete button
+    if (widget_counter) {
+	for (i = 0; i < widget_counter; i++) {
+	    var node_pos = dojo.marginBox('widget_box_' + i);
+	    var img_x = node_pos.l + node_pos.w - 20;
+	    var img_y = node_pos.t;
+	    
+	    // create image node
+	    img = new Image();
+	    img.src = '/panoptes/images/delete.png';
+	    img.id = 'widget_delete_icon_' + i;
+	    img.className = 'dashboardWidgetDeleteIcon';
+	    dojo.style(img, {
+		    top: img_y + 'px',
+		    left: img_x + 'px'
+		});
+	    dijit.byId('dashboard_tab').domNode.appendChild(img);
+	}
+    }
 
     // move focus to dashboard tab
     dijit.byId("panoptes_tab_container").selectChild(dijit.byId("dashboard_tab"));
