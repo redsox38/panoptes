@@ -206,6 +206,7 @@ function openEditDashboardTab() {
 	    img.src = '/panoptes/images/delete.png';
 	    img.id = 'widget_delete_icon_' + i;
 	    img.className = 'dashboardWidgetDeleteIcon';
+	    img.onclick = Function("deleteUserWidget(" + i + ")");
 	    dojo.style(img, {
 		    top: img_y + 'px',
 		    left: img_x + 'px'
@@ -216,6 +217,32 @@ function openEditDashboardTab() {
 
     // move focus to dashboard tab
     dijit.byId("panoptes_tab_container").selectChild(dijit.byId("dashboard_tab"));
+}
+
+function deleteUserWidget(idx) {
+    var xhrArgs = {
+	url: '/panoptes/dashboardWidget.php',
+	handleAs: 'json',
+	content: {
+	    action: 'deleteUserWidget',
+	    data: '{ "pos": "' + idx + '" }'
+	},
+	load: function(data) {
+	    if (data && !data.error) {
+		// remove widget from page
+		var prnt = document.getElementById("dashboard_tab");
+		// delete delete icon
+		img = dojo.byId('widget_delete_icon_' + idx);
+		box = dojo.byId('widget_box_' + idx);
+		prnt.removeChild(img);
+		prnt.removeChild(box);
+	    } else {
+		alert(data.error);
+	    }
+	},
+    };
+    
+    dojo.xhrGet(xhrArgs);       
 }
 
 function openAutoDiscoveryTab() {

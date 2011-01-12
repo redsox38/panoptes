@@ -103,9 +103,9 @@ class panoptesDashboard
   }
 
   /**
-   * getWidgets
+   * getUserWidget
    *
-   * @param none
+   * @param id optional specific widget id to retrieve
    * @throws none
    * @return array containing result and possible error messages
    */
@@ -142,6 +142,48 @@ class panoptesDashboard
 	$ent->params = unserialize($r['params']);
 
 	array_push($rtn, $ent);
+      }
+    } catch (PDOException $e) {
+      throw($e);
+    }
+
+    return($rtn);
+  }
+
+  /**
+   * getUserWidgetByPosition
+   *
+   * @param pos pposition of widget
+   * @throws none
+   * @return array containing result and possible error messages
+   */
+  public function getUserWidgetByPosition($pos) {
+    global $panoptes_current_user;
+
+    require_once 'userEntry.php';
+    $user = new userEntry();
+    $user->db = $this->db;
+    $user->getByName($panoptes_current_user);
+    
+    require_once 'dashboard/userWidget.php';
+
+    $rtn = null;
+
+    try {
+      $usr_id = $user->id;
+      $stmt = $this->db->prepare("SELECT * FROM user_dashboard_widgets WHERE user_id=? AND position=?");
+      $stmt->bindParam(1, $usr_id, PDO::PARAM_INT);
+      $stmt->bindParam(2, $pos, PDO::PARAM_INT);
+      $stmt->execute();
+      
+      $r = $stmt->fetch(PDO::FETCH_ASSOC);
+      if ($r) {
+	$rtn = new dashboardUserWidget($this->db);
+	$rtn->id = $r['id'];
+	$rtn->widget_id = $r['widget_id'];
+	$rtn->user_id = $r['user_id'];
+	$rtn->position = $r['position'];
+	$rtn->params = unserialize($r['params']);     
       }
     } catch (PDOException $e) {
       throw($e);
@@ -382,6 +424,53 @@ class panoptesDashboard
 	  $obj = new $class_name($this->db);
 
 	  $data = $obj->renderUserWidget($ent);
+	} else {
+	  $result = 'failure';
+	  $error = 'invalid widget id supplied';
+	}
+      } else {
+	$result = 'failure';
+	$error = 'no widget id supplied';
+      }
+    } catch (Exception $e) {
+      return(array('result' => 'failure',
+		   'error'  => $e->getMessage()));
+    }
+    
+    return(array('result' => $result, 'error' => $error, 'data' => $data));
+  }
+
+  /**
+   * deleteUserWidget
+   *
+   * @param args json params converted into an array
+   *             pos user dashbaord widget position to delete
+   * @throws none
+   * @return array containing result and possible error messages
+   */
+  public function ajax_deleteUserWidget($args) {
+    global $panoptes_current_user;
+
+    $result = 'success';
+    $error = '';
+    $data = '';
+
+    require_once 'userEntry.php';
+    $user = new userEntry();
+    $user->db = $this->db;
+    $user->getByName($panoptes_current_user);
+    
+    try {
+      if (array_key_exists('pos', $args)) {
+	$rst = $this->getUserWidgetByPosition($args['pos']);
+	if ($rst) {
+	  $widgets = $this->getWidget($rst->widget_id);
+	  require_once 'dashboard/' . $widgets[0]->php_file;
+
+	  $class_name = $widgets[0]->php_class;
+	  $obj = new $class_name($this->db);
+
+	  $obj->deleteWidget($rst->id, $user->id);
 	} else {
 	  $result = 'failure';
 	  $error = 'invalid widget id supplied';

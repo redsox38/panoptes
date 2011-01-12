@@ -132,6 +132,25 @@ class groupStatusWidget implements widgetInterface
   }
 
   /**
+   * deleteWidget
+   *
+   * @param id widget id for this user
+   * @param user_id user id for this dashbaord
+   * @throws PDOException
+   * @return none
+   */
+  function deleteWidget($id, $user_id) {
+    try {
+      $stmt = $this->db->prepare("DELETE FROM user_dashboard_widgets WHERE id=? AND user_id=?");
+      $stmt->bindParam(1, $id, PDO::PARAM_INT);
+      $stmt->bindParam(2, $user_id, PDO::PARAM_INT);
+      $stmt->execute();
+    } catch (PDOException $e) {
+      throw($e);
+    }
+  }
+
+  /**
    * renderUserWidget
    *
    * @param entry dashboardUserWidget object
