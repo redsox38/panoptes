@@ -36,4 +36,5 @@ CREATE TABLE user_dashboard_widgets (
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 INSERT INTO dashboard_widgets VALUES(0,'group status summary','groupStatusWidget','groupStatus.php','Display Summary Status of a Device Group');
+INSERT INTO dashboard_widgets VALUES(0,'performance history graph','perfromanceHistoryWidget','performanceHistory.php','Display Performance History Graph');
 

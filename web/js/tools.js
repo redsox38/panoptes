@@ -135,7 +135,6 @@ function openEditDashboardTab() {
 	    id: 'dashboard_save',
 	    label: 'Save',
 	    onClick: function() {
-		dashboard_edit_mode = false;
                 win = document.getElementById("new_widget_box");
 		var params = {};
 		if (win) {
@@ -149,14 +148,14 @@ function openEditDashboardTab() {
 		}
 
 		// call save function
-		var type_val = dijit.byId('new_widget_type').get('value');
+		var type_val = dijit.byId('new_widget_type');
 		if (type_val) {
 		    var xhrArgs = {
 			url: '/panoptes/dashboardWidget.php',
 			handleAs: 'json',
 			content: {
 			    action: 'saveWidget',
-			    data: '{ "widget_id": "' + type_val + '", "params": ' +
+			    data: '{ "widget_id": "' + type_val.get('value') + '", "params": ' +
 			    dojo.toJson(params) + ' }'
 			},
 			load: function(data) {
@@ -228,6 +227,7 @@ function deleteUserWidget(idx) {
 	    data: '{ "pos": "' + idx + '" }'
 	},
 	load: function(data) {
+	    hideLoading();
 	    if (data && !data.error) {
 		// remove widget from page
 		var prnt = document.getElementById("dashboard_tab");
@@ -236,12 +236,14 @@ function deleteUserWidget(idx) {
 		box = dojo.byId('widget_box_' + idx);
 		prnt.removeChild(img);
 		prnt.removeChild(box);
+		widget_counter--;
 	    } else {
 		alert(data.error);
 	    }
 	},
     };
     
+    showLoading();
     dojo.xhrGet(xhrArgs);       
 }
 

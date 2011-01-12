@@ -29,9 +29,36 @@ function renderWidget(params) {
 
 		    dojo.style(node, {
 			    left: xpos + "px",
-			    top: ypos + "px"
+			    top: ypos + "px",
+			    opacity: 0	
 			});
 		    dijit.byId('dashboard_tab').domNode.appendChild(node);
+
+		    fadeArgs = {
+			node: node,
+			duration: 1000
+		    };
+		    dojo.fadeIn(fadeArgs).play();
+
+		    // add delete icon if in edit mode
+		    if (dashboard_edit_mode) {
+			var node_pos = dojo.marginBox('widget_box_' + params.position);
+			var img_x = node_pos.l + node_pos.w - 20;
+			var img_y = node_pos.t;
+			
+			// create image node
+			img = new Image();
+			img.src = '/panoptes/images/delete.png';
+			img.id = 'widget_delete_icon_' + params.position;
+			img.className = 'dashboardWidgetDeleteIcon';
+			img.onclick = Function("deleteUserWidget(" + 
+					       params.position + ")");
+			dojo.style(img, {
+				top: img_y + 'px',
+				left: img_x + 'px'
+				    });
+			dijit.byId('dashboard_tab').domNode.appendChild(img);
+		    }		    
 		}
 	    } else {
 		alert(data.error);
@@ -57,9 +84,16 @@ function addDashboardWidget() {
 
     dojo.style(node, {
 	    left: xpos + "px",
-	    top: ypos + "px"
+	    top: ypos + "px",
+	    opacity: 0
 		});
     dijit.byId('dashboard_tab').domNode.appendChild(node);
+
+    fadeArgs = {
+	node: node,
+	duration: 700
+    };
+    dojo.fadeIn(fadeArgs).play();
 
     // append widget selector
     sb = new dijit.form.FilteringSelect({
