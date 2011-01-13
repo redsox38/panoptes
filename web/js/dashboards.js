@@ -131,5 +131,27 @@ function addDashboardWidget() {
     	});
 
     sb.placeAt(node);
+
+    // connect mouseover to show tooltip with description
+    dojo.connect(sb, 'onMouseOver', function(e) {
+	    var id = dijit.byId('new_widget_type').get('value');
+
+	    var req = dashboardWidgetStore.fetch({ query: { id: id },
+						   onComplete: function(items, req) {
+			// there should only be one item
+			for (var i = 0; i < items.length; i++) {
+			    // show tooltip
+			    var msg = dashboardWidgetStore.getValue(items[i], 'description');
+			    if (msg) {
+				dijit.showTooltip(msg, dijit.byId('new_widget_type').domNode);
+			    }
+			}
+		    }});
+	});
+
+    dojo.connect(sb, 'onMouseOut', function(e) {
+	    dijit.hideTooltip(dijit.byId('new_widget_type').domNode);
+	});
+
     widget_counter++;
 }
