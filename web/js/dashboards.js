@@ -1,4 +1,4 @@
-var widget_width = 156; // width + (border width + margin + padding / 2)
+var widget_width = 206; // width + (border width + margin + padding / 2)
 var dashboard_x_padding = 5;
 var dashboard_y_padding = 55;
 var dashboard_tab_info = dojo.position(dijit.byId("dashboard_tab").domNode, true);
@@ -116,7 +116,7 @@ function addDashboardWidget() {
     sb = new dijit.form.FilteringSelect({
    	    id: 'new_widget_type',
     	    store: dashboardWidgetStore,
-	    style: 'width: 120px;',
+	    style: 'width: 150px;',
     	    searchAttr: 'name',
 	    labelAttr: 'name',
 	    onChange: function(e) {

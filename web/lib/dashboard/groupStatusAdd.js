@@ -4,7 +4,7 @@ grp_sel = new dijit.form.FilteringSelect({
 	id: 'new_widget_grp',
 	store: deviceStore,
 	query: { type: 'group' },
-	style: 'width: 120px;',
+	style: 'width: 150px;',
 	searchAttr: 'id',
 	labelAttr: 'name',
 	labelFunc: function(itm, str) {

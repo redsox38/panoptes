@@ -1,1 +1,4 @@
-dijit.byId('new_widget_grp').destroy();
+var node = dijit.byId('new_widget_grp');
+if (node) {
+    node.destroy();
+}

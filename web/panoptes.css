@@ -8,8 +8,8 @@ div.dashboardWidget {
     border-style: solid;
     border-width: 1px;
     border-color: black;
-    height: 150px;
-    width: 150px; 
+    height: 200px;
+    width: 200px; 
     position: absolute;
 }
 
