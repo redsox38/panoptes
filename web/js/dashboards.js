@@ -25,7 +25,8 @@ function renderWidget(params) {
 		    };
 		    dojo.fadeOut(fadeArgs).play();
 		    
-		    node.destroy();
+		    var prnt = dojo.byId("dashboard_tab");
+		    prnt.removeChild(node);
 		}
 
 		if (data.data.type == 'html') {

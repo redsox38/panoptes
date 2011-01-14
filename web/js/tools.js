@@ -113,9 +113,9 @@ function openEditDashboardTab() {
 		    dojo.xhrGet(xhrArgs);       
 		}
 		
-		var prnt = document.getElementById("dashboard_tab");
+		var prnt = dojo.byId("dashboard_tab");
                 // destroy remaining dom nodes/dijits if present
-                win = document.getElementById("new_widget_box");
+                win = dojo.byId("new_widget_box");
 		if (win) {
 		    dijit.byId('new_widget_type').destroy();
 		    prnt.removeChild(win);
@@ -135,7 +135,7 @@ function openEditDashboardTab() {
 	    id: 'dashboard_save',
 	    label: 'Save',
 	    onClick: function() {
-                win = document.getElementById("new_widget_box");
+                win = dojo.byId("new_widget_box");
 		var params = {};
 		if (win) {
 		    for (i = 0; i < win.childNodes.length; i++) {
@@ -174,11 +174,11 @@ function openEditDashboardTab() {
 		    dojo.xhrGet(xhrArgs);       
 
 		    // destroy remaining dom nodes/dijits if present
-		    win = document.getElementById("new_widget_box");
+		    win = dojo.byId("new_widget_box");
 		    if (win) {
 			widget_counter--;
 			dijit.byId('new_widget_type').destroy();
-			var prnt = document.getElementById("dashboard_tab");
+			var prnt = dojo.byId("dashboard_tab");
 			prnt.removeChild(win);
 		    }
 		}		
@@ -230,7 +230,7 @@ function deleteUserWidget(idx) {
 	    hideLoading();
 	    if (data && !data.error) {
 		// remove widget from page
-		var prnt = document.getElementById("dashboard_tab");
+		var prnt = dojo.byId("dashboard_tab");
 		// delete delete icon
 		img = dojo.byId('widget_delete_icon_' + idx);
 		box = dojo.byId('widget_box_' + idx);
@@ -565,7 +565,7 @@ function deleteSecurityGroup() {
 		dijit.byId("del_security_group_name").destroy();
 		dijit.byId("del_security_group_reset").destroy();
                 dijit.byId("del_security_group_submit").destroy();
-                document.body.removeChild(document.getElementById("del_security_group"));
+                document.body.removeChild(dojo.byId("del_security_group"));
 	    }
 	});
     
@@ -576,7 +576,7 @@ function deleteSecurityGroup() {
 		dijit.byId("del_security_group_name").destroy();
                 dijit.byId("del_security_group_reset").destroy();
                 dijit.byId("del_security_group_submit").destroy();
-                document.body.removeChild(document.getElementById("del_security_group"));
+                document.body.removeChild(dojo.byId("del_security_group"));
             }
         });
 
@@ -603,7 +603,7 @@ function createSecurityGroup() {
 		dijit.byId("add_security_group_name").destroy();
 		dijit.byId("add_security_group_reset").destroy();
                 dijit.byId("add_security_group_submit").destroy();
-                document.body.removeChild(document.getElementById("add_security_group"));
+                document.body.removeChild(dojo.byId("add_security_group"));
 	    }
 	});
     
@@ -614,7 +614,7 @@ function createSecurityGroup() {
 		dijit.byId("add_security_group_name").destroy();
                 dijit.byId("add_security_group_reset").destroy();
                 dijit.byId("add_security_group_submit").destroy();
-                document.body.removeChild(document.getElementById("add_security_group"));
+                document.body.removeChild(dojo.byId("add_security_group"));
             }
         });
 
@@ -638,7 +638,7 @@ function uploadFile() {
 		xhrUploadFile('script', file_sel.files[0]);
 		dijit.byId("upload_file_reset").destroy();
                 dijit.byId("upload_file_submit").destroy();
-                document.body.removeChild(document.getElementById("upload_file"));
+                document.body.removeChild(dojo.byId("upload_file"));
 	    }
 	});
     
@@ -648,7 +648,7 @@ function uploadFile() {
             onClick: function() {
                 dijit.byId("upload_file_reset").destroy();
                 dijit.byId("upload_file_submit").destroy();
-                document.body.removeChild(document.getElementById("upload_file"));
+                document.body.removeChild(dojo.byId("upload_file"));
             }
         });
 
@@ -673,7 +673,7 @@ function addPingable() {
                 dijit.byId("ping_device_ip").destroy();
                 dijit.byId("ping_device_reset").destroy();
                 dijit.byId("ping_device_submit").destroy();
-                document.body.removeChild(document.getElementById("add_ping_device"));
+                document.body.removeChild(dojo.byId("add_ping_device"));
 	    }
 	});
     
@@ -684,7 +684,7 @@ function addPingable() {
                 dijit.byId("ping_device_ip").destroy();
                 dijit.byId("ping_device_reset").destroy();
                 dijit.byId("ping_device_submit").destroy();
-                document.body.removeChild(document.getElementById("add_ping_device"));
+                document.body.removeChild(dojo.byId("add_ping_device"));
             }
         });
 
