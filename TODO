@@ -1,4 +1,3 @@
-timer for reloading dashboard widgets
 rrd widget
 load device store earlier
 dashboard layout
@@ -7,3 +6,4 @@ different icons in device tree by device type ?
 network map
 look @ dojo charting instead of rrd for graphs
 snmp templates
+snmp trap receiver

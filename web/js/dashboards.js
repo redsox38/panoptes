@@ -15,6 +15,19 @@ function renderWidget(params) {
 	load: function(data) {
 	    hideLoading();
 	    if (data && !data.error) {
+		// fade out node, then delete it if it exists already
+		var node = dojo.byId('widget_box_' + params.position);
+
+		if (node) {
+		    fadeArgs = {
+			node: node,
+			duration: 1000
+		    };
+		    dojo.fadeOut(fadeArgs).play();
+		    
+		    node.destroy();
+		}
+
 		if (data.data.type == 'html') {
 		    var node = document.createElement("div");
 		    node.innerHTML = data.data.value;
@@ -60,6 +73,9 @@ function renderWidget(params) {
 			dijit.byId('dashboard_tab').domNode.appendChild(img);
 		    }		    
 		}
+
+		// redraw this widget in 5 minutes
+		timerId = setTimeout(renderWidget, 300000, params);
 	    } else {
 		alert(data.error);
 	    }
