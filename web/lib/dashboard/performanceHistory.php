@@ -200,7 +200,31 @@ class performanceHistoryWidget implements widgetInterface
    */
   public function renderUserWidget(dashboardUserWidget $entry) {
     try {
-      // draw rrd graph from params field of widget
+      $rtn = array();
+      $rtn['type'] = 'image';
+
+      require_once dirname(realpath(__FILE__)) . '/../panoptes.php';
+      
+      $pan = new panoptes();
+
+      // draw rrd graph from params field of widget render last hour of data
+      $start = sprintf("--start=%ld", time() - 3600);
+
+      $prms = $entry->params;
+
+      $rrd_params = array();
+      foreach ($prms as $a) {
+	preg_match('/^(\d+):(.*)/', $a, $matches);
+	$rrd_info = $pan->getRRDInfo($matches[1],
+				     $matches[2]);
+	$rrd_params = array_merge($rrd_params, $rrd_info['rrd_opts']);
+      }
+      array_unshift($rrd_params, $start);
+
+      $file_name = "/tmp/dashboard_image_" . rand() . '.png';
+      $ret = rrd_graph($file_name, $rrd_params, count($rrd_params));
+      
+      $rtn['value'] = $file_name;
     } catch (PDOException $e) {
       throw($e);
     }

@@ -54,10 +54,10 @@ $start = sprintf("--start=%ld", mktime(0, 0, 0, $sd['month'], $sd['day'],
 $end = sprintf("--end=%ld", mktime(0, 0, 0, $ed['month'], $ed['day'], 
 				   $ed['year']));
 
+// and push onto start of parameter array
 array_unshift($rrd_info['rrd_opts'], $end);
 array_unshift($rrd_info['rrd_opts'], $start);
 
-// and push onto start of parameter array
 $ret = rrd_graph($rrd_info['image_file'], $rrd_info['rrd_opts'], 
 		 count($rrd_info['rrd_opts']));
 
