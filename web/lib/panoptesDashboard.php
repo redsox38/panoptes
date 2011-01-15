@@ -325,7 +325,7 @@ class panoptesDashboard
     
     try {
       if (array_key_exists('widget_id', $args)) {
-	$rst = $this->getWidget();
+	$rst = $this->getWidget($args['widget_id']);
 	if ($rst) {
 	  $ent = $rst[0];
 	  require_once 'dashboard/' . $ent->php_file;

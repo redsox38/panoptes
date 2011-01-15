@@ -139,10 +139,16 @@ function openEditDashboardTab() {
 		var params = {};
 		if (win) {
 		    for (i = 0; i < win.childNodes.length; i++) {
-			var item_id = win.childNodes[i].id.replace("widget_","");
-			var thisDijit = dijit.byId(item_id);
-			if (thisDijit) {
-			    params[item_id] = thisDijit.get('value');
+			var my_id = win.childNodes[i].id;
+			if (my_id) {
+			    var item_id = my_id.replace("widget_","");
+			    var thisDijit = dijit.byId(item_id);
+			    if (thisDijit) {
+				params[item_id] = thisDijit.get('value');
+			    } else {
+				// not a dijit, just a form element
+				params[item_id] = dojo.byId(item_id).value;
+			    }
 			}
 		    }
 		}

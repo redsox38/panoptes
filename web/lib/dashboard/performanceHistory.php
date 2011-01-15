@@ -113,8 +113,17 @@ class performanceHistoryWidget implements widgetInterface
   public function saveWidget($widget_id, $user_id, $args) {
     $save_params = array();
 
-    $save_params['group_id'] = preg_replace('/g_(\d+)/', '\1', $args['new_widget_grp']);
-    
+    $i = 0;
+    while ($i >= 0) {
+      $p = 'perf_hist_input_' . $i;
+      if (array_key_exists($p, $args)) {
+	$save_params[] = $args[$p];
+	$i++;
+      } else {
+	$i = -1;
+      }
+    }
+
     try {
       $next_pos = $this->maxPosition($user_id);
       $next_pos++;
@@ -191,6 +200,7 @@ class performanceHistoryWidget implements widgetInterface
    */
   public function renderUserWidget(dashboardUserWidget $entry) {
     try {
+      // draw rrd graph from params field of widget
     } catch (PDOException $e) {
       throw($e);
     }
