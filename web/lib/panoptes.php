@@ -265,12 +265,18 @@ class panoptes
 	$count = 0;
 	foreach ($attrs as $a) {
 	  $ds_id = 'ds' . $id . '_' . $count . '_' . $vlabel;
-	  if (array_key_exists("display_as", $a)) {
-	    $disp = $a['display_as'];
-	    $disp = preg_replace('/:/', '\\:', $disp);
+	  if ($full) {
+	    if (array_key_exists("display_as", $a)) {
+	      $disp = $a['display_as'];
+	      $disp = preg_replace('/:/', '\\:', $disp);
+	    } else {
+	      $disp = $a['name'];
+	    }
 	  } else {
-	    $disp = $a['name'];
+	    // use title instead
+	    $disp = $cfg['title'];
 	  }
+
 	  array_push($defs, 'DEF:' . $ds_id . '=' . $r['rrd_file'] .
 		     ':' . $a['name'] . ':AVERAGE');
 	  array_push($graphs, $a['type'] . ':' . $ds_id . $a['color'] . ':' .

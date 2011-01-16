@@ -35,6 +35,8 @@ class performanceHistoryWidget implements widgetInterface
 {
   protected $data = array();
 
+  protected $colors = array('#ff0000','#0000ff','#6666ff','#00e600','#006600');
+
   public function __get($name) {
     if (array_key_exists($name, $this->data)) {
       return($this->data[$name]);
@@ -236,6 +238,11 @@ class performanceHistoryWidget implements widgetInterface
 	$rrd_info = $pan->getRRDInfo($matches[1],
 				     $matches[2], false, $count);
 
+	// replace colors in opts since they may overlap
+	foreach ($rrd_info['rrd_opts'] as $k => $v) {
+	  $rrd_info['rrd_opts'][$k] = preg_replace('/(\#.{6})/', $this->colors[$count % 5], $v);
+	}
+
 	$rrd_params = array_merge($rrd_params, $rrd_info['rrd_opts']);
 	$count++;
       }
@@ -272,7 +279,8 @@ class performanceHistoryWidget implements widgetInterface
 
 	imagedestroy($im);
       }
-      
+
+      $rtn['foobar'] = $rrd_params;
       $rtn['value'] = $file_name;
     } catch (PDOException $e) {
       throw($e);
