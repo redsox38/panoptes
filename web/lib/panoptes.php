@@ -195,11 +195,12 @@ class panoptes
    * @param id id of specific device to retrieve
    *                 rrd info for
    *        metric name of the metric to get rrd data from
-   *
+   *        full boolean flag to include labels default to true
+   *        vlabel optional variable tag to guarantee unique rrd var names for dashboard widget
    * @throws Exception 
    * @return array
    */
-  public function getRRDInfo($id, $metric) {
+  public function getRRDInfo($id, $metric, $full = true, $vlabel = 0) {
 
     try {
       $r = array();
@@ -245,35 +246,40 @@ class panoptes
 	  array_push($attrs, $cfg['attribute']);
 	}
 
-	if (array_key_exists("vertical_label", $cfg)) {
-	  array_push($r['rrd_opts'], '--vertical-label=' .
-		     $cfg['vertical_label']);
-	}
-
-	if (array_key_exists("title", $cfg)) {
-	  array_push($r['rrd_opts'], '--title=' .
-		     $cfg['title']);
+	if ($full) {
+	  if (array_key_exists("vertical_label", $cfg)) {
+	    array_push($r['rrd_opts'], '--vertical-label=' .
+		       $cfg['vertical_label']);
+	  }
+	  
+	  if (array_key_exists("title", $cfg)) {
+	    array_push($r['rrd_opts'], '--title=' .
+		       $cfg['title']);
+	  }
 	}
 
 	$defs = array();
 	$graphs = array();
 	$gprints = array();
 	
+	$count = 0;
 	foreach ($attrs as $a) {
+	  $ds_id = 'ds' . $id . '_' . $count . '_' . $vlabel;
 	  if (array_key_exists("display_as", $a)) {
 	    $disp = $a['display_as'];
 	    $disp = preg_replace('/:/', '\\:', $disp);
 	  } else {
 	    $disp = $a['name'];
 	  }
-	  array_push($defs, 'DEF:' . $a['name'] . '=' . $r['rrd_file'] .
+	  array_push($defs, 'DEF:' . $ds_id . '=' . $r['rrd_file'] .
 		     ':' . $a['name'] . ':AVERAGE');
-	  array_push($graphs, $a['type'] . ':' . $a['name'] . $a['color'] . ':' .
+	  array_push($graphs, $a['type'] . ':' . $ds_id . $a['color'] . ':' .
 		     $disp);
-	  if (array_key_exists("legend", $a)) {
-	    array_push($gprints, 'GPRINT:' . $a['name'] . ':' .
+	  if (array_key_exists("legend", $a) && $full) {
+	    array_push($gprints, 'GPRINT:' . $ds_id . ':' .
 		       $a['legend']);
 	  }
+	  $count++;
 	}
 
 	// append data definitions

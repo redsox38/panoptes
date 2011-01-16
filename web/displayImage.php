@@ -7,6 +7,6 @@ if (preg_match('/^\/tmp\/dashboard_image_/', $file)) {
   ob_clean();
   flush();
   readfile($file);
-  unlink($file);
+  //  unlink($file);
 } 
 ?>

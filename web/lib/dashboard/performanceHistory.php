@@ -191,6 +191,23 @@ class performanceHistoryWidget implements widgetInterface
     }
   }
 
+  private function _imageTextWrap($fontSize, $fontFace, $string, $width){
+    $ret = "";   
+    $arr = explode(' ', $string);
+    
+    foreach ( $arr as $word ){
+      $str = $ret.' '.$word;
+      $testbox = imagettfbbox($fontSize, 0, $fontFace, $str);
+      if ( $testbox[2] > $width ){
+	$ret.=($ret==""?"":"\n").$word;
+      } else {
+	$ret.=($ret==""?"":' ').$word;
+      }
+    }
+    
+    return $ret;
+  }
+
   /**
    * renderUserWidget
    *
@@ -207,22 +224,54 @@ class performanceHistoryWidget implements widgetInterface
       
       $pan = new panoptes();
 
-      // draw rrd graph from params field of widget render last hour of data
-      $start = sprintf("--start=%ld", time() - 3600);
+      // draw rrd graph from params field of widget render last 30 minutes
+      $start = sprintf("--start=%ld", time() - 1800);
 
       $prms = $entry->params;
 
       $rrd_params = array();
+      $count = 0;
       foreach ($prms as $a) {
 	preg_match('/^(\d+):(.*)/', $a, $matches);
 	$rrd_info = $pan->getRRDInfo($matches[1],
-				     $matches[2]);
+				     $matches[2], false, $count);
+
 	$rrd_params = array_merge($rrd_params, $rrd_info['rrd_opts']);
+	$count++;
       }
+      array_unshift($rrd_params, "--width=200");
+      array_unshift($rrd_params, "--height=200");
       array_unshift($rrd_params, $start);
 
       $file_name = "/tmp/dashboard_image_" . rand() . '.png';
       $ret = rrd_graph($file_name, $rrd_params, count($rrd_params));
+
+      if(!is_array($ret)) {
+	$fontsize = 10;
+	$font = $pan->config()->getConfigValue('web.gd_font');
+	$hgt = 200;
+	$wdt = 200;
+
+	$err = rrd_error();
+	$im = imagecreatetruecolor($wdt, $hgt);
+
+  
+	// set foreground and background colors
+	$bg_color = imagecolorallocate($im, 255, 255, 255);
+	$fg_color = imagecolorallocate($im, 0, 0, 0);
+
+	imagefilledrectangle($im, 0, 0, $wdt, $hgt, $bg_color);
+
+	// wrap text to fit in image
+	$err = $this->_imageTextWrap($fontsize, $font, $err, $wdt);
+	
+	imagettftext($im, $fontsize, 0, 0, ($hgt / 3), $fontsize, $font, $err);
+	
+	header("Content-type: image/png");
+	imagepng($im, $file_name);
+
+	imagedestroy($im);
+      }
       
       $rtn['value'] = $file_name;
     } catch (PDOException $e) {

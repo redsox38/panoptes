@@ -55,7 +55,7 @@ function renderWidget(params) {
 		if (data.data.type == 'html') {
 		    node.innerHTML = data.data.value;
 		} else if (data.data.type == "image") {
-		    graphImg = new Image();
+		    graphImg = new Image(200, 200);
 		    graphImg.src = '/panoptes/displayImage.php?file=' + data.data.value
 		    graphImg.id = 'widget_image_' + params.position;
 		    
