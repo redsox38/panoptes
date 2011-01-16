@@ -232,9 +232,13 @@ class performanceHistoryWidget implements widgetInterface
       $prms = $entry->params;
 
       $rrd_params = array();
+      $devices = array();
       $count = 0;
       foreach ($prms as $a) {
 	preg_match('/^(\d+):(.*)/', $a, $matches);
+	$dev = $pan->getDevice($matches[1]);
+	array_push($devices, $dev->name);
+
 	$rrd_info = $pan->getRRDInfo($matches[1],
 				     $matches[2], false, $count);
 
@@ -246,6 +250,18 @@ class performanceHistoryWidget implements widgetInterface
 	$rrd_params = array_merge($rrd_params, $rrd_info['rrd_opts']);
 	$count++;
       }
+
+      // make title out of device names
+      $devices = array_unique($devices);
+      if (count($devices) > 1) {
+	$last = array_pop($devices);
+	$first = implode(',', $devices);
+	$title = "--title=" . $first . ' & ' . $last;
+      } else {
+	$title = "--title=" . $devices[0];
+      }
+
+      array_unshift($rrd_params, $title);
       array_unshift($rrd_params, "--width=200");
       array_unshift($rrd_params, "--height=200");
       array_unshift($rrd_params, $start);

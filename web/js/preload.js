@@ -238,9 +238,6 @@ function loadAvailableShellScripts() {
 }
 
 dojo.addOnLoad(function(){
-	dojo.connect(dijit.byId("device_list"), "onShow",
-		     dojo.partial(createDeviceTree));
-
 	loadAvailableShellScripts();
 
 	all_user_data = {
@@ -266,6 +263,7 @@ dojo.addOnLoad(function(){
 	loadUsers();
 	loadUserPrefs();
 	loadGroups();
+	createDeviceTree();
 	loadDashboard();
     });
 
