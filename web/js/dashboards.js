@@ -65,8 +65,8 @@ function renderWidget(params) {
 		// add delete icon if in edit mode
 		if (dashboard_edit_mode) {
 		    var node_pos = dojo.marginBox('widget_box_' + params.position);
-		    var img_x = node_pos.l + node_pos.w - 20;
-		    var img_y = node_pos.t;
+		    var img_x = node_pos.l + node_pos.w - 15;
+		    var img_y = node_pos.t - 5;
 		    
 		    // create image node
 		    img = new Image();

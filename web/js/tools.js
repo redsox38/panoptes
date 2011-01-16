@@ -203,8 +203,8 @@ function openEditDashboardTab() {
     if (widget_counter) {
 	for (i = 0; i < widget_counter; i++) {
 	    var node_pos = dojo.marginBox('widget_box_' + i);
-	    var img_x = node_pos.l + node_pos.w - 20;
-	    var img_y = node_pos.t;
+	    var img_x = node_pos.l + node_pos.w - 15;
+	    var img_y = node_pos.t - 5;
 	    
 	    // create image node
 	    img = new Image();
