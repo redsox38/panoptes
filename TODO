@@ -5,3 +5,5 @@ network map
 look @ dojo charting instead of rrd for graphs
 snmp templates
 snmp trap receiver
+scheduled notification outage windows
+

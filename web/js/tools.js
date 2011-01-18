@@ -416,8 +416,10 @@ function openPrefTab() {
 	    placeHolder: 'Notification xmpp address'
 	});
 
+    // populate current preference values
     getPrefValue('general', 'general_prefs_theme');
     getPrefValue('notifications', 'notification_prefs_addr');
+    getPrefValue('notifications', 'notification_prefs_xmpp_addr');
     
     // add pref tabs
     tc.addChild(createPrefTab('general', [sb], ['Theme']));
