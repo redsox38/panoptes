@@ -33,10 +33,11 @@ void send_notification(monitor_entry_t *m, monitor_result_t *r)
   sendmail_cmd = get_config_value("notification.sendmail");
   from_addr = get_config_value("notification.from_address");
 
+  /* send mail notification */
   if (from_addr != NULL) {
     if (sendmail_cmd != NULL) {
       /* see if anybody is interested in being notified for this */
-      notify_user_list = get_notify_user_list(m);
+      notify_user_list = get_email_notify_user_list(m);
 
       if (notify_user_list) {
 	pipe(pipe_stdin_fd);
@@ -73,9 +74,6 @@ void send_notification(monitor_entry_t *m, monitor_result_t *r)
 	    free(p);
 	    *p++;
 	  }
-	  /*
-	  free(notify_user_list);
-	  */
 
 	  memset(writebuf, '\0', 1024);
 	  snprintf(writebuf, 1024, "From: <%s>\n", from_addr);
@@ -100,7 +98,7 @@ void send_notification(monitor_entry_t *m, monitor_result_t *r)
 	}
       }
     } else {
-      syslog(LOG_NOTICE, "No notification address is defined");
+      syslog(LOG_NOTICE, "No sendmail path is defined");
     }
   } else {
     syslog(LOG_NOTICE, "No notification address is defined");

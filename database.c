@@ -221,27 +221,27 @@ int update_monitor_entry(monitor_entry_t *m, monitor_result_t *r)
   return(rc);
 }
 
-/* get_notify_user_list
+/* get_email_notify_user_list
  * 
  * parameters: monitor_entry_t * monitor entry struct holding information on the entry that was monitored
  * return: char ** an array of character strings containing the email addresses for the users that 
  *                 want to get notified about status changes for this monitor.
  *
- * Looks for a function named _get_notify_user_list inside the shared library and passes the call off
+ * Looks for a function named _get_email_notify_user_list inside the shared library and passes the call off
  * to it.  The library function is expected to see which user ids are set to get notifications for the given
  * monitor entry and then check the preferences table to get their email addresses.  The return value from 
  * the library is passed back to the calling program.
  *
  */
-char **get_notify_user_list(monitor_entry_t *m)
+char **get_email_notify_user_list(monitor_entry_t *m)
 {
   char **r = NULL;
   char **(*notify_list_ptr)(monitor_entry_t *);
 
-  if ((notify_list_ptr = (char ** (*)(monitor_entry_t *))dlsym(lib_handle, "_get_notify_user_list")) != NULL) {
+  if ((notify_list_ptr = (char ** (*)(monitor_entry_t *))dlsym(lib_handle, "_get_email_notify_user_list")) != NULL) {
     r = (*notify_list_ptr)(m);
   } else {
-    syslog(LOG_ALERT, "_get_notify_user_list not defined");
+    syslog(LOG_ALERT, "_get_email_notify_user_list not defined");
   }
   
   return(r);

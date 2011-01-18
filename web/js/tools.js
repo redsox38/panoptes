@@ -409,12 +409,19 @@ function openPrefTab() {
 	    placeHolder: 'Notification email address'
 	});
 
+    tb2 = new dijit.form.TextBox({
+	    id: 'notification_prefs_xmpp_addr',
+	    name: 'notification_prefs_xmpp_addr',
+	    style: 'width: 25em;',
+	    placeHolder: 'Notification xmpp address'
+	});
+
     getPrefValue('general', 'general_prefs_theme');
     getPrefValue('notifications', 'notification_prefs_addr');
     
     // add pref tabs
-    tc.addChild(createPrefTab('general', [sb], ['theme']));
-    tc.addChild(createPrefTab('notifications', [tb], ['address']));
+    tc.addChild(createPrefTab('general', [sb], ['Theme']));
+    tc.addChild(createPrefTab('notifications', [tb, tb2], ['E-mail Address', 'XMPP Address']));
 
     dijit.byId("panoptes_tab_container").addChild(bc);
     dijit.byId("panoptes_tab_container").selectChild(bc);
