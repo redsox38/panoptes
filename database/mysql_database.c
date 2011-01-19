@@ -326,7 +326,7 @@ int _update_monitor_entry(monitor_entry_t *m, monitor_result_t *r)
   return(1);
 }
 
-char **_get_email_notify_user_list(monitor_entry_t *m)
+char **_get_notify_user_list(monitor_entry_t *m, char *type)
 {
   char        **rtn = NULL, *qry;
   int         len, rc, i, num_rows;
@@ -342,11 +342,13 @@ char **_get_email_notify_user_list(monitor_entry_t *m)
 	 20 +
 	 strlen(",'") +
 	 strlen(m->table_name) +
+	 strlen("','") +
+	 strlen(type) +
 	 strlen("')"));
   
   qry = (char *)malloc(len * sizeof(char));
-  snprintf(qry, len, "CALL get_monitor_notification(%s,'%s')",
-	   m->id, m->table_name);
+  snprintf(qry, len, "CALL get_monitor_notification(%s,'%s','%s')",
+	   m->id, m->table_name, type);
 
   pthread_mutex_lock(&sql_mutex);
 

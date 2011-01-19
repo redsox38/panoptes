@@ -29,6 +29,7 @@ void send_notification(monitor_entry_t *m, monitor_result_t *r)
   char           **notify_user_list, **p;
   int            rc, pipe_stdin_fd[2], i = 0;
   pid_t          pid;
+  char           *xmpp_user, *xmpp_pass, **xmpp_args;
 
   sendmail_cmd = get_config_value("notification.sendmail");
   from_addr = get_config_value("notification.from_address");
@@ -37,7 +38,7 @@ void send_notification(monitor_entry_t *m, monitor_result_t *r)
   if (from_addr != NULL) {
     if (sendmail_cmd != NULL) {
       /* see if anybody is interested in being notified for this */
-      notify_user_list = get_email_notify_user_list(m);
+      notify_user_list = get_notify_user_list(m, "email");
 
       if (notify_user_list) {
 	pipe(pipe_stdin_fd);
@@ -102,5 +103,72 @@ void send_notification(monitor_entry_t *m, monitor_result_t *r)
     }
   } else {
     syslog(LOG_NOTICE, "No notification address is defined");
+  }
+
+  xmpp_user = get_config_value("notification.xmpp_user");
+  xmpp_pass = get_config_value("notification.xmpp_pass");
+
+  /* send xmpp notification if so configured */
+  if ((xmpp_user != NULL) && (xmpp_pass != NULL)) {
+    /* see if anybody is interested in being notified for this */
+    notify_user_list = get_notify_user_list(m, "xmpp");
+    
+    if (notify_user_list) {      
+
+      pipe(pipe_stdin_fd);
+      if (!(pid = fork())) {
+	/* child */
+	/* free up stdin */
+	close(0);
+	
+	/* build args */
+	i = 0;
+	p = notify_user_list;
+	while (*p != NULL) {
+	  i++;
+	  *p++;
+	}
+
+	/* space for all rcpts + user/pass + prog name + NULL */
+	xmpp_args = (char **)malloc(sizeof(char *) * ((i * 2) + 6));
+	xmpp_args[0] = "xmpp_msg";
+	xmpp_args[1] = "--user";
+	xmpp_args[2] = xmpp_user;
+	xmpp_args[3] = "--pass";
+	xmpp_args[4] = xmpp_pass;
+	i = 5;
+	p = notify_user_list;
+	while (*p != NULL) {
+	  xmpp_args[i] = "--rcpt";
+	  i++;
+	  xmpp_args[i] = *p;
+	  i++;
+	  *p++;
+	}
+	xmpp_args[i] = NULL;
+
+	dup(pipe_stdin_fd[0]);
+	
+	execvp("xmpp_msg", xmpp_args);
+	exit(0);
+      } else {
+	/* parent */
+	p = notify_user_list;
+	while (*p != NULL) {
+	  free(p);
+	  *p++;
+	}
+
+	memset(writebuf, '\0', 1024);
+	snprintf(writebuf, 1024, "Status changed to %d\n", r->status);
+	write(pipe_stdin_fd[1], writebuf, strlen(writebuf));
+
+	close(pipe_stdin_fd[0]);
+	close(pipe_stdin_fd[1]);
+
+	/* wait for child */
+	waitpid(pid, NULL, 0);
+      }
+    }
   }
 }
