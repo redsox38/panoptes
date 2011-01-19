@@ -237,14 +237,18 @@ class performanceHistoryWidget implements widgetInterface
       foreach ($prms as $a) {
 	preg_match('/^(\d+):(.*)/', $a, $matches);
 	$dev = $pan->getDevice($matches[1]);
-	array_push($devices, $dev->name);
+
+	$short_name = preg_replace('/([^\.]+)\..*/', '\1', $dev->name);
+	array_push($devices, $short_name);
 
 	$rrd_info = $pan->getRRDInfo($matches[1],
 				     $matches[2], false, $count);
 
 	// replace colors in opts since they may overlap
+	// prefix host to graph text
 	foreach ($rrd_info['rrd_opts'] as $k => $v) {
-	  $rrd_info['rrd_opts'][$k] = preg_replace('/(\#.{6})/', $this->colors[$count % 5], $v);
+	  $rrd_info['rrd_opts'][$k] = preg_replace('/(\#.{6}):(.*)/', $this->colors[$count % 5] .
+						   ':' . $short_name . ' \2', $v);
 	}
 
 	$rrd_params = array_merge($rrd_params, $rrd_info['rrd_opts']);
@@ -296,7 +300,6 @@ class performanceHistoryWidget implements widgetInterface
 	imagedestroy($im);
       }
 
-      $rtn['foobar'] = $rrd_params;
       $rtn['value'] = $file_name;
     } catch (PDOException $e) {
       throw($e);
