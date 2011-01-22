@@ -84,7 +84,7 @@ function openEditDashboardTab() {
     // add cancel, save, and add new buttons to top of tab
     var cncl_btn = new dijit.form.Button({
 	    id: 'dashboard_cancel',
-	    label: 'Cancel',
+	    label: 'Done',
 	    onClick: function() {
 		dashboard_edit_mode = false;
 		dijit.byId("dashboard_add").destroy();
