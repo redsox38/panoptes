@@ -698,7 +698,7 @@ function addInfoData(id, container) {
 
 		// OS info
 		new_data += '<b>OS type : </b>' + data.data.os_type + '<br/>' +
-		'<b>OS details : </b>' + data.data.os_detail + '</br>';
+		'<b>OS details : </b>' + data.data.os_detail + '<br/>';
 
 		if (data.data.ping_data) {
 		    new_data += '<b>icmp response : </b>' +

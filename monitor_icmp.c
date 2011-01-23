@@ -145,6 +145,7 @@ monitor_result_t *monitor_icmp(char *addr, monitor_result_t *r)
     
     nfds = max(nfds, sock);
     rc = select(++nfds, &rd_set, &wr_set, NULL, &to);
+    close(sock);
 
     if (rc > 0) {
       gettimeofday(&stop, NULL);
