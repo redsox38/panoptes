@@ -31,8 +31,8 @@
 #include <fcntl.h>
 #include <sys/time.h>
 #include "panoptes/monitor_core.h"
-#include <linux/ip.h>
-#include <linux/icmp.h>
+#include <netinet/ip.h>
+#include <netinet/ip_icmp.h>
 
 /*
  * Checksum routine for Internet Protocol
@@ -60,7 +60,7 @@ unsigned short cksum(unsigned short *buffer, int size)
 monitor_result_t *monitor_icmp(char *addr, monitor_result_t *r)
 {
   struct timeval     to, start, stop;
-  fd_set             rd_set, wr_set;
+  fd_set             rd_set;
   double             elapsed;
   int                addrlen, len, rc, sock, optval, nfds = 0;
   struct iphdr       ip;
@@ -102,14 +102,15 @@ monitor_result_t *monitor_icmp(char *addr, monitor_result_t *r)
    */
   icmp.type = ICMP_ECHO;
   icmp.code = 0;
-  icmp.un.echo.id = 0;
-  icmp.un.echo.sequence = 0;
+  icmp.un.echo.id = 1;
+  icmp.un.echo.sequence = 1;
   icmp.checksum = 0;
   icmp.checksum = cksum((unsigned short *)&icmp, sizeof(struct icmphdr));
   ip.check = cksum((unsigned short *)&ip, sizeof(struct iphdr));
 
   conn.sin_family = AF_INET;
   conn.sin_addr.s_addr = inet_addr(addr);
+  conn.sin_port = 0;
 
   memcpy((void *)packet, (void*)&ip, sizeof(struct iphdr));
   memcpy((void *)(packet + sizeof(struct iphdr)), (void*)&icmp, sizeof(struct icmphdr));
@@ -137,14 +138,12 @@ monitor_result_t *monitor_icmp(char *addr, monitor_result_t *r)
     sendto(sock, packet, ip.tot_len, 0, 
 	   (struct sockaddr *)&conn, sizeof(struct sockaddr));
     
-    /* select on socket to see if it connected up until t/o */
+    /* select on socket to see if it got a response up until t/o */
     FD_ZERO(&rd_set);
-    FD_ZERO(&wr_set);
     FD_SET(sock, &rd_set);
-    FD_SET(sock, &wr_set);
     
     nfds = max(nfds, sock);
-    rc = select(++nfds, &rd_set, &wr_set, NULL, &to);
+    rc = select(++nfds, &rd_set, NULL, NULL, &to);
     close(sock);
 
     if (rc > 0) {
@@ -154,7 +153,6 @@ monitor_result_t *monitor_icmp(char *addr, monitor_result_t *r)
       /* get elapsed time in milliseconds */
       elapsed = (stop.tv_sec - start.tv_sec) * 1000;
       elapsed += ((stop.tv_usec - start.tv_usec) / 1000);
-
 
       r->monitor_msg = (char *)malloc(sizeof(char) * 11);
       snprintf(r->monitor_msg, 10, "%.4f", elapsed);
