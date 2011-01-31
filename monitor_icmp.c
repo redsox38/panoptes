@@ -91,7 +91,7 @@ monitor_result_t *monitor_icmp(char *addr, monitor_result_t *r)
   ip.version = 4;
   ip.tos = 0;
   ip.tot_len = sizeof(struct iphdr) + sizeof(struct icmphdr);
-  ip.id = htons(random());
+  ip.id = 0;
   ip.ttl = 255;
   ip.protocol = IPPROTO_ICMP;
   ip.saddr = htonl(INADDR_ANY);
@@ -106,7 +106,6 @@ monitor_result_t *monitor_icmp(char *addr, monitor_result_t *r)
   icmp.un.echo.sequence = 1;
   icmp.checksum = 0;
   icmp.checksum = cksum((unsigned short *)&icmp, sizeof(struct icmphdr));
-  ip.check = cksum((unsigned short *)&ip, sizeof(struct iphdr));
 
   conn.sin_family = AF_INET;
   conn.sin_addr.s_addr = inet_addr(addr);
@@ -116,7 +115,7 @@ monitor_result_t *monitor_icmp(char *addr, monitor_result_t *r)
   memcpy((void *)(packet + sizeof(struct iphdr)), (void*)&icmp, sizeof(struct icmphdr));
 
   /* open socket, send packet, wait for response */
-  if ((sock = socket(AF_INET, SOCK_RAW, IPPROTO_ICMP)) < 0) {
+  if ((sock = socket(AF_INET, SOCK_RAW, IPPROTO_RAW)) < 0) {
     /* error */
     r->status = MONITOR_RESULT_ERR;
     strerror_r(errno, errbuf, 1024);
@@ -131,6 +130,7 @@ monitor_result_t *monitor_icmp(char *addr, monitor_result_t *r)
     fcntl(sock, F_SETFL, O_NONBLOCK);
 
     /* keep kernel from touching the packet */
+    optval = 1;
     setsockopt(sock, IPPROTO_IP, IP_HDRINCL, &optval, sizeof(int));
 
     gettimeofday(&start, NULL);
