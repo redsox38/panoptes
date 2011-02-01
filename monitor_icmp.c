@@ -62,10 +62,9 @@ monitor_result_t *monitor_icmp(char *addr, monitor_result_t *r)
   struct timeval     to, start, stop;
   fd_set             rd_set;
   double             elapsed;
-  int                addrlen, len, rc, sock, optval, nfds = 0;
-  struct iphdr       ip;
+  int                addrlen, len, rc, sock, nfds = 0;
   struct icmphdr     icmp;
-  char               *packet, *to_str, errbuf[1024];
+  char               *to_str, errbuf[1024];
   struct sockaddr_in conn;
   
   to_str = get_config_value("ping_monitor.timeout");
@@ -80,30 +79,12 @@ monitor_result_t *monitor_icmp(char *addr, monitor_result_t *r)
   to.tv_usec = 0;
 
   /*
-   * allocate memory
-   */
-  packet = malloc(sizeof(struct iphdr) + sizeof(struct icmphdr));
-    
-  /*  
-   *   Set up IP packet
-   */
-  ip.ihl = 5;
-  ip.version = 4;
-  ip.tos = 0;
-  ip.tot_len = sizeof(struct iphdr) + sizeof(struct icmphdr);
-  ip.id = 0;
-  ip.ttl = 255;
-  ip.protocol = IPPROTO_ICMP;
-  ip.saddr = htonl(INADDR_ANY);
-  ip.daddr = inet_addr(addr);
-
-  /*
    * Set up ICMP packet
    */
   icmp.type = ICMP_ECHO;
   icmp.code = 0;
-  icmp.un.echo.id = 1;
-  icmp.un.echo.sequence = 1;
+  icmp.un.echo.id = 42;
+  icmp.un.echo.sequence = 42;
   icmp.checksum = 0;
   icmp.checksum = cksum((unsigned short *)&icmp, sizeof(struct icmphdr));
 
@@ -111,11 +92,8 @@ monitor_result_t *monitor_icmp(char *addr, monitor_result_t *r)
   conn.sin_addr.s_addr = inet_addr(addr);
   conn.sin_port = 0;
 
-  memcpy((void *)packet, (void*)&ip, sizeof(struct iphdr));
-  memcpy((void *)(packet + sizeof(struct iphdr)), (void*)&icmp, sizeof(struct icmphdr));
-
   /* open socket, send packet, wait for response */
-  if ((sock = socket(AF_INET, SOCK_RAW, IPPROTO_RAW)) < 0) {
+  if ((sock = socket(AF_INET, SOCK_RAW, IPPROTO_ICMP)) < 0) {
     /* error */
     r->status = MONITOR_RESULT_ERR;
     strerror_r(errno, errbuf, 1024);
@@ -129,13 +107,9 @@ monitor_result_t *monitor_icmp(char *addr, monitor_result_t *r)
     */
     fcntl(sock, F_SETFL, O_NONBLOCK);
 
-    /* keep kernel from touching the packet */
-    optval = 1;
-    setsockopt(sock, IPPROTO_IP, IP_HDRINCL, &optval, sizeof(int));
-
     gettimeofday(&start, NULL);
 
-    sendto(sock, packet, ip.tot_len, 0, 
+    sendto(sock, &icmp, sizeof(struct icmphdr), 0, 
 	   (struct sockaddr *)&conn, sizeof(struct sockaddr));
     
     /* select on socket to see if it got a response up until t/o */
@@ -177,8 +151,6 @@ monitor_result_t *monitor_icmp(char *addr, monitor_result_t *r)
       snprintf(r->monitor_msg, len, "select: %s", errbuf);
     }
   }
-
-  free(packet);
 
   return(r);
 }
