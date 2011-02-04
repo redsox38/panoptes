@@ -18,9 +18,7 @@ my $componentname = 'gmail.com';
 my $connectiontype = 'tcpip';
 my $tls = 1;
 
-while(<STDIN>) {
-    $body .= $_;
-}
+$body = <STDIN>;
 
 my $Connection = new Net::XMPP::Client();
 

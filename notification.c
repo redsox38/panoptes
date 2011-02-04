@@ -30,6 +30,7 @@ void send_notification(monitor_entry_t *m, monitor_result_t *r)
   int            rc, pipe_stdin_fd[2], i = 0;
   pid_t          pid;
   char           *xmpp_user, *xmpp_pass, **xmpp_args;
+  char           *statuses[] = { "new","ok","pending","warn","error" };
 
   sendmail_cmd = get_config_value("notification.sendmail");
   from_addr = get_config_value("notification.from_address");
@@ -85,7 +86,7 @@ void send_notification(monitor_entry_t *m, monitor_result_t *r)
 	  write(pipe_stdin_fd[1], writebuf, strlen(writebuf));
 	  
 	  memset(writebuf, '\0', 1024);
-	  snprintf(writebuf, 1024, "Status changed to %d\n", r->status);
+	  snprintf(writebuf, 1024, "Status changed to %s\n", statuses[r->status]);
 	  write(pipe_stdin_fd[1], writebuf, strlen(writebuf));
 	  memset(writebuf, '\0', 1024);
 	  snprintf(writebuf, 1024, ".\n");
@@ -114,7 +115,6 @@ void send_notification(monitor_entry_t *m, monitor_result_t *r)
     notify_user_list = get_notify_user_list(m, "xmpp");
     
     if (notify_user_list) {      
-
       pipe(pipe_stdin_fd);
       if (!(pid = fork())) {
 	/* child */
@@ -148,7 +148,7 @@ void send_notification(monitor_entry_t *m, monitor_result_t *r)
 	xmpp_args[i] = NULL;
 
 	dup(pipe_stdin_fd[0]);
-	
+
 	execvp("xmpp_msg", xmpp_args);
 	exit(0);
       } else {
@@ -160,15 +160,24 @@ void send_notification(monitor_entry_t *m, monitor_result_t *r)
 	}
 
 	memset(writebuf, '\0', 1024);
-	snprintf(writebuf, 1024, "Status changed to %d\n", r->status);
-	write(pipe_stdin_fd[1], writebuf, strlen(writebuf));
-
+	snprintf(writebuf, 1024, "Status changed to %s\n", statuses[r->status]);
+	rc = write(pipe_stdin_fd[1], writebuf, strlen(writebuf));
+	if (rc < 0) {
+	  strerror_r(errno, errbuf, 1024);
+	  syslog(LOG_NOTICE, "write: %s", errbuf);
+	} else {
+	  syslog(LOG_DEBUG, "wrote %d bytes", rc);
+	}
 	close(pipe_stdin_fd[0]);
 	close(pipe_stdin_fd[1]);
 
 	/* wait for child */
 	waitpid(pid, NULL, 0);
       }
+    } else {
+      syslog(LOG_DEBUG, "no xmpp user notifications registered");
     }
+  } else {
+    syslog(LOG_DEBUG, "xmpp user or pass is null");
   }
 }
