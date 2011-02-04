@@ -1,10 +1,10 @@
 Summary: Network Monitor tool
 Name: panoptes
-Version: 1.5rc1
+Version: 1.5
 Release: 1
 License: GPL
 Group: Applications/Network
-Source: https://github.com/downloads/redsox38/panoptes/panoptes-1.5rc1.tar.gz
+Source: https://github.com/downloads/redsox38/panoptes/panoptes-1.5.tar.gz
 Packager: Todd Merritt <redsox38@gmail.com>
 Requires: mysql-libs >= 5.0, libxml2, net-snmp-libs, libcurl, php >= 5.0, php-pdo, php-gd, php-snmp, php-xml, rrdtool-php, rrdtool
 BuildRequires: mysql-devel, libxml2-devel, net-snmp-devel, libcurl-devel, rrdtool-devel
@@ -34,6 +34,7 @@ cp -p panoptes_monitor.init %buildroot/etc/init.d/panoptes_monitor
 cp -p panoptes_discover.init %buildroot/etc/init.d/panoptes_discover
 cp -p install_db.sh %buildroot/usr/bin/panoptes_install_db.sh
 cp -p update_db.sh %buildroot/usr/bin/panoptes_update_db.sh
+cp -p xmpp_msg %buildroot/usr/bin/xmpp_msg
 
 %files
 %defattr(-,root,root)
@@ -43,6 +44,7 @@ cp -p update_db.sh %buildroot/usr/bin/panoptes_update_db.sh
 %attr(0755,root,root)/etc/init.d/panoptes_monitor
 %attr(0755,root,root)/usr/bin/panoptes_install_db.sh
 %attr(0755,root,root)/usr/bin/panoptes_update_db.sh
+%attr(0755,root,root)/usr/bin/xmpp_msg
 /usr/sbin/panoptes_monitor
 /usr/sbin/panoptes_discover
 %dir /usr/share/panoptes_rrds
