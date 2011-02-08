@@ -3,5 +3,5 @@ different icons in device tree by device type ?
 network map
 look @ dojo charting instead of rrd for graphs
 snmp templates
-snmp trap receiver
+snmp trap/external message receiver
 scheduled notification outage windows

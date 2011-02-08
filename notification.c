@@ -159,8 +159,8 @@ void send_notification(monitor_entry_t *m, monitor_result_t *r)
 	  *p++;
 	}
 
-	memset(writebuf, '\0', 1024);
-	snprintf(writebuf, 1024, "Status changed to %s\n", statuses[r->status]);
+	memset(writebuf, '\0', 1024);       
+	snprintf(writebuf, 1024, "%s status changed to %s\n", get_attr_val(m, "address"), statuses[r->status]);
 	rc = write(pipe_stdin_fd[1], writebuf, strlen(writebuf));
 	if (rc < 0) {
 	  strerror_r(errno, errbuf, 1024);
