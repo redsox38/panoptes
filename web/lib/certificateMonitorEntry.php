@@ -41,6 +41,7 @@ class certificateMonitorEntry extends monitorEntry
     $this->monitorTable("certificate_monitors");
     $this->ackTable("certificate_acknowledgments");
     $this->notificationTable("certificate_notifications");
+    $this->notificationBlackoutTable("certificate_notification_blackouts");
   }
   
  /**

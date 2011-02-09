@@ -34,6 +34,7 @@ abstract class monitorEntry
   protected $monitorTable;
   protected $ackTable;
   protected $notificationTable;
+  protected $notificationBlackoutTable;
   protected $data = array();
 
   /* 
@@ -102,6 +103,21 @@ abstract class monitorEntry
     }
 
     return($this->notificationTable);
+  }
+
+  /**
+   * Get/Set notification blackout table
+   *
+   * @param val optional string to set table name to
+   * @throws none
+   * @return var current table name
+   */
+  public function notificationBlackoutTable($val = null) {
+    if (!(is_null($val))) {
+      $this->notificationBlackoutTable = $val;
+    }
+
+    return($this->notificationBlackoutTable);
   }
 
   /**
@@ -378,6 +394,83 @@ abstract class monitorEntry
       }
 
       return($rtn);
+    } catch (PDOException $e) {
+      throw($e);
+    }
+  }
+
+  /**
+   * get notification blackouts for monitor
+   *
+   * @param none
+   * @throws PDOException
+   * @return array of start/stop times for blackouts for this monitor or null if no outages exist
+   */
+  public function getNotificationBlackouts() {
+    try {
+      $rtn = null;
+      $id = $this->id;
+
+      $stmt = $this->db->prepare("SELECT start,stop FROM " . $this->notificationBlackoutTable() . 
+				 " WHERE monitor_id=?");
+      $stmt->bindParam(1, $id, PDO::PARAM_INT);
+      $stmt->execute();
+
+      // there has to be a better way to see if a select statement returns rows
+      $r = $stmt->fetch(PDO::FETCH_ASSOC);
+
+      if ($r) {
+	$rtn = array(array('start' => $r['start'], 'stop' => $r['stop']));
+	while ($r = $stmt->fetch(PDO::FETCH_ASSOC)) {
+	  $rtn[] = array('start' => $r['start'], 'stop' => $r['stop']);
+	}
+      }
+
+      return($rtn);
+    } catch (PDOException $e) {
+      throw($e);
+    }
+  }
+
+  /**
+   * delete notification blackouts for monitor
+   *
+   * @param id blackout id to remove
+   * @throws PDOException
+   * @return none
+   */
+  public function deleteNotificationBlackout($bl_id) {
+    try {
+      $id = $this->id;
+
+      $stmt = $this->db->prepare("DELETE FROM " . $this->notificationBlackoutTable() . 
+				 " WHERE id=? AND monitor_id=?");
+      $stmt->bindParam(1, $bl_id, PDO::PARAM_INT);
+      $stmt->bindParam(2, $id, PDO::PARAM_INT);
+      $stmt->execute();
+    } catch (PDOException $e) {
+      throw($e);
+    }
+  }
+
+  /**
+   * add notification blackouts for monitor
+   *
+   * @param start start time for blackout
+   * @param stop  stop time for blackout
+   * @throws PDOException
+   * @return none
+   */
+  public function addNotificationBlackout($start, $stop) {
+    try {
+      $id = $this->id;
+
+      $stmt = $this->db->prepare("INSERT INTO " . $this->notificationBlackoutTable() . 
+				 " (monitor_id, start, stop) VALUES (?,?,?)");
+      $stmt->bindParam(1, $id, PDO::PARAM_INT);
+      $stmt->bindParam(2, $start);
+      $stmt->bindParam(3, $stop);
+      $stmt->execute();
     } catch (PDOException $e) {
       throw($e);
     }

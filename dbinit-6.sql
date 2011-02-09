@@ -1,12 +1,11 @@
 /* drop tables */
 
 DROP TABLE IF EXISTS port_notification_blackouts;
-DROP TABLE IF EXISTS ping_notification_blackouts;
 DROP TABLE IF EXISTS shell_notification_blackouts;
 DROP TABLE IF EXISTS snmp_notification_blackouts;
 DROP TABLE IF EXISTS url_notification_blackouts;
 DROP TABLE IF EXISTS certificate_notification_blackouts;
-DROP VIEW monitor_tasks;
+DROP PROCEDURE IF EXISTS get_monitor_notification;
 
 /* tables */
 
@@ -22,20 +21,6 @@ CREATE TABLE port_notification_blackouts (
   PRIMARY KEY (id),
   KEY port_notification_blackouts_ibfk_1 (monitor_id),
   CONSTRAINT port_notification_blackouts_ibfk_1 FOREIGN KEY (monitor_id) REFERENCES port_monitors (id) ON DELETE CASCADE ON UPDATE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
-
---
--- Table structure for ping_notification_blackouts
---
-
-CREATE TABLE ping_notification_blackouts (
-  id bigint(20) NOT NULL AUTO_INCREMENT,
-  monitor_id bigint(20) NOT NULL,
-  start time NOT NULL,
-  stop time NOT NULL,
-  PRIMARY KEY (id),
-  KEY ping_notification_blackouts_ibfk_1 (monitor_id),
-  CONSTRAINT ping_notification_blackouts_ibfk_1 FOREIGN KEY (monitor_id) REFERENCES ping_monitors (id) ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 --
@@ -94,50 +79,54 @@ CREATE TABLE certificate_notification_blackouts (
   CONSTRAINT certificate_notification_blackouts_ibfk_1 FOREIGN KEY (monitor_id) REFERENCES certificate_monitors (id) ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
-/* views */
+/* stored procedures */
 
-CREATE ALGORITHM=UNDEFINED SQL SECURITY INVOKER VIEW monitor_tasks
-    AS (SELECT 'port_monitors' AS table_name, po.id AS id,
-        po.device_id AS device_id,
-        po.last_check AS last_check, 
-        po.next_check AS next_check FROM
-        port_monitors po LEFT OUTER JOIN port_notification_blackouts pn ON po.id=pn.monitor_id 
-	WHERE po.disabled=0 AND po.status <> 'pending'
-	AND (start IS NULL OR current_timestamp < start OR current_timestamp > stop)) 
-        UNION (SELECT 'ping_monitors' AS table_name, pi.id AS id, 
-        pi.device_id AS device_id,
-        pi.last_check AS last_check, 
-        pi.next_check AS next_check FROM 
-	ping_monitors pi LEFT OUTER JOIN ping_notification_blackouts pn ON pi.id=pn.monitor_id
-        WHERE pi.disabled=0 AND pi.status <> 'pending'
-	AND (start IS NULL OR current_timestamp < start OR current_timestamp > stop)) 
-        UNION(SELECT 'certificate_monitors' AS table_name, ce.id AS id,
-        ce.device_id AS device_id,
-        ce.last_check AS last_check, 
-        ce.next_check AS next_check FROM certificate_monitors ce
-	LEFT OUTER JOIN certificate_notification_blackouts cn ON ce.id=cn.monitor_id
-        WHERE ce.disabled=0 AND ce.status <> 'pending'
-	AND (start IS NULL OR current_timestamp < start OR current_timestamp > stop))                 
-        UNION(SELECT 'snmp_monitors' AS table_name, sn.id AS id,
-        sn.device_id AS device_id,
-        sn.last_check AS last_check, 
-        sn.next_check AS next_check FROM snmp_monitors sn
-	LEFT OUTER JOIN snmp_notification_blackouts sb ON sn.id=sb.monitor_id
-        WHERE sn.disabled=0 AND sn.status <> 'pending'
-	AND (start IS NULL OR current_timestamp < start OR current_timestamp > stop))                 
-        UNION(SELECT 'shell_monitors' AS table_name, sh.id AS id,
-        sh.device_id AS device_id,
-        sh.last_check AS last_check, 
-        sh.next_check AS next_check FROM shell_monitors sh
-	LEFT OUTER JOIN shell_notification_blackouts sn ON sh.id=sn.monitor_id
-        WHERE sh.disabled=0 AND sh.status <> 'pending'
-	AND (start IS NULL OR current_timestamp < start OR current_timestamp > stop))                 
-        UNION(SELECT 'url_monitors' AS table_name, url.id AS id,
-        url.device_id AS device_id,
-        url.last_check AS last_check, 
-        url.next_check AS next_check FROM url_monitors url
-	LEFT OUTER JOIN url_notification_blackouts un ON url.id=un.monitor_id
-        WHERE url.disabled=0 AND url.status <> 'pending'
-	AND (start IS NULL OR current_timestamp < start OR current_timestamp > stop))                 
-        ORDER BY next_check;
 
+DELIMITER //
+CREATE PROCEDURE get_monitor_notification(IN in_id BIGINT,
+                                          IN in_table VARCHAR(50),
+                                          IN in_type VARCHAR(32))
+READS SQL DATA
+SQL SECURITY INVOKER
+COMMENT 'Retrieve list of addresses to notify for this monitor'
+BEGIN
+
+DECLARE V_notification_table VARCHAR(50);
+DECLARE V_notification_bo_table VARCHAR(50);
+DECLARE V_notification_attr VARCHAR(50);
+
+IF (in_table = 'port_monitors') THEN
+   SET V_notification_table = 'port_notifications';
+   SET V_notification_bo_table = 'port_notification_blackouts';
+ELSEIF (in_table = 'certificate_monitors') THEN
+   SET V_notification_table = 'certificate_notifications';
+   SET V_notification_bo_table = 'certificate_notification_blackouts';
+ELSEIF (in_table = 'snmp_monitors') THEN
+   SET V_notification_table = 'snmp_notifications';
+   SET V_notification_bo_table = 'snmp_notification_blackouts';
+ELSEIF (in_table = 'shell_monitors') THEN
+   SET V_notification_table = 'shell_notifications';
+   SET V_notification_bo_table = 'shell_notification_blackouts';
+ELSEIF (in_table = 'url_monitors') THEN
+   SET V_notification_table = 'url_notifications';
+   SET V_notification_bo_table = 'url_notification_blackouts';
+END IF;
+
+IF (in_type = 'email') THEN
+   SET V_notification_attr = 'notification_prefs_addr';
+ELSEIF (in_type = 'xmpp') THEN
+   SET V_notification_attr = 'notification_prefs_xmpp_addr';
+END IF;
+
+-- read from approprate table
+SET @s = CONCAT('SELECT p.pref_value AS address FROM user_prefs p, ', V_notification_table, 
+                ' n LEFT OUTER JOIN ', V_notification_bo_table, ' b ON n.monitor_id=b.monitor_id WHERE n.monitor_id=', in_id,
+                ' AND n.user_id=p.user_id and p.pref_scope="notifications" AND pref_name="',
+                V_notification_attr, '"  and (b.start is null or (current_timestamp < start or current_timestamp > stop))');
+
+PREPARE stmt FROM @s;
+EXECUTE stmt;
+
+END;
+//
+DELIMITER ;

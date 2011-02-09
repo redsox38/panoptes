@@ -41,6 +41,7 @@ class urlMonitorEntry extends monitorEntry
     $this->monitorTable("url_monitors");
     $this->ackTable("url_acknowledgments");
     $this->notificationTable("url_notifications");
+    $this->notificationBlackoutTable("url_notification_blackouts");
   }
   
  /**

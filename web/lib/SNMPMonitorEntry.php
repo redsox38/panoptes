@@ -41,6 +41,7 @@ class SNMPMonitorEntry extends monitorEntry
     $this->monitorTable("snmp_monitors");
     $this->ackTable("snmp_acknowledgments");
     $this->notificationTable("snmp_notifications");
+    $this->notificationBlackoutTable("snmp_notification_blackouts");
   }
   
  /**
