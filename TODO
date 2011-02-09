@@ -4,4 +4,5 @@ network map
 look @ dojo charting instead of rrd for graphs
 snmp templates
 snmp trap/external message receiver
-scheduled notification outage windows
+scheduled recurring notification outage windows
+work around for monitors getting left in pending state
