@@ -187,6 +187,49 @@ function addNotification() {
     xhrAddNotification(id, monitor_ids, table);
 }
 
+function manageNotifications() {
+    // figure out which grid we're working with
+    selectedTab = dijit.byId('panoptes_tab_container').selectedChildWidget;
+    id = selectedTab.id.replace("_tab", "");
+
+    var monitor_ids = [];
+    var table;
+    var dataGrid;
+
+    if (dijit.byId(id + '_port_mon_grid').selected) {
+	table = 'port_monitors';
+	dataGrid = dijit.byId(id + '_port_mon_grid');
+    } else if (dijit.byId(id + '_cert_mon_grid').selected) {
+	table = 'certificate_monitors';
+	dataGrid = dijit.byId(id + '_cert_mon_grid');
+    } else if (dijit.byId(id + '_snmp_mon_grid').selected) {
+	table = 'snmp_monitors';
+	dataGrid = dijit.byId(id + '_snmp_mon_grid');
+    } else if (dijit.byId(id + '_shell_mon_grid').selected) {
+	table = 'shell_monitors';
+	dataGrid = dijit.byId(id + '_shell_mon_grid');
+    } else if (dijit.byId(id + '_url_mon_grid').selected) {
+	table = 'url_monitors';
+	dataGrid = dijit.byId(id + '_url_mon_grid');
+    }
+
+    // get row ids
+    var itms = dataGrid.selection.getSelected();
+    dataGrid.selection.clear();
+    
+    if (itms.length) {
+	dojo.forEach(itms, function(selectedItem) {
+		if (selectedItem !== null) {
+		    var entry_id = dataGrid.store.getValue(selectedItem, 
+							 "id", null);
+		    monitor_ids.push(entry_id);
+		}
+	    });
+    }
+
+    // get existing notification schedules and display them in an overlay window
+}
+
 function removeNotification() {
     // figure out which grid we're working with
     selectedTab = dijit.byId('panoptes_tab_container').selectedChildWidget;
@@ -1433,67 +1476,75 @@ function openDevice() {
     id = id.replace("d_", "");
     var name = deviceStore.getValues(deviceTreeSelectedItem, 'name');
 
-    // border container to hold the content for the tab for this
-    // device
-    var bc = new dijit.layout.BorderContainer({
-	    id: id + '_tab',
-	    title: name,
-	    style: "width: 100%; height: 100%;",
-	    closable: true
-	});
+    // see if tab is open already
+    // if it is just select it
+    // otherwise open it up
+    this_tc = dijit.byId(id + '_tab');
+    if (this_tc) {
+	dijit.byId("panoptes_tab_container").selectChild(this_tc);
+    } else {
+	// border container to hold the content for the tab for this
+	// device
+	var bc = new dijit.layout.BorderContainer({
+		id: id + '_tab',
+		title: name,
+		style: "width: 100%; height: 100%;",
+		closable: true
+	    });
 
-    // info pane for new tab
-    var ic = new dijit.layout.ContentPane({
-	    id: id + '_info',
-	    title: ' Device Info',
-	    region: 'leading',
-	    style: 'width: 15%',
-	    closable: true,
-	    content: 'info',	    
-	});
+	// info pane for new tab
+	var ic = new dijit.layout.ContentPane({
+		id: id + '_info',
+		title: ' Device Info',
+		region: 'leading',
+		style: 'width: 15%',
+		closable: true,
+		content: 'info',	    
+	    });
 
-    // add info data to info container
-    addInfoData(id, ic);
+	// add info data to info container
+	addInfoData(id, ic);
 
-    // header for new tab
-    var hc = new dijit.layout.ContentPane({
-	    id: id + '_hdr',
-	    region: 'top',
-	    title: 'Device Header',
-	    closable: true,
-	    content: '<b>' + name + '</b>'
-	});
+	// header for new tab
+	var hc = new dijit.layout.ContentPane({
+		id: id + '_hdr',
+		region: 'top',
+		title: 'Device Header',
+		closable: true,
+		content: '<b>' + name + '</b>'
+	    });
 
-    // tab container for new tab
-    var tc = new dijit.layout.TabContainer({
-            id: id + '_tc',
-	    region: 'center',
-	    closable: true,
-	    style: "height: 100%; width: 100%;"
-	});
+	// tab container for new tab
+	var tc = new dijit.layout.TabContainer({
+		id: id + '_tc',
+		region: 'center',
+		closable: true,
+		style: "height: 100%; width: 100%;"
+	    });
+	
+	// tabs for new tab container
+	tc_1 = createPortMonitorTab(id);
+	tc_2 = createPerformanceHistoryTab(id);
+	tc_3 = createCertificateTab(id);
+	tc_4 = createSNMPTab(id);
+	tc_5 = createShellTab(id);
+	tc_6 = createUrlTab(id);
 
-    // tabs for new tab container
-    tc_1 = createPortMonitorTab(id);
-    tc_2 = createPerformanceHistoryTab(id);
-    tc_3 = createCertificateTab(id);
-    tc_4 = createSNMPTab(id);
-    tc_5 = createShellTab(id);
-    tc_6 = createUrlTab(id);
-
-    // put all of the components together in border container
-    // and append to parent tab
-    tc.addChild(tc_1);
-    tc.addChild(tc_2);
-    tc.addChild(tc_3);
-    tc.addChild(tc_4);
-    tc.addChild(tc_5);
-    tc.addChild(tc_6);
-    bc.addChild(ic);
-    bc.addChild(hc);
-    bc.addChild(tc);
+	// put all of the components together in border container
+	// and append to parent tab
+	tc.addChild(tc_1);
+	tc.addChild(tc_2);
+	tc.addChild(tc_3);
+	tc.addChild(tc_4);
+	tc.addChild(tc_5);
+	tc.addChild(tc_6);
+	bc.addChild(ic);
+	bc.addChild(hc);
+	bc.addChild(tc);
     
-    dijit.byId("panoptes_tab_container").addChild(bc);
-    dijit.byId("panoptes_tab_container").selectChild(bc);
+	dijit.byId("panoptes_tab_container").addChild(bc);
+	dijit.byId("panoptes_tab_container").selectChild(bc);
+    }
 }
 
 function addMonitor() {
