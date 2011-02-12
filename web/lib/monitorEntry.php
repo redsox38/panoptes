@@ -466,7 +466,7 @@ abstract class monitorEntry
       $id = $this->id;
 
       $stmt = $this->db->prepare("INSERT INTO " . $this->notificationBlackoutTable() . 
-				 " (monitor_id, start, stop) VALUES (?,?,?)");
+				 " (id, monitor_id, start, stop) VALUES (0, ?,?,?)");
       $stmt->bindParam(1, $id, PDO::PARAM_INT);
       $stmt->bindParam(2, $start);
       $stmt->bindParam(3, $stop);

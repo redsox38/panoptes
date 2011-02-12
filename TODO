@@ -6,3 +6,4 @@ snmp templates
 snmp trap/external message receiver
 scheduled recurring notification outage windows
 work around for monitors getting left in pending state
+better management of timers in ui, ie expire them when a device tab is closed

@@ -2074,6 +2074,49 @@ class panoptes
 
     return(array('result' => 'success', 'data' => $data));
   }
+
+  /**
+   * add monitor blackout
+   *
+   * @param args json params converted into an array
+   *             
+   * @throws none
+   * @return array containing result and possible error messages
+   */
+  public function ajax_addNotificationBlackout($args) {
+    try {
+      foreach ($args['monitor_ids'] as $v) {	  
+	// table is based on type argument
+	if ($args['type'] == 'port_monitors') {
+	  require_once 'portMonitorEntry.php';
+	  $ent = new portMonitorEntry($this->db);
+	} else if ($args['type'] == 'certificate_monitors') {
+	  require_once 'certificateMonitorEntry.php';
+	  $ent = new certificateMonitorEntry($this->db);
+	} else if ($args['type'] == 'snmp_monitors') {
+	  require_once 'SNMPMonitorEntry.php';
+	  $ent = new SNMPMonitorEntry($this->db);
+	} else if ($args['type'] == 'shell_monitors') {
+	  require_once 'shellMonitorEntry.php';
+	  $ent = new shellMonitorEntry($this->db);
+	} else if ($args['type'] == 'url_monitors') {
+	  require_once 'urlMonitorEntry.php';
+	  $ent = new urlMonitorEntry($this->db);
+	} else {
+	  return(array('result' => 'failure',
+		       'error'  => 'unknown type: ' . $args['type']));	
+	}
+	
+	$ent->id = $v;
+	$ent->addNotificationBlackout($args['start'], $args['stop']);
+      }
+    } catch (Exception $e) {
+      return(array('result' => 'failure',
+		   'error'  => $e->getMessage()));
+    }
+
+    return(array('result' => 'success'));
+  }
 	
   /**
    * ack monitor entry

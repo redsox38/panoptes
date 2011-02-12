@@ -159,6 +159,9 @@ Context menus
         <div dojoType="dijit.MenuItem" id="monitorMenuAddNotification" iconClass="panoptesIconAddNotification" onClick="addNotification();">
             Add Notification
         </div>
+        <div dojoType="dijit.MenuItem" id="monitorMenuManageNotifications" iconClass="panoptesIconReschedule" onClick="manageNotifications();">
+            Manage Notification Schedule
+        </div>
         <div dojoType="dijit.MenuItem" id="monitorMenuRemoveNotification" iconClass="panoptesIconRemoveNotification" onClick="removeNotification();">
             Remove Notification
         </div>

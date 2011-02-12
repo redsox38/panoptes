@@ -228,6 +228,80 @@ function manageNotifications() {
     }
 
     // get existing notification schedules and display them in an overlay window
+    start_time = new dijit.form.TimeTextBox({
+            name: 'manage_start_time_new',
+            id: 'manage_start_time_new',
+            constraints: {
+                timePattern: 'HH:mm',
+                clickableIncrement: 'T00:15:00',
+                visibleIncrement: 'T00:15:00',
+                visibleRange: 'T01:00:00'
+            },
+	    placeHolder: 'start time'
+	});
+
+    stop_time = new dijit.form.TimeTextBox({
+            name: 'manage_stop_time_new',
+            id: 'manage_stop_time_new',
+            constraints: {
+                timePattern: 'HH:mm',
+                clickableIncrement: 'T00:15:00',
+                visibleIncrement: 'T00:15:00',
+                visibleRange: 'T01:00:00'
+            },
+	    placeHolder: 'stop time'
+	});
+
+    sub = new dijit.form.Button({
+	    label: 'Save',
+	    id: 'manage_notifications_submit',
+	    onClick: function() {
+		xhrAddNotificationBlackout(monitor_ids, table, 
+					   start_time.attr('displayedValue'), stop_time.attr('displayedValue'));
+
+		// destroy dijits
+		dijit.byId("manage_start_time_new").destroy();
+		dijit.byId("manage_stop_time_new").destroy();
+		dijit.byId("manage_notifications_reset").destroy();
+		dijit.byId("manage_notifications_submit").destroy();
+		
+		// destroy remaining dom nodes
+		win = document.getElementById("manage_notifications");
+		while (win.hasChildNodes() >= 1) {
+		    win.removeChild(win.firstChild);
+		}
+		
+		document.body.removeChild(win);
+	    }
+	});
+    
+    rst = new dijit.form.Button({
+	    label: 'Cancel',
+	    id: 'manage_notifications_reset',
+	    onClick: function() {
+		// destroy dijits
+		dijit.byId("manage_start_time_new").destroy();
+		dijit.byId("manage_stop_time_new").destroy();
+		dijit.byId("manage_notifications_reset").destroy();
+		dijit.byId("manage_notifications_submit").destroy();
+		
+		// destroy remaining dom nodes
+		win = document.getElementById("manage_notifications");
+		while (win.hasChildNodes() >= 1) {
+		    win.removeChild(win.firstChild);
+		}
+		
+		document.body.removeChild(win);
+	    }
+	});
+    
+    items = [ start_time.domNode, stop_time.domNode,
+	      document.createElement("br"),
+	      rst.domNode, sub.domNode ];
+
+    createOverlayWindow("manage_notifications", items);
+
+    // load existing notifications once window has been created
 }
 
 function removeNotification() {
@@ -271,6 +345,27 @@ function removeNotification() {
     }
 
     xhrRemoveNotification(id, monitor_ids, table);
+}
+
+function xhrAddNotificationBlackout(monitor_ids, table, start, stop) {
+    var xhrArgs = {
+	url: '/panoptes/',
+	handleAs: 'json',
+	content: {
+	    action: 'addNotificationBlackout',
+	    data: '{ "type": "' + table + '", "start": "' + start + '", ' +
+	    '"stop": "' + stop + '", ' + '"monitor_ids": ' + dojo.toJson(monitor_ids) + ' }'
+	},
+	load: function(data) {
+	    if (data && !data.error) {          
+		alert('Notification blackout added');
+	    } else {
+		alert(data.error);
+	    }
+	}
+    };
+
+    var resp = dojo.xhrGet(xhrArgs);
 }
 
 function xhrRescheduleMonitor(dataGrid, dev_id, params, monitor_ids) {
