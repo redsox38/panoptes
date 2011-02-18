@@ -302,6 +302,7 @@ function manageNotifications() {
     createOverlayWindow("manage_notifications", items);
 
     // load existing notifications once window has been created
+    xhrGetNotificationBlackout(monitor_ids, table);
 }
 
 function removeNotification() {
@@ -359,6 +360,28 @@ function xhrAddNotificationBlackout(monitor_ids, table, start, stop) {
 	load: function(data) {
 	    if (data && !data.error) {          
 		alert('Notification blackout added');
+	    } else {
+		alert(data.error);
+	    }
+	}
+    };
+
+    var resp = dojo.xhrGet(xhrArgs);
+}
+
+function xhrGetNotificationBlackout(monitor_ids, table) {
+    var xhrArgs = {
+	url: '/panoptes/',
+	handleAs: 'json',
+	content: {
+	    action: 'addNotificationBlackout',
+	    data: '{ "type": "' + table + '", "monitor_ids": ' + dojo.toJson(monitor_ids) + ' }'
+	},
+	load: function(data) {
+	    if (data && !data.error) {          
+		if (data.data && data.data.length) {
+		    // add entries to "manage_notifications" overlay window
+		}
 	    } else {
 		alert(data.error);
 	    }
