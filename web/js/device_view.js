@@ -295,7 +295,10 @@ function manageNotifications() {
 	    }
 	});
     
-    items = [ start_time.domNode, stop_time.domNode,
+    blackout_list_div = document.createElement("div");
+    blackout_list_div.id = 'blackout_list_div';
+
+    items = [ blackout_list_div, start_time.domNode, stop_time.domNode,
 	      document.createElement("br"),
 	      rst.domNode, sub.domNode ];
 
@@ -374,13 +377,23 @@ function xhrGetNotificationBlackout(monitor_ids, table) {
 	url: '/panoptes/',
 	handleAs: 'json',
 	content: {
-	    action: 'addNotificationBlackout',
+	    action: 'getNotificationBlackout',
 	    data: '{ "type": "' + table + '", "monitor_ids": ' + dojo.toJson(monitor_ids) + ' }'
 	},
 	load: function(data) {
 	    if (data && !data.error) {          
 		if (data.data && data.data.length) {
 		    // add entries to "manage_notifications" overlay window
+		    for (var i = 0; i < data.data.length; i++) {
+			var tb = new dijit.form.TextBox({
+				id: 'blackout_list_' + i,
+				style: 'width: 15em;',
+				value: data.data[i]['start'] + ' - ' + data.data[i]['stop'],
+				disabled: true
+			    });
+
+			tb.placeAt('blackout_list_div', 'first');
+		    }
 		}
 	    } else {
 		alert(data.error);

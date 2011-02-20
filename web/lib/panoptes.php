@@ -2155,7 +2155,7 @@ class panoptes
 	$ent->id = $v;
 	$bo = $ent->getNotificationBlackouts();
 	if (!is_null($bo)) {
-	  $data[] = $bo;
+	  $data = array_merge($data, $bo);
 	}
       }
     } catch (Exception $e) {
