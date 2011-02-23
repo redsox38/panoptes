@@ -372,6 +372,9 @@ function xhrAddNotificationBlackout(monitor_ids, table, start, stop) {
     var resp = dojo.xhrGet(xhrArgs);
 }
 
+function xhrRemoveNotifictionBlackout(index, table, blackout_id) {
+}
+
 function xhrGetNotificationBlackout(monitor_ids, table) {
     var xhrArgs = {
 	url: '/panoptes/',
@@ -385,6 +388,10 @@ function xhrGetNotificationBlackout(monitor_ids, table) {
 		if (data.data && data.data.length) {
 		    // add entries to "manage_notifications" overlay window
 		    for (var i = 0; i < data.data.length; i++) {
+		
+			var this_div = document.createElement('div');
+			this_div.id = 'blackout_list_div_' + i;
+
 			var tb = new dijit.form.TextBox({
 				id: 'blackout_list_' + i,
 				style: 'width: 15em;',
@@ -392,7 +399,18 @@ function xhrGetNotificationBlackout(monitor_ids, table) {
 				disabled: true
 			    });
 
-			tb.placeAt('blackout_list_div', 'first');
+			var rb = new dijit.form.Button({
+				label: 'Remove Blackout',
+				id: 'remove_notification_' + i,
+				onClick: function() {
+				    xhrRemoveNotificationBlackout(i, table, data.data[i]['id']);
+				}
+			    });
+    			
+			this_div.appendChild(tb.domNode);
+			this_div.appendChild(rb.domNode);
+			
+			dojo.place(this_div, 'blackout_list_div', 'first');
 		    }
 		}
 	    } else {

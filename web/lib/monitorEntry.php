@@ -411,7 +411,7 @@ abstract class monitorEntry
       $rtn = null;
       $id = $this->id;
 
-      $stmt = $this->db->prepare("SELECT start,stop FROM " . $this->notificationBlackoutTable() . 
+      $stmt = $this->db->prepare("SELECT id,start,stop FROM " . $this->notificationBlackoutTable() . 
 				 " WHERE monitor_id=?");
       $stmt->bindParam(1, $id, PDO::PARAM_INT);
       $stmt->execute();
@@ -420,7 +420,7 @@ abstract class monitorEntry
       $r = $stmt->fetch(PDO::FETCH_ASSOC);
 
       if ($r) {
-	$rtn = array(array('start' => $r['start'], 'stop' => $r['stop']));
+	$rtn = array(array('start' => $r['start'], 'stop' => $r['stop'], 'id' => $r['id']));
 	while ($r = $stmt->fetch(PDO::FETCH_ASSOC)) {
 	  $rtn[] = array('start' => $r['start'], 'stop' => $r['stop']);
 	}
