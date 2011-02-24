@@ -420,9 +420,9 @@ abstract class monitorEntry
       $r = $stmt->fetch(PDO::FETCH_ASSOC);
 
       if ($r) {
-	$rtn = array(array('start' => $r['start'], 'stop' => $r['stop'], 'id' => $r['id']));
+	$rtn = array(array('start' => $r['start'], 'stop' => $r['stop'], 'device_id' => $id, 'id' => $r['id']));
 	while ($r = $stmt->fetch(PDO::FETCH_ASSOC)) {
-	  $rtn[] = array('start' => $r['start'], 'stop' => $r['stop']);
+	  $rtn[] = array('start' => $r['start'], 'stop' => $r['stop'], 'device_id' => $id, 'id' => $r['id']);
 	}
       }
 

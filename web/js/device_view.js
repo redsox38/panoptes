@@ -265,6 +265,15 @@ function manageNotifications() {
 		dijit.byId("manage_notifications_reset").destroy();
 		dijit.byId("manage_notifications_submit").destroy();
 		
+		// there's probably a better way to do this
+		for (var i = 0; i < 24; i++) {
+		    var this_dijit = dijit.byId('blackout_list_' + i);
+		    if (this_dijit) {
+			this_dijit.destroy();
+			dijit.byId('remove_notification_' + i).destroy();
+		    }
+		}
+
 		// destroy remaining dom nodes
 		win = document.getElementById("manage_notifications");
 		while (win.hasChildNodes() >= 1) {
@@ -284,6 +293,15 @@ function manageNotifications() {
 		dijit.byId("manage_stop_time_new").destroy();
 		dijit.byId("manage_notifications_reset").destroy();
 		dijit.byId("manage_notifications_submit").destroy();
+
+		// there's probably a better way to do this
+		for (var i = 0; i < 24; i++) {
+		    var this_dijit = dijit.byId('blackout_list_' + i);
+		    if (this_dijit) {
+			this_dijit.destroy();
+			dijit.byId('remove_notification_' + i).destroy();
+		    }
+		}
 		
 		// destroy remaining dom nodes
 		win = document.getElementById("manage_notifications");
@@ -372,7 +390,26 @@ function xhrAddNotificationBlackout(monitor_ids, table, start, stop) {
     var resp = dojo.xhrGet(xhrArgs);
 }
 
-function xhrRemoveNotifictionBlackout(index, table, blackout_id) {
+function xhrRemoveNotificationBlackout(index, table, id, blackout_id) {
+    var xhrArgs = {
+	url: '/panoptes/',
+	handleAs: 'json',
+	content: {
+	    action: 'removeNotificationBlackout',
+	    data: '{ "type": "' + table + '", "blackout_id": ' + blackout_id + ', "id": ' + id + ' }'
+	},
+	load: function(data) {
+	    if (data && !data.error) {          
+		// remove dijits
+                dijit.byId("blackout_list_" + index).destroy();
+                dijit.byId("remove_notification_" + index).destroy();
+	    } else {
+		alert(data.error);
+	    }
+	}
+    };
+
+    var resp = dojo.xhrGet(xhrArgs);
 }
 
 function xhrGetNotificationBlackout(monitor_ids, table) {
@@ -388,14 +425,16 @@ function xhrGetNotificationBlackout(monitor_ids, table) {
 		if (data.data && data.data.length) {
 		    // add entries to "manage_notifications" overlay window
 		    for (var i = 0; i < data.data.length; i++) {
-		
+			var this_entry = data.data[i];
+			this_entry['index'] = i;
+
 			var this_div = document.createElement('div');
 			this_div.id = 'blackout_list_div_' + i;
 
 			var tb = new dijit.form.TextBox({
 				id: 'blackout_list_' + i,
 				style: 'width: 15em;',
-				value: data.data[i]['start'] + ' - ' + data.data[i]['stop'],
+				value: this_entry['start'] + ' - ' + this_entry['stop'],
 				disabled: true
 			    });
 
@@ -403,7 +442,8 @@ function xhrGetNotificationBlackout(monitor_ids, table) {
 				label: 'Remove Blackout',
 				id: 'remove_notification_' + i,
 				onClick: function() {
-				    xhrRemoveNotificationBlackout(i, table, data.data[i]['id']);
+				    xhrRemoveNotificationBlackout(this_entry['index'], table, this_entry['device_id'], 
+								  this_entry['id']);
 				}
 			    });
     			
