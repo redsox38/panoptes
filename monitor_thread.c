@@ -36,7 +36,7 @@ void *monitor_thread(void *arg)
   char             **p, **q;
   monitor_result_t r;
   char             perf_attr[256], errbuf[1024];
-  int              rc, current_status;
+  int              rc, current_status, iter = 0;
   char             *addr;
   /* data for port monitoring */
   char             *proto, *port;
@@ -75,6 +75,15 @@ void *monitor_thread(void *arg)
       syslog(LOG_ALERT, "pthread_mutex_unlock: %s", errbuf);
     }
 
+    /* count number of times we've passed through here so we don't clean up every time */
+    iter++;
+
+    if (!(iter % 100)) {
+      /* clean up and hung pending monitors possibly left over from an unclean shutdown */
+      reset_pending_monitors();
+      iter = 0;
+    }
+       
     /* get next monitor entry from task table */
     allocate_monitor_entry(&m);
 

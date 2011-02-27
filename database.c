@@ -109,6 +109,29 @@ int database_open(int initialize)
   return(r);
 }
 
+/* reset_pending_monitors
+ *
+ * parameters: none
+ * return: void
+ *
+ * Looks for a function named _reset_pending_monitors inside the shared library and passes the call off
+ * to it.  
+ * The function in the library is expected to reset the status of any monitors that are in a pending 
+ * state that have not been updated in over 15 minutes.
+ *
+ */
+void reset_pending_monitors()
+{
+  void (*get_ptr)();
+
+  /* load get function */
+  if ((get_ptr = (void (*)())dlsym(lib_handle, "_reset_pending_monitors")) != NULL) {
+    (*get_ptr)();
+  } else {
+    syslog(LOG_ALERT, "_reset_pending_monitors not defined");
+  }
+}
+
 /* get_next_monitor_entry
  * 
  * parameters: monitor_entry_t * pointer to monitor entry structure to fill in 

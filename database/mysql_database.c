@@ -196,6 +196,30 @@ void _add_discovered_connection(char *src, int src_port, char *dst,
   free(qry);
 }
 
+void _reset_pending_monitors()
+{
+  MYSQL_RES *result;
+  int       rc;
+
+  pthread_mutex_lock(&sql_mutex);
+
+  rc = mysql_query(mysql, "CALL reset_pending_monitors()");
+
+  do {
+    result = mysql_store_result(mysql);
+    if (result) {
+      mysql_free_result(result);
+    } else {
+      /* an error occurred or no results */
+      if (mysql_field_count(mysql) != 0)
+	syslog(LOG_DEBUG, "Error: %s\n", mysql_error(mysql));
+    }
+    rc = mysql_next_result(mysql);
+  } while (rc == 0);
+
+  pthread_mutex_unlock(&sql_mutex);
+}
+
 void _get_next_monitor_entry(monitor_entry_t *m)
 {
   MYSQL_RES   *result;

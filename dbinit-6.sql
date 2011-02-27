@@ -6,7 +6,7 @@ DROP TABLE IF EXISTS snmp_notification_blackouts;
 DROP TABLE IF EXISTS url_notification_blackouts;
 DROP TABLE IF EXISTS certificate_notification_blackouts;
 DROP PROCEDURE IF EXISTS get_monitor_notification;
-
+DROP PROCEDURE IF EXISTS reset_pending_monitors;
 /* tables */
 
 --
@@ -81,7 +81,6 @@ CREATE TABLE certificate_notification_blackouts (
 
 /* stored procedures */
 
-
 DELIMITER //
 CREATE PROCEDURE get_monitor_notification(IN in_id BIGINT,
                                           IN in_table VARCHAR(50),
@@ -127,6 +126,23 @@ SET @s = CONCAT('SELECT p.pref_value AS address FROM user_prefs p, ', V_notifica
 PREPARE stmt FROM @s;
 EXECUTE stmt;
 
+END;
+//
+DELIMITER ;
+
+DELIMITER //
+CREATE PROCEDURE reset_pending_monitors()
+
+MODIFIES SQL DATA	
+SQL SECURITY INVOKER
+COMMENT 'reset any pending monitors'
+BEGIN
+UPDATE port_monitors SET status='warn' WHERE status='pending' AND next_check < DATE_ADD(NOW(), INTERVAL 15 MINUTE);
+UPDATE ping_monitors SET status='warn' WHERE status='pending' AND next_check < DATE_ADD(NOW(), INTERVAL 15 MINUTE);
+UPDATE snmp_monitors SET status='warn' WHERE status='pending' AND next_check < DATE_ADD(NOW(), INTERVAL 15 MINUTE);
+UPDATE shell_monitors SET status='warn' WHERE status='pending' AND next_check < DATE_ADD(NOW(), INTERVAL 15 MINUTE);
+UPDATE certificate_monitors SET status='warn' WHERE status='pending' AND next_check < DATE_ADD(NOW(), INTERVAL 15 MINUTE);
+UPDATE url_monitors SET status='warn' WHERE status='pending' AND next_check < DATE_ADD(NOW(), INTERVAL 15 MINUTE);
 END;
 //
 DELIMITER ;
