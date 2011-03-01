@@ -11,6 +11,7 @@ var availableShellMonitorStore;
 var urlMonitorStore;
 var userStore;
 var prefStore;
+var timers = [];
 
 var dashboard_edit_mode = false;
 var loading_count = 0;

@@ -500,6 +500,9 @@ function xhrRescheduleMonitor(dataGrid, dev_id, params, monitor_ids) {
 			timerId = reloadMonitorEntry(updateShellMonitorEntry, dev_id, monitor_ids[i], 
 						     dataGrid, data.data['time']);
 		    }
+
+		    // add to timer list for this device
+		    timers[dev_id + '_tab'].push(timerId);
 		}
 	    } else {
 		alert(data.error);
@@ -538,6 +541,9 @@ function updatePortMonitorEntry(dev_id, ent_id, container) {
 		// schedule reload
 		timerId = reloadMonitorEntry(updatePortMonitorEntry, dev_id, ent_id, 
 					     container, data.data['next_check']);
+		// add to timer list for this device
+		timers[dev_id + '_tab'].push(timerId);
+
 	    } else {
 		alert(data.error);
 	    }
@@ -575,6 +581,8 @@ function updateUrlMonitorEntry(dev_id, ent_id, container) {
 		// schedule reload
 		timerId = reloadMonitorEntry(updateUrlMonitorEntry, dev_id, ent_id, 
 					     container, data.data['next_check']);
+		// add to timer list for this device
+		timers[dev_id + '_tab'].push(timerId);
 	    } else {
 		alert(data.error);
 	    }
@@ -612,6 +620,8 @@ function updateSNMPMonitorEntry(dev_id, ent_id, container) {
 		// schedule reload
 		timerId = reloadMonitorEntry(updateSNMPMonitorEntry, dev_id, ent_id, 
 					     container, data.data['next_check']);
+		// add to timer list for this device
+		timers[dev_id + '_tab'].push(timerId);
 	    } else {
 		alert(data.error);
 	    }
@@ -649,8 +659,8 @@ function updateShellMonitorEntry(dev_id, ent_id, container) {
 		// schedule reload
 		timerId = reloadMonitorEntry(updateShellMonitorEntry, dev_id, ent_id, 
 					     container, data.data['next_check']);
-
-
+		// add to timer list for this device
+		timers[dev_id + '_tab'].push(timerId);
 	    } else {
 		alert(data.error);
 	    }
@@ -731,6 +741,8 @@ function addPortMonitorData(id, container) {
 			portMonitorStore.newItem(oneEntry);
 			timerId = reloadMonitorEntry(updatePortMonitorEntry, id, oneEntry['id'], 
 						     container, oneEntry['next_check']);
+			// add to timer list for this device
+			timers[id + '_tab'].push(timerId);
 		    });
 
 		portMonitorStore.save();
@@ -763,6 +775,8 @@ function addUrlMonitorData(id, container) {
 			    urlMonitorStore.newItem(oneEntry);
 			    timerId = reloadMonitorEntry(updateUrlMonitorEntry, id, oneEntry['id'], 
 							 container, oneEntry['next_check']);
+			    // add to timer list for this device
+			    timers[id + '_tab'].push(timerId);
  			});
 
 		    urlMonitorStore.save();
@@ -827,6 +841,8 @@ function addShellMonitorData(id, container) {
 			    shellMonitorStore.newItem(oneEntry);
 			    timerId = reloadMonitorEntry(updateShellMonitorEntry, id, oneEntry['id'], 
 							 container, oneEntry['next_check']);
+			    // add to timer list for this device
+			    timers[id + '_tab'].push(timerId);
 			});
 
 		    shellMonitorStore.save();
@@ -860,6 +876,8 @@ function addSNMPMonitorData(id, container) {
 			    SNMPMonitorStore.newItem(oneEntry);
 			    timerId = reloadMonitorEntry(updateSNMPMonitorEntry, id, oneEntry['id'], 
 							 container, oneEntry['next_check']);
+			    // add to timer list for this device
+			    timers[id + '_tab'].push(timerId);
 			});
 
 		    SNMPMonitorStore.save();
@@ -1672,13 +1690,27 @@ function openDevice() {
     if (this_tc) {
 	dijit.byId("panoptes_tab_container").selectChild(this_tc);
     } else {
+	// add array element to timers array to hold timer ids of reload timers
+	timers[id + '_tab'] = [];
+
 	// border container to hold the content for the tab for this
 	// device
 	var bc = new dijit.layout.BorderContainer({
 		id: id + '_tab',
 		title: name,
 		style: "width: 100%; height: 100%;",
-		closable: true
+		closable: true,
+		onClose: function() {
+		    // cancel all of the timer ids for this tab
+		    for (i = 0; i < timers[id + '_tab'].length; i++) {
+			clearTimeout(timers[id + '_tab'][i]);
+		    }
+		    delete(timers[id + '_tab']);
+		    return(true);
+		}
+	    });
+
+	dojo.connect(bc, 'onClose', function() {
 	    });
 
 	// info pane for new tab

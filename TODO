@@ -4,4 +4,3 @@ network map
 look @ dojo charting instead of rrd for graphs
 snmp templates
 snmp trap/external message receiver
-better management of timers in ui, ie expire them when a device tab is closed
