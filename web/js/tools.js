@@ -674,6 +674,9 @@ function uploadFile() {
     createOverlayWindow("upload_file", items);
 }
 
+function createTemplate() {
+}
+
 function addPingable() {
     tb = new dijit.form.TextBox({
 	    id: 'ping_device_ip',
