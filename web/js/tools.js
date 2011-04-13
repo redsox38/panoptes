@@ -681,6 +681,7 @@ function addPingable() {
     tb = new dijit.form.TextBox({
 	    id: 'ping_device_ip',
 	    name: 'ping_device_ip',
+            placeHolder: 'IP Address to monitor'
 	});
 
     sub = new dijit.form.Button({
