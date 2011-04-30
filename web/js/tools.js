@@ -675,6 +675,70 @@ function uploadFile() {
 }
 
 function createTemplate() {
+    tb = new dijit.form.TextBox({
+	    id: 'template_name',
+	    name: 'template_name',
+            placeHolder: 'Template Name'
+	});
+
+    dojo.connect(tb, "onBlur", function () {
+	    var n = dijit.byId("create_template_obj0");
+	    if (!n) {
+		monitorTypeStore = new dojo.data.ItemFileReadStore({
+			data: {
+			    identifier: 'monitor_name',
+			    label: 'monitor_name',
+			    items: [
+		                    { monitor_name: 'ICMP' },
+		                    { monitor_name: 'Port' },
+		                    { monitor_name: 'SSL Certificate' },
+		                    { monitor_name: 'SNMP' },
+		                    { monitor_name: 'Shell Script' },
+		                    { monitor_name: 'URL' },
+				    ]
+	                }
+	        });
+		
+		t = new dijit.form.FilteringSelect({
+			id: 'create_template_obj0',
+			name: 'create_template_obj0',
+			store: monitorTypeStore,
+			title: 'Monitor Type',        
+			searchAttr: 'monitor_name',
+			placeHolder: 'Monitor Type'
+		    });
+
+		var b = document.createElement("br");
+		b.id = "create_template_br0";
+		dojo.place(b, dijit.byId("template_name").domNode, "after");
+		dojo.place(t.domNode, b, "after");
+	    }
+	});
+
+    sub = new dijit.form.Button({
+	    id: 'create_template_submit',
+	    label: 'Save',
+	    onClick: function() {
+		dijit.byId("create_template_reset").destroy();
+                dijit.byId("create_template_submit").destroy();
+                document.body.removeChild(dojo.byId("create_template"));
+	    }
+	});
+    
+    rst = new dijit.form.Button({
+	    id: 'create_template_reset',
+            label: 'Cancel',
+            onClick: function() {
+                dijit.byId("create_template_reset").destroy();
+                dijit.byId("create_template_submit").destroy();
+                document.body.removeChild(dojo.byId("create_template"));
+            }
+        });
+
+    var items = [ tb.domNode, document.createElement("br"),
+		  rst.domNode, sub.domNode ];
+
+    createOverlayWindow("create_template", items);
 }
 
 function addPingable() {
