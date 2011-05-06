@@ -1,6 +1,95 @@
  var dashboards_loaded = false;
 var dashboardWidgetStore = null;
 var widget_counter = 0;
+var monitorTypeStore = new dojo.data.ItemFileReadStore({
+	data: {
+	    identifier: 'monitor_name',
+	    label: 'monitor_name',
+	    items: [
+{ monitor_name: 'ICMP' },
+{ monitor_name: 'Port' },
+{ monitor_name: 'SSL Certificate' },
+{ monitor_name: 'SNMP' },
+{ monitor_name: 'Shell Script' },
+{ monitor_name: 'URL' },
+		    ]
+	}
+    });
+
+function _createTemplateParam (e) {
+    var type = this.get('value');
+
+    var idx = this.get('name').match(/\d+$/);
+    var param = null;
+
+    if (type == "ICMP") {
+	// no further data needed
+    } else if (type == "Port") {
+	// add port spinner
+        param = new dijit.form.NumberSpinner({
+                id: 'create_template_param' + idx,
+                name: 'create_template_param' + idx,
+                value: 80,
+                style: 'width: 100px;',
+                constraints: {
+                    min: 4,
+                    max: 65536,
+                    places: 0
+                }
+            });
+    } else if (type == "SSL Certificate") {
+    } else if (type == "SNMP") {
+    } else if (type == "Shell Script") {
+    } else if (type == "URL") {
+    } else {
+	alert("Unknown type: " + type);
+    }
+
+    if (param) {
+	dojo.place(param.domNode, "create_template_br" + idx, "before");
+    }
+
+    _createTemplateObject(null);
+}
+
+function _createTemplateObject (e) {
+    // find next object that hasn't been created yet
+    var done = false;
+    var i = 0;
+    var obj;
+
+    while (!done) {
+	obj = dijit.byId("create_template_obj" + i);
+	if (!obj) {
+	    done = true;
+	} else {
+	    i++;
+	}
+    }
+
+    t = new dijit.form.FilteringSelect({
+	    id: 'create_template_obj' + i,
+	    name: 'create_template_obj' + i,
+	    store: monitorTypeStore,
+	    title: 'Monitor Type',        
+	    searchAttr: 'monitor_name',
+	    placeHolder: 'Monitor Type'
+	});
+
+    dojo.connect(t, "onChange", dijit.byId('create_template_obj' + i), _createTemplateParam);
+
+    // if i is 0, then the parent is template_name_br, otherwise it's obj i - 1
+    var prnt;
+    if (!i) { 
+	prnt = dojo.byId("template_name_br"); 
+    } else {
+	prnt = dojo.byId("create_template_br" + (i - 1));
+    }
+    var b = document.createElement("br");
+    b.id = "create_template_br" + i;
+    dojo.place(t.domNode, prnt, "after");
+    dojo.place(b, t.domNode, "after");
+}
 
 function loadDashboard() {
     if (!dashboards_loaded) {
@@ -681,47 +770,13 @@ function createTemplate() {
             placeHolder: 'Template Name'
 	});
 
-    dojo.connect(tb, "onBlur", function () {
-	    var n = dijit.byId("create_template_obj0");
-	    if (!n) {
-		monitorTypeStore = new dojo.data.ItemFileReadStore({
-			data: {
-			    identifier: 'monitor_name',
-			    label: 'monitor_name',
-			    items: [
-		                    { monitor_name: 'ICMP' },
-		                    { monitor_name: 'Port' },
-		                    { monitor_name: 'SSL Certificate' },
-		                    { monitor_name: 'SNMP' },
-		                    { monitor_name: 'Shell Script' },
-		                    { monitor_name: 'URL' },
-				    ]
-	                }
-	        });
-		
-		t = new dijit.form.FilteringSelect({
-			id: 'create_template_obj0',
-			name: 'create_template_obj0',
-			store: monitorTypeStore,
-			title: 'Monitor Type',        
-			searchAttr: 'monitor_name',
-			placeHolder: 'Monitor Type'
-		    });
-
-		var b = document.createElement("br");
-		b.id = "create_template_br0";
-		dojo.place(b, dijit.byId("template_name").domNode, "after");
-		dojo.place(t.domNode, b, "after");
-	    }
-	});
+    dojo.connect(tb, "onBlur", _createTemplateObject);
 
     sub = new dijit.form.Button({
 	    id: 'create_template_submit',
 	    label: 'Save',
 	    onClick: function() {
-		dijit.byId("create_template_reset").destroy();
-                dijit.byId("create_template_submit").destroy();
-                document.body.removeChild(dojo.byId("create_template"));
+		destroyAll("create_template");
 	    }
 	});
     
@@ -729,13 +784,14 @@ function createTemplate() {
 	    id: 'create_template_reset',
             label: 'Cancel',
             onClick: function() {
-                dijit.byId("create_template_reset").destroy();
-                dijit.byId("create_template_submit").destroy();
-                document.body.removeChild(dojo.byId("create_template"));
+		destroyAll("create_template");
             }
         });
 
-    var items = [ tb.domNode, document.createElement("br"),
+    b = document.createElement("br");
+    b.id = "template_name_br";
+
+    var items = [ tb.domNode, b,
 		  rst.domNode, sub.domNode ];
 
     createOverlayWindow("create_template", items);

@@ -1,4 +1,13 @@
 
+function destroyAll(node) {
+    var n = dojo.byId(node);
+    
+    dojo.forEach(dijit.findWidgets(n), function(widget) {
+	    widget.destroyRecursive();
+	});
+    dojo.destroy(n);
+}
+
 function showLoading() {
     loading_count++;
 
