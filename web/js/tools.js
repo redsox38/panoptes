@@ -38,9 +38,41 @@ function _createTemplateParam (e) {
                 }
             });
     } else if (type == "SSL Certificate") {
+	// no further data needed
     } else if (type == "SNMP") {
     } else if (type == "Shell Script") {
+	param = new dijit.form.FilteringSelect({
+		id: 'create_template_param' + idx,
+		name: 'create_template_param' + idx,
+		store: availableShellMonitorStore,
+		title: 'Monitor',	    
+		searchAttr: 'script',
+	    });
     } else if (type == "URL") {
+	param_a = new dijit.form.TextBox({
+		id: 'create_template_param_a_' + idx,
+		name: 'create_template_param_a_' + idx,
+		style: 'width: 25em;',
+		placeHolder: 'http://'
+	    });
+	dojo.place(param_a.domNode, "create_template_br" + idx, "before");
+
+	param_b = new dijit.form.TextBox({
+		id: 'create_template_param_b_' + idx,
+		name: 'create_template_param_b_' + idx,
+		style: 'width: 5em;',
+		required: true,
+		placeHolder: '200'
+	    });
+	dojo.place(param_b.domNode, "create_template_br" + idx, "before");
+
+	param = new dijit.form.TextBox({
+		id: 'create_template_param' + idx,
+		name: 'create_template_param' + idx,
+		style: 'width: 20em;',
+		required: false,
+		placeHolder: 'optional text in web page'
+	    });
     } else {
 	alert("Unknown type: " + type);
     }
