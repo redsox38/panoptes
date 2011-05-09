@@ -5,6 +5,7 @@ DROP TABLE IF EXISTS shell_notification_blackouts;
 DROP TABLE IF EXISTS snmp_notification_blackouts;
 DROP TABLE IF EXISTS url_notification_blackouts;
 DROP TABLE IF EXISTS certificate_notification_blackouts;
+DROP TABLE IF EXISTS device_templates;
 DROP PROCEDURE IF EXISTS get_monitor_notification;
 DROP PROCEDURE IF EXISTS reset_pending_monitors;
 /* tables */
@@ -77,6 +78,18 @@ CREATE TABLE certificate_notification_blackouts (
   PRIMARY KEY (id),
   KEY certificate_notification_blackouts_ibfk_1 (monitor_id),
   CONSTRAINT certificate_notification_blackouts_ibfk_1 FOREIGN KEY (monitor_id) REFERENCES certificate_monitors (id) ON DELETE CASCADE ON UPDATE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+--
+-- Table structure for certificate_notification_blackouts
+--
+
+CREATE TABLE device_templates (
+  id bigint(20) NOT NULL AUTO_INCREMENT,
+  name VARCHAR(255) NOT NULL,
+  parameters BLOB NOT NULL,
+  PRIMARY KEY (id),
+  UNIQUE KEY idx (name)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 /* stored procedures */

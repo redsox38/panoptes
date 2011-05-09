@@ -1,4 +1,4 @@
- var dashboards_loaded = false;
+var dashboards_loaded = false;
 var dashboardWidgetStore = null;
 var widget_counter = 0;
 var monitorTypeStore = new dojo.data.ItemFileReadStore({
@@ -9,7 +9,6 @@ var monitorTypeStore = new dojo.data.ItemFileReadStore({
 { monitor_name: 'ICMP' },
 { monitor_name: 'Port' },
 { monitor_name: 'SSL Certificate' },
-{ monitor_name: 'SNMP' },
 { monitor_name: 'Shell Script' },
 { monitor_name: 'URL' },
 		    ]
@@ -39,7 +38,6 @@ function _createTemplateParam (e) {
             });
     } else if (type == "SSL Certificate") {
 	// no further data needed
-    } else if (type == "SNMP") {
     } else if (type == "Shell Script") {
 	param = new dijit.form.FilteringSelect({
 		id: 'create_template_param' + idx,
@@ -53,7 +51,7 @@ function _createTemplateParam (e) {
 		id: 'create_template_param_a_' + idx,
 		name: 'create_template_param_a_' + idx,
 		style: 'width: 25em;',
-		placeHolder: 'http://'
+		placeHolder: 'http://%PANOPTES_MONITOR_ADDR%/some_url'
 	    });
 	dojo.place(param_a.domNode, "create_template_br" + idx, "before");
 
@@ -603,6 +601,53 @@ function xhrAddPingable(ip_address) {
     dojo.xhrGet(xhrArgs);    
 }
 
+function xhrCreateTemplate() {
+    var i = 0;
+    var obj = dijit.byId("create_template_obj" + i);
+    var params = [];
+
+    while (obj) {
+	var type = obj.get('value');
+
+	if (type == "ICMP") {
+	    params.push({ 'type': type });
+	} else if (type == "Port") {
+	    var prm = dijit.byId("create_template_param" + i).get('value');
+	    params.push({ 'type': type, 'port' : prm });	    
+	} else if (type == "SSL Certificate") {
+	    params.push({ 'type': type });
+	} else if (type == "Shell Script") {
+	    var prm = dijit.byId("create_template_param" + i).get('value');
+	    params.push({ 'type': type, 'script' : prm });	    
+	} else if (type == "URL") {
+	    var prm0 = dijit.byId("create_template_param_a_" + i).get('value');
+	    var prm1 = dijit.byId("create_template_param_b_" + i).get('value');
+	    var prm2 = dijit.byId("create_template_param" + i).get('value');
+	    params.push({ 'type': type, 'url' : prm0, 'code' : prm1, 'content' : prm2 });	    
+	}
+
+	obj = dijit.byId("create_template_obj" + i);
+    }
+
+    var xhrArgs = {
+	url: '/panoptes/',
+	handleAs: 'json',
+	content: {
+	    action: 'createTemplate',
+	    data: '{ "name" : ' + dijit.byId('template_name').get('value') + ', "params" : ' + dojo.toJson(params) + '}'
+	},
+	load: function(data) {
+	    if (data && !data.error) {
+		alert('Template ' + tpl_name + ' saved.');
+	    } else {
+		alert(data.error);
+	    }
+	},
+    };
+	
+    dojo.xhrGet(xhrArgs);    
+}
+
 function xhrCreateSecurityGroup(name) {
     var xhrArgs = {
 	url: '/panoptes/',
@@ -816,6 +861,7 @@ function createTemplate() {
 	    id: 'create_template_reset',
             label: 'Cancel',
             onClick: function() {
+		xhrCreateTemplate();
 		destroyAll("create_template");
             }
         });
