@@ -626,6 +626,7 @@ function xhrCreateTemplate() {
 	    params.push({ 'type': type, 'url' : prm0, 'code' : prm1, 'content' : prm2 });	    
 	}
 
+	i++;
 	obj = dijit.byId("create_template_obj" + i);
     }
 
@@ -634,11 +635,11 @@ function xhrCreateTemplate() {
 	handleAs: 'json',
 	content: {
 	    action: 'createTemplate',
-	    data: '{ "name" : ' + dijit.byId('template_name').get('value') + ', "params" : ' + dojo.toJson(params) + '}'
+	    data: '{ "name" : "' + dijit.byId('template_name').get('value') + '", "params" : ' + dojo.toJson(params) + '}'
 	},
 	load: function(data) {
 	    if (data && !data.error) {
-		alert('Template ' + tpl_name + ' saved.');
+		alert('Template saved.');
 	    } else {
 		alert(data.error);
 	    }
@@ -853,6 +854,7 @@ function createTemplate() {
 	    id: 'create_template_submit',
 	    label: 'Save',
 	    onClick: function() {
+		xhrCreateTemplate();
 		destroyAll("create_template");
 	    }
 	});
@@ -861,7 +863,6 @@ function createTemplate() {
 	    id: 'create_template_reset',
             label: 'Cancel',
             onClick: function() {
-		xhrCreateTemplate();
 		destroyAll("create_template");
             }
         });

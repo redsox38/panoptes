@@ -31,6 +31,7 @@
 
 require_once 'deviceGroup.php';
 require_once 'deviceEntry.php';
+require_once 'panoptesTemplate.php';
 
 class panoptes
 {
@@ -2988,6 +2989,7 @@ class panoptes
 
     try {
       if (array_key_exists('device_id', $args)) {
+	// TODO
       } else {
 	foreach ($args['monitor_ids'] as $v) {
 	  if ($args['type'] == 'port_monitors') {
@@ -3041,6 +3043,40 @@ class panoptes
       } else {
 	$result = 'failure';
 	$error = 'must supply parent and child ids';
+      }
+    } catch (Exception $e) {
+      return(array('result' => 'failure',
+		   'error'  => $e->getMessage()));
+    }
+    
+    return(array('result' => $result, 'error' => $error, 
+		 'data' => $data));
+  }
+
+  /**
+   * createTemplate
+   *
+   * @param args name name of template
+   *             params array of template objects
+   * @throws none
+   * @return array containing result and possible error messages
+   */
+  public function ajax_createTemplate($args) {
+    $result = 'success';
+    $error = '';
+
+    try {
+      if (array_key_exists('name', $args) &&
+	  array_key_exists('params', $args)) {
+	// store template
+	$tpl = new panoptesTemplate($this->db);
+	$tpl->id = 0;
+	$tpl->name = $args['name'];
+	$tpl->params = $args['params'];
+	$tpl->save();
+      } else {
+	$result = 'failure';
+	$error = 'must supply name and params';
       }
     } catch (Exception $e) {
       return(array('result' => 'failure',
