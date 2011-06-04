@@ -1,4 +1,113 @@
 
+function applyDeviceTemplate() {
+    template_data = {
+	label: "name",
+	identifier: "id",
+	items: []
+    };
+
+    templateStore = new dojo.data.ItemFileWriteStore({ 
+	    data: template_data
+	});	      
+
+    // display overlay window to select template from
+    var ts = new dijit.form.FilteringSelect({
+   	    id: 'template_selector',
+   	    name: 'template_selector',
+    	    store: templateStore,
+	    title: 'template',	    
+    	    searchAttr: 'name',
+	    labelFunc: function(itm, str) {
+		var label = str.getValue(itm, 'name');
+		return label;
+	    },
+	    labelAttr: 'name'
+    	});
+
+    lbl = document.createElement("label");
+    lbl.htmlFor = 'template_selector';
+
+    rst = new dijit.form.Button({
+	    label: 'Cancel',
+	    id: 'apply_template_reset',
+	    onClick: function() {
+		destroyAll("apply_template_win");
+	    }
+	});
+
+    sub = new dijit.form.Button({
+	    label: 'Apply',
+	    id: 'apply_template_submit',
+	    onClick: function() {
+		// get selected device
+		var dev_id = deviceStore.getValues(deviceTreeSelectedItem, 'id').toString();
+		dev_id = dev_id.replace("d_", "");
+
+		// get selected template
+		var tpl_id = dijit.byId('template_selector').get('value');
+		var tpl_name = dijit.byId('template_selector').get('displayedValue');
+
+		xhrApplyDeviceTemplate(dev_id, tpl_id, tpl_name);
+		destroyAll("apply_template_win");
+	    }
+	});
+
+    var items = [ lbl, ts.domNode, 
+		  document.createElement("br"),
+		  rst.domNode, sub.domNode ];
+    
+    createOverlayWindow("apply_template_win", items);
+
+    // load list of available templates 
+    var xhrArgs = {
+        url: '/panoptes/',
+        handleAs: 'json',
+        content: {
+            action: 'getDeviceTemplates',
+            data: '{}'
+        },
+        load: function(data) {
+            if (data && !data.error) {          
+                // populate grid
+                if (data.data && (data.data.length > 0)) {
+                    dojo.forEach(data.data, function(oneEntry) {
+                            templateStore.newItem(oneEntry);
+                        });
+
+                    templateStore.save();
+                }
+            } else {
+                alert(data.error);
+            }
+            hideLoading();
+        },      
+    };
+       
+    showLoading();
+    var resp = dojo.xhrGet(xhrArgs);
+}
+
+function xhrApplyDeviceTemplate(device_id, template_id, template_name) {
+
+    var xhrArgs = {
+	url: '/panoptes/',
+	handleAs: 'json',
+	content: {
+	    action: 'ApplyDeviceTemplate',
+	    data: '{ "device_id": "' + device_id + '", "template_id": "' + template_id + '" }'
+	},
+	load: function(data) {
+	    if (data && ! data.error) {
+		alert("Template " + template_name + " has been applied.");
+	    } else {
+		alert(data.error);
+	    }
+	},
+    };
+	
+    dojo.xhrGet(xhrArgs);
+}
+
 function xhrAddNotification(device_id, monitor_ids, type) {
 
     var args = {};

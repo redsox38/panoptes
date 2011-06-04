@@ -199,6 +199,9 @@ Context menus
         <div dojoType="dijit.MenuItem" iconClass="panoptesIconRemoveNotification" onClick="removeDeviceNotification();">
             Remove Notification
         </div>
+        <div dojoType="dijit.MenuItem" onClick="applyDeviceTemplate();">
+            Apply Template
+        </div>
     </div>
 
     <!-- Context menu for group objects in device tree //-->

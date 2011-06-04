@@ -136,6 +136,49 @@ class panoptes
 
     return($r);
   }
+
+  /**
+   * Return array of all templates or single template if 
+   * a template id was passed in
+   *
+   * @param id id of specific template to retrieve
+   *                 
+   *
+   * @throws Exception 
+   * @return array or template object
+   */
+  public function getDeviceTemplate($id) {
+
+    try {
+      if (is_null($id)) {
+	$r = array();
+	$stmt = $this->db->prepare("SELECT * FROM device_templates");
+	$stmt->execute();
+
+	while ($t = $stmt->fetch(PDO::FETCH_ASSOC)) {
+	  $tpl = new panoptesTemplate($this->db);
+	  $tpl->id = $t['id'];
+	  $tpl->name = $t['name'];
+	  $tpl->params = $t['params'];
+	  array_push($r, $tpl);
+	}	
+      } else {
+	$stmt = $this->db->prepare("SELECT * FROM device_templates WHERE id=?");
+	$stmt->bindParam(1, $id, PDO::PARAM_INT);
+	$stmt->execute();
+
+	$t = $stmt->fetch(PDO::FETCH_ASSOC);
+	$r = new panoptesTemplate($this->db);
+	$r->id = $t['id'];
+	$r->params = $t['params'];
+	$r->name = $t['name'];
+      }
+    } catch (Exception $e) {
+      throw($e);
+    }
+
+    return($r);
+  }
   
   /**
    * Return list of available RRDs for a given device
@@ -3126,6 +3169,31 @@ class panoptes
     }
     
     return(array('result' => $result, 'error' => $error));
+  }
+
+  /**
+   * getDeviceTemplates
+   *
+   * @param args ignored
+   * @throws none
+   * @return array containing result and possible error messages
+   */
+  public function ajax_getDevicetemplates($args) {
+    $result = 'success';
+    $error = '';
+    $data = array();
+
+    try {
+      $tpls = $this->getDeviceTemplate(null);
+      foreach ($tpls as $t) {
+	array_push($data, array('name' => $t->name, 'id' => $t->id));
+      }
+    } catch (Exception $e) {
+      return(array('result' => 'failure',
+		   'error'  => $e->getMessage()));
+    }
+    
+    return(array('result' => $result, 'error' => $error, 'data' => $data));
   }
 }
 
