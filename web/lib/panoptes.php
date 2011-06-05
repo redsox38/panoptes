@@ -3222,7 +3222,48 @@ class panoptes
       } else {
 	$tpl = $this->getDeviceTemplate($args['template_id']);
 	if (!(is_null($tpl))) {
-	  // aply $tpl->params to device id
+	  // apply $tpl->params to device id
+	  // convert params from json data to php data
+	  $params = json_decode($tpl->params, true);
+	  $dev = $this->getDevice($args['device_id']);
+
+	  foreach ($params as $p) {
+	    if ($p['type'] == 'ICMP') {
+	      require_once 'pingEntry.php';
+	      $ent = new pingEntry();
+	      $ent->db($this->db);
+	      $ent->device = $dev;
+	      $ent->commit();
+	    } else if ($p['type'] == 'Port') {
+	      require_once 'portMonitorEntry.php';
+	      $ent = new portMonitorEntry($this->db);
+	      $ent->device_id = $args['device_id'];
+	      $ent->sport = $p['port'];
+	      $ent->proto = 'tcp';
+	      $ent->commit();
+	    } else if ($p['type'] == 'SSL Certificate') {
+	      require_once 'certificateMonitorEntry.php';
+	      $ent = new certificateMonitorEntry($this->db);
+	      $ent->device_id = $args['device_id'];
+	      $ent->url = 'https://' . $dev->name . '/';
+	      $ent->commit();
+	    } else if ($p['type'] == 'Shell Script') {
+	      require_once 'shellMonitorEntry.php';
+	      $ent = new shellMonitorEntry($this->db);
+	      $ent->device_id = $args['device_id'];
+	      $ent->script = $p['script'];
+	      $ent->params = '';
+	      $ent->commit();
+	    } else if ($p['type'] == 'URL') {
+	      require_once 'urlMonitorEntry.php';
+	      $ent = new urlMonitorEntry($this->db);
+	      $ent->device_id = $args['device_id'];
+	      $ent->url = $p['url'];
+	      $ent->expect_http_status = $p['code'];
+	      $ent->expect_http_content = $p['content'];
+	      $ent->commit();
+	    }
+	  }
 	}
       }
     } catch (Exception $e) {
