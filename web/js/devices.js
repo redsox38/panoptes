@@ -93,7 +93,7 @@ function xhrApplyDeviceTemplate(device_id, template_id, template_name) {
 	url: '/panoptes/',
 	handleAs: 'json',
 	content: {
-	    action: 'ApplyDeviceTemplate',
+	    action: 'applyDeviceTemplate',
 	    data: '{ "device_id": "' + device_id + '", "template_id": "' + template_id + '" }'
 	},
 	load: function(data) {

@@ -163,15 +163,18 @@ class panoptes
 	  array_push($r, $tpl);
 	}	
       } else {
+	$r = null;
 	$stmt = $this->db->prepare("SELECT * FROM device_templates WHERE id=?");
 	$stmt->bindParam(1, $id, PDO::PARAM_INT);
 	$stmt->execute();
 
 	$t = $stmt->fetch(PDO::FETCH_ASSOC);
-	$r = new panoptesTemplate($this->db);
-	$r->id = $t['id'];
-	$r->params = $t['params'];
-	$r->name = $t['name'];
+	if ($t) {
+	  $r = new panoptesTemplate($this->db);
+	  $r->id = $t['id'];
+	  $r->params = $t['params'];
+	  $r->name = $t['name'];
+	}
       }
     } catch (Exception $e) {
       throw($e);
@@ -3195,6 +3198,39 @@ class panoptes
     
     return(array('result' => $result, 'error' => $error, 'data' => $data));
   }
-}
 
+  /**
+   * applyDeviceTemplate
+   *
+   * @param args array containing parameters
+   *                   device_id id of device to apply template to
+   *                   template_id id of template to apply
+   * @throws none
+   * @return array containing result and possible error messages
+   */
+  public function ajax_applyDevicetemplate($args) {
+    $result = 'success';
+    $error = '';
+    $data = array();
+    try {
+      if (!(array_key_exists('device_id', $args))) {
+	$result = 'failure';
+	$error = 'No device id supplied';
+      } else if (!(array_key_exists('template_id', $args))) {
+	$result = 'failure';
+	$error = 'No template id supplied';
+      } else {
+	$tpl = $this->getDeviceTemplate($args['template_id']);
+	if (!(is_null($tpl))) {
+	  // aply $tpl->params to device id
+	}
+      }
+    } catch (Exception $e) {
+      return(array('result' => 'failure',
+		   'error'  => $e->getMessage()));
+    }
+    
+    return(array('result' => $result, 'error' => $error, 'data' => $data));
+  }
+}
 ?>
