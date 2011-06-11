@@ -11,7 +11,7 @@ php-gd
 rrdtool-php
 php-xml
 php-snmp
-dojo 1.5+
+dojo 1.5+, (1.6 is untested)
 
 
 QUICKSTART
