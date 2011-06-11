@@ -3273,5 +3273,36 @@ class panoptes
     
     return(array('result' => $result, 'error' => $error, 'data' => $data));
   }
+
+  /**
+   * deleteDeviceTemplate
+   *
+   * @param args array containing parameters
+   *                   template_id id of template to apply
+   * @throws none
+   * @return array containing result and possible error messages
+   */
+  public function ajax_deleteDevicetemplate($args) {
+    $result = 'success';
+    $error = '';
+    $data = array();
+
+    try {
+      if (!(array_key_exists('template_id', $args))) {
+	$result = 'failure';
+	$error = 'No template id supplied';
+      } else {
+	$tpl = $this->getDeviceTemplate($args['template_id']);
+	if (!(is_null($tpl))) {
+	  $tpl->delete();
+	}
+      }
+    } catch (Exception $e) {
+      return(array('result' => 'failure',
+		   'error'  => $e->getMessage()));
+    }
+    
+    return(array('result' => $result, 'error' => $error, 'data' => $data));
+  }
 }
 ?>

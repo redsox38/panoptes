@@ -601,7 +601,33 @@ function xhrAddPingable(ip_address) {
     dojo.xhrGet(xhrArgs);    
 }
 
-function xhrCreateTemplate() {
+function xhrDeleteTemplate () {
+    var obj = dijit.byId('delete_template_selector');
+
+    if (obj) {
+	var tpl_id = obj.get('value');
+
+	var xhrArgs = {
+	    url: '/panoptes/',
+	    handleAs: 'json',
+	    content: {
+		action: 'deleteDeviceTemplate',
+		data: '{ "template_id": "' + tpl_id + '" }'
+	    },
+	    load: function(data) {
+		if (data && ! data.error) {
+		    alert("Template has been deleted.");
+		} else {
+		    alert(data.error);
+		}
+	    },
+	};
+	
+	dojo.xhrGet(xhrArgs);
+    }
+}
+
+function xhrCreateTemplate () {
     var i = 0;
     var obj = dijit.byId("create_template_obj" + i);
     var params = [];
@@ -841,7 +867,84 @@ function uploadFile() {
     createOverlayWindow("upload_file", items);
 }
 
-function createTemplate() {
+function deleteTemplate () {
+    template_data = {
+	label: "name",
+	identifier: "id",
+	items: []
+    };
+
+    templateStore = new dojo.data.ItemFileWriteStore({ 
+	    data: template_data
+	});	      
+
+    // display overlay window to select template from
+    var ts = new dijit.form.FilteringSelect({
+   	    id: 'delete_template_selector',
+   	    name: 'delete_template_selector',
+    	    store: templateStore,
+	    title: 'template',	    
+    	    searchAttr: 'name',
+	    labelFunc: function(itm, str) {
+		var label = str.getValue(itm, 'name');
+		return label;
+	    },
+	    labelAttr: 'name'
+    	});
+
+    // load list of available templates 
+    var xhrArgs = {
+        url: '/panoptes/',
+        handleAs: 'json',
+        content: {
+            action: 'getDeviceTemplates',
+            data: '{}'
+        },
+        load: function(data) {
+            if (data && !data.error) {          
+                // populate grid
+                if (data.data && (data.data.length > 0)) {
+                    dojo.forEach(data.data, function(oneEntry) {
+                            templateStore.newItem(oneEntry);
+                        });
+
+                    templateStore.save();
+                }
+            } else {
+                alert(data.error);
+            }
+            hideLoading();
+        },      
+    };
+       
+    showLoading();
+    var resp = dojo.xhrGet(xhrArgs);
+
+    sub = new dijit.form.Button({
+	    id: 'delete_template_submit',
+	    label: 'Delete',
+	    onClick: function() {
+		xhrDeleteTemplate();
+		destroyAll("delete_template");
+	    }
+	});
+    
+    rst = new dijit.form.Button({
+	    id: 'delete_template_reset',
+            label: 'Cancel',
+            onClick: function() {
+		destroyAll("delete_template");
+            }
+        });
+
+    var b = document.createElement("br");
+    b.id = 'delete_template_br';
+    var items = [ ts.domNode, b, rst.domNode, sub.domNode ];
+
+    createOverlayWindow("delete_template", items);
+}
+
+function createTemplate () {
     tb = new dijit.form.TextBox({
 	    id: 'template_name',
 	    name: 'template_name',

@@ -3,7 +3,7 @@ dashboard layout editing
 different icons in device tree by device type ?
 network map
 look @ dojo charting instead of rrd for graphs
-device templates (apply, edit, delete)
+device templates (edit)
 snmp trap/external message receiver
 twitter notification feed 
 web service api (status request/update, etc)

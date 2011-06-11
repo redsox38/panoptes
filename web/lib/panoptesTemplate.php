@@ -99,6 +99,30 @@ class panoptesTemplate
       throw($e);
     }
   }
+
+  /*
+   * delete
+   *
+   * @param none
+   * @throws Exception
+   * @return none
+   *
+   */
+  public function delete() {
+    try {
+      if (is_null($this->id)) {
+	throw new Exception("id is not defined");
+      }
+
+      $id = $this->id;
+      
+      $stmt = $this->db->prepare("DELETE FROM device_templates WHERE id=?)");
+      $stmt->bindParam(1, $id);
+      $stmt->execute();
+    } catch (Exception $e) {
+      throw($e);
+    }
+  }
 }
 
 ?>

@@ -250,6 +250,9 @@ Context menus
                 <div>
 	        <a href="#" onClick="createTemplate();">Create Template</a><br/>
                 </div>
+                <div>
+	        <a href="#" onClick="deleteTemplate();">Delete Template</a><br/>
+                </div>
 <?php
 	  if ($panoptes->isAdmin($panoptes_current_user)) {
             echo '<div>' . "\n";
