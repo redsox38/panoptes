@@ -159,7 +159,7 @@ class panoptes
 	  $tpl = new panoptesTemplate($this->db);
 	  $tpl->id = $t['id'];
 	  $tpl->name = $t['name'];
-	  $tpl->params = $t['params'];
+	  $tpl->params = $t['parameters'];
 	  array_push($r, $tpl);
 	}	
       } else {
@@ -172,7 +172,7 @@ class panoptes
 	if ($t) {
 	  $r = new panoptesTemplate($this->db);
 	  $r->id = $t['id'];
-	  $r->params = $t['params'];
+	  $r->params = $t['parameters'];
 	  $r->name = $t['name'];
 	}
       }
@@ -3212,6 +3212,7 @@ class panoptes
     $result = 'success';
     $error = '';
     $data = array();
+
     try {
       if (!(array_key_exists('device_id', $args))) {
 	$result = 'failure';
@@ -3264,6 +3265,9 @@ class panoptes
 	      $ent->commit();
 	    }
 	  }
+	} else {
+	  $result = 'failure';
+	  $error = 'Template id ' . $args['template_id'] . ' does not exist';
 	}
       }
     } catch (Exception $e) {

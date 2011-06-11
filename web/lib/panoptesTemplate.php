@@ -116,7 +116,7 @@ class panoptesTemplate
 
       $id = $this->id;
       
-      $stmt = $this->db->prepare("DELETE FROM device_templates WHERE id=?)");
+      $stmt = $this->db->prepare("DELETE FROM device_templates WHERE id=?");
       $stmt->bindParam(1, $id);
       $stmt->execute();
     } catch (Exception $e) {
