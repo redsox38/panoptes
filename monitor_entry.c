@@ -21,6 +21,15 @@
 #include <pthread.h>
 #include "panoptes/monitor_core.h"
 
+/* allocate_monitor_entry
+ *
+ * parameters: monitor_entry_t NULL or pointer address
+ *
+ * return: monitor_entry_t *
+ *
+ * if input is null, allocate a new monitor_entry and initialize it to null, otherwise just initialize the
+ * entry that was passed in to null
+ */
 monitor_entry_t *allocate_monitor_entry(monitor_entry_t *m)
 {
   monitor_entry_t *r;
@@ -43,6 +52,15 @@ monitor_entry_t *allocate_monitor_entry(monitor_entry_t *m)
   }
 }
 
+/* allocate_monitor_result
+ *
+ * parameters: monitor_result_t NULL or pointer address
+ *
+ * return: monitor_result_t *
+ *
+ * if input is null, allocate a new monitor_result and initialize it to null, otherwise just initialize the
+ * entry that was passed in to null
+ */
 monitor_result_t *allocate_monitor_result(monitor_result_t *m)
 {
   monitor_result_t *r;
@@ -61,6 +79,16 @@ monitor_result_t *allocate_monitor_result(monitor_result_t *m)
   }
 }
 
+/* get_attr_val
+ *
+ * parameters: monitor_entry_t entry to search for attributes in
+ *             char * attribute name to search for in the monitor entry
+ *
+ * return: char *
+ *
+ * Iterate over attributes within a monitor entry looking for the given atribute.  Returns the value of the attribute if found,
+ * otherwise returns null.
+ */
 char *get_attr_val(monitor_entry_t *m, char *attr_name) {
   char **p, **q;
   char *r = NULL;
@@ -79,6 +107,16 @@ char *get_attr_val(monitor_entry_t *m, char *attr_name) {
   return(r);
 }
 
+/* free_monitor_entry
+ *
+ * parameters: monitor_entry_t entry to free
+ *             int flag indicating whether or not ot free structure as well
+ *
+ * return: none
+ *
+ * Free all of the fields and attributes from the given monitor entry.  If flag is true, also
+ * free the underlying data structure.
+ */
 void free_monitor_entry(monitor_entry_t *m, int free_struct)
 {
   char **p;
@@ -112,6 +150,16 @@ void free_monitor_entry(monitor_entry_t *m, int free_struct)
     free(m);
 }
 
+/* free_monitor_result
+ *
+ * parameters: monitor_result_t entry to free
+ *             int flag indicating whether or not ot free structure as well
+ *
+ * return: none
+ *
+ * Free all of the fields from the given monitor result.  If flag is true, also
+ * free the underlying data structure.
+ */
 void free_monitor_result(monitor_result_t *r, int free_struct)
 {
 

@@ -117,6 +117,7 @@ void *monitor_thread(void *arg)
 	    update_monitor_entry(&m, &r);
 
 	    if (current_status != r.status) {
+	      log_status_change(&m, &r);
 	      send_notification(&m, &r);
 	    }
 
@@ -137,6 +138,7 @@ void *monitor_thread(void *arg)
 	    update_monitor_entry(&m, &r);
 	    
 	    if (current_status != r.status) {
+	      log_status_change(&m, &r);
 	      send_notification(&m, &r);
 	    }
 
@@ -158,6 +160,7 @@ void *monitor_thread(void *arg)
 	    update_monitor_entry(&m, &r);
 	    
 	    if (current_status != r.status) {
+	      log_status_change(&m, &r);
 	      send_notification(&m, &r);
 	    }
 
@@ -180,6 +183,7 @@ void *monitor_thread(void *arg)
 	    update_monitor_entry(&m, &r);
 
 	    if (current_status != r.status) {
+	      log_status_change(&m, &r);
 	      send_notification(&m, &r);
 	    }
 
@@ -202,6 +206,7 @@ void *monitor_thread(void *arg)
 	    update_monitor_entry(&m, &r);
 
 	    if (current_status != r.status) {
+	      log_status_change(&m, &r);
 	      send_notification(&m, &r);
 	    }
 
@@ -225,6 +230,7 @@ void *monitor_thread(void *arg)
 	    update_monitor_entry(&m, &r);
 	    
 	    if (current_status != r.status) {
+	      log_status_change(&m, &r);
 	      send_notification(&m, &r);
 	    }
 

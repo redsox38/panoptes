@@ -36,6 +36,16 @@ size_t wrfu(void *ptr, size_t size, size_t nmemb, void *stream)
   return size * nmemb;
 }
 
+/* monitor_certificate
+ *
+ * parameters: char * url to retrieve certificate for
+ *             monitor_result_t information about the most recent monitoring output
+ *
+ * return: monitor_result_t *
+ *
+ * Poll url via libcurl and see if the web server certificate expiration date is 
+ * within the configured minimum number of days of expiration
+ */
 monitor_result_t *monitor_certificate(char *url, monitor_result_t *r)
 {
 
