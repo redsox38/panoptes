@@ -500,16 +500,23 @@ function openPrefTab() {
 
     bc.addChild(tc);
 
+    var theme_items = [{theme_name: 'claro'},
+		   {theme_name: 'tundra'},
+		   {theme_name: 'nihilo'},
+		   {theme_name: 'soria'}
+		   ];
+    
+    // add a11y if running dojo 1.6 or later
+
+    if (dojoVersion >= 160) {
+	theme_items.push({theme_name: 'a11y'});
+    }
+
     themeStore = new dojo.data.ItemFileReadStore({
 	    data: {
 		identifier: 'theme_name',
 		label: 'theme_name',
-		items: [
-                        {theme_name: 'claro'},
-                        {theme_name: 'tundra'},
-		        {theme_name: 'nihilo'},
-		        {theme_name: 'soria'}
-			]
+		items: theme_items
 	    }
 	});
 

@@ -15,6 +15,10 @@ var timers = [];
 
 var dashboard_edit_mode = false;
 var loading_count = 0;
+var dojoVersion;
+
+v = dojo.version;
+dojoVersion = (v.major * 100) + (v.minor * 10) + v.patch;
 
 function loadUsers() {
     var xhrArgs = {
