@@ -199,7 +199,7 @@ Context menus
         <div dojoType="dijit.MenuItem" iconClass="panoptesIconRemoveNotification" onClick="removeDeviceNotification();">
             Remove Notification
         </div>
-        <div dojoType="dijit.MenuItem" onClick="applyDeviceTemplate();">
+        <div dojoType="dijit.MenuItem" iconClass="dijitEditorIcon dijitEditorIconCopy" onClick="applyDeviceTemplate();">
             Apply Template
         </div>
     </div>

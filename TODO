@@ -7,5 +7,5 @@ device templates (edit)
 snmp trap/external message receiver
 twitter notification feed 
 web service api (status request/update, etc)
-service status change history
+service status change history in UI
 regroup tools menu options into tabs (ie, launch new tab for template funcs, group funcs) to curb menu growth
