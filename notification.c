@@ -23,19 +23,6 @@
 #include <errno.h>
 #include <unistd.h>
 
-/* log_status_change
- *
- * parameters: monitor_entry_t information about the monitor being updated
- *             monitor_result_t information about the most recent monitoring output
- *
- * return: void
- *
- * Log results of status change to database
- */
-void log_status_change(monitor_entry_t *m, monitor_result_t *r)
-{
-}
-
 /* send_notification
  *
  * parameters: monitor_entry_t information about the monitor being updated

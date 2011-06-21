@@ -285,8 +285,7 @@ char **get_notify_user_list(monitor_entry_t *m, char *notify_type)
  *
  */
 void add_ssl_monitor(char *dev_id, char *addr, int port)
-{
-  
+{  
   int rc = -1;
   void (*add_ptr)(char *, char *, int);
 
@@ -297,5 +296,28 @@ void add_ssl_monitor(char *dev_id, char *addr, int port)
     syslog(LOG_ALERT, "_add_ssl_monitor not defined");
   }
 
+}
+
+/* log_status_change
+ *
+ * parameters: monitor_entry_t information about the monitor being updated
+ *             monitor_result_t information about the most recent monitoring output
+ *
+ * return: void
+ *
+ * Log results of status change to database.  Calls _log_status_change from
+ * database library.
+ */
+void log_status_change(monitor_entry_t *m, monitor_result_t *r)
+{
+  int rc = -1;
+  void (*log_ptr)(monitor_entry_t *, monitor_result_t *);
+
+  /* load add function */
+  if ((log_ptr = (void (*)(monitor_entry_t *, monitor_result_t *))dlsym(lib_handle, "_log_status_change")) != NULL) {
+    (*log_ptr)(m, r);
+  } else {
+    syslog(LOG_ALERT, "_log_status_change not defined");
+  }
 }
 

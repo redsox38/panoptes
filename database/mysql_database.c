@@ -138,8 +138,6 @@ void _add_monitor_port(char *src, int src_port, char *prot, char *os_genre, char
   MYSQL_FIELD *fields;
   long        *lengths;
 
-  qry = (char *)malloc(sizeof(char) * MAX_MYSQL_DISC_QRY_LEN);
-
   len = (strlen("CALL add_port_monitor(") +
 	 20 +
 	 strlen(",'") +
@@ -423,6 +421,69 @@ void _add_ssl_monitor(char *dev_id, char *addr, int port)
   mysql_query(mysql, qry);
 
   free(url);
+  free(qry);
+}
+
+void _log_status_change(monitor_entry_t *m, monitor_result_t *r) {
+
+  strlen(m->table_name);
+
+  char      *qry, *status_str;
+  int       len, rc;
+  MYSQL_RES *result;
+
+  switch(r->status) {
+  case MONITOR_RESULT_OK:
+    status_str = strdup("ok");
+    break;
+  case MONITOR_RESULT_WARN:
+    status_str = strdup("warn");
+    break;
+  default:
+    status_str = strdup("critical");
+    break;
+  }
+
+  /* 
+     space for query string, 20 digit id (max BIGINT value)     
+   */
+  len = (strlen("CALL log_status_change('") +
+	 strlen(m->table_name) +
+	 strlen("',") +
+	 20 +
+	 strlen(",'") +
+	 strlen(status_str) +
+	 strlen("','") +
+	 (r-> monitor_msg == NULL ? 0 : strlen(r->monitor_msg)) +
+ 	 strlen("')"));
+  
+  qry = (char *)malloc(len * sizeof(char));
+  snprintf(qry, len, "CALL log_status_change('%s',%d,'%s','%s')",
+	   m->table_name, m->id, status_str,
+	   (r-> monitor_msg == NULL ? "" : r->monitor_msg));
+
+  free(status_str);
+
+  syslog(LOG_DEBUG, "query: %s", qry);
+
+  pthread_mutex_lock(&sql_mutex);
+
+  rc = mysql_query(mysql, qry);
+
+  do {
+    result = mysql_store_result(mysql);
+    if (result) {
+      mysql_free_result(result);
+    } else {
+      /* an error occurred or no results */
+      if (mysql_field_count(mysql) != 0)
+	syslog(LOG_DEBUG, "Error: %s\n", mysql_error(mysql));
+    }
+    rc = mysql_next_result(mysql);
+  } while (rc == 0);
+
+  pthread_mutex_unlock(&sql_mutex);
+
   free(qry);
 }
 

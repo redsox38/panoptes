@@ -13,6 +13,7 @@ DROP TABLE IF EXISTS url_history;
 DROP TABLE IF EXISTS certificate_history;
 DROP PROCEDURE IF EXISTS get_monitor_notification;
 DROP PROCEDURE IF EXISTS reset_pending_monitors;
+DROP PROCEDURE IF EXISTS log_status_change;
 /* tables */
 
 --
@@ -236,6 +237,42 @@ UPDATE snmp_monitors SET status='warn' WHERE status='pending' AND next_check < D
 UPDATE shell_monitors SET status='warn' WHERE status='pending' AND next_check < DATE_ADD(NOW(), INTERVAL 15 MINUTE);
 UPDATE certificate_monitors SET status='warn' WHERE status='pending' AND next_check < DATE_ADD(NOW(), INTERVAL 15 MINUTE);
 UPDATE url_monitors SET status='warn' WHERE status='pending' AND next_check < DATE_ADD(NOW(), INTERVAL 15 MINUTE);
+END;
+//
+DELIMITER ;
+
+DELIMITER //
+CREATE PROCEDURE log_status_change(IN in_table VARCHAR(50),
+       		 		   IN in_id BIGINT,
+ 				   IN in_status VARCHAR(32),
+				   IN in_msg VARCHAR(255))
+READS SQL DATA
+SQL SECURITY INVOKER
+COMMENT 'add a log message for a given monitor'
+BEGIN
+
+DECLARE V_history_table VARCHAR(50);
+
+IF (in_table = 'port_monitors') THEN
+   SET V_history_table = 'port_history';
+ELSEIF (in_table = 'certificate_monitors') THEN
+   SET V_history_table = 'certificate_history';
+ELSEIF (in_table = 'snmp_monitors') THEN
+   SET V_history_table = 'snmp_history';
+ELSEIF (in_table = 'shell_monitors') THEN
+   SET V_history_table = 'shell_history';
+ELSEIF (in_table = 'url_monitors') THEN
+   SET V_history_table = 'url_history';
+END IF;
+
+-- read from approprate table
+SET @s = CONCAT('INSERT INTO ', V_history_table, 
+                ' VALUES(0,', in_id, ', NOW(), "', in_status,
+		'","', in_msg, '")');
+
+PREPARE stmt FROM @s;
+EXECUTE stmt;
+
 END;
 //
 DELIMITER ;
