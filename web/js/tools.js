@@ -388,6 +388,96 @@ function openAutoDiscoveryTab() {
     createAutoDiscoveryGrid();
 }
 
+function openTemplateTab() {
+    // load list of current templates for edit and delete options
+
+    template_data = {
+	label: "name",
+	identifier: "id",
+	items: []
+    };
+
+    templateStore = new dojo.data.ItemFileWriteStore({ 
+	    data: template_data
+	});	      
+
+    // load list of available templates 
+    var xhrArgs = {
+        url: '/panoptes/',
+        handleAs: 'json',
+        content: {
+            action: 'getDeviceTemplates',
+            data: '{}'
+        },
+        load: function(data) {
+            if (data && !data.error) {          
+                // populate grid
+                if (data.data && (data.data.length > 0)) {
+                    dojo.forEach(data.data, function(oneEntry) {
+                            templateStore.newItem(oneEntry);
+                        });
+
+                    templateStore.save();
+                }
+            } else {
+                alert(data.error);
+            }
+            hideLoading();
+        },      
+    };
+       
+    showLoading();
+    var resp = dojo.xhrGet(xhrArgs);
+
+    // create tab
+    var cp = new dijit.layout.ContentPane({
+            id: 'manage_template_tab',
+            title: 'Device Templates',
+	    closable: true,
+            style: "width: 100%; height: 100%;"
+        });
+
+    // render tab
+    dijit.byId("panoptes_tab_container").addChild(cp);
+
+    // add content to tab
+    // create button    
+    var crt_btn = new dijit.form.Button({
+	    id: 'create_tpl',
+	    label: 'Create New Template',
+	    onClick: function() {
+		createTemplate();
+	    }
+	}).placeAt("manage_template_tab");
+
+    dojo.place('<br/>', "manage_template_tab");
+
+    // delete template pieces
+    var ts = new dijit.form.FilteringSelect({
+   	    id: 'delete_template_selector',
+   	    name: 'delete_template_selector',
+    	    store: templateStore,
+	    title: 'template',	    
+    	    searchAttr: 'name',
+	    labelFunc: function(itm, str) {
+		var label = str.getValue(itm, 'name');
+		return label;
+	    },
+	    labelAttr: 'name'
+    	}).placeAt("manage_template_tab");
+
+    var del_sub = new dijit.form.Button({
+	    id: 'delete_template_submit',
+	    label: 'Delete Template',
+	    onClick: function() {
+		xhrDeleteTemplate();
+	    }
+	}).placeAt("manage_template_tab");
+
+    // move focus to tab
+    dijit.byId("panoptes_tab_container").selectChild(cp);
+}
+
 function getPrefValue(scope, name) {
     showLoading();
     var req = prefStore.fetch({ query: { pref_name: name },
@@ -872,83 +962,6 @@ function uploadFile() {
 		  rst.domNode, sub.domNode ];
 
     createOverlayWindow("upload_file", items);
-}
-
-function deleteTemplate () {
-    template_data = {
-	label: "name",
-	identifier: "id",
-	items: []
-    };
-
-    templateStore = new dojo.data.ItemFileWriteStore({ 
-	    data: template_data
-	});	      
-
-    // display overlay window to select template from
-    var ts = new dijit.form.FilteringSelect({
-   	    id: 'delete_template_selector',
-   	    name: 'delete_template_selector',
-    	    store: templateStore,
-	    title: 'template',	    
-    	    searchAttr: 'name',
-	    labelFunc: function(itm, str) {
-		var label = str.getValue(itm, 'name');
-		return label;
-	    },
-	    labelAttr: 'name'
-    	});
-
-    // load list of available templates 
-    var xhrArgs = {
-        url: '/panoptes/',
-        handleAs: 'json',
-        content: {
-            action: 'getDeviceTemplates',
-            data: '{}'
-        },
-        load: function(data) {
-            if (data && !data.error) {          
-                // populate grid
-                if (data.data && (data.data.length > 0)) {
-                    dojo.forEach(data.data, function(oneEntry) {
-                            templateStore.newItem(oneEntry);
-                        });
-
-                    templateStore.save();
-                }
-            } else {
-                alert(data.error);
-            }
-            hideLoading();
-        },      
-    };
-       
-    showLoading();
-    var resp = dojo.xhrGet(xhrArgs);
-
-    sub = new dijit.form.Button({
-	    id: 'delete_template_submit',
-	    label: 'Delete',
-	    onClick: function() {
-		xhrDeleteTemplate();
-		destroyAll("delete_template");
-	    }
-	});
-    
-    rst = new dijit.form.Button({
-	    id: 'delete_template_reset',
-            label: 'Cancel',
-            onClick: function() {
-		destroyAll("delete_template");
-            }
-        });
-
-    var b = document.createElement("br");
-    b.id = 'delete_template_br';
-    var items = [ ts.domNode, b, rst.domNode, sub.domNode ];
-
-    createOverlayWindow("delete_template", items);
 }
 
 function createTemplate () {

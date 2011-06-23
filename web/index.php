@@ -248,10 +248,7 @@ Context menus
 	        <a href="#" onClick="openEditDashboardTab();">Edit Dashboard</a><br/>
                 </div>
                 <div>
-	        <a href="#" onClick="createTemplate();">Create Template</a><br/>
-                </div>
-                <div>
-	        <a href="#" onClick="deleteTemplate();">Delete Template</a><br/>
+	        <a href="#" onClick="openTemplateTab();">Manage Templates</a><br/>
                 </div>
 <?php
 	  if ($panoptes->isAdmin($panoptes_current_user)) {
