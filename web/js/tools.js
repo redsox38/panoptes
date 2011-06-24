@@ -388,6 +388,61 @@ function openAutoDiscoveryTab() {
     createAutoDiscoveryGrid();
 }
 
+function openSecurityGroupTab() {
+    // create tab
+    var cp = new dijit.layout.ContentPane({
+            id: 'manage_security_groups_tab',
+            title: 'Security Groups',
+	    closable: true,
+            style: "width: 100%; height: 100%;"
+        });
+
+    // render tab
+    dijit.byId("panoptes_tab_container").addChild(cp);
+
+    // add content to tab
+
+    // add group
+    add_tb = new dijit.form.TextBox({
+	    id: 'add_security_group_name',
+	    name: 'add_security_group_name',
+	    style: 'width: 25em;',
+	    placeHolder: 'Group Name'
+	}).placeAt("manage_security_groups_tab");
+
+    add_sub = new dijit.form.Button({
+	    id: 'add_security_group_submit',
+	    label: 'Create',
+	    onClick: function() {
+		xhrCreateSecurityGroup(dijit.byId("add_security_group_name").get('displayedValue'));
+	    }
+	}).placeAt("manage_security_groups_tab");
+    
+    dojo.place('<br/>', "manage_security_groups_tab");
+
+    // delete group
+    del_tb = new dijit.form.FilteringSelect({
+	    id: 'del_security_group_name',
+	    name: 'del_security_group_name',
+	    style: 'width: 15em;',
+	    store: userStore,
+	    query: { type: 'group' },
+	    searchAttr: 'name',
+	    placeHolder: 'group to delete'
+	}).placeAt("manage_security_groups_tab");
+
+    del_sub = new dijit.form.Button({
+	    id: 'del_security_group_submit',
+	    label: 'Delete',
+	    onClick: function() {
+		xhrDeleteSecurityGroup(dijit.byId("del_security_group_name").get('value'));
+	    }
+	}).placeAt("manage_security_groups_tab");
+
+    // move focus to tab
+    dijit.byId("panoptes_tab_container").selectChild(cp);
+}
+
 function openTemplateTab() {
     // load list of current templates for edit and delete options
 
@@ -849,86 +904,6 @@ function xhrUploadFile(type, file) {
     };
 	
     dojo.xhrGet(xhrArgs);    
-}
-
-function deleteSecurityGroup() {
-    tb = new dijit.form.FilteringSelect({
-	    id: 'del_security_group_name',
-	    name: 'del_security_group_name',
-	    style: 'width: 15em;',
-	    store: userStore,
-	    query: { type: 'group' },
-	    searchAttr: 'name',
-	    placeHolder: 'group to delete'
-	});
-
-    sub = new dijit.form.Button({
-	    id: 'del_security_group_submit',
-	    label: 'Delete',
-	    onClick: function() {
-		xhrDeleteSecurityGroup(dijit.byId("del_security_group_name").get('value'));
-		dijit.byId("del_security_group_name").destroy();
-		dijit.byId("del_security_group_reset").destroy();
-                dijit.byId("del_security_group_submit").destroy();
-                document.body.removeChild(dojo.byId("del_security_group"));
-	    }
-	});
-    
-    rst = new dijit.form.Button({
-	    id: 'del_security_group_reset',
-            label: 'Cancel',
-            onClick: function() {
-		dijit.byId("del_security_group_name").destroy();
-                dijit.byId("del_security_group_reset").destroy();
-                dijit.byId("del_security_group_submit").destroy();
-                document.body.removeChild(dojo.byId("del_security_group"));
-            }
-        });
-
-    var items = [ tb.domNode,
-		  document.createElement("br"),
-		  rst.domNode, sub.domNode ];
-
-    createOverlayWindow("del_security_group", items);
-}
-
-function createSecurityGroup() {
-    tb = new dijit.form.TextBox({
-	    id: 'add_security_group_name',
-	    name: 'add_security_group_name',
-	    style: 'width: 25em;',
-	    placeHolder: 'Group Name'
-	});
-
-    sub = new dijit.form.Button({
-	    id: 'add_security_group_submit',
-	    label: 'Create',
-	    onClick: function() {
-		xhrCreateSecurityGroup(dijit.byId("add_security_group_name").get('displayedValue'));
-		dijit.byId("add_security_group_name").destroy();
-		dijit.byId("add_security_group_reset").destroy();
-                dijit.byId("add_security_group_submit").destroy();
-                document.body.removeChild(dojo.byId("add_security_group"));
-	    }
-	});
-    
-    rst = new dijit.form.Button({
-	    id: 'add_security_group_reset',
-            label: 'Cancel',
-            onClick: function() {
-		dijit.byId("add_security_group_name").destroy();
-                dijit.byId("add_security_group_reset").destroy();
-                dijit.byId("add_security_group_submit").destroy();
-                document.body.removeChild(dojo.byId("add_security_group"));
-            }
-        });
-
-    var items = [ tb.domNode, 
-		  document.createElement("br"),
-		  rst.domNode, sub.domNode ];
-
-    createOverlayWindow("add_security_group", items);
-
 }
 
 function uploadFile() {

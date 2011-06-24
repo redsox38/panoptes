@@ -8,4 +8,3 @@ snmp trap/external message receiver
 twitter notification feed 
 web service api (status request/update, etc)
 service status change history in UI - maybe as new tab on device view or tooltip flyout ?
-regroup tools menu options into tabs (ie, launch new tab for template funcs, group funcs) to curb menu growth
