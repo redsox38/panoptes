@@ -3189,7 +3189,7 @@ class panoptes
     try {
       $tpls = $this->getDeviceTemplate(null);
       foreach ($tpls as $t) {
-	array_push($data, array('name' => $t->name, 'id' => $t->id));
+	array_push($data, array('name' => $t->name, 'id' => $t->id, 'params' => $t->params));
       }
     } catch (Exception $e) {
       return(array('result' => 'failure',

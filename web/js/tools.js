@@ -15,20 +15,22 @@ var monitorTypeStore = new dojo.data.ItemFileReadStore({
 	}
     });
 
-function _createTemplateParam (e) {
-    var type = this.get('value');
-
-    var idx = this.get('name').match(/\d+$/);
+function _createTemplateParam_internal(type, idx, param_val) {
     var param = null;
 
     if (type == "ICMP") {
 	// no further data needed
     } else if (type == "Port") {
 	// add port spinner
+	if (param_val == null) {
+	    // default to port 80
+	    param_val = 80;
+	}
+
         param = new dijit.form.NumberSpinner({
                 id: 'create_template_param' + idx,
                 name: 'create_template_param' + idx,
-                value: 80,
+                value: param_val,
                 style: 'width: 100px;',
                 constraints: {
                     min: 4,
@@ -80,6 +82,14 @@ function _createTemplateParam (e) {
     }
 
     _createTemplateObject(null);
+}
+
+function _createTemplateParam (e) {
+    var type = this.get('value');
+
+    var idx = this.get('name').match(/\d+$/);
+
+    _createTemplateParam_internal(type, idx, null);
 }
 
 function _createTemplateObject (e) {
@@ -508,7 +518,7 @@ function openTemplateTab() {
     dojo.place('<br/>', "manage_template_tab");
 
     // delete template pieces
-    var ts = new dijit.form.FilteringSelect({
+    var del_ts = new dijit.form.FilteringSelect({
    	    id: 'delete_template_selector',
    	    name: 'delete_template_selector',
     	    store: templateStore,
@@ -529,8 +539,112 @@ function openTemplateTab() {
 	    }
 	}).placeAt("manage_template_tab");
 
+    dojo.place('<br/>', "manage_template_tab");
+
+    // edit template
+    var edt_ts = new dijit.form.FilteringSelect({
+   	    id: 'edit_template_selector',
+   	    name: 'edit_template_selector',
+    	    store: templateStore,
+	    title: 'edit_template',	    
+    	    searchAttr: 'name',
+	    labelFunc: function(itm, str) {
+		var label = str.getValue(itm, 'name');
+		return label;
+	    },
+	    labelAttr: 'name'
+    	}).placeAt("manage_template_tab");
+
+    var edt_sub = new dijit.form.Button({
+	    id: 'edit_template_submit',
+	    label: 'Edit Template',
+	    onClick: function() {
+		var obj = dijit.byId('edit_template_selector');
+		if (obj) {
+		    editTemplate(obj);
+		}
+	    } 
+	}).placeAt("manage_template_tab");
+
     // move focus to tab
     dijit.byId("panoptes_tab_container").selectChild(cp);
+}
+
+function editTemplate(tpl) {
+    tb = new dijit.form.TextBox({
+	    id: 'template_name',
+	    name: 'template_name',
+            placeHolder: 'Template Name'
+	});
+
+    b = document.createElement("br");
+    b.id = "template_name_br";
+
+    createOverlayWindow("create_template", [ tb.domNode, b ]);
+
+    var tpl_id = tpl.get('value');
+    templateStore.fetchItemByIdentity({
+	    identity: tpl_id,
+	    onItem: function(item) {
+		// set template name
+		dijit.byId('template_name').set('value', 
+						templateStore.getValue(item, 'name'));
+		dijit.byId('template_name').attr('disabled', 'true');
+
+		// params is a json encoded object
+		// convert it and iterate through its items
+		var tpl_items = dojo.fromJson(templateStore.getValue(item, 'params'));
+		for (var i = 0; i < tpl_items.length; i++) {
+		    var tpl_val = null;
+		    if (tpl_items[i]['type'] == 'Port') {
+			tpl_val = tpl_items[i]['port'];
+		    }
+		    t = new dijit.form.FilteringSelect({
+			    id: 'create_template_obj' + i,
+			    name: 'create_template_obj' + i,
+			    store: monitorTypeStore,
+			    value: tpl_items[i]['type'],
+			    title: 'Monitor Type',        
+			    searchAttr: 'monitor_name'
+			});
+
+		    dojo.connect(t, "onChange", dijit.byId('create_template_obj' + i), 
+				 _createTemplateParam);
+
+		    // if i is 0, then the parent is template_name_br, 
+		    // otherwise it's obj i - 1
+		    var prnt;
+		    if (!i) { 
+			prnt = dojo.byId("template_name_br"); 
+		    } else {
+			prnt = dojo.byId("create_template_br" + (i - 1));
+		    }
+		    var b = document.createElement("br");
+		    b.id = "create_template_br" + i;
+		    dojo.place(t.domNode, prnt, "after");
+		    dojo.place(b, t.domNode, "after");
+
+		    _createTemplateParam_internal(tpl_items[i]['type'], i, tpl_val);
+		}
+
+		// add buttons at bottom of form when complete
+		rst = new dijit.form.Button({
+			id: 'create_template_reset',
+			label: 'Cancel',
+			onClick: function() {
+			    destroyAll("create_template");
+			}
+		    }).placeAt("create_template_br" + i, "after");
+
+		sub = new dijit.form.Button({
+			id: 'create_template_submit',
+			label: 'Save',
+			onClick: function() {
+			    destroyAll("create_template");
+			}
+		    }).placeAt("create_template_br" + i, "after");    
+	    }
+	});
 }
 
 function getPrefValue(scope, name) {
