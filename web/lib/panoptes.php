@@ -3115,10 +3115,17 @@ class panoptes
       if (array_key_exists('name', $args) &&
 	  array_key_exists('params', $args)) {
 	// store template
-	$tpl = new panoptesTemplate($this->db);
-	$tpl->id = 0;
-	$tpl->name = $args['name'];
+	// but first see if we're just replacing the parameters of 
+	// an existing template or creating a new one
+	if (array_key_exists('id', $args)) {
+	  $tpl = $this->getDeviceTemplate($args['id']);
+	} else {
+	  $tpl = new panoptesTemplate($this->db);
+	  $tpl->id = 0;
+	  $tpl->name = $args['name'];
+	}
 	$tpl->params = $args['params'];
+
 	$tpl->save();
 	$data = array(array('name' => $tpl->name, 'id' => $tpl->id, 
 			    'params' => $tpl->params));

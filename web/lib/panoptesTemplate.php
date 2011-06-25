@@ -88,13 +88,21 @@ class panoptesTemplate
 
       $id = $this->id;
 
-      $stmt = $this->db->prepare("INSERT INTO device_templates VALUES(?, ?, ?)");
-      $stmt->bindParam(1, $id);
-      $stmt->bindParam(2, $this->name);
-      $stmt->bindParam(3, json_encode($this->params));
-      $stmt->execute();
-      
-      $this->id = $this->db->lastInsertId();
+      if ($id > 0) {
+	// update existing entry
+	$stmt = $this->db->prepare("UPDATE device_templates SET parameters=? WHERE id=?");
+	$stmt->bindParam(1, json_encode($this->params));
+	$stmt->bindParam(2, $id);
+	$stmt->execute();
+      } else {
+	$stmt = $this->db->prepare("INSERT INTO device_templates VALUES(?, ?, ?)");
+	$stmt->bindParam(1, $id);
+	$stmt->bindParam(2, $this->name);
+	$stmt->bindParam(3, json_encode($this->params));
+	$stmt->execute();
+	
+	$this->id = $this->db->lastInsertId();
+      }
     } catch (Exception $e) {
       throw($e);
     }

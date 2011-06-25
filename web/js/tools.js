@@ -675,6 +675,7 @@ function editTemplate(tpl) {
 			id: 'create_template_submit',
 			label: 'Save',
 			onClick: function() {
+			    xhrCreateTemplate(tpl_id);
 			    destroyAll("create_template");
 			}
 		    }).placeAt("create_template_br" + i, "after");    
@@ -936,7 +937,7 @@ function xhrDeleteTemplate () {
     }
 }
 
-function xhrCreateTemplate () {
+function xhrCreateTemplate (tpl_id) {
     var i = 0;
     var obj = dijit.byId("create_template_obj" + i);
     var params = [];
@@ -970,7 +971,7 @@ function xhrCreateTemplate () {
 	handleAs: 'json',
 	content: {
 	    action: 'createTemplate',
-	    data: '{ "name" : "' + dijit.byId('template_name').get('value') + '", "params" : ' + dojo.toJson(params) + '}'
+	    data: '{ "name" : "' + dijit.byId('template_name').get('value') + '", "params" : ' + dojo.toJson(params) + (tpl_id == null ? '}' : ', "id": "' + tpl_id + '"}')
 	},
 	load: function(data) {
 	    if (data && !data.error) {
@@ -1113,7 +1114,7 @@ function createTemplate () {
 	    id: 'create_template_submit',
 	    label: 'Save',
 	    onClick: function() {
-		xhrCreateTemplate();
+		xhrCreateTemplate(null);
 		destroyAll("create_template");
 	    }
 	});
