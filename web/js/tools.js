@@ -90,6 +90,34 @@ function _createTemplateParam_internal(type, idx, param_val) {
     if (param) {
 	dojo.place(param.domNode, "create_template_br" + idx, "before");
     }
+
+    // create image node for delete button
+    img = new Image();
+    img.src = '/panoptes/images/delete.png';
+    img.id = 'create_template_delete' + idx;
+    img.className = 'panoptesTemplateDeleteIcon';
+    img.onclick = Function("_deleteTemplateObject(" + idx + ")");
+    dojo.place(img, "create_template_br" + idx, "before");
+}
+
+function _deleteTemplateObject(id) {
+    // delete dijits and delete image
+    var dijits = [ 'create_template_param_b_' + id,
+		   'create_template_param_a_' + id,
+		   'create_template_param' + id,
+		   'create_template_obj' + id ];
+
+    dojo.forEach(dijits, function(d) {
+	    // delete dijit
+	    var t = dijit.byId(d);
+	    if (t) { 
+		t.destroy();    
+	    }
+	});
+
+    // destroy non widgets
+    dojo.destroy('create_template_delete' + id);
+    dojo.destroy('create_template_br' + id);
 }
 
 function _createTemplateParam (e) {
