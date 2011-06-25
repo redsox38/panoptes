@@ -48,6 +48,9 @@ function _createTemplateParam_internal(type, idx, param_val) {
 		title: 'Monitor',	    
 		searchAttr: 'script',
 	    });
+	if (param_val != null) {
+	    param.set('value', param_val);
+	}
     } else if (type == "URL") {
 	param_a = new dijit.form.TextBox({
 		id: 'create_template_param_a_' + idx,
@@ -73,6 +76,13 @@ function _createTemplateParam_internal(type, idx, param_val) {
 		required: false,
 		placeHolder: 'optional text in web page'
 	    });
+	if (param_val != null) {
+	    param_a.set('value', param_val[0]);
+	    param_b.set('value', param_val[1]);
+	    if (param_val.length > 2) {
+		param.set('value', param_val[2]);
+	    }
+	}
     } else {
 	alert("Unknown type: " + type);
     }
@@ -80,8 +90,6 @@ function _createTemplateParam_internal(type, idx, param_val) {
     if (param) {
 	dojo.place(param.domNode, "create_template_br" + idx, "before");
     }
-
-    _createTemplateObject(null);
 }
 
 function _createTemplateParam (e) {
@@ -90,6 +98,7 @@ function _createTemplateParam (e) {
     var idx = this.get('name').match(/\d+$/);
 
     _createTemplateParam_internal(type, idx, null);
+    _createTemplateObject(null);
 }
 
 function _createTemplateObject (e) {
@@ -476,7 +485,7 @@ function openTemplateTab() {
         },
         load: function(data) {
             if (data && !data.error) {          
-                // populate grid
+                // populate data store
                 if (data.data && (data.data.length > 0)) {
                     dojo.forEach(data.data, function(oneEntry) {
                             templateStore.newItem(oneEntry);
@@ -598,7 +607,14 @@ function editTemplate(tpl) {
 		    var tpl_val = null;
 		    if (tpl_items[i]['type'] == 'Port') {
 			tpl_val = tpl_items[i]['port'];
+		    } else if (tpl_items[i]['type'] == 'Shell Script') {
+			tpl_val = tpl_items[i]['script'];
+		    } else if (tpl_items[i]['type'] == 'URL') {
+			tpl_val = [ tpl_items[i]['url'], 
+				    tpl_items[i]['code'], 
+				    tpl_items[i]['content'] ];
 		    }
+
 		    t = new dijit.form.FilteringSelect({
 			    id: 'create_template_obj' + i,
 			    name: 'create_template_obj' + i,
@@ -626,6 +642,25 @@ function editTemplate(tpl) {
 
 		    _createTemplateParam_internal(tpl_items[i]['type'], i, tpl_val);
 		}
+
+		// insert empty node for adding new items
+		var prnt = dojo.byId("create_template_br" + (i - 1));
+		t = new dijit.form.FilteringSelect({
+			id: 'create_template_obj' + i,
+			name: 'create_template_obj' + i,
+			store: monitorTypeStore,
+			placeHolder: 'Monitor Type',
+			title: 'Monitor Type',        
+			searchAttr: 'monitor_name'
+		    }).placeAt(prnt, "after");
+
+		dojo.connect(t, "onChange", dijit.byId('create_template_obj' + i), 
+			     _createTemplateParam);
+		var b = document.createElement("br");
+		b.id = "create_template_br" + i;
+		dojo.place(t.domNode, prnt, "after");
+		dojo.place(b, t.domNode, "after");
+
 
 		// add buttons at bottom of form when complete
 		rst = new dijit.form.Button({
@@ -882,6 +917,14 @@ function xhrDeleteTemplate () {
 	    },
 	    load: function(data) {
 		if (data && ! data.error) {
+		    // delete item from store
+		    templateStore.fetchItemByIdentity({
+			    identity: tpl_id,
+			    onItem: function(item, req) {
+				templateStore.deleteItem(item);
+				templateStore.save();
+			    }
+			});
 		    alert("Template has been deleted.");
 		} else {
 		    alert(data.error);
@@ -931,6 +974,10 @@ function xhrCreateTemplate () {
 	},
 	load: function(data) {
 	    if (data && !data.error) {
+		dojo.forEach(data.data, function(oneEntry) {
+			templateStore.newItem(oneEntry);
+		    });
+		templateStore.save();
 		alert('Template saved.');
 	    } else {
 		alert(data.error);

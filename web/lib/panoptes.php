@@ -3120,6 +3120,8 @@ class panoptes
 	$tpl->name = $args['name'];
 	$tpl->params = $args['params'];
 	$tpl->save();
+	$data = array(array('name' => $tpl->name, 'id' => $tpl->id, 
+			    'params' => $tpl->params));
       } else {
 	$result = 'failure';
 	$error = 'must supply name and params';
