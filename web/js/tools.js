@@ -975,10 +975,14 @@ function xhrCreateTemplate (tpl_id) {
 	},
 	load: function(data) {
 	    if (data && !data.error) {
-		dojo.forEach(data.data, function(oneEntry) {
-			templateStore.newItem(oneEntry);
-		    });
-		templateStore.save();
+		if (tpl_id == null) {
+		    // if tempalte id was null then this is a new entry 
+		    // and we should update the data store
+		    dojo.forEach(data.data, function(oneEntry) {
+			    templateStore.newItem(oneEntry);
+			});
+		    templateStore.save();
+		}
 		alert('Template saved.');
 	    } else {
 		alert(data.error);
