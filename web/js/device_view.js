@@ -726,6 +726,36 @@ function updatePerformanceGraph(id) {
     dojo.fadeIn(fadeArgs).play();
 }
 
+function addAlertData(id, container, start, stop) {
+    var xhrArgs = {
+	url: '/panoptes/',
+	handleAs: 'json',
+	content: {
+	    action: 'getAlertHistory',
+	    data: '{ "id": "' + id + '", "start": "' + start  +
+	    ', "stop": "' + stop + '" }'
+	},
+	load: function(data) {
+	    if (data && !data.error) {          
+		// populate grid
+		dojo.forEach(data.data, function(oneEntry) {
+			alertStore.newItem(oneEntry);
+		    });
+
+		alertStore.save();
+		container.setStore(alertStore);
+		container.update();		
+	    } else {
+		alert(data.error);
+	    }
+	    hideLoading();
+	},	
+    };
+       
+    showLoading();
+    var resp = dojo.xhrGet(xhrArgs);
+}
+
 function addPortMonitorData(id, container) {
     var xhrArgs = {
 	url: '/panoptes/',
@@ -973,6 +1003,63 @@ function addInfoData(id, container) {
     var resp = dojo.xhrGet(xhrArgs);
 }
 
+function createAlertHistoryTab(id) {
+    // create grid
+    var alert_layout = [{
+	    field: 'id',
+	    name: 'ID',
+	    width: '45px'	    
+	},
+	{
+	    field: 'id_string',
+	    name: 'Identifier',
+	    width: '300px'
+	},
+	{
+	    field: 'timestamp',
+	    name: 'Timestamp',
+	    width: '150px'	    
+	},
+	{
+	    field: 'status',
+	    name: 'Status',
+	    width: '80px'	    
+	},
+	{
+	    field: 'message',
+	    name: 'Message',
+	    width: 'auto'	    
+	}];
+
+    alert_data = {
+	label: "alert",
+	identifier: "id",
+	items: []
+    };
+
+    alertStore = new dojo.data.ItemFileWriteStore({ 
+	    data: alert_data 
+	});		
+
+    var tc_1 = new dojox.grid.EnhancedGrid({
+	    id: id + '_alert_grid',
+	    title: 'Alerts',
+	    store: alertStore,
+	    structure: alert_layout,
+	    clientSort: true,
+	    rowSelector: '10px',
+	    selectionMode: 'multiple',
+	    plugins: {
+		nestedSorting: true,
+	    }
+	}, document.createElement('div'));                  
+    tc_1.startup();                
+
+    // retrieve first 10 alerts
+    addAlertData(id, tc_1, 0, 10);
+    return(tc_1);    
+}
+
 function createPerformanceHistoryTab(id) {
 
     perf_monitor_data = {
@@ -1019,7 +1106,7 @@ function createPerformanceHistoryTab(id) {
 	    name: id + '_perf_start_date',
 	    closable: true,
 	    title: 'Start Date',
-	    constraints: { datePattern:'MM/dd/yyyy'}
+ 	    constraints: { datePattern:'MM/dd/yyyy'}
 	});
 
     start_dt.placeAt(tc_2.domNode);
@@ -1750,6 +1837,7 @@ function openDevice() {
 	tc_4 = createSNMPTab(id);
 	tc_5 = createShellTab(id);
 	tc_6 = createUrlTab(id);
+	tc_7 = createAlertHistoryTab(id);
 
 	// put all of the components together in border container
 	// and append to parent tab
@@ -1759,6 +1847,7 @@ function openDevice() {
 	tc.addChild(tc_4);
 	tc.addChild(tc_5);
 	tc.addChild(tc_6);
+	tc.addChild(tc_7);
 	bc.addChild(ic);
 	bc.addChild(hc);
 	bc.addChild(tc);

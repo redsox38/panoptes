@@ -2,6 +2,7 @@ var deviceTree;
 var deviceStore;
 var deviceTreeSelectedItem;
 var groupStore;
+var alertStore;
 var portMonitorStore;
 var perfMonitorStore;
 var certificateMonitorStore;
