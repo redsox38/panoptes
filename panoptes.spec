@@ -35,6 +35,7 @@ cp -p panoptes_discover.init %buildroot/etc/init.d/panoptes_discover
 cp -p install_db.sh %buildroot/usr/bin/panoptes_install_db.sh
 cp -p update_db.sh %buildroot/usr/bin/panoptes_update_db.sh
 cp -p xmpp_msg %buildroot/usr/bin/xmpp_msg
+cp -p twitter_msg %buildroot/usr/bin/twitter_msg
 
 %files
 %defattr(-,root,root)

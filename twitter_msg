@@ -1,0 +1,26 @@
+#!/usr/bin/perl -w
+
+use strict;
+use Net::Twitter::Lite;
+use Getopt::Long;
+
+my ($cons_key, $cons_secret, $access_token, $access_token_secret);
+my $msg = '';
+
+$msg = <STDIN>;
+
+GetOptions('consumer_key=s' => \$cons_key, 
+	   'consumer_secret=s' => \$cons_secret,
+	   'access_token=s'    => \$access_token,
+	   'access_token_secret=s' => \$access_token_secret
+    );
+
+my $twit = Net::Twitter::Lite->new(
+    'consumer_key'        => $cons_key,
+    'consumer_secret'     => $cons_secret,
+    'access_token'        => $access_token,
+    'access_token_secret' => $access_token_secret,
+    );
+
+$twit->update($msg);
+

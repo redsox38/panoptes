@@ -6,4 +6,4 @@ look @ dojo charting instead of rrd for graphs
 snmp trap/external message receiver
 twitter notification feed 
 web service api (status request/update, etc)
-service status change history in UI - maybe as new tab on device view or tooltip flyout ?
+service status change history in UI as new tab on device view 
