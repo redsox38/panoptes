@@ -4,6 +4,5 @@ different icons in device tree by device type ?
 network map
 look @ dojo charting instead of rrd for graphs
 snmp trap/external message receiver
-twitter notification feed 
 web service api (status request/update, etc)
 service status change history in UI as new tab on device view 
