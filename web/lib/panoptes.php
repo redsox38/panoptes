@@ -3317,5 +3317,36 @@ class panoptes
     
     return(array('result' => $result, 'error' => $error, 'data' => $data));
   }
+
+
+  /**
+   * getAlertHistory
+   *
+   * @param args array containing parameters
+   *                   id id of device to get history for
+   *                   start msg number to start at
+   *                   stop  msg number to stop at
+   * @throws none
+   * @return array containing result and possible error messages
+   */
+  public function ajax_getAlertHistory($args) {
+    $result = 'success';
+    $error = '';
+    $data = array();
+
+    try {
+      if (!(array_key_exists('id', $args))) {
+	$result = 'failure';
+	$error = 'No device id supplied';
+      } else {
+	// look up alerts
+      }
+    } catch (Exception $e) {
+      return(array('result' => 'failure',
+		   'error'  => $e->getMessage()));
+    }
+    
+    return(array('result' => $result, 'error' => $error, 'data' => $data));
+  }
 }
 ?>

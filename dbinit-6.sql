@@ -11,9 +11,11 @@ DROP TABLE IF EXISTS shell_history;
 DROP TABLE IF EXISTS snmp_history;
 DROP TABLE IF EXISTS url_history;
 DROP TABLE IF EXISTS certificate_history;
+DROP VIEW IF EXISTS alert_history;
 DROP PROCEDURE IF EXISTS get_monitor_notification;
 DROP PROCEDURE IF EXISTS reset_pending_monitors;
 DROP PROCEDURE IF EXISTS log_status_change;
+
 /* tables */
 
 --
@@ -172,6 +174,50 @@ CREATE TABLE device_templates (
   PRIMARY KEY (id),
   UNIQUE KEY idx (name)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+/* views */
+CREATE ALGORITHM=UNDEFINED SQL SECURITY INVOKER VIEW alert_history
+    AS (SELECT 'port_monitors' AS table_name, ph.id AS id,
+        ph.entry_timestamp AS timestamp,
+        ph.status AS status, 
+        ph.status_string AS message,
+	CONCAT(pm.proto, '/', pm.port) AS identifier,
+	d.id AS device_id FROM
+        port_history ph, port_monitors pm, devices d 
+	WHERE ph.monitor_id=pm.id AND pm.device_id=d.id) 
+        UNION (SELECT 'certificate_monitors' AS table_name, ph.id AS id,
+        ph.entry_timestamp AS timestamp,
+        ph.status AS status, 
+        ph.status_string AS message,
+	pm.url AS identifier,
+	d.id AS device_id FROM
+        certificate_history ph, certificate_monitors pm, devices d 
+	WHERE ph.monitor_id=pm.id AND pm.device_id=d.id) 
+        UNION (SELECT 'shell_monitors' AS table_name, ph.id AS id,
+        ph.entry_timestamp AS timestamp,
+        ph.status AS status, 
+        ph.status_string AS message,
+	pm.script AS identifier,
+	d.id AS device_id FROM
+        shell_history ph, shell_monitors pm, devices d 
+	WHERE ph.monitor_id=pm.id AND pm.device_id=d.id) 
+        UNION (SELECT 'snmp_monitors' AS table_name, ph.id AS id,
+        ph.entry_timestamp AS timestamp,
+        ph.status AS status, 
+        ph.status_string AS message,
+	pm.name AS identifier,
+	d.id AS device_id FROM
+        snmp_history ph, snmp_monitors pm, devices d 
+	WHERE ph.monitor_id=pm.id AND pm.device_id=d.id) 
+        UNION (SELECT 'url_monitors' AS table_name, ph.id AS id,
+        ph.entry_timestamp AS timestamp,
+        ph.status AS status, 
+        ph.status_string AS message,
+	pm.url AS identifier,
+	d.id AS device_id FROM
+        url_history ph, url_monitors pm, devices d 
+	WHERE ph.monitor_id=pm.id AND pm.device_id=d.id)	
+	ORDER BY timestamp;
 
 /* stored procedures */
 
