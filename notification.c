@@ -40,6 +40,7 @@ void send_notification(monitor_entry_t *m, monitor_result_t *r)
   int            rc, pipe_stdin_fd[2], i = 0;
   pid_t          pid;
   char           *xmpp_user, *xmpp_pass, **xmpp_args;
+  char           *twit_cons_tok, *twit_cons_sec, *twit_access_tok, *twit_access_sec, **twitter_args;
   char           *statuses[] = { "new","ok","pending","warn","error" };
 
   sendmail_cmd = get_config_value("notification.sendmail");
@@ -189,5 +190,72 @@ void send_notification(monitor_entry_t *m, monitor_result_t *r)
     }
   } else {
     syslog(LOG_DEBUG, "xmpp user or pass is null");
+  }
+
+  twit_cons_tok = get_config_value("notification.twitter_consumer_key");
+  twit_cons_sec = get_config_value("notification.twitter_consumer_secret");
+  twit_access_tok = get_config_value("notification.twitter_access_token");
+  twit_access_sec = get_config_value("notification.twitter_access_token_secret");
+
+  /* send twitter notification if so configured */
+  if ((twit_cons_tok != NULL) && (twit_cons_sec != NULL) &&
+      (twit_access_tok != NULL) && (twit_access_sec != NULL)) {
+    /* see if anybody is interested in having this tweeted */
+    notify_user_list = get_notify_user_list(m, "twitter");
+    
+    if (notify_user_list) {      
+      pipe(pipe_stdin_fd);
+      if (!(pid = fork())) {
+	/* child */
+	/* free up stdin */
+	close(0);
+	
+	/* build args */
+
+	/* space for all twitter params + prog name + NULL */
+	twitter_args = (char **)malloc(sizeof(char *) * 10);
+	twitter_args[0] = "twitter_msg";
+	twitter_args[1] = "--consumer_key";
+	twitter_args[2] = twit_cons_tok;
+	twitter_args[3] = "--consumer_secret";
+	twitter_args[4] = twit_cons_sec;
+	twitter_args[5] = "--access_token";
+	twitter_args[6] = twit_access_tok;
+	twitter_args[7] = "--access_token_secret";
+	twitter_args[8] = twit_access_sec;
+	twitter_args[9] = NULL;
+
+	dup(pipe_stdin_fd[0]);
+
+	execvp("twitter_msg", twitter_args);
+	exit(0);
+      } else {
+	/* parent */
+	p = notify_user_list;
+	while (*p != NULL) {
+	  free(p);
+	  *p++;
+	}
+
+	memset(writebuf, '\0', 1024);       
+	snprintf(writebuf, 1024, "%s status changed to %s\n", get_attr_val(m, "address"), statuses[r->status]);
+	rc = write(pipe_stdin_fd[1], writebuf, strlen(writebuf));
+	if (rc < 0) {
+	  strerror_r(errno, errbuf, 1024);
+	  syslog(LOG_NOTICE, "write: %s", errbuf);
+	} else {
+	  syslog(LOG_DEBUG, "wrote %d bytes", rc);
+	}
+	close(pipe_stdin_fd[0]);
+	close(pipe_stdin_fd[1]);
+
+	/* wait for child */
+	waitpid(pid, NULL, 0);
+      }
+    } else {
+      syslog(LOG_DEBUG, "no twitter user notifications registered");
+    }
+  } else {
+    syslog(LOG_DEBUG, "missing twitter OAuth parameters");
   }
 }
