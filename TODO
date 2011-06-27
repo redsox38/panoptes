@@ -5,5 +5,4 @@ network map
 look @ dojo charting instead of rrd for graphs
 snmp trap/external message receiver
 web service api (status request/update, etc)
-service status change history in UI as new tab on device view 
 have twitter updates be more flexible
