@@ -3335,7 +3335,7 @@ class panoptes
     $data = array();
 
     try {
-      if (!(array_key_exists('id', $args))) {
+      if (!(array_key_exists('device_id', $args))) {
 	$result = 'failure';
 	$error = 'No device id supplied';
       } else {

@@ -458,7 +458,7 @@ void _log_status_change(monitor_entry_t *m, monitor_result_t *r) {
  	 strlen("')"));
   
   qry = (char *)malloc(len * sizeof(char));
-  snprintf(qry, len, "CALL log_status_change('%s',%d,'%s','%s')",
+  snprintf(qry, len, "CALL log_status_change('%s',%s,'%s','%s')",
 	   m->table_name, m->id, status_str,
 	   (r-> monitor_msg == NULL ? "" : r->monitor_msg));
 
