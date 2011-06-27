@@ -733,7 +733,7 @@ function addAlertData(id, container, start, stop) {
 	content: {
 	    action: 'getAlertHistory',
 	    data: '{ "device_id": "' + id + '", "start": "' + start  +
-	    ', "stop": "' + stop + '" }'
+	    '", "stop": "' + stop + '" }'
 	},
 	load: function(data) {
 	    if (data && !data.error) {          

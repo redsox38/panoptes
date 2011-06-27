@@ -138,6 +138,39 @@ class panoptes
   }
 
   /**
+   * Return array of all alerts for given device id
+   *
+   * @param id id of specific device to retrieve alerts for
+   * @param start alert to start return list from
+   * @param stop alert to stop return list at
+   *                 
+   * @throws Exception 
+   * @return array of alerts for given device id
+   */
+  public function getDeviceAlerts($id, $start, $stop) {
+    $rtn = array();
+
+    try {
+      $stmt = $this->db->prepare("SELECT * FROM alert_history WHERE device_id=?");
+      $stmt->bindParam(1, $id, PDO::PARAM_INT);
+      $stmt->execute();
+
+      while ($t = $stmt->fetch(PDO::FETCH_ASSOC)) {
+	$rtn[] = array('id' => $t['id'],
+		       'id_string' => $t['identifier'],
+		       'timestamp' => $t['timestamp'],
+		       'status' => $t['status'],
+		       'message' => $t['message'],
+		       );
+      }
+    } catch (Exception $e) {
+      throw($e);
+    }
+
+    return($rtn);
+  }
+
+  /**
    * Return array of all templates or single template if 
    * a template id was passed in
    *
@@ -3318,12 +3351,11 @@ class panoptes
     return(array('result' => $result, 'error' => $error, 'data' => $data));
   }
 
-
   /**
    * getAlertHistory
    *
    * @param args array containing parameters
-   *                   id id of device to get history for
+   *                   device_id id of device to get history for
    *                   start msg number to start at
    *                   stop  msg number to stop at
    * @throws none
@@ -3340,6 +3372,8 @@ class panoptes
 	$error = 'No device id supplied';
       } else {
 	// look up alerts
+	$data = $this->getDeviceAlerts($args['device_id'], 
+				       $args['start'], $args['stop']);
       }
     } catch (Exception $e) {
       return(array('result' => 'failure',
