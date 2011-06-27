@@ -5,9 +5,8 @@ use Net::Twitter::Lite;
 use Getopt::Long;
 
 my ($cons_key, $cons_secret, $access_token, $access_token_secret);
-my $msg = '';
 
-$msg = <STDIN>;
+my $msg = <STDIN>;
 
 GetOptions('consumer_key=s' => \$cons_key, 
 	   'consumer_secret=s' => \$cons_secret,

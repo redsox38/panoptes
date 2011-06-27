@@ -53,7 +53,11 @@ void send_notification(monitor_entry_t *m, monitor_result_t *r)
       notify_user_list = get_notify_user_list(m, "email");
 
       if (notify_user_list) {
-	pipe(pipe_stdin_fd);
+	if (pipe(pipe_stdin_fd)) {
+	  strerror_r(errno, errbuf, 1024);
+	  syslog(LOG_NOTICE, "pipe: %s", errbuf);
+	}
+
 	if (!(pid = fork())) {
 	  /* child */
 	  /* free up stdin */
@@ -126,7 +130,11 @@ void send_notification(monitor_entry_t *m, monitor_result_t *r)
     notify_user_list = get_notify_user_list(m, "xmpp");
     
     if (notify_user_list) {      
-      pipe(pipe_stdin_fd);
+      if (pipe(pipe_stdin_fd)) {
+	strerror_r(errno, errbuf, 1024);
+	syslog(LOG_NOTICE, "pipe: %s", errbuf);
+      }
+
       if (!(pid = fork())) {
 	/* child */
 	/* free up stdin */
@@ -200,12 +208,17 @@ void send_notification(monitor_entry_t *m, monitor_result_t *r)
   /* send twitter notification if so configured */
   if ((twit_cons_tok != NULL) && (twit_cons_sec != NULL) &&
       (twit_access_tok != NULL) && (twit_access_sec != NULL)) {
-    pipe(pipe_stdin_fd);
+    if (pipe(pipe_stdin_fd)) {
+      strerror_r(errno, errbuf, 1024);
+      syslog(LOG_NOTICE, "pipe: %s", errbuf);
+    }
+
     if (!(pid = fork())) {
       /* child */
       /* free up stdin */
       close(0);
 	
+      dup(pipe_stdin_fd[0]);
       /* build args */
 
       /* space for all twitter params + prog name + NULL */
@@ -219,10 +232,15 @@ void send_notification(monitor_entry_t *m, monitor_result_t *r)
       twitter_args[6] = twit_access_tok;
       twitter_args[7] = "--access_token_secret";
       twitter_args[8] = twit_access_sec;
-      twitter_args[9] = NULL;
-      
-      dup(pipe_stdin_fd[0]);
-      
+      twitter_args[9] = NULL;     
+
+      /*      
+      syslog(LOG_DEBUG, "exec %s %s %s %s %s %s %s %s %s", twitter_args[0],
+	     twitter_args[1], twitter_args[2], twitter_args[3],
+	     twitter_args[4], twitter_args[5], twitter_args[6],
+	     twitter_args[7], twitter_args[8], twitter_args[9]
+	     );      
+      */
       execvp("twitter_msg", twitter_args);
       exit(0);
     } else {
