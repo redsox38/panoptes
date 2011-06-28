@@ -736,8 +736,8 @@ function addAlertData(id, container, start, stop) {
 	    '", "stop": "' + stop + '" }'
 	},
 	load: function(data) {
-	    if (data && !data.error) {          
-		// populate grid
+	    if (data && !data.error && data.data.length) {          
+		// populate grid       		
 		dojo.forEach(data.data, function(oneEntry) {
 			alertStore.newItem(oneEntry);
 		    });
