@@ -48,7 +48,8 @@ div.newDashboardWidget { border-width: 2px; }
 .panoptesIconAccess,
 .panoptesIconDisable,
 .panoptesIconEnable,
-.panoptesIconOSLinux {
+.panoptesIconOSLinux,
+.panoptesIconOSWin {
         background-image: url('/panoptes/images/panoptesIcons.png'); 
         width: 16px;
         height: 16px;
@@ -65,3 +66,4 @@ div.newDashboardWidget { border-width: 2px; }
 .panoptesIconDisable { background-position: -128px; }
 .panoptesIconEnable { background-position: -144px; }
 .panoptesIconOSLinux { background-position: -160px; }
+.panoptesIconOSWin { background-position: -176px; }

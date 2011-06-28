@@ -124,6 +124,8 @@ function reloadDeviceTree() {
 				}
 				if (itm.os == 'Linux') {
 				    return("panoptesIconOSLinux");
+				} else if (itm.os == 'Windows') {
+				    return("panoptesIconOSWin");
 				} else {
 				    return("dijitLeaf");
 				}
