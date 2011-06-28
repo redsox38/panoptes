@@ -1116,6 +1116,7 @@ class panoptes
       while($dev = $this->getDevice()) {
 	$list[] = array('name' => $dev->name,
 			'type' => 'device',
+			'os'   => $dev->os_genre,
 			'id'   => 'd_' . $dev->id);
 	if (!array_key_exists($dev->id, $grouped)) {
 	  $ungrouped_children[] = array('_reference' => 'd_' . $dev->id);

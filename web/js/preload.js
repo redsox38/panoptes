@@ -115,7 +115,20 @@ function reloadDeviceTree() {
 		deviceTree = new dijit.Tree({
 			model: treeModel,
 			id: 'device_tree',
-			showRoot: false,			
+			showRoot: false,
+			getIconClass: function(itm, opened) {
+			    if (itm !== undefined && itm !== null) {
+				if (itm.type == 'group') {
+				    return(opened ? "dijitFolderOpened" : 
+					   "dijitFolderClosed");
+				}
+				if (itm.os == 'Linux') {
+				    return("panoptesIconOSLinux");
+				} else {
+				    return("dijitLeaf");
+				}
+			    }
+			},
 			onClick: getSelectedTreeNode
 		    });		    
 		
