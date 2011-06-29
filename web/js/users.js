@@ -123,6 +123,10 @@ function buildUserForm() {
 	    store: userStore,
 	    query: { type: 'user' },
 	    searchAttr: 'id',
+	    labelFunc: function(itm, str) {
+		var label = str.getValue(itm, 'name');
+		return label;
+	    },
 	    placeHolder: 'username to delete'
 	});
     del_tb.placeAt(user_tab.domNode);
