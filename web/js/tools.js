@@ -643,6 +643,8 @@ function editTemplate(tpl) {
 				    tpl_items[i]['content'] ];
 		    }
 
+		    alert(tpl_items[i]['type']);
+
 		    t = new dijit.form.FilteringSelect({
 			    id: 'create_template_obj' + i,
 			    name: 'create_template_obj' + i,

@@ -174,7 +174,7 @@ class securityGroup
   public function deleteMember($userid) {
     // delete from security group
     try {
-      $stmt = $this->db->prepare("DELETE FROM security_group_membership WHERE id=? AND user_id=?");
+      $stmt = $this->db->prepare("DELETE FROM security_group_membership WHERE group_id=? AND user_id=?");
       $stmt->bindParam(1, $this->id, PDO::PARAM_INT);
       $stmt->bindParam(2, $userid, PDO::PARAM_INT);
       $stmt->execute();

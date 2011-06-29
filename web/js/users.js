@@ -147,6 +147,10 @@ function buildUserForm() {
 	    store: userStore,
 	    query: { type: 'user' },
 	    searchAttr: 'id',
+	    labelFunc: function(itm, str) {
+		var label = str.getValue(itm, 'name');
+		return label;
+	    },
 	    placeHolder: 'username to add'
 	});
     add_src_tb.placeAt(user_tab.domNode);    
@@ -158,6 +162,10 @@ function buildUserForm() {
 	    store: userStore,
 	    query: { type: 'group' },
 	    searchAttr: 'id',
+	    labelFunc: function(itm, str) {
+		var label = str.getValue(itm, 'name');
+		return label;
+	    },
 	    placeHolder: 'group to add to'
 	});
     add_tgt_tb.placeAt(user_tab.domNode);    
@@ -184,6 +192,10 @@ function buildUserForm() {
 	    store: userStore,
 	    query: { type: 'user' },
 	    searchAttr: 'id',
+	    labelFunc: function(itm, str) {
+		var label = str.getValue(itm, 'name');
+		return label;
+	    },
 	    placeHolder: 'username to delete'
 	});
     del_src_tb.placeAt(user_tab.domNode);    
@@ -195,6 +207,10 @@ function buildUserForm() {
 	    store: userStore,
 	    query: { type: 'group' },
 	    searchAttr: 'id',
+	    labelFunc: function(itm, str) {
+		var label = str.getValue(itm, 'name');
+		return label;
+	    },
 	    placeHolder: 'group to remove from'
 	});
     del_tgt_tb.placeAt(user_tab.domNode);    

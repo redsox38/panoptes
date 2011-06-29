@@ -12127,7 +12127,9 @@ $as_echo "$ac_cv_path_SED" >&6; }
 
 
 
-for ac_header in arpa/inet.h netinet/in.h stdlib.h string.h sys/socket.h pcap.h libxml/parser.h mysql.h syslog.h curl/curl.h net-snmp/net-snmp-config.h
+
+
+for ac_header in arpa/inet.h netinet/in.h stdlib.h string.h sys/socket.h pcap.h libxml/parser.h mysql.h syslog.h curl/curl.h net-snmp/net-snmp-config.h sys/types.h sys/wait.h
 do
 as_ac_Header=`$as_echo "ac_cv_header_$ac_header" | $as_tr_sh`
 if { as_var=$as_ac_Header; eval "test \"\${$as_var+set}\" = set"; }; then
