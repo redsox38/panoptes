@@ -736,15 +736,17 @@ function addAlertData(id, container, start, stop) {
 	    '", "stop": "' + stop + '" }'
 	},
 	load: function(data) {
-	    if (data && !data.error && data.data.length) {          
-		// populate grid       		
-		dojo.forEach(data.data, function(oneEntry) {
-			alertStore.newItem(oneEntry);
-		    });
-
-		alertStore.save();
-		container.setStore(alertStore);
-		container.update();		
+	    if (data && !data.error) {
+		if (data.data.length) {
+		    // populate grid       		
+		    dojo.forEach(data.data, function(oneEntry) {
+			    alertStore.newItem(oneEntry);
+			});
+		    
+		    alertStore.save();
+		    container.setStore(alertStore);
+		    container.update();		
+		}
 	    } else {
 		alert(data.error);
 	    }
