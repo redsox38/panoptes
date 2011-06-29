@@ -985,7 +985,12 @@ install-data-hook:
 	$(INSTALL) dbinit-5.sql $(DESTDIR)$(datarootdir)/panoptes
 	$(INSTALL) dbinit-6.sql $(DESTDIR)$(datarootdir)/panoptes
 	/bin/chown apache $(DESTDIR)$(libexecdir)/panoptes_scripts
-	htpasswd -b -c $(DESTDIR)$(datarootdir)/panoptes/htpasswd admin admin
+
+	if test -e $(DESTDIR)$(datarootdir)/panoptes/htpasswd; then \
+            echo "htpasswd exists, skipping...";\
+        else \
+	    htpasswd -b -c $(DESTDIR)$(datarootdir)/panoptes/htpasswd admin admin;\
+        fi
 
 	sed -e "s:SBINDIR:$(sbindir):" panoptes_discover.init.in > panoptes_discover.init
 	chmod a+rx panoptes_discover.init

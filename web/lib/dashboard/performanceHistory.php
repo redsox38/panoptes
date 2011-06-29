@@ -93,10 +93,10 @@ class performanceHistoryWidget implements widgetInterface
       $stmt->execute();
       
       $r = $stmt->fetch(PDO::FETCH_ASSOC);
-      if ($r) {
-	return($r['max']);
+      if ($r && $r['max'] !== null) {
+	return($r['max'] + 1);
       } else {
-	return(-1);
+	return(0);
       }
     } catch (PDOException $e) {
       throw($e);
@@ -128,7 +128,6 @@ class performanceHistoryWidget implements widgetInterface
 
     try {
       $next_pos = $this->maxPosition($user_id);
-      $next_pos++;
 
       $stmt = $this->db->prepare("INSERT INTO user_dashboard_widgets VALUES(0, ?, ?, ?, ?)");
       $stmt->bindParam(1, $widget_id, PDO::PARAM_INT);
@@ -163,7 +162,7 @@ class performanceHistoryWidget implements widgetInterface
       if ($last > $pos) {
 	// reindex everything between the deleted widget and the last widget
 	$pos++;
-	for ($i = $pos; $i <= $last; $i++) {
+	for ($i = $pos; $i < $last; $i++) {
 	  $this->reindexWidget($user_id, $i, ($i - 1));
 	}
       }
