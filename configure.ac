@@ -27,7 +27,7 @@ AC_PROG_SED
 # Checks for libraries.
 
 # Checks for header files.
-AC_CHECK_HEADERS([arpa/inet.h netinet/in.h stdlib.h string.h sys/socket.h pcap.h libxml/parser.h mysql.h syslog.h curl/curl.h net-snmp/net-snmp-config.h])
+AC_CHECK_HEADERS([arpa/inet.h netinet/in.h stdlib.h string.h sys/socket.h pcap.h libxml/parser.h mysql.h syslog.h curl/curl.h net-snmp/net-snmp-config.h sys/types.h sys/wait.h])
 
 # Checks for typedefs, structures, and compiler characteristics.
 
