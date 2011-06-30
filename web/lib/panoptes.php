@@ -3162,7 +3162,7 @@ class panoptes
 
 	$tpl->save();
 	$data = array(array('name' => $tpl->name, 'id' => $tpl->id, 
-			    'params' => $tpl->params));
+			    'params' => json_encode($tpl->params)));
       } else {
 	$result = 'failure';
 	$error = 'must supply name and params';
