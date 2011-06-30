@@ -23,6 +23,56 @@
 #include <errno.h>
 #include <unistd.h>
 
+/* generate_message
+ * 
+ * parameters: monitor_entry_t information about the monitor being updated
+ *             monitor_result_t information about the most recent monitoring output
+ *
+ * return: char *
+ *
+ * Generate a message to send based on the alert
+ */
+char *generate_message(monitor_entry_t *m, monitor_result_t *r)
+{
+  char *rtn;	  
+  char *statuses[] = { "new","ok","pending","warn","error" };	  
+
+  rtn = (char *)malloc(1024 * sizeof(char));
+
+  if (rtn != NULL) {
+    if (!strcmp(m->table_name, "port_monitors")) {
+      snprintf(rtn, 1024, "%s:%s/%s status changed to %s\n", 
+	       get_attr_val(m, "address"), get_attr_val(&m, "proto"),
+	       get_attr_val(&m, "port"), statuses[r->status]);
+    } else if (!strcmp(m->table_name, "shell_monitors")) {
+      snprintf(rtn, 1024, "%s:%s status changed to %s\n", 
+	       get_attr_val(m, "address"), get_attr_val(m, "script"), 
+	       statuses[r->status]);
+    } else if (!strcmp(m->table_name, "snmp_monitors")) {
+      snprintf(rtn, 1024, "%s:%s status changed to %s\n", 
+	       get_attr_val(m, "address"), get_attr_val(m, "name"), 
+	       statuses[r->status]);
+    } else if (!strcmp(m->table_name, "url_monitors")) {
+      snprintf(rtn, 1024, "%s:%s status changed to %s\n", 
+	       get_attr_val(m, "address"), get_attr_val(m, "url"), 
+	       statuses[r->status]);
+    } else if (!strcmp(m->table_name, "certificate_monitors")) {
+      snprintf(rtn, 1024, "%s:%s certificate status changed to %s\n", 
+	       get_attr_val(m, "address"), statuses[r->status]);
+    } else if (!strcmp(m->table_name, "ping_monitors")) {
+      snprintf(rtn, 1024, "%s:icmp status changed to %s\n", 
+	       get_attr_val(m, "address"), statuses[r->status]);
+    } else {
+      snprintf(rtn, 1024, "%s status changed to %s\n", 
+	       get_attr_val(m, "address"), statuses[r->status]);
+    }
+  } else {
+    syslog(LOG_NOTICE, "malloc failed");
+  }
+  
+  return(rtn);
+}
+
 /* send_notification
  *
  * parameters: monitor_entry_t information about the monitor being updated
@@ -36,15 +86,16 @@
 void send_notification(monitor_entry_t *m, monitor_result_t *r)
 {
   char           *sendmail_cmd, *from_addr, writebuf[1024], errbuf[1024];
-  char           **notify_user_list, **p;
+  char           **notify_user_list, **p, *message_body;
   int            rc, pipe_stdin_fd[2], i = 0;
   pid_t          pid;
   char           *xmpp_user, *xmpp_pass, **xmpp_args;
   char           *twit_cons_tok, *twit_cons_sec, *twit_access_tok, *twit_access_sec, **twitter_args;
-  char           *statuses[] = { "new","ok","pending","warn","error" };
 
   sendmail_cmd = get_config_value("notification.sendmail");
   from_addr = get_config_value("notification.from_address");
+  
+  message_body = generate_message(m, r);
 
   /* send mail notification */
   if (from_addr != NULL) {
@@ -100,9 +151,8 @@ void send_notification(monitor_entry_t *m, monitor_result_t *r)
 		   get_attr_val(m, "address"));
 	  write(pipe_stdin_fd[1], writebuf, strlen(writebuf));
 	  
-	  memset(writebuf, '\0', 1024);
-	  snprintf(writebuf, 1024, "Status changed to %s\n", statuses[r->status]);
-	  write(pipe_stdin_fd[1], writebuf, strlen(writebuf));
+	  write(pipe_stdin_fd[1], message_body, strlen(message_body));
+
 	  memset(writebuf, '\0', 1024);
 	  snprintf(writebuf, 1024, ".\n");
 	  write(pipe_stdin_fd[1], writebuf, strlen(writebuf));
@@ -178,9 +228,7 @@ void send_notification(monitor_entry_t *m, monitor_result_t *r)
 	  *p++;
 	}
 
-	memset(writebuf, '\0', 1024);       
-	snprintf(writebuf, 1024, "%s status changed to %s\n", get_attr_val(m, "address"), statuses[r->status]);
-	rc = write(pipe_stdin_fd[1], writebuf, strlen(writebuf));
+	rc = write(pipe_stdin_fd[1], message_body, strlen(message_body));
 	if (rc < 0) {
 	  strerror_r(errno, errbuf, 1024);
 	  syslog(LOG_NOTICE, "write: %s", errbuf);
@@ -245,9 +293,7 @@ void send_notification(monitor_entry_t *m, monitor_result_t *r)
       exit(0);
     } else {
       /* parent */
-      memset(writebuf, '\0', 1024);       
-      snprintf(writebuf, 1024, "%s status changed to %s\n", get_attr_val(m, "address"), statuses[r->status]);
-      rc = write(pipe_stdin_fd[1], writebuf, strlen(writebuf));
+      rc = write(pipe_stdin_fd[1], message_body, strlen(message_body));
       if (rc < 0) {
 	strerror_r(errno, errbuf, 1024);
 	syslog(LOG_NOTICE, "write: %s", errbuf);
@@ -262,5 +308,9 @@ void send_notification(monitor_entry_t *m, monitor_result_t *r)
     }
   } else {
     syslog(LOG_DEBUG, "missing twitter OAuth parameters");
+  }
+
+  if (message_body != NULL) {  
+    free(message_body);
   }
 }
