@@ -342,6 +342,8 @@ class panoptes
 	$graphs = array();
 	$gprints = array();
 	
+	$r['datas'] = array();
+
 	$count = 0;
 	foreach ($attrs as $a) {
 	  $ds_id = 'ds' . $id . '_' . $count . '_' . $vlabel;
@@ -356,6 +358,10 @@ class panoptes
 	    // use title instead
 	    $disp = $cfg['title'];
 	  }
+
+	  $r['datas'][] = array('name' => $a['name'],
+				'label' => $disp,
+				'color' => $a['color']);
 
 	  array_push($defs, 'DEF:' . $ds_id . '=' . $r['rrd_file'] .
 		     ':' . $a['name'] . ':AVERAGE');
@@ -3383,5 +3389,61 @@ class panoptes
     
     return(array('result' => $result, 'error' => $error, 'data' => $data));
   }
+
+  /**
+   * getPerformanceChartData
+   *
+   * @param args array containing parameters
+   *                   device_id id of device to get history for
+   *                   start start date/time
+   *                   stop  date/time
+   *                   metric metric to return rrd data for
+   * @throws none
+   * @return array containing result and possible error messages
+   */
+  public function ajax_getPerformanceChartData($args) {
+    $result = 'success';
+    $error = '';
+    $data = array();
+
+    try {
+      $rrd_info = $this->getRRDInfo($args['id'], $args['metric']);
+
+      $sd = date_parse_from_format('D M d Y H:i:s \G\M\TO \(T\)', 
+				   $args['start']);
+      $ed = date_parse_from_format('D M d Y H:i:s \G\M\TO \(T\)', 
+				   $args['stop']);
+      $start = sprintf("--start=%ld", 
+		       mktime(0, 0, 0, $sd['month'], $sd['day'], $sd['year']));
+      $end = sprintf("--end=%ld", 
+		     mktime(0, 0, 0, $ed['month'], $ed['day'], $ed['year']));
+
+      if (extension_loaded('rrd') && function_exists('rrd_fetch')) {
+	$ret = rrd_fetch($rrd_info['rrd_file'], 
+			 array("AVERAGE", $start, $end), 3);
+	if(!is_array($ret)) {
+	  $result = 'failure';
+	  $error = rrd_error();
+	} else {
+	  // parse response and return useful pieces
+	  $data['start'] = $ret['start'];
+	  $data['end'] = $ret['end'];
+	  $data['step'] = $ret['step'];
+	  $data['data'] = $ret['data'];
+	  $data['info'] = $rrd_info['datas'];	  
+	}
+      } else {
+	// just run cli and parse the output	
+	$result = 'failure';
+	$error = 'php rrd extension missing';
+      }
+    } catch (Exception $e) {
+      return(array('result' => 'failure',
+		   'error'  => $e->getMessage()));
+    }
+    
+    return(array('result' => $result, 'error' => $error, 'data' => $data));
+  }
+
 }
 ?>
