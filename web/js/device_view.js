@@ -709,6 +709,72 @@ function updatePerformanceGraph(id) {
 
     cp.placeAt(dijit.byId(id + '_tc_perf').domNode);
 
+    var xhrArgs = {
+	url: '/panoptes/',
+	handleAs: 'json',
+	content: {
+	    action: 'getPerformanceChartData',
+	    data: '{ "device_id": "' + id + '", "metric": "' + metric +
+	    '", "start": "' + start_dt  +
+	    '", "stop": "' + stop_dt + '" }'
+	},
+	load: function(data) {
+	    if (data && !data.error) {
+		// create container div
+		var dv = document.createElement("div");
+		dv.id = id + '_' + metric + '_graph_div';
+		dv.style.height = '175px';
+		dv.style.width = '500px';
+
+		dojo.place(dv, cp.domNode, 'last');
+		dojo.style(dv.id, "opacity", "0");
+		
+		// draw graph		
+		var chrt = new dojox.charting.Chart2D(id + '_' + metric + 
+						      '_graph_div');
+		chrt.addPlot('default', { type: 'StackedAreas' });
+		chrt.addAxis('x', { natural: true,
+			    labelFunc: function(value) {
+			        var dt = new Date();
+				dt.setTime(value * 1000);
+			        return(dt.toLocaleDateString());
+			    },
+			    microTicks: false,
+			    min: data.data.start,
+			    max: data.data.end,
+			    minorTickSpan: data.data.step,
+			    title: 'Time'
+		    });
+		chrt.addAxis('y', { vertical: true,
+			    min: 0,
+			    max: Math.max.apply(0, data.data.data),
+			    title: data.data.info[0].label
+			    });
+		var plot_data = [];
+		for(i = 0; i < data.data.data.length; i++) {
+		    var xval = data.data.start + (i * data.data.step);
+		    var yval = data.data.data[i];
+		    plot_data.push({x: xval, y: yval});
+		}
+		chrt.addSeries("Series 1", plot_data);
+		chrt.render();
+
+		fadeArgs = {
+		    node: dv.id,
+		    duration: 1000
+		};
+		dojo.fadeIn(fadeArgs).play();
+
+	    } else {
+		alert(data.error);
+	    }
+	    hideLoading();
+	},	
+    };
+       
+    showLoading();
+    var resp = dojo.xhrGet(xhrArgs);
+
     graphImg = new Image();
     graphImg.src = '/panoptes/graph.php?id=' + id + '&metric=' + metric +
 	'&start=' + encodeURIComponent(start_dt) + 

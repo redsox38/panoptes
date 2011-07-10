@@ -3418,7 +3418,7 @@ class panoptes
       $end = sprintf("--end=%ld", 
 		     mktime(0, 0, 0, $ed['month'], $ed['day'], $ed['year']));
 
-      if (extension_loaded('rrd') && function_exists('rrd_fetch')) {
+      if (extension_loaded('RRDTool') && function_exists('rrd_fetch')) {
 	$ret = rrd_fetch($rrd_info['rrd_file'], 
 			 array("AVERAGE", $start, $end), 3);
 	if(!is_array($ret)) {
@@ -3429,7 +3429,14 @@ class panoptes
 	  $data['start'] = $ret['start'];
 	  $data['end'] = $ret['end'];
 	  $data['step'] = $ret['step'];
-	  $data['data'] = $ret['data'];
+	  $data['data'] = array();
+	  foreach ($ret['data'] as $v) {
+	    if ($v == 'NaN') {
+	      $v = 0;
+	    } 
+	    //$data['data'][] = (float)$v;
+	    $data['data'][] = $v;
+	  }
 	  $data['info'] = $rrd_info['datas'];	  
 	}
       } else {

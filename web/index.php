@@ -97,6 +97,7 @@ $theme_e_grid_css = $dojo_url . '/dojox/grid/enhanced/resources/' . $theme . 'En
         dojo.require("dojox.grid.enhanced.plugins.NestedSorting");
         dojo.require("dojox.grid.enhanced.plugins.IndirectSelection");
         dojo.require("dojox.grid.enhanced.plugins.Menu");
+        dojo.require("dojox.charting.Chart2D");
         dojo.require("dojo.data.ItemFileReadStore");
         dojo.require("dojo.data.ItemFileWriteStore");
         dojo.require("dojo.dnd.Source");
