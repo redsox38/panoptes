@@ -3407,7 +3407,7 @@ class panoptes
     $data = array();
 
     try {
-      $rrd_info = $this->getRRDInfo($args['id'], $args['metric']);
+      $rrd_info = $this->getRRDInfo($args['device_id'], $args['metric']);
 
       $sd = date_parse_from_format('D M d Y H:i:s \G\M\TO \(T\)', 
 				   $args['start']);
@@ -3429,13 +3429,11 @@ class panoptes
 	  $data['start'] = $ret['start'];
 	  $data['end'] = $ret['end'];
 	  $data['step'] = $ret['step'];
-	  $data['data'] = array();
-	  foreach ($ret['data'] as $v) {
-	    if ($v == 'NaN') {
+	  foreach ($ret['data'] as $k => $v) {
+	    if ($v == 'NAN') {
 	      $v = 0;
 	    } 
-	    //$data['data'][] = (float)$v;
-	    $data['data'][] = $v;
+	    $data['data'][$k] = $v;
 	  }
 	  $data['info'] = $rrd_info['datas'];	  
 	}

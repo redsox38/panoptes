@@ -723,7 +723,7 @@ function updatePerformanceGraph(id) {
 		// create container div
 		var dv = document.createElement("div");
 		dv.id = id + '_' + metric + '_graph_div';
-		dv.style.height = '175px';
+		dv.style.height = '225px';
 		dv.style.width = '500px';
 
 		dojo.place(dv, cp.domNode, 'last');
@@ -732,7 +732,7 @@ function updatePerformanceGraph(id) {
 		// draw graph		
 		var chrt = new dojox.charting.Chart2D(id + '_' + metric + 
 						      '_graph_div');
-		chrt.addPlot('default', { type: 'StackedAreas' });
+		chrt.addPlot('default', { type: 'Lines'});
 		chrt.addAxis('x', { natural: true,
 			    labelFunc: function(value) {
 			        var dt = new Date();
@@ -748,15 +748,18 @@ function updatePerformanceGraph(id) {
 		chrt.addAxis('y', { vertical: true,
 			    min: 0,
 			    max: Math.max.apply(0, data.data.data),
-			    title: data.data.info[0].label
+			    title: data.data.info[0].label,
+			    includeZero: true
 			    });
+		
 		var plot_data = [];
+
 		for(i = 0; i < data.data.data.length; i++) {
 		    var xval = data.data.start + (i * data.data.step);
 		    var yval = data.data.data[i];
-		    plot_data.push({x: xval, y: yval});
+		    plot_data.push({ x: xval, y: yval });
 		}
-		chrt.addSeries("Series 1", plot_data);
+		chrt.addSeries("Series 1", plot_data, { stroke: { color: "blue" }});
 		chrt.render();
 
 		fadeArgs = {

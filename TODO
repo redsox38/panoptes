@@ -3,3 +3,4 @@ look @ dojo charting instead of rrd for graphs
 snmp trap/external message receiver
 web service api (status request/update, etc)
 have twitter updates be more flexible
+fix error with alert history for url monitors
