@@ -731,6 +731,8 @@ function updatePerformanceGraph(id) {
 		dojo.place(dv, cp.domNode, 'last');
 		dojo.style(dv.id, "opacity", "0");
 		
+		var days_span = (data.data.stop - data.data.stop) / 86400;
+		
 		// draw graph		
 		var chrt = new dojox.charting.Chart2D(id + '_' + metric + 
 						      '_graph_div', {
@@ -741,7 +743,15 @@ function updatePerformanceGraph(id) {
 			    labelFunc: function(value) {
 			        var dt = new Date();
 				dt.setTime(value * 1000);
-			        return(dt.toLocaleDateString());
+				if (days_span > 1) {
+				    return(dt.toLocaleDateString());
+				} else {
+				    var h = dt.getHours();
+				    h = (h < 10 ? "0" + h : h); 
+				    var m = dt.getMinutes();
+				    m = (m < 10 ? "0" + m : m); 
+				    return(h + ':' + m);
+				}
 			    },
 			    microTicks: false,
 			    min: data.data.start,
