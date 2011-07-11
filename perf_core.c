@@ -83,7 +83,7 @@ void panoptes_rrd_xml_create(char *path,
     if (!strcmp(m->table_name, "port_monitors")) {
       fprintf(fh, "\t<title>%s port %s Connect Time</title>\n", 
 	      get_attr_val(m, "proto"), get_attr_val(m, "port"));
-      fprintf(fh, "\t<vertical_label>Millieconds</vertical_label>\n");
+      fprintf(fh, "\t<vertical_label>Milliseconds</vertical_label>\n");
       fprintf(fh,"\t<attribute>\n");
       fprintf(fh, "\t\t<name>ds0</name>\n");
       fprintf(fh, "\t\t<display_as>ConnectTime</display_as>\n");
@@ -93,7 +93,7 @@ void panoptes_rrd_xml_create(char *path,
       fprintf(fh, "\t</attribute>\n");
     } else if (!strcmp(m->table_name, "ping_monitors")) {
       fprintf(fh, "\t<title>ICMP Response Time</title>\n");
-      fprintf(fh, "\t<vertical_label>Millieconds</vertical_label>\n");
+      fprintf(fh, "\t<vertical_label>Milliseconds</vertical_label>\n");
       fprintf(fh,"\t<attribute>\n");
       fprintf(fh, "\t\t<name>ds0</name>\n");
       fprintf(fh, "\t\t<display_as>ResponseTime</display_as>\n");
@@ -148,7 +148,7 @@ void panoptes_rrd_xml_create(char *path,
       }
     } else if (!strcmp(m->table_name, "url_monitors")) {
       fprintf(fh, "\t<title>%s Response Time</title>\n", get_attr_val(m, "url"));
-      fprintf(fh, "\t<vertical_label>Millieconds</vertical_label>\n");
+      fprintf(fh, "\t<vertical_label>Milliseconds</vertical_label>\n");
       fprintf(fh,"\t<attribute>\n");
       fprintf(fh, "\t\t<name>ds0</name>\n");
       fprintf(fh, "\t\t<display_as>ResponseTime</display_as>\n");

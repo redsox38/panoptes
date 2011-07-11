@@ -335,6 +335,7 @@ class panoptes
 	  if (array_key_exists("title", $cfg)) {
 	    array_push($r['rrd_opts'], '--title=' .
 		       $cfg['title']);
+	    $r['title'] = $cfg['title'];
 	  }
 	}
 
@@ -358,10 +359,11 @@ class panoptes
 	    // use title instead
 	    $disp = $cfg['title'];
 	  }
-
+	  
 	  $r['datas'][] = array('name' => $a['name'],
 				'label' => $disp,
-				'color' => $a['color']);
+				'color' => $a['color'],
+				'vlabel'=> $cfg['vertical_label']);
 
 	  array_push($defs, 'DEF:' . $ds_id . '=' . $r['rrd_file'] .
 		     ':' . $a['name'] . ':AVERAGE');
@@ -3429,6 +3431,7 @@ class panoptes
 	  $data['start'] = $ret['start'];
 	  $data['end'] = $ret['end'];
 	  $data['step'] = $ret['step'];
+	  $data['title'] = $ret['title'];
 	  foreach ($ret['data'] as $k => $v) {
 	    if ($v == 'NAN') {
 	      $v = 0;
