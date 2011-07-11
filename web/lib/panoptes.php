@@ -3431,7 +3431,8 @@ class panoptes
 	  $data['start'] = $ret['start'];
 	  $data['end'] = $ret['end'];
 	  $data['step'] = $ret['step'];
-	  $data['title'] = $ret['title'];
+	  $data['title'] = $rrd_info['title'];
+
 	  foreach ($ret['data'] as $k => $v) {
 	    if ($v == 'NAN') {
 	      $v = 0;

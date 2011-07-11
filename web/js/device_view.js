@@ -726,20 +726,18 @@ function updatePerformanceGraph(id) {
 		var dv = document.createElement("div");
 		dv.id = id + '_' + metric + '_graph_div';
 		dv.style.height = '225px';
-		dv.style.width = '500px';
+		dv.style.width = '600px';
 
 		dojo.place(dv, cp.domNode, 'last');
-		dojo.style(dv.id, "opacity", "0");
 		
 		var days_span = (data.data.stop - data.data.stop) / 86400;
 		
 		// draw graph		
 		var chrt = new dojox.charting.Chart2D(id + '_' + metric + 
 						      '_graph_div', {
-							  title: data.data.title });
+							  title: "Title" });
 		chrt.addPlot('default', { type: 'Lines'});
 		chrt.addAxis('x', { natural: true,
-			    title: 'Time',
 			    labelFunc: function(value) {
 			        var dt = new Date();
 				dt.setTime(value * 1000);
@@ -758,10 +756,10 @@ function updatePerformanceGraph(id) {
 			    max: data.data.end,
 			    minorTickSpan: data.data.step
 		    });
+
 		chrt.addAxis('y', { vertical: true,
 			    min: 0,
 			    max: Math.max.apply(0, data.data.data),
-			    title: info.vlabel,
 			    includeZero: true
 			    });
 		
@@ -774,13 +772,6 @@ function updatePerformanceGraph(id) {
 		}
 		chrt.addSeries("Series 1", plot_data, { stroke: { color: info.color }});
 		chrt.render();
-
-		fadeArgs = {
-		    node: dv.id,
-		    duration: 1000
-		};
-		dojo.fadeIn(fadeArgs).play();
-
 	    } else {
 		alert(data.error);
 	    }
