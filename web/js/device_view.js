@@ -725,7 +725,7 @@ function updatePerformanceGraph(id) {
 		// create container div
 		var dv = document.createElement("div");
 		dv.id = id + '_' + metric + '_graph_div';
-		dv.style.height = '225px';
+		dv.style.height = '250px';
 		dv.style.width = '600px';
 
 		dojo.place(dv, cp.domNode, 'last');
@@ -736,20 +736,20 @@ function updatePerformanceGraph(id) {
 		var chrt = new dojox.charting.Chart2D(id + '_' + metric + 
 						      '_graph_div', {
 							  title: "Title" });
-		chrt.addPlot('default', { type: 'Lines'});
+		chrt.addPlot('default', { type: 'Lines', markers: true });
 		chrt.addAxis('x', { natural: true,
 			    labelFunc: function(value) {
 			        var dt = new Date();
 				dt.setTime(value * 1000);
-				if (days_span > 1) {
-				    return(dt.toLocaleDateString());
-				} else {
-				    var h = dt.getHours();
-				    h = (h < 10 ? "0" + h : h); 
-				    var m = dt.getMinutes();
-				    m = (m < 10 ? "0" + m : m); 
-				    return(h + ':' + m);
-				}
+			    	if (days_span > 1) {
+			    	    return(dt.toLocaleDateString());
+			    	} else {
+			    	    var h = dt.getHours();
+			    	    h = (h < 10 ? "0" + h : h); 
+			    	    var m = dt.getMinutes();
+			    	    m = (m < 10 ? "0" + m : m); 
+			    	    return(h + ':' + m);
+			    	}
 			    },
 			    microTicks: false,
 			    min: data.data.start,
@@ -768,10 +768,24 @@ function updatePerformanceGraph(id) {
 		for(i = 0; i < data.data.data.length; i++) {
 		    var xval = data.data.start + (i * data.data.step);
 		    var yval = data.data.data[i];
-		    plot_data.push({ x: xval, y: yval });
+		    plot_data.push({ x: xval, 
+				     y: yval, 
+				     tooltip: yval.toFixed(2) });
 		}
-		chrt.addSeries("Series 1", plot_data, { stroke: { color: info.color }});
+		chrt.addSeries(data.data.title, plot_data, { stroke: { color: info.color }});
+		f = new dojox.charting.action2d.Tooltip(chrt, "default");
+
 		chrt.render();
+
+		var lgnd_dv = document.createElement("div");
+		lgnd_dv.id = id + '_' + metric + '_legend_div';
+		lgnd_dv.style.height = '50px';
+		lgnd_dv.style.width = '600px';
+
+		dojo.place(lgnd_dv, cp.domNode, 'last');
+		
+		f = new dojox.charting.widget.Legend({ chart: chrt }, 
+						     id + '_' + metric + '_legend_div');
 	    } else {
 		alert(data.error);
 	    }
