@@ -720,8 +720,6 @@ function updatePerformanceGraph(id) {
 	},
 	load: function(data) {
 	    if (data && !data.error) {
-		var info = data.data.info[0];
-
 		// create container div
 		var dv = document.createElement("div");
 		dv.id = id + '_' + metric + '_graph_div';
@@ -763,16 +761,23 @@ function updatePerformanceGraph(id) {
 			    includeZero: true
 			    });
 		
-		var plot_data = [];
+		var info = data.data.info;
 
-		for(i = 0; i < data.data.data.length; i++) {
-		    var xval = data.data.start + (i * data.data.step);
-		    var yval = data.data.data[i];
-		    plot_data.push({ x: xval, 
-				     y: yval, 
-				     tooltip: yval.toFixed(2) });
+		for (j = 0; j < data.data.info.length; j++) {
+		    var plot_data = [];
+		    for(i = j; i < data.data.data.length; i += data.data.info.length) {
+			
+			var xval = data.data.start + 
+			    (Math.floor(i / data.data.info.length) * 
+			     data.data.step);
+			var yval = data.data.data[i];
+			plot_data.push({ x: xval, 
+				    y: yval, 
+				    tooltip: yval.toFixed(2) });
+		    }
+		    chrt.addSeries(info[j].label, plot_data, { stroke: { color: info[j].color }});
 		}
-		chrt.addSeries(data.data.title, plot_data, { stroke: { color: info.color }});
+
 		f = new dojox.charting.action2d.Tooltip(chrt, "default");
 
 		chrt.render();
