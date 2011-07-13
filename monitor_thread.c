@@ -174,6 +174,9 @@ void *monitor_thread(void *arg)
 	  nm = get_attr_val(&m, "name");
 	  comm = get_attr_val(&m, "community");
 	  oid = get_attr_val(&m, "oid");
+
+	  syslog(LOG_DEBUG, "oid before %s", get_attr_val(&m, "oid"));
+	  
 	  if (nm != NULL &&
 	      oid != NULL &&
 	      comm != NULL &&
@@ -189,6 +192,7 @@ void *monitor_thread(void *arg)
 
 	    if (r.perf_data != NULL) {
 	      snprintf(perf_attr, 256, nm);
+	      syslog(LOG_DEBUG, "oid after %s", get_attr_val(&m, "oid"));
 	      update_performance_data(addr, perf_attr, &m, &r);
 	    }
 	    

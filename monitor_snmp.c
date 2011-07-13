@@ -38,7 +38,7 @@ monitor_result_t *monitor_snmp(char *addr, char *nm, char *comm,
   oid                  this_oid[MAX_OID_LEN];
   struct variable_list *vars;
   int                  status, snmp_err, sys_err, len;
-  char                 *errstr, *p, *q, *tkn;
+  char                 *errstr, *p, *q, *s, *tkn;
   /* 1024 is the max errrstr len in glibc */
   char                 *perf_str = NULL, *val_buf, *name_buf;
   size_t               this_oid_size;
@@ -72,7 +72,10 @@ monitor_result_t *monitor_snmp(char *addr, char *nm, char *comm,
 
   pdu = snmp_pdu_create(SNMP_MSG_GET);
 
-  p = oids;
+  s = strdup(oids);
+  p = s;
+  syslog(LOG_DEBUG, "monitor_snmp: oids %s", oids);
+
   p = strtok_r(p, ",", &tkn);
 
   while(p != NULL) {
@@ -92,6 +95,8 @@ monitor_result_t *monitor_snmp(char *addr, char *nm, char *comm,
       p = strtok_r(NULL, ",", &tkn);
     }
   }
+
+  free(s);
 
   if (r->status == MONITOR_RESULT_OK) {
     status = snmp_synch_response(ss, pdu, &resp);

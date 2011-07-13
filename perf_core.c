@@ -107,9 +107,13 @@ void panoptes_rrd_xml_create(char *path,
 
       /* go through oid list */
       oids = get_attr_val(m, "oid");
+      syslog(LOG_DEBUG, "panoptes_rrd_xml_create: oids %s", 
+	     oids);
       q = oids;
       q = strtok_r(q, ",", &tkn);
       while (q != NULL) {
+	syslog(LOG_DEBUG, "panoptes_rrd_xml_create: next oid %s", 
+	       q);
 	fprintf(fh,"\t<attribute>\n");
 	fprintf(fh, "\t\t<name>ds%d</name>\n", i);
 	fprintf(fh, "\t\t<display_as>%s</display_as>\n", q);
