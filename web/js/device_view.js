@@ -800,22 +800,6 @@ function updatePerformanceGraph(id) {
        
     showLoading();
     var resp = dojo.xhrGet(xhrArgs);
-
-    graphImg = new Image();
-    graphImg.src = '/panoptes/graph.php?id=' + id + '&metric=' + metric +
-	'&start=' + encodeURIComponent(start_dt) + 
-	'&stop=' + encodeURIComponent(stop_dt);
-    graphImg.id = id + '_' + metric + '_graph';
-
-    dojo.place(graphImg, cp.domNode, 'last');
-
-    dojo.style(graphImg.id, "opacity", "0");
-
-    fadeArgs = {
-	node: graphImg.id,
-	duration: 1000
-    };
-    dojo.fadeIn(fadeArgs).play();
 }
 
 function addAlertData(id, container, start, stop) {
