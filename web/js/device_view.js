@@ -728,7 +728,7 @@ function updatePerformanceGraph(id) {
 
 		dojo.place(dv, cp.domNode, 'last');
 		
-		var days_span = (data.data.stop - data.data.stop) / 86400;
+		var days_span = (data.data.end - data.data.start) / 86400;
 		
 		// draw graph		
 		var chrt = new dojox.charting.Chart2D(id + '_' + metric + 
@@ -765,17 +765,27 @@ function updatePerformanceGraph(id) {
 
 		for (j = 0; j < data.data.info.length; j++) {
 		    var plot_data = [];
+		    var total = 0;
+		    var max = 0;
+		    var min = Math.max.apply(0, data.data.data);
 		    for(i = j; i < data.data.data.length; i += data.data.info.length) {
 			
 			var xval = data.data.start + 
 			    (Math.floor(i / data.data.info.length) * 
 			     data.data.step);
 			var yval = data.data.data[i];
+			if (yval > max) { max = yval; }
+			if (yval < min) { min = yval; }
+
 			plot_data.push({ x: xval, 
-				    y: yval, 
+				    y: yval.toFixed(4), 
 				    tooltip: yval.toFixed(2) });
 		    }
-		    chrt.addSeries(info[j].label, plot_data, { stroke: { color: info[j].color }});
+		    
+		    var metric_info = 'Max: ' + max + ' Min: ' + 
+			min + ' Avg: ' + (total / data.data.info.length);
+		    chrt.addSeries(info[j].label + " " + metric_info, 
+				   plot_data, { stroke: { color: info[j].color }});
 		}
 
 		f = new dojox.charting.action2d.Tooltip(chrt, "default");

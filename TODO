@@ -1,3 +1,6 @@
+include max/min average values for charts
+replace dashboard graph with dojo chart
+add pie chart dashboard widget
 network map
 finish cleaning up dojo charts
 snmp trap/external message receiver
