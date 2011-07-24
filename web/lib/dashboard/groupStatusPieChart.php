@@ -192,8 +192,46 @@ class groupStatusPieChartWidget implements widgetInterface
     try {
       $rtn = array();
       $rtn['type'] = 'js';
+      $rtn['value'] = '';
 
-      $rtn['value'] = "alert('hello world!');";
+      require_once dirname(realpath(__FILE__)) . '/../deviceGroup.php';
+      require_once dirname(realpath(__FILE__)) . '/../deviceEntry.php';
+
+      // get group name from id
+      $prms = $entry->params;
+      $grp = new deviceGroup($this->db);
+      $grp->getById($prms['group_id']);
+      if ($grp) {
+	$counts = array();
+	$counts['ok'] = 0;
+	$counts['warn'] = 0;
+	$counts['critical'] = 0;
+
+	// get status for children
+	foreach ($grp->children() as $c) {
+	  $dev = new deviceEntry($this->db);
+	  $dev->getById($c);
+	  if ($dev->id) {
+	    $status = $dev->maxStatus();
+	    if (array_key_exists($status, $counts)) {
+	      $counts[$status]++;
+	    } else {
+	      $counts[$status] = 1;
+	    }
+	  }
+	}
+      }
+
+      $str = 'var groupStatusPieData = [';
+      $i = 1;
+      foreach($counts as $k => $v) {
+      	$str .= '{ "x": "' . $i . '", "y": "' . $v . '"},';
+      	$i++;
+      }
+      $str .= ']; ';
+
+      $rtn['value'] .= $str;
+      $rtn['value'] .= "var dv = document.createElement('div'); dv.id = '" . $prms['group_id'] . "' + '_gs_div'; dv.style.height = '200px'; dv.style.width = '200px'; node.appendChild(dv); var GS_pieChart = new dojox.charting.Chart2D('" . $prms['group_id'] . "' + '_gs_div'); GS_pieChart.addPlot('default', { type: 'Pie', radius: 50, fontColor: 'black', labelOffset: '-20'}); GS_pieChart.addSeries('" . $grp->name . "' + ' Summary', groupStatusPieData); GS_pieChart.render()";
     } catch (PDOException $e) {
       throw($e);
     }

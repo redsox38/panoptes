@@ -1,7 +1,8 @@
+use dojo themes for charts and make theme a user pref
 fix axis titles not displaying on charts
 fix precision error for graphs where rrd val is approaching 0
 replace dashboard graph with dojo chart
-add pie chart dashboard widget
+elaborate pie chart dashboard widget
 network map
 snmp trap/external message receiver
 web service SOAP api (status request/update, etc)
