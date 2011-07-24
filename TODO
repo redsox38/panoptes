@@ -1,8 +1,8 @@
+fix axis titles not displaying on charts
 fix precision error for graphs where rrd val is approaching 0
 replace dashboard graph with dojo chart
 add pie chart dashboard widget
 network map
-finish cleaning up dojo charts
 snmp trap/external message receiver
-web service api (status request/update, etc)
+web service SOAP api (status request/update, etc)
 have twitter updates be more flexible

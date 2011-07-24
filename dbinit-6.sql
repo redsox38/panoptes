@@ -322,3 +322,5 @@ EXECUTE stmt;
 END;
 //
 DELIMITER ;
+
+INSERT INTO dashboard_widgets VALUES(0,'group status pie chart','groupStatusPieChartWidget','groupStatusPieChart.php','Display Summary Status of a Device Group as a pie chart');
