@@ -835,6 +835,9 @@ function openPrefTab() {
 	theme_items.push({theme_name: 'a11y'});
     }
 
+    var chart_theme_items = [{theme_name: 'Grasslands', theme_path: 'dojox.charting.themes.Grasslands'},
+			     {theme_name: 'Renkoo', theme_path: 'dojox.charting.themes.Renkoo'}];
+
     themeStore = new dojo.data.ItemFileReadStore({
 	    data: {
 		identifier: 'theme_name',
@@ -843,11 +846,27 @@ function openPrefTab() {
 	    }
 	});
 
+    chartThemeStore = new dojo.data.ItemFileReadStore({
+	    data: {
+		identifier: 'theme_name',
+		label: 'theme_name',
+		items: chart_theme_items
+	    }
+	});
+
     sb = new dijit.form.FilteringSelect({
             id: 'general_prefs_theme',
             name: 'theme_name',
             store: themeStore,
             title: 'Theme',        
+            searchAttr: 'theme_name'
+        });
+
+    sb2 = new dijit.form.FilteringSelect({
+            id: 'general_prefs_chart_theme',
+            name: 'chart_theme_name',
+            store: chartThemeStore,
+            title: 'ChartTheme',        
             searchAttr: 'theme_name'
         });
 
@@ -867,11 +886,12 @@ function openPrefTab() {
 
     // populate current preference values
     getPrefValue('general', 'general_prefs_theme');
+    getPrefValue('general', 'general_prefs_chart_theme');
     getPrefValue('notifications', 'notification_prefs_addr');
     getPrefValue('notifications', 'notification_prefs_xmpp_addr');
     
     // add pref tabs
-    tc.addChild(createPrefTab('general', [sb], ['Theme']));
+    tc.addChild(createPrefTab('general', [sb, sb2], ['Theme', 'Chart Theme']));
     tc.addChild(createPrefTab('notifications', [tb, tb2], ['E-mail Address', 'XMPP Address']));
 
     dijit.byId("panoptes_tab_container").addChild(bc);
