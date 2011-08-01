@@ -835,8 +835,8 @@ function openPrefTab() {
 	theme_items.push({theme_name: 'a11y'});
     }
 
-    var chart_theme_items = [{theme_name: 'Grasslands', theme_path: 'dojox.charting.themes.Grasslands'},
-			     {theme_name: 'Renkoo', theme_path: 'dojox.charting.themes.Renkoo'}];
+    var chart_theme_items = [{theme_name: 'dojox.charting.themes.Grasslands'},
+			     {theme_name: 'dojox.charting.themes.Renkoo'}];
 
     themeStore = new dojo.data.ItemFileReadStore({
 	    data: {

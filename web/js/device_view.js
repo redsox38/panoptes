@@ -728,79 +728,93 @@ function updatePerformanceGraph(id) {
 
 		dojo.place(dv, cp.domNode, 'last');
 		
-		var days_span = (data.data.end - data.data.start) / 86400;
 		
-		// draw graph		
-		var chrt = new dojox.charting.Chart2D(id + '_' + metric + 
-						      '_graph_div', {
-							  title: "Title" });
-		chrt.addPlot('default', { type: 'Lines', markers: true });
-		chrt.addAxis('x', { natural: true,
-			    labelFunc: function(value) {
-			        var dt = new Date();
-				dt.setTime(value * 1000);
-			    	if (days_span > 1) {
-			    	    return(dt.toLocaleDateString());
-			    	} else {
-			    	    var h = dt.getHours();
-			    	    h = (h < 10 ? "0" + h : h); 
-			    	    var m = dt.getMinutes();
-			    	    m = (m < 10 ? "0" + m : m); 
-			    	    return(h + ':' + m);
-			    	}
-			    },
-			    microTicks: false,
-			    min: data.data.start,
-			    max: data.data.end,
-			    minorTickSpan: data.data.step
-		    });
+		var req = prefStore.fetch({ query: { pref_name: 'general_prefs_chart_theme' },
+					    onComplete: function(items, req) {
+			    var chrt_theme;
+			    if (items.length) {
+				chrt_theme = dojox.charting.themes.Renkoo;
+			    } else {
+				// no pref set, use default value		
+				chrt_theme = dojox.charting.themes.Renkoo;
+			    }			    
 
-		chrt.addAxis('y', { vertical: true,
-			    min: 0,
-			    max: Math.max.apply(0, data.data.data),
-			    includeZero: true
-			    });
-		
-		var info = data.data.info;
+			    var days_span = (data.data.end - data.data.start) / 86400;
 
-		for (j = 0; j < data.data.info.length; j++) {
-		    var plot_data = [];
-		    var total = 0;
-		    var max = 0;
-		    var min = Math.max.apply(0, data.data.data);
-		    for(i = j; i < data.data.data.length; i += data.data.info.length) {
-			
-			var xval = data.data.start + 
-			    (Math.floor(i / data.data.info.length) * 
-			     data.data.step);
-			var yval = data.data.data[i];
-			if (yval > max) { max = yval; }
-			if (yval < min) { min = yval; }
+			    // draw graph		
+			    var chrt = new dojox.charting.Chart2D(id + '_' + metric + 
+								  '_graph_div', {
+								      title: "Title" });
 
-			plot_data.push({ x: xval, 
-				    y: yval.toFixed(4), 
-				    tooltip: yval.toFixed(2) });
-		    }
-		    
-		    var metric_info = 'Max: ' + max + ' Min: ' + 
-			min + ' Avg: ' + (total / data.data.info.length);
-		    chrt.addSeries(info[j].label + " " + metric_info, 
-				   plot_data, { stroke: { color: info[j].color }});
-		}
-
-		f = new dojox.charting.action2d.Tooltip(chrt, "default");
-
-		chrt.render();
-
-		var lgnd_dv = document.createElement("div");
-		lgnd_dv.id = id + '_' + metric + '_legend_div';
-		lgnd_dv.style.height = '50px';
-		lgnd_dv.style.width = '600px';
-
-		dojo.place(lgnd_dv, cp.domNode, 'last');
-		
-		f = new dojox.charting.widget.Legend({ chart: chrt }, 
-						     id + '_' + metric + '_legend_div');
+			    chrt.setTheme(chrt_theme);
+			    chrt.addPlot('default', { type: 'Lines', markers: true });
+			    chrt.addAxis('x', { natural: true,
+					labelFunc: function(value) {
+					var dt = new Date();
+					dt.setTime(value * 1000);
+					if (days_span > 1) {
+					    return(dt.toLocaleDateString());
+					} else {
+					    var h = dt.getHours();
+					    h = (h < 10 ? "0" + h : h); 
+					    var m = dt.getMinutes();
+					    m = (m < 10 ? "0" + m : m); 
+					    return(h + ':' + m);
+					}
+				    },
+					microTicks: false,
+					min: data.data.start,
+					max: data.data.end,
+					minorTickSpan: data.data.step
+					});
+			    
+			    chrt.addAxis('y', { vertical: true,
+					min: 0,
+					max: Math.max.apply(0, data.data.data),
+					includeZero: true
+					});
+			    
+			    var info = data.data.info;
+			    
+			    for (j = 0; j < data.data.info.length; j++) {
+				var plot_data = [];
+				var total = 0;
+				var max = 0;
+				var min = Math.max.apply(0, data.data.data);
+				for(i = j; i < data.data.data.length; i += data.data.info.length) {
+				    
+				    var xval = data.data.start + 
+					(Math.floor(i / data.data.info.length) * 
+					 data.data.step);
+				    var yval = data.data.data[i];
+				    if (yval > max) { max = yval; }
+				    if (yval < min) { min = yval; }
+				    
+				    plot_data.push({ x: xval, 
+						y: yval.toFixed(4), 
+						tooltip: yval.toFixed(2) });
+				}
+				
+				var metric_info = 'Max: ' + max + ' Min: ' + 
+				    min + ' Avg: ' + (total / data.data.info.length);
+				chrt.addSeries(info[j].label + " " + metric_info, 
+					       plot_data, { stroke: { color: info[j].color }});
+			    }
+			    
+			    f = new dojox.charting.action2d.Tooltip(chrt, "default");
+			    
+			    chrt.render();
+			    
+			    var lgnd_dv = document.createElement("div");
+			    lgnd_dv.id = id + '_' + metric + '_legend_div';
+			    lgnd_dv.style.height = '50px';
+			    lgnd_dv.style.width = '600px';
+			    
+			    dojo.place(lgnd_dv, cp.domNode, 'last');
+			    
+			    f = new dojox.charting.widget.Legend({ chart: chrt }, 
+								 id + '_' + metric + '_legend_div');
+			}});
 	    } else {
 		alert(data.error);
 	    }

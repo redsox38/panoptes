@@ -69,6 +69,11 @@ if (is_null($theme)) {
 $theme_css = $dojo_url . '/dijit/themes/' . $theme . '/' . $theme . '.css';
 $theme_grid_css = $dojo_url . '/dojox/grid/resources/' . $theme . 'Grid.css';
 $theme_e_grid_css = $dojo_url . '/dojox/grid/enhanced/resources/' . $theme . 'EnhancedGrid.css';
+
+$chart_theme = $userPrefs->getPref($user->id, 'general', 'general_prefs_chart_theme');
+if (is_null($chart_theme)) {
+  $chart_theme = $panoptes->config()->getConfigValue('web.default_chart_theme');
+}
 ?>
 
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
@@ -127,6 +132,8 @@ $theme_e_grid_css = $dojo_url . '/dojox/grid/enhanced/resources/' . $theme . 'En
     <script type="text/javascript" src="js/devices.js"></script>
     <script type="text/javascript" src="js/tools.js"></script>
 <?php
+	  echo "dojo.require(\"" . $chart_theme . "\");\n";
+
 	  if ($panoptes->isAdmin($panoptes_current_user)) {
 	    echo '<script type="text/javascript" src="js/users.js"></script>' . "\n";
 	  }

@@ -1,4 +1,5 @@
 use dojo themes for charts and make theme a user pref
+remove color parameters from rrd xml generation
 fix axis titles not displaying on charts
 fix precision error for graphs where rrd val is approaching 0
 replace dashboard graph with dojo chart
