@@ -76,7 +76,7 @@ int _database_open(int initialize)
   db = get_config_value("db.name");
 
   if (!db) {
-    fprintf(stderr, "MySQL: No db attribute listed.\n");
+    syslog(LOG_ALERT, "MySQL: No db attribute listed.\n");
     return(-1);
   }
 
@@ -95,7 +95,7 @@ int _database_open(int initialize)
   mysql = mysql_init(NULL);
 
   if (mysql == NULL) {
-    fprintf(stderr, "MySQL Err: %s\n", mysql_error(mysql));
+    syslog(LOG_DEBUG, "Error: %s\n", mysql_error(mysql));
     free(db);
     free(host);
     free(user);
@@ -107,7 +107,7 @@ int _database_open(int initialize)
 
   /* connect allowing multi statements for stored procedure calls */
   if (mysql_real_connect(mysql, host, user, pass, db, 0, NULL, CLIENT_MULTI_STATEMENTS) == NULL) {
-    fprintf(stderr, "MySQL: %s\n", mysql_error(mysql));
+    syslog(LOG_DEBUG, "Error: %s\n", mysql_error(mysql));
 
     free(db);
     free(host);
