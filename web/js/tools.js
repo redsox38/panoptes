@@ -835,8 +835,40 @@ function openPrefTab() {
 	theme_items.push({theme_name: 'a11y'});
     }
 
-    var chart_theme_items = [{theme_name: 'dojox.charting.themes.Grasslands'},
-			     {theme_name: 'dojox.charting.themes.Renkoo'}];
+    var chart_theme_items = [{theme_name: 'Adobebricks'},
+			     {theme_name: 'Algae'},
+			     {theme_name: 'Bahamation'},
+			     {theme_name: 'BlueDusk'},
+			     {theme_name: 'Charged'},
+			     {theme_name: 'Chris'},
+			     {theme_name: 'Claro'},
+			     {theme_name: 'CubanShirts'},
+			     {theme_name: 'Desert'},
+			     {theme_name: 'Distinctive'},
+			     {theme_name: 'Dollar'},
+			     {theme_name: 'Electric'},
+			     {theme_name: 'gradientGenerator'},
+			     {theme_name: 'Grasshopper'},
+			     {theme_name: 'Grasslands'},
+			     {theme_name: 'GreySkies'},
+			     {theme_name: 'Harmony'},
+			     {theme_name: 'IndigoNation'},
+			     {theme_name: 'Ireland'},
+			     {theme_name: 'Julie'},
+			     {theme_name: 'MiamiNice'},
+			     {theme_name: 'Midwest'},
+			     {theme_name: 'Minty'},
+			     {theme_name: 'PrimaryColors'},
+			     {theme_name: 'PurpleRain'},
+			     {theme_name: 'Renkoo'},
+			     {theme_name: 'RoyalPurples'},
+			     {theme_name: 'SageToLime'},
+			     {theme_name: 'Shrooms'},
+			     {theme_name: 'ThreeD'},
+			     {theme_name: 'Tom'},
+			     {theme_name: 'Tufte'},
+			     {theme_name: 'WatersEdge'},
+			     {theme_name: 'Wetland'}];
 
     themeStore = new dojo.data.ItemFileReadStore({
 	    data: {
