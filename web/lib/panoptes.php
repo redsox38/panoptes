@@ -2855,6 +2855,14 @@ class panoptes
       $userPrefs = new userPrefs($this->db);
       $userPrefs->db = $this->db;
       $data = $userPrefs->getAllPrefs($user->id);
+
+      // load any default prefs that haven't been overriden
+      if (!$userPrefs->getPref($user->id, 'general', 
+			       'general_prefs_chart_theme')) {
+	$data[] = array('pref_name' => 'general_prefs_chart_theme',
+			'pref_scope' => 'general',
+			'pref_value' => $panoptes->config()->getConfigValue('web.default_chart_theme'));
+      }      
     } catch (Exception $e) {
       return(array('result' => 'failure',
 		   'error'  => $e->getMessage()));

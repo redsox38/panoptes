@@ -728,15 +728,16 @@ function updatePerformanceGraph(id) {
 
 		dojo.place(dv, cp.domNode, 'last');
 		
-		
+
 		var req = prefStore.fetch({ query: { pref_name: 'general_prefs_chart_theme' },
 					    onComplete: function(items, req) {
-			    var chrt_theme;
+			    var chrt_theme = null;
 			    if (items.length) {
-				chrt_theme = dojox.charting.themes.Renkoo;
-			    } else {
-				// no pref set, use default value		
-				chrt_theme = dojox.charting.themes.Renkoo;
+				var v = prefStore.getValue(items[0], 
+							   'pref_value');
+				chrt_theme = eval('(' + 
+						  "dojox.charting.themes." + 
+						  v + ')');
 			    }			    
 
 			    var days_span = (data.data.end - data.data.start) / 86400;
@@ -746,7 +747,11 @@ function updatePerformanceGraph(id) {
 								  '_graph_div', {
 								      title: "Title" });
 
-			    chrt.setTheme(chrt_theme);
+					    
+			    if (chrt_theme) {
+				chrt.setTheme(chrt_theme);
+			    }
+
 			    chrt.addPlot('default', { type: 'Lines', markers: true });
 			    chrt.addAxis('x', { natural: true,
 					labelFunc: function(value) {

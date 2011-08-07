@@ -132,7 +132,8 @@ if (is_null($chart_theme)) {
     <script type="text/javascript" src="js/devices.js"></script>
     <script type="text/javascript" src="js/tools.js"></script>
 <?php
-	  echo "dojo.require(\"" . $chart_theme . "\");\n";
+	  echo "<script>dojo.require(\"dojox.charting.themes." . 
+	  $chart_theme . "\");</script>\n";
 
 	  if ($panoptes->isAdmin($panoptes_current_user)) {
 	    echo '<script type="text/javascript" src="js/users.js"></script>' . "\n";
