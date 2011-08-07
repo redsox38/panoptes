@@ -35,8 +35,6 @@ class performanceHistoryWidget implements widgetInterface
 {
   protected $data = array();
 
-  protected $colors = array('#ff0000','#0000ff','#6666ff','#00e600','#006600');
-
   public function __get($name) {
     if (array_key_exists($name, $this->data)) {
       return($this->data[$name]);
@@ -217,19 +215,46 @@ class performanceHistoryWidget implements widgetInterface
    * @return none
    */
   public function renderUserWidget(dashboardUserWidget $entry) {
+    global $panoptes_current_user;
     try {
       $rtn = array();
-      $rtn['type'] = 'image';
+      $rtn['type'] = 'js';
+
+      // make sure rrd extension is loaded
+      if (!extension_loaded('RRDTool') && function_exists('rrd_fetch')) {
+	// throw error for now
+	// could just run cli though
+	$rtn['error'] = 'php rrd extension missing';	
+	return($rtn);
+      }
 
       require_once dirname(realpath(__FILE__)) . '/../panoptes.php';
+      require_once dirname(realpath(__FILE__)) . '/../userEntry.php';
+      require_once dirname(realpath(__FILE__)) . '/../userPrefs.php';
       
       $pan = new panoptes();
 
+      // load user prefs for chart theme
+      $user = new userEntry();
+      $user->db = $this->db;
+      $user->getByName($panoptes_current_user);
+
+      $userPrefs = new userPrefs($this->db);
+      $userPrefs->db = $this->db;
+      
+      $theme = $userPrefs->getPref($user->id, 'general', 
+				   'general_prefs_chart_theme');
+    
+      if (is_null($theme)) {
+	$theme = $pan->config()->getConfigValue('web.default_chart_theme');
+      }      
+
       // draw rrd graph from params field of widget render last 30 minutes
-      $start = sprintf("--start=%ld", time() - 1800);
+      $start = sprintf("--start=%d", time() - 1800);
 
       $prms = $entry->params;
 
+      $data = array();
       $rrd_params = array();
       $devices = array();
       $count = 0;
@@ -243,14 +268,25 @@ class performanceHistoryWidget implements widgetInterface
 	$rrd_info = $pan->getRRDInfo($matches[1],
 				     $matches[2], false, $count);
 
-	// replace colors in opts since they may overlap
-	// prefix host to graph text
-	foreach ($rrd_info['rrd_opts'] as $k => $v) {
-	  $rrd_info['rrd_opts'][$k] = preg_replace('/(\#.{6}):(.*)/', $this->colors[$count % 5] .
-						   ':' . $short_name . ' \2', $v);
+
+	$ret = rrd_fetch($rrd_info['rrd_file'], 
+			 array("AVERAGE", $start), 2);
+	if(!is_array($ret)) {
+	  $rtn['error'] = rrd_error();
+	  return($rtn);
+	} else {
+	  // parse response and load data for this device into array
+	  $data['_']['step'] = $ret['step'];
+	  
+	  foreach ($ret['data'] as $k => $v) {
+	    if ($v == 'NAN') {
+	      $v = 0;
+	    } 
+	    $data[$short_name][$k] = $v;
+	  }
+	  $data[$short_name]['info'] = $rrd_info['datas'];	  
 	}
 
-	$rrd_params = array_merge($rrd_params, $rrd_info['rrd_opts']);
 	$count++;
       }
 
@@ -259,47 +295,14 @@ class performanceHistoryWidget implements widgetInterface
       if (count($devices) > 1) {
 	$last = array_pop($devices);
 	$first = implode(',', $devices);
-	$title = "--title=" . $first . ' & ' . $last;
+	$title = $first . ' & ' . $last;
       } else {
-	$title = "--title=" . $devices[0];
+	$title = $devices[0];
       }
 
-      array_unshift($rrd_params, $title);
-      array_unshift($rrd_params, "--width=200");
-      array_unshift($rrd_params, "--height=200");
-      array_unshift($rrd_params, $start);
-
-      $file_name = "/tmp/dashboard_image_" . rand() . '.png';
-      $ret = rrd_graph($file_name, $rrd_params, count($rrd_params));
-
-      if(!is_array($ret)) {
-	$fontsize = 10;
-	$font = $pan->config()->getConfigValue('web.gd_font');
-	$hgt = 200;
-	$wdt = 200;
-
-	$err = rrd_error();
-	$im = imagecreatetruecolor($wdt, $hgt);
-
-  
-	// set foreground and background colors
-	$bg_color = imagecolorallocate($im, 255, 255, 255);
-	$fg_color = imagecolorallocate($im, 0, 0, 0);
-
-	imagefilledrectangle($im, 0, 0, $wdt, $hgt, $bg_color);
-
-	// wrap text to fit in image
-	$err = $this->_imageTextWrap($fontsize, $font, $err, $wdt);
-	
-	imagettftext($im, $fontsize, 0, 0, ($hgt / 3), $fontsize, $font, $err);
-	
-	header("Content-type: image/png");
-	imagepng($im, $file_name);
-
-	imagedestroy($im);
-      }
-
-      $rtn['value'] = $file_name;
+      // send back code to draw chart
+      $ret = "var dv = document.createElement('div'); dv.id = '" . $entry->id . "' + '_perf_div'; dv.style.height = '200px'; dv.style.width = '200px'; node.appendChild(dv);var chrt = new dojox.charting.Chart2D('" . $entry->id . "_perf_div', { title: '" . $title . "' }); chrt.setTheme(dojox.charting.themes." . $theme . "); chrt.addPlot('default', { type: 'Lines', markers: true });";
+      $rtn['value'] = $ret;
     } catch (PDOException $e) {
       throw($e);
     }

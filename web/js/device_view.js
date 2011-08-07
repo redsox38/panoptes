@@ -820,7 +820,7 @@ function updatePerformanceGraph(id) {
 			    f = new dojox.charting.widget.Legend({ chart: chrt }, 
 								 id + '_' + metric + '_legend_div');
 			}});
-	    } else {
+ 	    } else {
 		alert(data.error);
 	    }
 	    hideLoading();
