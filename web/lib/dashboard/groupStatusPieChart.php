@@ -189,6 +189,7 @@ class groupStatusPieChartWidget implements widgetInterface
    * @return none
    */
   public function renderUserWidget(dashboardUserWidget $entry) {
+    global $panoptes_current_user;
     try {
       $rtn = array();
       $rtn['type'] = 'js';
@@ -196,6 +197,8 @@ class groupStatusPieChartWidget implements widgetInterface
 
       require_once dirname(realpath(__FILE__)) . '/../deviceGroup.php';
       require_once dirname(realpath(__FILE__)) . '/../deviceEntry.php';
+      require_once dirname(realpath(__FILE__)) . '/../userEntry.php';
+      require_once dirname(realpath(__FILE__)) . '/../userPrefs.php';
 
       // get group name from id
       $prms = $entry->params;
@@ -231,8 +234,25 @@ class groupStatusPieChartWidget implements widgetInterface
       $str .= ']; ';
 
       // load user prefs for chart theme
+      $user = new userEntry();
+      $user->db = $this->db;
+      $user->getByName($panoptes_current_user);
+
+      $userPrefs = new userPrefs($this->db);
+      $userPrefs->db = $this->db;
+      
+      $theme = $userPrefs->getPref($user->id, 'general', 
+				   'general_prefs_chart_theme');
+    
+      if (is_null($theme)) {
+	require_once dirname(realpath(__FILE__)) . '/../panoptes.php';
+
+	$panoptes = new panoptes();
+	$theme = $panoptes->config()->getConfigValue('web.default_chart_theme');
+      }      
+
       $rtn['value'] .= $str;
-      $rtn['value'] .= "var dv = document.createElement('div'); dv.id = '" . $prms['group_id'] . "' + '_gs_div'; dv.style.height = '200px'; dv.style.width = '200px'; node.appendChild(dv); var GS_pieChart = new dojox.charting.Chart2D('" . $prms['group_id'] . "' + '_gs_div'); GS_pieChart.addPlot('default', { type: 'Pie', radius: 50, fontColor: 'black', labelOffset: '-20'}); GS_pieChart.addSeries('" . $grp->name . "' + ' Summary', groupStatusPieData); GS_pieChart.render()";
+      $rtn['value'] .= "var dv = document.createElement('div'); dv.id = '" . $prms['group_id'] . "' + '_gs_div'; dv.style.height = '200px'; dv.style.width = '200px'; node.appendChild(dv); var GS_pieChart = new dojox.charting.Chart2D('" . $prms['group_id'] . "' + '_gs_div'); GS_pieChart.setTheme(dojox.charting.themes." . $theme . "); GS_pieChart.addPlot('default', { type: 'Pie', radius: 50, fontColor: 'black', labelOffset: '-20'}); GS_pieChart.addSeries('" . $grp->name . "' + ' Summary', groupStatusPieData); GS_pieChart.render()";
     } catch (PDOException $e) {
       throw($e);
     }

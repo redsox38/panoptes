@@ -3,7 +3,6 @@ fix axis titles not displaying on charts
 fix precision error for graphs where rrd val is approaching 0
 replace dashboard graph with dojo chart
 elaborate pie chart dashboard widget
-make pie chart widget use theme pref
 network map
 snmp trap/external message receiver
 web service SOAP api (status request/update, etc)
