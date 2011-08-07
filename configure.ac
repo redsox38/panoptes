@@ -24,6 +24,37 @@ AC_PROG_INSTALL
 AC_PROG_MKDIR_P
 AC_PROG_SED
 
+# Checks for config programs
+AC_ARG_WITH(mysql_config,
+        AC_HELP_STRING(
+                [--with-mysql_config=PROGRAM],
+                [location of the mysql_config program]),
+        [mysql_config_prog=$withval])
+AC_PATH_PROG(MYSQL_CONFIG, mysql_config, $mysql_config_prog)
+
+AC_ARG_WITH(xml2-configconfig,
+        AC_HELP_STRING(
+                [--with-xml2-config=PROGRAM],
+                [location of the xml2-config program]),
+        [xml2-config_prog=$withval])
+AC_PATH_PROG(XML2_CONFIG, xml2-config, $xml2-config_prog)
+
+## Determine MySQL library path
+MYSQL_LIBS=$($MYSQL_CONFIG --libs)
+LIBS="$LIBS $MYSQL_LIBS"
+
+## Determine MySQL include path
+MYSQL_INCLUDE=$($MYSQL_CONFIG --cflags)
+CPPFLAGS="$CPPFLAGS $MYSQL_INCLUDE"
+
+## Determine xml2 library path
+XML2_LIBS=$($XML2_CONFIG --libs)
+LIBS="$LIBS $XML2_LIBS"
+
+## Determine xml2 include path
+XML2_INCLUDE=$($XML2_CONFIG --cflags)
+CPPFLAGS="$CPPFLAGS $XML2_INCLUDE"
+
 # Checks for libraries.
 
 # Checks for header files.
