@@ -250,7 +250,9 @@ class performanceHistoryWidget implements widgetInterface
       }      
 
       // draw rrd graph from params field of widget render last 30 minutes
-      $start = sprintf("--start=%d", time() - 1800);
+      $end = time();
+      $st = $end - 1800;
+      $start = sprintf("--start=%d", $st);
 
       $prms = $entry->params;
 
@@ -258,6 +260,7 @@ class performanceHistoryWidget implements widgetInterface
       $rrd_params = array();
       $devices = array();
       $count = 0;
+      $max_y = 0;
       foreach ($prms as $a) {
 	preg_match('/^(\d+):(.*)/', $a, $matches);
 	$dev = $pan->getDevice($matches[1]);
@@ -282,6 +285,10 @@ class performanceHistoryWidget implements widgetInterface
 	    if ($v == 'NAN') {
 	      $v = 0;
 	    } 
+
+	    // keep track of max value for y-axis
+	    if ($v > $max_y) { $max_y = $v; }
+
 	    $data[$short_name][$k] = $v;
 	  }
 	  $data[$short_name]['info'] = $rrd_info['datas'];	  
@@ -301,7 +308,8 @@ class performanceHistoryWidget implements widgetInterface
       }
 
       // send back code to draw chart
-      $ret = "var dv = document.createElement('div'); dv.id = '" . $entry->id . "' + '_perf_div'; dv.style.height = '200px'; dv.style.width = '200px'; node.appendChild(dv);var chrt = new dojox.charting.Chart2D('" . $entry->id . "_perf_div', { title: '" . $title . "' }); chrt.setTheme(dojox.charting.themes." . $theme . "); chrt.addPlot('default', { type: 'Lines', markers: true });";
+      $ret = "var dv = document.createElement('div'); dv.id = '" . $entry->id . "' + '_perf_div'; dv.style.height = '200px'; dv.style.width = '200px'; node.appendChild(dv);var chrt = new dojox.charting.Chart2D('" . $entry->id . "_perf_div', { title: '" . $title . "' }); chrt.setTheme(dojox.charting.themes." . $theme . "); chrt.addPlot('default', { type: 'Lines', markers: true }); f = new dojox.charting.action2d.Tooltip(chrt, 'default'); chrt.addAxis('x', { natural: true, labelFunc: function(value) { var dt = new Date(); dt.setTime(value * 1000); var h = dt.getHours(); h = (h < 10 ? '0' + h : h); var m = dt.getMinutes(); m = (m < 10 ? '0' + m : m); return(h + ':' + m); }, microTicks: false, min: " . $st . ", max: " . $end . ", minorTickSpan: " . $data['_']['step'] . " }); chrt.addAxis('y', { vertical: true, min: 0, max: " . $max_y . ", includeZero: true }); chrt.render();";
+
       $rtn['value'] = $ret;
     } catch (PDOException $e) {
       throw($e);
