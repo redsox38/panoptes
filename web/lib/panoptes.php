@@ -362,13 +362,10 @@ class panoptes
 	  
 	  $r['datas'][] = array('name' => $a['name'],
 				'label' => $disp,
-				'color' => $a['color'],
 				'vlabel'=> $cfg['vertical_label']);
 
 	  array_push($defs, 'DEF:' . $ds_id . '=' . $r['rrd_file'] .
 		     ':' . $a['name'] . ':AVERAGE');
-	  array_push($graphs, $a['type'] . ':' . $ds_id . $a['color'] . ':' .
-		     $disp);
 	  if (array_key_exists("legend", $a) && $full) {
 	    array_push($gprints, 'GPRINT:' . $ds_id . ':' .
 		       $a['legend']);
