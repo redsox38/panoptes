@@ -88,7 +88,6 @@ void panoptes_rrd_xml_create(char *path,
       fprintf(fh, "\t\t<name>ds0</name>\n");
       fprintf(fh, "\t\t<display_as>ConnectTime</display_as>\n");
       fprintf(fh, "\t\t<type>LINE2</type>\n");
-      fprintf(fh, "\t\t<legend>AVERAGE:Average connect time\\: %%lf %%Sms</legend>\n");
       fprintf(fh, "\t</attribute>\n");
     } else if (!strcmp(m->table_name, "ping_monitors")) {
       fprintf(fh, "\t<title>ICMP Response Time</title>\n");
@@ -97,7 +96,6 @@ void panoptes_rrd_xml_create(char *path,
       fprintf(fh, "\t\t<name>ds0</name>\n");
       fprintf(fh, "\t\t<display_as>ResponseTime</display_as>\n");
       fprintf(fh, "\t\t<type>LINE2</type>\n");
-      fprintf(fh, "\t\t<legend>AVERAGE:Average response time\\: %%lf %%Sms</legend>\n");
       fprintf(fh, "\t</attribute>\n");
     } else if (!strcmp(m->table_name, "snmp_monitors")) {
       fprintf(fh, "\t<title>%s</title>\n", get_attr_val(m, "name"));
@@ -116,7 +114,6 @@ void panoptes_rrd_xml_create(char *path,
 	fprintf(fh, "\t\t<name>ds%d</name>\n", i);
 	fprintf(fh, "\t\t<display_as>%s</display_as>\n", q);
 	fprintf(fh, "\t\t<type>LINE2</type>\n");
-	fprintf(fh, "\t\t<legend>AVERAGE:Average \\: %%lf %%S</legend>\n");
 	fprintf(fh, "\t</attribute>\n");
 	q = strtok_r(NULL, ",", &tkn);
 	i++;
@@ -141,7 +138,6 @@ void panoptes_rrd_xml_create(char *path,
 	fprintf(fh, "\t\t<name>ds0</name>\n");
 	fprintf(fh, "\t\t<display_as>%s</display_as>\n", q);
 	fprintf(fh, "\t\t<type>LINE2</type>\n");
-	fprintf(fh, "\t\t<legend>AVERAGE:Average %s\\: %%lf %%S</legend>\n", q);
 	fprintf(fh, "\t</attribute>\n");
 	
 	p = strtok_r(NULL, ";", &tkn);
@@ -153,7 +149,6 @@ void panoptes_rrd_xml_create(char *path,
       fprintf(fh, "\t\t<name>ds0</name>\n");
       fprintf(fh, "\t\t<display_as>ResponseTime</display_as>\n");
       fprintf(fh, "\t\t<type>LINE2</type>\n");
-      fprintf(fh, "\t\t<legend>AVERAGE:Average response time\\: %%lf %%Sms</legend>\n");
       fprintf(fh, "\t</attribute>\n");
     } else {
       syslog(LOG_NOTICE, "error creating rrd xml: unknown type %s", 

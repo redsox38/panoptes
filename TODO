@@ -1,6 +1,4 @@
-remove remaining graph related parameters from rrd xmls
 fix axis titles not displaying on charts
-fix precision error for graphs where rrd val is approaching 0
 elaborate pie chart dashboard widget
 network map
 snmp trap/external message receiver

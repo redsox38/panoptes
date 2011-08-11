@@ -366,10 +366,6 @@ class panoptes
 
 	  array_push($defs, 'DEF:' . $ds_id . '=' . $r['rrd_file'] .
 		     ':' . $a['name'] . ':AVERAGE');
-	  if (array_key_exists("legend", $a) && $full) {
-	    array_push($gprints, 'GPRINT:' . $ds_id . ':' .
-		       $a['legend']);
-	  }
 	  $count++;
 	}
 
@@ -384,9 +380,6 @@ class panoptes
 	  array_push($r['rrd_opts'], $v);
 	}
 
-	foreach ($gprints as $v) {
-	  array_push($r['rrd_opts'], $v);
-	}
     } else {
 	throw new Exception("Device " . $id . " does not exist");
       }
