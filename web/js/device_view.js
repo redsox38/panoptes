@@ -745,7 +745,9 @@ function updatePerformanceGraph(id) {
 			    // draw graph		
 			    var chrt = new dojox.charting.Chart2D(id + '_' + metric + 
 								  '_graph_div', {
-								      title: "Title" });
+								      title: "Chart Title",
+								      titlePos: "top",
+								  });
 
 					    
 			    if (chrt_theme) {
@@ -757,7 +759,7 @@ function updatePerformanceGraph(id) {
 					labelFunc: function(value) {
 					var dt = new Date();
 					dt.setTime(value * 1000);
-					if (days_span > 1) {
+					if (days_span > 2) {
 					    return(dt.toLocaleDateString());
 					} else {
 					    var h = dt.getHours();
@@ -803,7 +805,7 @@ function updatePerformanceGraph(id) {
 				var metric_info = 'Max: ' + max + ' Min: ' + 
 				    min + ' Avg: ' + (total / data.data.info.length);
 				chrt.addSeries(info[j].label + " " + metric_info, 
-					       plot_data, { stroke: { color: info[j].color }});
+					       plot_data);
 			    }
 			    
 			    f = new dojox.charting.action2d.Tooltip(chrt, "default");
