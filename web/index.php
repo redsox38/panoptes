@@ -102,6 +102,7 @@ if (is_null($chart_theme)) {
         dojo.require("dojox.grid.enhanced.plugins.NestedSorting");
         dojo.require("dojox.grid.enhanced.plugins.IndirectSelection");
         dojo.require("dojox.grid.enhanced.plugins.Menu");
+        dojo.require("dojox.charting.Chart");
         dojo.require("dojox.charting.Chart2D");
         dojo.require("dojox.charting.action2d.Tooltip");
         dojo.require("dojox.charting.widget.Legend");

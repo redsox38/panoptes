@@ -745,8 +745,8 @@ function updatePerformanceGraph(id) {
 			    // draw graph		
 			    var chrt = new dojox.charting.Chart2D(id + '_' + metric + 
 								  '_graph_div', {
-								      title: "Chart Title",
-								      titlePos: "top",
+								      title: data.data.title,
+								      titleFont: "normal normal bold 12pt Helvetica",
 								  });
 
 					    

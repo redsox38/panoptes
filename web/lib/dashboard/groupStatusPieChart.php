@@ -252,7 +252,7 @@ class groupStatusPieChartWidget implements widgetInterface
       }      
 
       $rtn['value'] .= $str;
-      $rtn['value'] .= "var dv = document.createElement('div'); dv.id = '" . $prms['group_id'] . "' + '_gs_div'; dv.style.height = '200px'; dv.style.width = '200px'; node.appendChild(dv); var GS_pieChart = new dojox.charting.Chart2D('" . $prms['group_id'] . "' + '_gs_div'); GS_pieChart.setTheme(dojox.charting.themes." . $theme . "); GS_pieChart.addPlot('default', { type: 'Pie', radius: 50, fontColor: 'black', labelOffset: '-20'}); GS_pieChart.addSeries('" . $grp->name . "' + ' Summary', groupStatusPieData); GS_pieChart.render()";
+      $rtn['value'] .= "var dv = document.createElement('div'); dv.id = '" . $prms['group_id'] . "' + '_gs_div'; dv.style.height = '200px'; dv.style.width = '200px'; node.appendChild(dv); var GS_pieChart = new dojox.charting.Chart2D('" . $prms['group_id'] . "' + '_gs_div', { title: '" . $grp->name . " summary', titleFont: 'normal normal bold 12pt Helvetica' }); GS_pieChart.setTheme(dojox.charting.themes." . $theme . "); GS_pieChart.addPlot('default', { type: 'Pie', radius: 50, fontColor: 'black', labelOffset: '-20'}); GS_pieChart.addSeries('" . $grp->name . "' + ' Summary', groupStatusPieData); GS_pieChart.render()";
     } catch (PDOException $e) {
       throw($e);
     }
