@@ -1,5 +1,4 @@
 fix axis titles not displaying on charts
-fix x axis labels broken by including chart title
 elaborate pie chart dashboard widget
 network map
 snmp trap/external message receiver

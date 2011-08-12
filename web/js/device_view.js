@@ -756,9 +756,14 @@ function updatePerformanceGraph(id) {
 
 			    chrt.addPlot('default', { type: 'Lines', markers: true });
 			    chrt.addAxis('x', { natural: true,
+					htmlLabels: true,
 					labelFunc: function(value) {
+					var v = value;
 					var dt = new Date();
-					dt.setTime(value * 1000);
+					// dojo sticks commas in the labels 
+					// which messes up my juju
+					dt.setTime(v.replace(/\,/g,'') * 1000);
+
 					if (days_span > 2) {
 					    return(dt.toLocaleDateString());
 					} else {
