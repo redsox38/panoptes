@@ -287,6 +287,7 @@ class performanceHistoryWidget implements widgetInterface
 	    if ($v == 'NAN') {
 	      $v = 0;
 	    } 
+	    $v = round($v, 5);
 
 	    // keep track of max value for y-axis
 	    if ($v > $max_y) { $max_y = $v; }

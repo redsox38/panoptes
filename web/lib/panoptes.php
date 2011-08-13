@@ -3436,7 +3436,7 @@ class panoptes
 	    if ($v == 'NAN') {
 	      $v = 0;
 	    } 
-	    $data['data'][$k] = $v;
+	    $data['data'][$k] = round($v, 5);
 	  }
 	  $data['info'] = $rrd_info['datas'];	  
 	}
