@@ -1,10 +1,10 @@
 Summary: Network Monitor tool
 Name: panoptes
-Version: 1.6
+Version: 1.6rc2
 Release: 1
 License: GPL
 Group: Applications/Network
-Source: https://github.com/downloads/redsox38/panoptes/panoptes-1.6.tar.gz
+Source: https://github.com/downloads/redsox38/panoptes/panoptes-1.6rc2.tar.gz
 Packager: Todd Merritt <redsox38@gmail.com>
 Requires: mysql-libs >= 5.0, libxml2, net-snmp-libs, libcurl >= 7.19.1, php >= 5.0, php-pdo, php-gd, php-snmp, php-xml, rrdtool
 BuildRequires: mysql-devel, libxml2-devel, net-snmp-devel, libcurl-devel, rrdtool-devel
@@ -45,6 +45,7 @@ cp -p twitter_msg %buildroot/usr/bin/twitter_msg
 %attr(0755,root,root)/usr/bin/panoptes_install_db.sh
 %attr(0755,root,root)/usr/bin/panoptes_update_db.sh
 %attr(0755,root,root)/usr/bin/xmpp_msg
+%attr(0755,root,root)/usr/bin/twitter_msg
 /usr/sbin/panoptes_monitor
 /usr/sbin/panoptes_discover
 %dir /usr/share/panoptes_rrds
@@ -63,6 +64,7 @@ cp -p twitter_msg %buildroot/usr/bin/twitter_msg
 /usr/share/panoptes/dbinit-3.sql
 /usr/share/panoptes/dbinit-4.sql
 /usr/share/panoptes/dbinit-5.sql
+/usr/share/panoptes/dbinit-6.sql
 /usr/share/panoptes/htpasswd
 /usr/share/panoptes/web/*
 /usr/share/panoptes/web/.htaccess
