@@ -45,6 +45,7 @@ cp -p twitter_msg %buildroot/usr/bin/twitter_msg
 %attr(0755,root,root)/usr/bin/panoptes_install_db.sh
 %attr(0755,root,root)/usr/bin/panoptes_update_db.sh
 %attr(0755,root,root)/usr/bin/xmpp_msg
+%attr(0755,root,root)/usr/bin/twitter_msg
 /usr/sbin/panoptes_monitor
 /usr/sbin/panoptes_discover
 %dir /usr/share/panoptes_rrds
@@ -63,6 +64,7 @@ cp -p twitter_msg %buildroot/usr/bin/twitter_msg
 /usr/share/panoptes/dbinit-3.sql
 /usr/share/panoptes/dbinit-4.sql
 /usr/share/panoptes/dbinit-5.sql
+/usr/share/panoptes/dbinit-6.sql
 /usr/share/panoptes/htpasswd
 /usr/share/panoptes/web/*
 /usr/share/panoptes/web/.htaccess
