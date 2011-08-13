@@ -312,13 +312,13 @@ class performanceHistoryWidget implements widgetInterface
       }
 
       // send back code to draw chart
-      $ret = "var dv = document.createElement('div'); dv.id = '" . $entry->id . "' + '_perf_div'; dv.style.height = '200px'; dv.style.width = '200px'; node.appendChild(dv);var chrt = new dojox.charting.Chart2D('" . $entry->id . "_perf_div', { title: '" . $title . "', titleFont: 'normal normal bold 12pt Helvetica' }); chrt.setTheme(dojox.charting.themes." . $theme . "); chrt.addPlot('default', { type: 'Lines', markers: true }); f = new dojox.charting.action2d.Tooltip(chrt, 'default'); chrt.addAxis('x', { natural: true, htmlLabels: true, labelFunc: function(value) { var v = value; var dt = new Date(); dt.setTime(v.replace(/\,/g,'') * 1000); var h = dt.getHours(); h = (h < 10 ? '0' + h : h); var m = dt.getMinutes(); m = (m < 10 ? '0' + m : m); return(h + ':' + m); }, microTicks: false, min: " . $data['_']['start'] . ", max: " . $data['_']['end'] . ", minorTickSpan: " . $data['_']['step'] . " }); chrt.addAxis('y', { vertical: true, min: 0, max: " . $max_y . ", includeZero: true, title: '" . $rrd_info['datas'][0]['vlabel'] . "', font: 'normal normal bold 8pt Helvetica' });";
+      $ret = "var dv = document.createElement('div'); dv.id = '" . $entry->id . "' + '_perf_div'; dv.style.height = '200px'; dv.style.width = '200px'; node.appendChild(dv);var chrt = new dojox.charting.Chart2D('" . $entry->id . "_perf_div', { title: '" . $title . "', titleFont: 'normal normal bold 12pt Helvetica' }); chrt.setTheme(dojox.charting.themes." . $theme . "); chrt.addPlot('default', { type: 'Lines', markers: true }); f = new dojox.charting.action2d.Tooltip(chrt, 'default'); chrt.addAxis('x', { natural: true, htmlLabels: true, labelFunc: function(value) { var v = value; var dt = new Date(); dt.setTime(v.replace(/\,/g,'') * 1000); var h = dt.getHours(); h = (h < 10 ? '0' + h : h); var m = dt.getMinutes(); m = (m < 10 ? '0' + m : m); return(h + ':' + m); }, microTicks: false, min: " . $data['_']['start'] . ", max: " . $data['_']['end'] . ", minorTickSpan: " . $data['_']['step'] . " }); chrt.addAxis('y', { vertical: true, min: 0, max: " . $max_y . ", includeZero: true, title: '" . $rrd_info['datas'][0]['vlabel'] . "', font: 'normal normal bold 8pt Helvetica', titleGap: 5 });";
 
       // go through each requested rrd and add series to chart
       foreach ($data as $k => $v) {
 	if ($k != '_') {
 	  $ret .= " var foo = " . json_encode($v) . 
-	    "; chrt.addSeries('" . $data['_'][$k]['info']['label'] . 
+	    "; chrt.addSeries('" . $data['_'][$k]['info'][0]['label'] . 
 	    "', foo);";
 	}
       }

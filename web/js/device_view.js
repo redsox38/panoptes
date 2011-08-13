@@ -817,7 +817,7 @@ function updatePerformanceGraph(id) {
 			    
 			    f = new dojox.charting.action2d.Tooltip(chrt, "default");
 			    
-			    chrt.render();
+ 			    chrt.render();
 			    
 			    var lgnd_dv = document.createElement("div");
 			    lgnd_dv.id = id + '_' + metric + '_legend_div';
