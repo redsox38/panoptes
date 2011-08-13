@@ -1,4 +1,4 @@
-fix axis titles not displaying on charts
+fix precision out of range errors on some graphs
 elaborate pie chart dashboard widget
 network map
 snmp trap/external message receiver

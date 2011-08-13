@@ -330,6 +330,7 @@ class panoptes
 	  if (array_key_exists("vertical_label", $cfg)) {
 	    array_push($r['rrd_opts'], '--vertical-label=' .
 		       $cfg['vertical_label']);
+	    
 	  }
 	  
 	  if (array_key_exists("title", $cfg)) {

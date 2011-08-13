@@ -783,8 +783,10 @@ function updatePerformanceGraph(id) {
 			    chrt.addAxis('y', { vertical: true,
 					min: 0,
 					max: Math.max.apply(0, data.data.data),
-					includeZero: true
-					});
+					includeZero: true,
+					title: data.data.info[0].vlabel,
+					font: "normal normal bold 8pt Helvetica"
+				});
 			    
 			    var info = data.data.info;
 			    
