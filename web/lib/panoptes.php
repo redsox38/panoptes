@@ -3442,6 +3442,7 @@ class panoptes
 	}
       } else {
 	// just run cli and parse the output	
+
 	$result = 'failure';
 	$error = 'php rrd extension missing';
       }
