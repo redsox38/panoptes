@@ -8,10 +8,10 @@ libxml2
 net-snmp
 php
 php-gd
-rrdtool-php
+rrdtool-php (not required, but preferred)
 php-xml
 php-snmp
-dojo 1.5+, (1.6 is untested)
+dojo 1.5+,
 
 
 QUICKSTART

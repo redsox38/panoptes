@@ -3442,9 +3442,45 @@ class panoptes
 	}
       } else {
 	// just run cli and parse the output	
+	$rrdtool = $this->getConfigValue('web.rrdtool');
+	if ($rrdtool) {
+	  $cmd = $rrdtool . ' fetch ' . $rrf_info['rrd_file'] . 
+	    ' AVERAGE ' . $start . ' ' . $end;
+	  $pfh = popen($cmd, "r");
+	  // read off first two header lines
+	  fread($pfh, 1024);
+	  fread($pfh, 1024);
 
-	$result = 'failure';
-	$error = 'php rrd extension missing';
+	  $data['data'] = array();
+
+	  while (!feof($pfh)) {
+	    /* and read data */
+	    $line = fread($pfh, 1024);
+	    if (preg_match('/^(\d+):\s+([^\s+])\s+([^\s+])\s+([^\s+])\s+([^\s+])/', 
+			   $line, $matches)) {
+	      $v = $matches[2];
+	      if ($v == '-nan') {
+		$v = 0;
+	      }
+	      
+	      $data['data'][$matches[1]] = round($v, 5);
+	    } else {
+	      $result = 'failure';
+	      $error = 'rrdtool unexpected output: ' . $line;	      
+	    }
+	  }
+	  $keys = sort(array_keys($data['data']), SORT_NUMERIC);
+	  $data['start'] = min(array_keys($data['data']));
+	  $data['end'] = max(array_keys($data['data']));
+	  $data['step'] = $keys[0] - $keys[1];
+	  $data['title'] = $rrd_info['title'];
+	  $data['info'] = $rrd_info['datas'];	  
+
+	  pclose($pfh);
+	} else {
+	  $result = 'failure';
+	  $error = 'web.rrdtool is not defined';
+	}
       }
     } catch (Exception $e) {
       return(array('result' => 'failure',
