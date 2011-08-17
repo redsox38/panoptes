@@ -1,4 +1,28 @@
+/*
+ *
+ * Copyright (C) 2010 Todd Merritt <redsox38@gmail.com>
+ *
+ *    This program is free software: you can redistribute it and/or modify
+ *    it under the terms of the GNU General Public License as published by
+ *    the Free Software Foundation, either version 3 of the License, or
+ *    (at your option) any later version.
+ *
+ *    This program is distributed in the hope that it will be useful,
+ *    but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *    GNU General Public License for more details.
+ *
+ *    You should have received a copy of the GNU General Public License
+ *    along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ *
+ */
 
+// 
+// destroyAll - function to recursively destroy all dojo widgets
+//              that exist below a given DOM node
+// @param {string} node a DOM object id
+// @return none
+//
 function destroyAll(node) {
     var n = dojo.byId(node);
     
@@ -8,6 +32,13 @@ function destroyAll(node) {
     dojo.destroy(n);
 }
 
+// 
+// showLoading - function to call when issuing an AJAX call.  It 
+//               increments the count of pending ajax calls and makes
+//               the loading image visible
+// @param none
+// @return none
+//
 function showLoading() {
     loading_count++;
 
@@ -15,6 +46,14 @@ function showLoading() {
     img_div.style.visibility = "visible";
 }
 
+// 
+// hideLoading - function to call when completing an AJAX call.  It 
+//               decrements the count of pending ajax calls and makes
+//               the hides the loading image if there are no more pending 
+//               requests
+// @param none
+// @return none
+//
 function hideLoading() {    
     loading_count--;
     if (loading_count < 1) {
@@ -23,6 +62,18 @@ function hideLoading() {
     }
 }
 
+// 
+// reloadMonitorEntry - function run when a monitor entry is
+//                      updated to reload the entry after the 
+//                      next scheduled check.
+// @param {Function} func - The function to call when the timer expires
+// @param {Number} dev_id - device id of the entry to be reloaded
+// @param {Number} ent_id - Monitor entry id to reload
+// @param {Object} container - dojo grid object that the entry id is in
+// @param {String} reload_date - Date to reload the entry at in the format
+//                               YYYY-MM-DD hh:mm:ss
+// @param {Number} timerId - id for reload timer
+//
 function reloadMonitorEntry(func, dev_id, ent_id, container, reload_date) {
     // countdown now to reload_date, convert to milliseconds and set timer
     date_pat = /(^\d{4})\-(\d{2})-(\d{2}) (\d+):(\d+):(\d+)/;
@@ -41,6 +92,14 @@ function reloadMonitorEntry(func, dev_id, ent_id, container, reload_date) {
     return(timerId);
 }
 
+//
+// createOverlayWindow - called to create a new overlay window
+//                       
+// @param {String} id - id for the new window
+// @param {Array} objs - array of DOM objects to make children of the
+//                       newly created div
+// @return none
+//
 function createOverlayWindow(id, objs) {
     var dv1 = document.createElement("div");
     dv1.id = id;

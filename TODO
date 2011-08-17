@@ -1,6 +1,7 @@
+compress javascript
 fix dashboard charts w/ multiple data series
 dashboard layout editing
-embelish charts (zoom in, pan left/right, etc)
+make charts interactive (zoom in, pan left/right, etc)
 network map
 snmp trap/external message receiver
 web service SOAP api (status request/update, etc)
