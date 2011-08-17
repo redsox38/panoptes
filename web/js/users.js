@@ -19,6 +19,14 @@
 
 var userFormbuilt = false;
 
+// 
+// xhrUpdateSecurityGroups - function for managing access groups
+// @param {String} type - operation to perform.  Either add or delete
+// @param {String} src - id of user from userStore to add/remove
+// @param {String} tgt - id of device group from deviceStore to 
+//                       add/remove user from/to
+// @return none
+//
 function xhrUpdateSecurityGroups(type, src, tgt) {
 
     if (type == 'add') {
@@ -54,6 +62,11 @@ function xhrUpdateSecurityGroups(type, src, tgt) {
     dojo.xhrGet(xhrArgs);    
 }
 
+//
+// xhrAddUser - add a userid on server
+// @param {Object} name - dijit for the input field for the user name to add
+// @return none
+//
 function xhrAddUser(name) {
     var xhrArgs = {
         url: '/panoptes/',
@@ -80,6 +93,11 @@ function xhrAddUser(name) {
     dojo.xhrGet(xhrArgs);    
 }
 
+//
+// xhrDeleteUser - remove a userid on server
+// @param {Object} name - dijit for the input field for the user name to remove
+// @return none
+//
 function xhrDeleteUser(name) {
     var xhrArgs = {
         url: '/panoptes/',
@@ -110,6 +128,12 @@ function xhrDeleteUser(name) {
     dojo.xhrGet(xhrArgs);    
 }
 
+//
+// buildUserForm - called to generate the user management tab content when 
+//                 the tab is opened for the first time.
+// @param none
+// @return none
+//
 function buildUserForm() {
     if (userFormbuilt) {
 	return;

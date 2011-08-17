@@ -20,6 +20,12 @@
 var discoveryGrid;
 var discoveryStore;
 
+//
+// createAutoDiscoveryGrid - called to populate the discovered device 
+//                           management tab when the tab is opened
+// @param none
+// @return none
+//
 function createAutoDiscoveryGrid(){
     var xhrArgs = {
 	url: '/panoptes/',
@@ -76,6 +82,13 @@ function createAutoDiscoveryGrid(){
     var resp = dojo.xhrGet(xhrArgs);
 }
 
+//
+// monitorEntry - adds a monitor on the server for the selected auto
+//                discovery entry
+// @param {String} type - One of src/dst, indicating side of connection to
+//                        monitor.  It's always dst though. 
+// @return none
+//
 function monitorEntry(type) {
     var ids = [];
     // get row ids
@@ -110,6 +123,11 @@ function monitorEntry(type) {
     var resp = dojo.xhrGet(xhrArgs);
 }
 
+//
+// ignoreEntry - ignore the selected autoDiscovery entry  in the database
+// @param none
+// @return none
+//
 function ignoreEntry() {
     var ids = [];
     // get row ids
