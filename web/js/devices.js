@@ -17,6 +17,12 @@
  *
  */
 
+//
+// applyDeviceTemplate - apply a device template to the selected deviceTree
+//                       item.
+// @param none
+// @return none
+//
 function applyDeviceTemplate() {
     template_data = {
 	label: "name",
@@ -105,6 +111,15 @@ function applyDeviceTemplate() {
     var resp = dojo.xhrGet(xhrArgs);
 }
 
+//
+// xhrApplyDeviceTemplate - call server side code to actually apply the 
+//                          template to the device
+// @param {String} device_id id of the device to apply the tempalte to
+// @param {String} template_id id of the template to apply
+// @param {String} template_name name of the template to display in error 
+//                 messages
+// @return none
+//
 function xhrApplyDeviceTemplate(device_id, template_id, template_name) {
 
     var xhrArgs = {

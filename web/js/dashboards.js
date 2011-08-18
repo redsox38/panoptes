@@ -23,6 +23,14 @@ var dashboard_y_padding = 55;
 var dashboard_tab_info = dojo.position(dijit.byId("dashboard_tab").domNode, true);
 var ncols = Math.floor((dashboard_tab_info.w - dashboard_tab_info.x - dashboard_x_padding) / widget_width);
 
+//
+// renderWidget - call the server function to retrieve the widget data
+//                from the server and draw the results on the screen.
+// @param {Array} params array of parameters that define this widget
+//                       including the database id and its position on
+//                       the screen
+// @return none
+//
 function renderWidget(params) {
     var xhrArgs = {
 	url: '/panoptes/dashboardWidget.php',
@@ -115,6 +123,12 @@ function renderWidget(params) {
     dojo.xhrGet(xhrArgs);       
 }
 
+//
+// addDashboardWidget - draw form elements required for a user to
+//                      add a new widget to their dashboard
+// @param none
+// @return none
+//
 function addDashboardWidget() {
     // append selector box to end of dashboard
     var node = document.createElement("div");

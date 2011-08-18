@@ -41,6 +41,11 @@ var dojoVersion;
 v = dojo.version;
 dojoVersion = (v.major * 100) + (v.minor * 10) + v.patch;
 
+//
+// loadUsers - load users from server into userStore
+// @param none
+// @return none
+//
 function loadUsers() {
     var xhrArgs = {
 	url: '/panoptes/',
@@ -65,6 +70,11 @@ function loadUsers() {
     dojo.xhrGet(xhrArgs);    
 }
 
+//
+// loadGroups - load users from server into groupStore
+// @param none
+// @return none
+//
 function loadGroups() {
     var xhrArgs = {
 	url: '/panoptes/',
@@ -91,12 +101,26 @@ function loadGroups() {
     dojo.xhrGet(xhrArgs);    
 }
 
+//
+// getSelectedTreeNode - function passed to onSelect of device tree
+//                       sets global variable to the current selected item
+// @param {Object} item dojo item represented by this node in the device tree
+// @param {Object} node tree node of selected item, ignored
+// @param {Event} e event that selected the item, ignored
+// @return none
+//
 function getSelectedTreeNode(item, node, e) {
     // set global variables for processing 
     // menu option later
     deviceTreeSelectedItem = item;
 };
 
+//
+// reloadDeviceTree - called when a new device is added to add the device
+//                    to the device store and add a new node to the tree
+// @param none
+// @return none
+//
 function reloadDeviceTree() {
 
     if (dijit.byId('device_tree')) {
@@ -205,6 +229,11 @@ function reloadDeviceTree() {
     setTimeout(reloadDeviceTree, 900000);
 }
 
+//
+// createDeviceTree - create and populate device tree
+// @param none
+// @return none
+//
 function createDeviceTree(){
     if (!deviceTree) {
 
@@ -249,6 +278,12 @@ function createDeviceTree(){
     }
 }
 
+// 
+// loadAvailableShellScripts - retrieve a list of current shell script 
+//                             monitors installed on the server
+// @param none
+// @return none
+//
 function loadAvailableShellScripts() {
     var xhrArgs = {
 	url: '/panoptes/',
