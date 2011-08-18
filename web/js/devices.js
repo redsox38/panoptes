@@ -141,6 +141,17 @@ function xhrApplyDeviceTemplate(device_id, template_id, template_name) {
     dojo.xhrGet(xhrArgs);
 }
 
+//
+// xhrAddNotification - call serer side code to add notification for the logged in user for the 
+//                      requested monitor
+// @param {String} device_id id of the device to add notifications for.  If null, then monitor_ids
+//                           parameter is checked instead for specific entries to be notified for.
+// @param {Array} monitor_ids array of monitor_ids from the given device id to add notifications
+//                            for.  Not checked if a device id is supplied.
+// @param {String} type if monitoring individual monitors, this parameter specifies the type of
+//                      monitor (url/snmp/certificate/shell/etc...)
+// @return none
+//
 function xhrAddNotification(device_id, monitor_ids, type) {
 
     var args = {};
@@ -170,6 +181,18 @@ function xhrAddNotification(device_id, monitor_ids, type) {
     dojo.xhrGet(xhrArgs);
 }
 
+//
+// xhrRemoveNotification - call serer side code to remove notification for the logged in user for the 
+//                      requested monitor
+// @param {String} device_id id of the device to remove notifications for.  If null, 
+//                           then monitor_ids parameter is checked instead for specific 
+//                           entries to remove notification from.
+// @param {Array} monitor_ids array of monitor_ids from the given device id to remove notifications
+//                            for.  Not checked if a device id is supplied.
+// @param {String} type if removing notifications for individual monitors, this parameter 
+//                      specifies the type of monitor (url/snmp/certificate/shell/etc...)
+// @return none
+//
 function xhrRemoveNotification(device_id, monitor_ids, type) {
 
     var args = {};
@@ -209,6 +232,15 @@ function removeDeviceNotification() {
     xhrRemoveNotification(id, null, null);
 }
 
+//
+// xhrUpdatePermissions - call server side code to update security permissions on a 
+//                        device group
+// @param {String} type add or remove
+// @param {String} src security group to apply permissions for
+// @param {String} tgt device group to apply permissions to
+// @param {String} level access level to apply to group
+// @return none
+//
 function xhrUpdatePermissions(type, src, tgt, level) {
     src = src.replace("g_", "");
     tgt = tgt.replace("g_", "");
@@ -235,6 +267,11 @@ function xhrUpdatePermissions(type, src, tgt, level) {
     dojo.xhrGet(xhrArgs);
 }
 
+//
+// manageDeviceGroupAccess - draw form for managing device group access
+// @param none
+// @return none
+//
 function manageDeviceGroupAccess() {
     var id = deviceStore.getValues(deviceTreeSelectedItem, 'id').toString();
     var name = deviceStore.getValues(deviceTreeSelectedItem, 'name').toString();
@@ -357,6 +394,12 @@ function manageDeviceGroupAccess() {
     createOverlayWindow("manage_device_win", items);
 }
 
+//
+// deleteDeviceGroup - call server side code to remove a device group (not the actual devices in
+//                     the group though
+// @param none
+// @return none
+//
 function deleteDeviceGroup() {
     var id = deviceStore.getValues(deviceTreeSelectedItem, 'id').toString();
     var name = deviceStore.getValues(deviceTreeSelectedItem, 'name').toString();
