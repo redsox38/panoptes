@@ -476,6 +476,11 @@ function deleteDeviceGroup() {
     }
 }
 
+//
+// xhrScheduleOutage - call server side code to mark a window where a device is not to be monitored
+// @param {String} device_id - id of device to schedule outage for
+// @return none
+//
 function xhrScheduleOutage(device_id) {
     start_date = dijit.byId("outage_start_date").attr('displayedValue');
     stop_date = dijit.byId("outage_stop_date").attr('displayedValue');
@@ -504,6 +509,13 @@ function xhrScheduleOutage(device_id) {
     dojo.xhrGet(xhrArgs);
 }
 
+//
+// xhrGroupAdd - call server side code to add a device to a device group.  If the device group doesn't exist it will
+//               be created.
+// @param {Dijit} attr_name - dijit containint the group name form the form
+// @param {String} device_id - id of the device to add to he group
+// @return none
+//
 function xhrGroupAdd(attr_name, device_id) {
 
     grp = dijit.byId(attr_name).attr('value');
@@ -607,6 +619,11 @@ function xhrGroupAdd(attr_name, device_id) {
     document.body.removeChild(document.getElementById("add_to_device_group_win"));
 }
 
+//
+// deleteDevice - call server side code to delete the currently selected device from the server
+// @param none
+// @return none
+//
 function deleteDevice() {
     var id = deviceStore.getValues(deviceTreeSelectedItem, 'id').toString();
     id = id.replace("d_", "");
@@ -642,6 +659,11 @@ function deleteDevice() {
     }
 }
 
+//
+// scheduleOutage - draw form to allow user to schedule a window to not monitor a particular device
+// @param none
+// @return none
+//
 function scheduleOutage() {
     var id = deviceStore.getValues(deviceTreeSelectedItem, 'id').toString();
     id = id.replace("d_", "");
@@ -746,6 +768,11 @@ function scheduleOutage() {
     createOverlayWindow("schedule_outage_win", items);
 }
 
+//
+// xhrRemoveGroupMember - call server side code to remove a device from a device group
+// @param {String} group_id - id of the device group to remove the device from
+// @param {String} device_id - id of device to remove from the group
+//
 function xhrRemoveGroupMember(group_id, device_id) {
     var xhrArgs = {
 	url: '/panoptes/',
@@ -816,6 +843,13 @@ function xhrRemoveGroupMember(group_id, device_id) {
     dojo.xhrGet(xhrArgs);
 }
 
+//
+// xhrAddParentDevice - call server side code to add a parent child relationship between two devices.  Intended
+//                      to be used for drawing maps
+// @param {String} child_id - device id of the child device 
+// @param {String} parent_id - device id of the parent device
+// @return none
+//
 function xhrAddParentDevice(child_id, parent_id) {
     child_id = child_id.replace("d_", "");
     parent_id = parent_id.replace("d_", "");
@@ -842,6 +876,11 @@ function xhrAddParentDevice(child_id, parent_id) {
     dojo.xhrGet(xhrArgs);
 }
 
+//
+// editDeviceInfo - draw form to allow user to edit device name and OS
+// @param none
+// @return none
+//
 function editDeviceInfo() {
     var id = deviceStore.getValues(deviceTreeSelectedItem, 'id').toString();
 
@@ -928,6 +967,12 @@ function editDeviceInfo() {
     createOverlayWindow("edit_device_win", items);
 }
 
+//
+// xhrEditDeviceInfo - call server side code to update info for a particular device
+// @param {Array} params - array of attributes to update which includes the id for the device to
+//                         update
+// @return none
+//
 function xhrEditDeviceInfo(params) {
     var xhrArgs = {
 	url: '/panoptes/',
@@ -948,6 +993,11 @@ function xhrEditDeviceInfo(params) {
     dojo.xhrGet(xhrArgs);
 }
 
+//
+// addParentDevice - draw form to allow user to specify a parent/child relationship between two devices
+// @param none
+// @reutrn none
+//
 function addParentDevice() {
     var id = deviceStore.getValues(deviceTreeSelectedItem, 'id').toString();
     
@@ -1001,6 +1051,12 @@ function addParentDevice() {
     createOverlayWindow("add_parent_device_win", items);
 }
 
+//
+// removeFromGroup - sort through device tree and find the parent of the currently selected item.
+//                   Pass that off to the server to remove the device from the device group.
+// @param none
+// @return none
+//
 function removeFromGroup() {
     var id = deviceStore.getValues(deviceTreeSelectedItem, 'id').toString();
     var name = deviceStore.getValues(deviceTreeSelectedItem, 'name');
@@ -1025,6 +1081,11 @@ function removeFromGroup() {
 	});
 }
 
+//
+// addToGroup - draw form to add a device to a device group
+// @param none
+// @return none
+//
 function addToGroup() {
     var id = deviceStore.getValues(deviceTreeSelectedItem, 'id').toString();
     id = id.replace("d_", "");

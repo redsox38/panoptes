@@ -34,6 +34,14 @@ var monitorTypeStore = new dojo.data.ItemFileReadStore({
 	}
     });
 
+//
+// _createTemplateParam_internal - called when the previous template parameter has been completely filled out on 
+//                                 the add template form to add the right form elements for the particular input type
+// @param {String} type - type of monitor being added to the template
+// @param {Integer} idx - position in list for naming elements
+// @param {String} param_val - default value for the newly created parameter
+// @return none
+//
 function _createTemplateParam_internal(type, idx, param_val) {
     var param = null;
 
@@ -119,6 +127,11 @@ function _createTemplateParam_internal(type, idx, param_val) {
     dojo.place(img, "create_template_br" + idx, "before");
 }
 
+//
+// _deleteTemplateObject - remove an item and its associated parameters from a device template
+// @param {Integer} id - index of item to remove
+// @return none
+//
 function _deleteTemplateObject(id) {
     // delete dijits and delete image
     var dijits = [ 'create_template_param_b_' + id,
@@ -139,6 +152,11 @@ function _deleteTemplateObject(id) {
     dojo.destroy('create_template_br' + id);
 }
 
+//
+// _createTemplateParam - called by createTemplate when the previous element has been filled out
+// @param {Event} e - the onChange dojo event object
+// @return none
+//
 function _createTemplateParam (e) {
     var type = this.get('value');
 
