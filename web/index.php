@@ -139,7 +139,7 @@ if (is_null($chart_theme)) {
 	  $chart_theme . "\");</script>\n";
 
 	  if ($panoptes->isAdmin($panoptes_current_user)) {
-	    echo '<script type="text/javascript" src="js/users.js"></script>' . "\n";
+	    echo '<script type="text/javascript" src="js/_users.js"></script>' . "\n";
 	  }
 ?>
 
