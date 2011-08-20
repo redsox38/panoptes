@@ -166,6 +166,11 @@ function _createTemplateParam (e) {
     _createTemplateObject(null);
 }
 
+//
+// _createTemplateObject - called to create a new input in the create template process 
+// @param {Event} e - the dojo onChange event
+// @return none
+//
 function _createTemplateObject (e) {
     // find next object that hasn't been created yet
     var done = false;
@@ -205,6 +210,12 @@ function _createTemplateObject (e) {
     dojo.place(b, t.domNode, "after");
 }
 
+//
+// loadDashboard - loads the dashboard javascript if it hasn't been loaded and then loads/renders the 
+//                 dashboard widgets for the logged in user
+// @param none
+// @return none
+//
 function loadDashboard() {
     if (!dashboards_loaded) {
 	//load functions for dashboard    
@@ -240,6 +251,11 @@ function loadDashboard() {
     dojo.xhrGet(xhrArgs);       
 }
 
+//
+// openEditDashboardTab - makes the dashboard editable to add/remove widgets
+// @param none
+// @return none
+//
 function openEditDashboardTab() {
     if (!dashboards_loaded) {
 	//load functions for dashboard    
@@ -427,6 +443,11 @@ function openEditDashboardTab() {
     dijit.byId("panoptes_tab_container").selectChild(dijit.byId("dashboard_tab"));
 }
 
+//
+// deleteUserWidget - remove a widget from the user dashboard
+// @param {Integer} idx - position of the widget in the user's dashboard
+// @return none
+//
 function deleteUserWidget(idx) {
     var xhrArgs = {
 	url: '/panoptes/dashboardWidget.php',
@@ -456,6 +477,12 @@ function deleteUserWidget(idx) {
     dojo.xhrGet(xhrArgs);       
 }
 
+//
+// openAutoDiscoveryTab - loads the auto discovery tab and retrieves the auto discovery data from
+//                        the server
+// @param none
+// @return none
+//
 function openAutoDiscoveryTab() {
     // create tab
     var cp = new dijit.layout.ContentPane({
@@ -472,6 +499,11 @@ function openAutoDiscoveryTab() {
     createAutoDiscoveryGrid();
 }
 
+//
+// openSecurityGroupTab - creates a tab for adding/removing user security groups
+// @param none
+// @return none
+//
 function openSecurityGroupTab() {
     // create tab
     var cp = new dijit.layout.ContentPane({
@@ -527,6 +559,11 @@ function openSecurityGroupTab() {
     dijit.byId("panoptes_tab_container").selectChild(cp);
 }
 
+//
+// openTemplateTab - open tab for creating/editing/removing device templates
+// @param none
+// @return none
+//
 function openTemplateTab() {
     // load list of current templates for edit and delete options
 
@@ -644,6 +681,11 @@ function openTemplateTab() {
     dijit.byId("panoptes_tab_container").selectChild(cp);
 }
 
+// 
+// editTemplate - edit an existing device template
+// @param {Object} tpl - teplate item to edit from templateStore
+// @return none
+//
 function editTemplate(tpl) {
     tb = new dijit.form.TextBox({
 	    id: 'template_name',
@@ -748,6 +790,12 @@ function editTemplate(tpl) {
 	});
 }
 
+//
+// getPrefValue - retrieve preference from userPrefs store and set the value of the dijit for "name" accordingly
+// @param {String} scope - preference scope (ie general, notification, etc...)
+// @param {String} name - preference name which must be the name of the dijit where the value is being set
+// @return none
+//
 function getPrefValue(scope, name) {
     showLoading();
     var req = prefStore.fetch({ query: { pref_name: name },
@@ -761,6 +809,12 @@ function getPrefValue(scope, name) {
             }});
 }
 
+//
+// loadUserPrefs - load user preferences from the server.  Unset preferences will be filled in by the 
+//                 server side code with default values.
+// @param none
+// @return none
+//
 function loadUserPrefs() {
     var xhrArgs = {
         url: '/panoptes/',
@@ -785,6 +839,13 @@ function loadUserPrefs() {
     dojo.xhrGet(xhrArgs);        
 }
 
+//
+// createPrefTab - draw user form to editing preferences for a given preference scope
+// @param {String} name - preference scope
+// @param {Array} dijits - array of dijits to add to form
+// @param {Array} labels - array ofstrings to be used as labels for dijits
+// @return none
+//
 function createPrefTab(name, dijits, labels) {
 
     var cp = new dijit.layout.ContentPane({
@@ -842,6 +903,11 @@ function createPrefTab(name, dijits, labels) {
     return(cp);
 }
 
+//
+// openPrefTab - draw form for setting user preferences
+// @param none
+// @return none
+//
 function openPrefTab() {
     
     var bc = new dijit.layout.BorderContainer({
@@ -967,7 +1033,11 @@ function openPrefTab() {
     dijit.byId("panoptes_tab_container").selectChild(bc);
 }
 
-// create new device that's only monitored via ping
+//
+// xhrAddPingable - call server side code to create new device that's only monitored via ping
+// @param {String} ip_address - ip address of device to monitor
+// @return none
+//
 function xhrAddPingable(ip_address) {
     var xhrArgs = {
 	url: '/panoptes/',
@@ -1020,6 +1090,11 @@ function xhrAddPingable(ip_address) {
     dojo.xhrGet(xhrArgs);    
 }
 
+//
+// xhrDeleteTemplate - call server side code to remove the currently selected device template from the server
+// @param none
+// @return none
+//
 function xhrDeleteTemplate () {
     var obj = dijit.byId('delete_template_selector');
 
@@ -1054,6 +1129,11 @@ function xhrDeleteTemplate () {
     }
 }
 
+//
+// xhrCreateTemplate - call server side code to store a newly device template on the server
+// @param {Integer} tpl_id - device template id
+// @return none
+//
 function xhrCreateTemplate (tpl_id) {
     var i = 0;
     var obj = dijit.byId("create_template_obj" + i);
@@ -1110,6 +1190,11 @@ function xhrCreateTemplate (tpl_id) {
     dojo.xhrGet(xhrArgs);    
 }
 
+//
+// xhrCreateSecurityGroup - call server side code to create a user security group
+// @param {String} name - name of group to create
+// @return none
+//
 function xhrCreateSecurityGroup(name) {
     var xhrArgs = {
 	url: '/panoptes/',
@@ -1132,7 +1217,11 @@ function xhrCreateSecurityGroup(name) {
     dojo.xhrGet(xhrArgs);    
 }
 
-
+//
+// xhrDeleteSecurityGroup - call server side code to remove a user security group from the server
+// @param {String} id - id of group to remove
+// @return none
+//
 function xhrDeleteSecurityGroup(id) {
     
     var g_id = id.replace('g_', '');
@@ -1161,6 +1250,12 @@ function xhrDeleteSecurityGroup(id) {
     dojo.xhrGet(xhrArgs);    
 }
 
+//
+// xhrUploadFile - push a file from the user's desktop to the server to be used as a shell monitor
+// @param {String} type - type of file being uploaded.  Currently only supports "script"
+// @param {Object} file - file from client computer
+// @return none
+//
 function xhrUploadFile(type, file) {
     file_contents = Base64.encode(file.getAsText(""));
 
@@ -1189,6 +1284,12 @@ function xhrUploadFile(type, file) {
     dojo.xhrGet(xhrArgs);    
 }
 
+//
+// uploadFile - allow user to select a file from their desktop to upload as a shell monitor.  Only works in firefox
+//              currently
+// @param none
+// @return none
+//
 function uploadFile() {
     file_sel = document.createElement("input");
     file_sel.type = 'file';
@@ -1222,6 +1323,11 @@ function uploadFile() {
     createOverlayWindow("upload_file", items);
 }
 
+//
+// createTemlpate - called when user clicks create template to initiate the template creation process
+// @param none
+// @return none
+//
 function createTemplate () {
     tb = new dijit.form.TextBox({
 	    id: 'template_name',
@@ -1257,6 +1363,11 @@ function createTemplate () {
     createOverlayWindow("create_template", items);
 }
 
+// 
+// addPingable - create form to allow user to add a device manually
+// @param none
+// @return none
+//
 function addPingable() {
     tb = new dijit.form.TextBox({
 	    id: 'ping_device_ip',

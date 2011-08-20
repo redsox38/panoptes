@@ -27,6 +27,14 @@ var _dndMibCreator = function(item, hint) {
     return({ node: node, data: item, type: type });
 };
 
+//
+// xhrCloneMonitor - call server side code to copy a monitor from one device to another
+// @param {String} device_id - source device id
+// @param {Array} monitor_ids - ids of monitors to copy
+// @param {String} type - monitor type
+// @param {String} target_device_id - id of device to copy monitor to
+// @return none
+//
 function xhrCloneMonitor(device_id, monitor_ids, type, target_device_id) {
 
     target_device_id = target_device_id.replace("d_", "");
