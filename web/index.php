@@ -131,9 +131,9 @@ if (is_null($chart_theme)) {
     </script>
     <script type="text/javascript" src="js/_preload.js"></script>
     <script type="text/javascript" src="js/_utils.js"></script>
-    <script type="text/javascript" src="js/discovery.js"></script>
+    <script type="text/javascript" src="js/_discovery.js"></script>
     <script type="text/javascript" src="js/devices.js"></script>
-    <script type="text/javascript" src="js/tools.js"></script>
+    <script type="text/javascript" src="js/_tools.js"></script>
 <?php
 	  echo "<script>dojo.require(\"dojox.charting.themes." . 
 	  $chart_theme . "\");</script>\n";
