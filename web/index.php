@@ -129,12 +129,21 @@ if (is_null($chart_theme)) {
         dojo.require("dijit.form.TextBox");
         dojo.require("dijit.form.Button");
     </script>
-    <script type="text/javascript" src="js/preload.js"></script>
-    <script type="text/javascript" src="js/utils.js"></script>
-    <script type="text/javascript" src="js/discovery.js"></script>
-    <script type="text/javascript" src="js/devices.js"></script>
-    <script type="text/javascript" src="js/tools.js"></script>
 <?php
+	  // include js files. 
+          // use compressed files if they are installed
+	  $js_files = array('preload.js','utils.js','discovery.js',
+			    'devices.js','tools.js');
+          foreach ($js_files as $f) {
+	    if (file_exists("js/_" . $f)) {
+                echo "<script type=\"text/javascript\" src=\"js/_" .
+		  $f . "\"></script>\n";
+	    } else {
+                echo "<script type=\"text/javascript\" src=\"js/" .
+		  $f . "\"></script>\n";
+	    }
+          } 
+
 	  echo "<script>dojo.require(\"dojox.charting.themes." . 
 	  $chart_theme . "\");</script>\n";
 

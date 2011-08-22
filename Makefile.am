@@ -45,7 +45,7 @@ install-data-hook:
 	/bin/chown apache $(DESTDIR)$(libexecdir)/panoptes_scripts
 
 	if test -e $(DESTDIR)$(datarootdir)/panoptes/htpasswd; then \
-            @echo "htpasswd exists, skipping...";\
+            echo "htpasswd exists, skipping...";\
         else \
 	    htpasswd -b -c $(DESTDIR)$(datarootdir)/panoptes/htpasswd admin admin;\
         fi
