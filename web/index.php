@@ -129,17 +129,17 @@ if (is_null($chart_theme)) {
         dojo.require("dijit.form.TextBox");
         dojo.require("dijit.form.Button");
     </script>
-    <script type="text/javascript" src="js/_preload.js"></script>
-    <script type="text/javascript" src="js/_utils.js"></script>
-    <script type="text/javascript" src="js/_discovery.js"></script>
-    <script type="text/javascript" src="js/_devices.js"></script>
-    <script type="text/javascript" src="js/_tools.js"></script>
+    <script type="text/javascript" src="js/preload.js"></script>
+    <script type="text/javascript" src="js/utils.js"></script>
+    <script type="text/javascript" src="js/discovery.js"></script>
+    <script type="text/javascript" src="js/devices.js"></script>
+    <script type="text/javascript" src="js/tools.js"></script>
 <?php
 	  echo "<script>dojo.require(\"dojox.charting.themes." . 
 	  $chart_theme . "\");</script>\n";
 
 	  if ($panoptes->isAdmin($panoptes_current_user)) {
-	    echo '<script type="text/javascript" src="js/_users.js"></script>' . "\n";
+	    echo '<script type="text/javascript" src="js/users.js"></script>' . "\n";
 	  }
 ?>
 

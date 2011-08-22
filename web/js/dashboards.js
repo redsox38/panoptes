@@ -43,7 +43,7 @@ function renderWidget(params) {
 	    hideLoading();
 	    if (data && !data.error) {
 		// fade out node, then delete it if it exists already
-		var node = dojo.byId('widget_box_' + params.position);
+		node = dojo.byId('widget_box_' + params.position);
 
 		if (node) {
 		    fadeArgs = {
@@ -56,7 +56,7 @@ function renderWidget(params) {
 		    prnt.removeChild(node);
 		}
 
-		var node = document.createElement("div");
+		node = document.createElement("div");
 		node.className = "dashboardWidget";
 		node.id = "widget_box_" + params.position;
 		
@@ -82,7 +82,8 @@ function renderWidget(params) {
 		if (data.data.type == 'html') {
 		    node.innerHTML = data.data.value;
 		} else if (data.data.type == "js") {
-		    eval(data.data.value);
+                    js_code = data.data.value;
+		    eval(js_code);
 		} else if (data.data.type == "image") {
 		    graphImg = new Image(200, 200);
 		    graphImg.src = '/panoptes/displayImage.php?file=' + data.data.value

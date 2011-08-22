@@ -713,6 +713,9 @@ distdir: $(DISTFILES)
 	      || exit 1; \
 	  fi; \
 	done
+	$(MAKE) $(AM_MAKEFLAGS) \
+	  top_distdir="$(top_distdir)" distdir="$(distdir)" \
+	  dist-hook
 	-test -n "$(am__skip_mode_fix)" \
 	|| find "$(distdir)" -type d ! -perm -755 \
 		-exec chmod u+rwx,go+rx {} \; -o \
@@ -941,20 +944,20 @@ uninstall-am: uninstall-sbinPROGRAMS
 .PHONY: $(RECURSIVE_CLEAN_TARGETS) $(RECURSIVE_TARGETS) CTAGS GTAGS \
 	all all-am am--refresh check check-am clean clean-generic \
 	clean-libtool clean-sbinPROGRAMS ctags ctags-recursive dist \
-	dist-all dist-bzip2 dist-gzip dist-lzma dist-shar dist-tarZ \
-	dist-xz dist-zip distcheck distclean distclean-compile \
-	distclean-generic distclean-hdr distclean-libtool \
-	distclean-tags distcleancheck distdir distuninstallcheck dvi \
-	dvi-am html html-am info info-am install install-am \
-	install-data install-data-am install-data-hook install-dvi \
-	install-dvi-am install-exec install-exec-am install-html \
-	install-html-am install-info install-info-am install-man \
-	install-pdf install-pdf-am install-ps install-ps-am \
-	install-sbinPROGRAMS install-strip installcheck \
-	installcheck-am installdirs installdirs-am maintainer-clean \
-	maintainer-clean-generic mostlyclean mostlyclean-compile \
-	mostlyclean-generic mostlyclean-libtool pdf pdf-am ps ps-am \
-	tags tags-recursive uninstall uninstall-am \
+	dist-all dist-bzip2 dist-gzip dist-hook dist-lzma dist-shar \
+	dist-tarZ dist-xz dist-zip distcheck distclean \
+	distclean-compile distclean-generic distclean-hdr \
+	distclean-libtool distclean-tags distcleancheck distdir \
+	distuninstallcheck dvi dvi-am html html-am info info-am \
+	install install-am install-data install-data-am \
+	install-data-hook install-dvi install-dvi-am install-exec \
+	install-exec-am install-html install-html-am install-info \
+	install-info-am install-man install-pdf install-pdf-am \
+	install-ps install-ps-am install-sbinPROGRAMS install-strip \
+	installcheck installcheck-am installdirs installdirs-am \
+	maintainer-clean maintainer-clean-generic mostlyclean \
+	mostlyclean-compile mostlyclean-generic mostlyclean-libtool \
+	pdf pdf-am ps ps-am tags tags-recursive uninstall uninstall-am \
 	uninstall-sbinPROGRAMS
 
 
@@ -998,6 +1001,16 @@ install-data-hook:
 	chmod a+rx panoptes_discover.init
 	sed -e "s:SBINDIR:$(sbindir):" panoptes_monitor.init.in > panoptes_monitor.init
 	chmod a+rx panoptes_monitor.init
+
+dist-hook:
+	echo "compressing javascript..."
+	java -jar /var/www/html/js/util/shrinksafe/shrinksafe.jar web/js/dashboards.js > web/js/_dashboards.js
+	java -jar /var/www/html/js/util/shrinksafe/shrinksafe.jar web/js/devices.js > web/js/_devices.js
+	java -jar /var/www/html/js/util/shrinksafe/shrinksafe.jar web/js/device_view.js > web/js/_device_view.js
+	java -jar /var/www/html/js/util/shrinksafe/shrinksafe.jar web/js/tools.js > web/js/_tools.js
+	java -jar /var/www/html/js/util/shrinksafe/shrinksafe.jar web/js/preload.js > web/js/_preload.js
+	java -jar /var/www/html/js/util/shrinksafe/shrinksafe.jar web/js/utils.js > web/js/_utils.js
+	java -jar /var/www/html/js/util/shrinksafe/shrinksafe.jar web/js/discovery.js > web/js/_discovery.js
 
 # Tell versions [3.59,3.63) of GNU make to not export all variables.
 # Otherwise a system limit (for SysV at least) may be exceeded.

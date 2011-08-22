@@ -17,16 +17,6 @@
  *
  */
 
-var _dndMibCreator = function(item, hint) {
-    var type = ['mib'];
-    var node = document.createElement("div");
-    node.innerHTML = item.mib_txt;
-    node.id = dojo.dnd.getUniqueId();
-    node.title = item.mib;
-
-    return({ node: node, data: item, type: type });
-};
-
 //
 // xhrCloneMonitor - call server side code to copy a monitor from one device to another
 // @param {String} device_id - source device id
@@ -2587,7 +2577,15 @@ function snmpMonitorStep2(dataGrid, id, params) {
 
     srcMibs = new dojo.dnd.Source(dnd_src, {
 	    accept: ['mib'],
-	    creator: _dndMibCreator
+//	    creator: function(item, hint) {
+//                var type = ['mib'];
+//                var node = document.createElement("div");
+//                node.innerHTML = item.mib_txt;
+//                node.id = dojo.dnd.getUniqueId();
+//                node.title = item.mib;
+//            
+//                return({ node: node, data: item, type: type });
+//            }
 	});
 
     dnd_tgt = document.createElement("div");
@@ -2601,7 +2599,15 @@ function snmpMonitorStep2(dataGrid, id, params) {
 
     tgtMibs = new dojo.dnd.Source(dnd_tgt, {
 	    accept: ['mib'],
-	    creator: _dndMibCreator
+//	    creator: function(item, hint) {
+//                var type = ['mib'];
+//                var node = document.createElement("div");
+//                node.innerHTML = item.mib_txt;
+//                node.id = dojo.dnd.getUniqueId();
+//                node.title = item.mib;
+//            
+//                return({ node: node, data: item, type: type });
+//            }
 	});
 
     // kick off snmp walk to load available mibs
