@@ -1004,7 +1004,7 @@ install-data-hook:
 
 dist-hook:
 	@echo "compressing javascript..."
-	for file in devices.js users.js tools.js preload.js utils.js discovery.js; do \
+	for file in dashboards.js devices.js users.js tools.js preload.js utils.js discovery.js; do \
 	    java -jar /var/www/html/js/util/shrinksafe/shrinksafe.jar web/js/$$file > web/js/_$$file; \
 	done
 
