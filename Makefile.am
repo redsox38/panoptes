@@ -45,7 +45,7 @@ install-data-hook:
 	/bin/chown apache $(DESTDIR)$(libexecdir)/panoptes_scripts
 
 	if test -e $(DESTDIR)$(datarootdir)/panoptes/htpasswd; then \
-            echo "htpasswd exists, skipping...";\
+            @echo "htpasswd exists, skipping...";\
         else \
 	    htpasswd -b -c $(DESTDIR)$(datarootdir)/panoptes/htpasswd admin admin;\
         fi
@@ -56,12 +56,11 @@ install-data-hook:
 	chmod a+rx panoptes_monitor.init
 
 dist-hook:
-	echo "compressing javascript..."
-	java -jar /var/www/html/js/util/shrinksafe/shrinksafe.jar web/js/dashboards.js > web/js/_dashboards.js
-	java -jar /var/www/html/js/util/shrinksafe/shrinksafe.jar web/js/devices.js > web/js/_devices.js
-	java -jar /var/www/html/js/util/shrinksafe/shrinksafe.jar web/js/device_view.js > web/js/_device_view.js
-	java -jar /var/www/html/js/util/shrinksafe/shrinksafe.jar web/js/tools.js > web/js/_tools.js
-	java -jar /var/www/html/js/util/shrinksafe/shrinksafe.jar web/js/preload.js > web/js/_preload.js
-	java -jar /var/www/html/js/util/shrinksafe/shrinksafe.jar web/js/utils.js > web/js/_utils.js
-	java -jar /var/www/html/js/util/shrinksafe/shrinksafe.jar web/js/discovery.js > web/js/_discovery.js
+	@echo "compressing javascript..."
+	for file in devices.js users.js tools.js preload.js utils.js discovery.js; do \
+	    java -jar /var/www/html/js/util/shrinksafe/shrinksafe.jar web/js/$$file > web/js/_$$file; \
+	done
 
+distclean-local:
+	@echo "removing compressed javascript..."
+	rm -f web/js/_*.js
