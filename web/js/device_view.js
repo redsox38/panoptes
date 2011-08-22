@@ -2570,7 +2570,7 @@ function snmpMonitorStep2(dataGrid, id, params) {
     dnd_src.style.border = '1px solid black';
     dnd_src.style.height = '200px';
     dnd_src.style.width = '350px';
-    dnd_src.style.float = 'left';
+    dnd_src.style.cssFloat = 'left';
     dnd_src.style.align = 'left';
     dnd_src.style.marginRight = '200px';
     dnd_src.style.overflow = 'scroll';
@@ -2593,7 +2593,7 @@ function snmpMonitorStep2(dataGrid, id, params) {
     dnd_tgt.style.border = '1px solid black';
     dnd_tgt.style.height = '200px';
     dnd_tgt.style.width = '350px';
-    dnd_tgt.style.float = 'right';
+    dnd_tgt.style.cssFloat = 'right';
     dnd_tgt.style.align = 'right';
     dnd_tgt.style.overflow = 'scroll';
 
