@@ -148,7 +148,9 @@ if (is_null($chart_theme)) {
 	  $chart_theme . "\");</script>\n";
 
 	  if ($panoptes->isAdmin($panoptes_current_user)) {
-	    echo '<script type="text/javascript" src="js/users.js"></script>' . "\n";
+	    echo '<script type="text/javascript" src="js/' . 
+	      (file_exists("js/_users.js") ? "_users.js" : "users.js" ) . 
+	      '"></script>' . "\n";
 	  }
 ?>
 
