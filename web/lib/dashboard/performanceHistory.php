@@ -312,8 +312,17 @@ class performanceHistoryWidget implements widgetInterface
 	$title = $devices[0];
       }
 
+      // select a font size that will fit number of characters within 200px
+      // div on most user screens
+      // assume avg is 90 px/inch
+      // 200px = 2.22 in
+      // 72 pts/in
+      // pts avail = 72 / 2.22 = 32
+      $font_width = round(32 / strlen($title)); 
+      
+      
       // send back code to draw chart
-      $ret = "var dv = document.createElement('div'); dv.id = '" . $entry->id . "' + '_perf_div'; dv.style.height = '200px'; dv.style.width = '200px'; node.appendChild(dv);var chrt = new dojox.charting.Chart2D('" . $entry->id . "_perf_div', { title: '" . $title . "', titleGap: 5, titleFont: 'normal normal bold 12pt Helvetica' }); chrt.setTheme(dojox.charting.themes." . $theme . "); chrt.addPlot('default', { type: 'Lines', markers: true }); f = new dojox.charting.action2d.Tooltip(chrt, 'default'); chrt.addAxis('x', { natural: true, htmlLabels: true, labelFunc: function(value) { var v = value; var dt = new Date(); dt.setTime(v.replace(/\,/g,'') * 1000); var h = dt.getHours(); h = (h < 10 ? '0' + h : h); var m = dt.getMinutes(); m = (m < 10 ? '0' + m : m); return(h + ':' + m); }, microTicks: false, min: " . $data['_']['start'] . ", max: " . $data['_']['end'] . ", minorTickSpan: " . $data['_']['step'] . " }); chrt.addAxis('y', { vertical: true, min: 0, max: " . $max_y . ", includeZero: true, title: '" . $rrd_info['datas'][0]['vlabel'] . "', font: 'normal normal bold 8pt Helvetica', titleGap: 5 });";
+      $ret = "var dv = document.createElement('div'); dv.id = '" . $entry->id . "' + '_perf_div'; dv.style.height = '200px'; dv.style.width = '200px'; node.appendChild(dv);var chrt = new dojox.charting.Chart2D('" . $entry->id . "_perf_div', { title: '" . $title . "', titleGap: 5, titleFont: 'normal normal bold " . $font_width . "pt Helvetica' }); chrt.setTheme(dojox.charting.themes." . $theme . "); chrt.addPlot('default', { type: 'Lines', markers: true }); f = new dojox.charting.action2d.Tooltip(chrt, 'default'); chrt.addAxis('x', { natural: true, htmlLabels: true, labelFunc: function(value) { var v = value; var dt = new Date(); dt.setTime(v.replace(/\,/g,'') * 1000); var h = dt.getHours(); h = (h < 10 ? '0' + h : h); var m = dt.getMinutes(); m = (m < 10 ? '0' + m : m); return(h + ':' + m); }, microTicks: false, min: " . $data['_']['start'] . ", max: " . $data['_']['end'] . ", minorTickSpan: " . $data['_']['step'] . " }); chrt.addAxis('y', { vertical: true, min: 0, max: " . $max_y . ", includeZero: true, title: '" . $rrd_info['datas'][0]['vlabel'] . "', font: 'normal normal bold 8pt Helvetica', titleGap: 5 });";
 
       // go through each requested rrd and add series to chart
       foreach ($data as $k => $v) {

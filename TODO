@@ -1,5 +1,4 @@
 compress javascript
-fix dashboard charts w/ multiple data series
 dashboard layout editing
 make charts interactive (zoom in, pan left/right, etc)
 network map
