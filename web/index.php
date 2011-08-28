@@ -133,7 +133,7 @@ if (is_null($chart_theme)) {
 	  // include js files. 
           // use compressed files if they are installed
 	  $js_files = array('preload.js','utils.js','discovery.js',
-			    'devices.js','tools.js');
+			    'devices.js','tools.js','device_view.js');
           foreach ($js_files as $f) {
 	    if (file_exists("js/_" . $f)) {
                 echo "<script type=\"text/javascript\" src=\"js/_" .

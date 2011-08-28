@@ -236,14 +236,6 @@ function reloadDeviceTree() {
 //
 function createDeviceTree(){
     if (!deviceTree) {
-
-	//load functions for device view
-	var handle = dojo.xhrGet({
-		url: '/panoptes/js/device_view.js',
-		handleAs: 'javascript',
-		sync: true
-	    });
-
 	reloadDeviceTree();	
     }
 
