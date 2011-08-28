@@ -1,4 +1,4 @@
-legend div cleanup in perf history widget
+replace createElement usage with dojo.create
 compress javascript
 dashboard layout editing
 make charts interactive (zoom in, pan left/right, etc)

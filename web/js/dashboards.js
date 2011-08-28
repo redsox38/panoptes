@@ -53,7 +53,7 @@ function renderWidget(params) {
 		    dojo.fadeOut(fadeArgs).play();
 		    
 		    var prnt = dojo.byId("dashboard_tab");
-		    prnt.removeChild(node);
+		    destroyAll(node);
 		}
 
 		node = document.createElement("div");
