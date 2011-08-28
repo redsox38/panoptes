@@ -257,6 +257,7 @@ function loadDashboard() {
 // @return none
 //
 function openEditDashboardTab() {
+
     if (!dashboards_loaded) {
 	//load functions for dashboard    
 	var handle = dojo.xhrGet({
@@ -264,6 +265,14 @@ function openEditDashboardTab() {
 		handleAs: 'javascript'
 	    });
 	dashboards_loaded = true;
+    }
+
+    // move focus to dashboard tab
+    dijit.byId("panoptes_tab_container").selectChild(dijit.byId("dashboard_tab"));
+
+    // skip the rest if already in edit mode
+    if (dashboard_edit_mode) {
+	return;
     }
 
     dashboard_edit_mode = true;
@@ -438,9 +447,6 @@ function openEditDashboardTab() {
 	    dijit.byId('dashboard_tab').domNode.appendChild(img);
 	}
     }
-
-    // move focus to dashboard tab
-    dijit.byId("panoptes_tab_container").selectChild(dijit.byId("dashboard_tab"));
 }
 
 //
@@ -484,6 +490,15 @@ function deleteUserWidget(idx) {
 // @return none
 //
 function openAutoDiscoveryTab() {
+    // see if the tab exists before trying to create it
+    // and just make it active if it's already present
+    var b = dijit.byId('auto_discovery_tab');
+    
+    if (b != null) {
+	dijit.byId("panoptes_tab_container").selectChild(b);
+	return;
+    }
+
     // create tab
     var cp = new dijit.layout.ContentPane({
             id: 'auto_discovery_tab',
@@ -505,6 +520,15 @@ function openAutoDiscoveryTab() {
 // @return none
 //
 function openSecurityGroupTab() {
+    // see if the tab exists before trying to create it
+    // and just make it active if it's already present
+    var b = dijit.byId('manage_security_groups_tab');
+    
+    if (b != null) {
+	dijit.byId("panoptes_tab_container").selectChild(b);
+	return;
+    }
+
     // create tab
     var cp = new dijit.layout.ContentPane({
             id: 'manage_security_groups_tab',
@@ -565,6 +589,15 @@ function openSecurityGroupTab() {
 // @return none
 //
 function openTemplateTab() {
+    // see if the tab exists before trying to create it
+    // and just make it active if it's already present
+    var b = dijit.byId('manage_template_tab');
+    
+    if (b != null) {
+	dijit.byId("panoptes_tab_container").selectChild(b);
+	return;
+    }
+
     // load list of current templates for edit and delete options
 
     template_data = {
@@ -908,8 +941,7 @@ function createPrefTab(name, dijits, labels) {
 // @param none
 // @return none
 //
-function openPrefTab() {
-    
+function openPrefTab() {    
     // see if the tab exists before trying to create it
     // and just make it active if it's already present
     var b = dijit.byId('prefs_tab');
