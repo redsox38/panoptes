@@ -1,5 +1,5 @@
 replace createElement usage with dojo.create
-compress javascript
+compress dashboards.js
 dashboard layout editing
 make charts interactive (zoom in, pan left/right, etc)
 network map
