@@ -910,6 +910,15 @@ function createPrefTab(name, dijits, labels) {
 //
 function openPrefTab() {
     
+    // see if the tab exists before trying to create it
+    // and just make it active if it's already present
+    var b = dijiy.byId('prefs_tab');
+    
+    if (b != null) {
+	dijit.byId("panoptes_tab_container").selectChild(b);
+	return;
+    }
+
     var bc = new dijit.layout.BorderContainer({
             id: 'prefs_tab',
             title: 'User Preferences',
