@@ -71,7 +71,7 @@ function createAutoDiscoveryGrid(){
 			    nestedSorting: true,
 			    menus: { rowMenu: 'autoDiscoveryRowMenu' }
 			}
-		    }, document.createElement('div'));		    
+		    }, dojo.create('div'));		    
 		dojo.byId('auto_discovery_tab').appendChild(discoveryGrid.domNode);
 		discoveryGrid.startup();		    
 	    }

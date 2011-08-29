@@ -101,26 +101,18 @@ function reloadMonitorEntry(func, dev_id, ent_id, container, reload_date) {
 // @return none
 //
 function createOverlayWindow(id, objs) {
-    var dv1 = document.createElement("div");
-    dv1.id = id;
-    dv1.innerHTML = "";
-    dv1.className = "overlayWindow";
+    var dv1 = dojo.create("div", { id: id, innerHTML: "", className: "overlayWindow" });
 
     // create white background div 
     // to hold form elements
-    var dv2 = document.createElement("div");
-    dv2.id = id + "_bg";
-    dv2.style.backgroundColor = "white";
-    dv2.style.color = "black";
-    dv2.style.border = "solid";
-    dv2.style.marginTop = "75px";
-    dv2.style.marginBottom = "50px";
-    dv2.style.marginLeft = "250px";
-    dv2.style.marginRight = "250px";
-    dv2.style.align = "center";
     // needs to be on top of transparent overlay,
     // but below the zIndex for the combobox
-    dv2.zIndex = 51;
+    var dv2 = dojo.create("div", { id: id + '_bg', 
+				   style: { backgroundColor: "white", color: "black", 
+					    border: "solid", marginTop: "75px", 
+					    marginBottom: "50px", marginLeft: "250px", 
+					    marginRight: "250px", align: "center"}, 
+				   zIndex: 51 });
 
     for (i = 0; i < objs.length; i++) {
 	objs[i].style.marginTop = "5px";
@@ -130,10 +122,11 @@ function createOverlayWindow(id, objs) {
 	dv2.appendChild(objs[i]);
     }
 
-    dv2.appendChild(document.createElement("br"));
-    dv2.appendChild(document.createElement("br"));
-    dv2.appendChild(document.createElement("br"));
-    dv2.appendChild(document.createElement("br"));
+    dojo.create("div", null, dv2, "last");
+    dojo.create("div", null, dv2, "last");
+    dojo.create("div", null, dv2, "last");
+    dojo.create("div", null, dv2, "last");
+
     dv1.appendChild(dv2);
 
     document.body.appendChild(dv1);    

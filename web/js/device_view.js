@@ -99,8 +99,7 @@ function cloneMonitor() {
 	    });
     }
 
-    label = document.createElement("label");
-    label.htmlFor = 'tgt_device';
+    var label = dojo.create("label", { htmlFor: 'tgt_device' });
     label.appendChild(document.createTextNode('Target Device'));
 
     tgt_device = new dijit.form.FilteringSelect({
@@ -153,7 +152,7 @@ function cloneMonitor() {
 
 
     items = [ label, tgt_device.domNode, 
-	      document.createElement("br"),
+	      dojo.create("br"),
 	      rst.domNode, sub.domNode ];
     
     createOverlayWindow("clone_win", items);
@@ -329,12 +328,10 @@ function manageNotifications() {
 	    }
 	});
     
-    blackout_list_div = document.createElement("div");
-    blackout_list_div.id = 'blackout_list_div';
+    var blackout_list_div = dojo.create("div", { id: 'blackout_list_div' });
 
     items = [ blackout_list_div, start_time.domNode, stop_time.domNode,
-	      document.createElement("br"),
-	      rst.domNode, sub.domNode ];
+	      dojo.create("br"), rst.domNode, sub.domNode ];
 
     createOverlayWindow("manage_notifications", items);
 
@@ -444,8 +441,7 @@ function xhrGetNotificationBlackout(monitor_ids, table) {
 			var this_entry = data.data[i];
 			this_entry['index'] = i;
 
-			var this_div = document.createElement('div');
-			this_div.id = 'blackout_list_div_' + i;
+			var this_div = dojo.create('div', { id: 'blackout_list_div_' + i });
 
 			var tb = new dijit.form.TextBox({
 				id: 'blackout_list_' + i,
@@ -737,13 +733,9 @@ function updatePerformanceGraph(id) {
 	load: function(data) {
 	    if (data && !data.error) {
 		// create container div
-		var dv = document.createElement("div");
-		dv.id = id + '_' + metric + '_graph_div';
-		dv.style.height = '250px';
-		dv.style.width = '600px';
-
-		dojo.place(dv, cp.domNode, 'last');
-		
+		var dv = dojo.create("div", { id: id + '_' + metric + '_graph_div',
+					      style: { height: '250px', width: '600px' }},
+		    cp.domNode, 'last');
 
 		var req = prefStore.fetch({ query: { pref_name: 'general_prefs_chart_theme' },
 					    onComplete: function(items, req) {
@@ -835,12 +827,10 @@ function updatePerformanceGraph(id) {
 			    
  			    chrt.render();
 			    
-			    var lgnd_dv = document.createElement("div");
-			    lgnd_dv.id = id + '_' + metric + '_legend_div';
-			    lgnd_dv.style.height = '50px';
-			    lgnd_dv.style.width = '600px';
-			    
-			    dojo.place(lgnd_dv, cp.domNode, 'last');
+			    var lgnd_dv = dojo.create("div", { id: id + '_' + metric + '_legend_div', 
+							       style: { height: '50px',
+									width: '600px' }} , 
+				cp.domNode, 'last');
 			    
 			    f = new dojox.charting.widget.Legend({ chart: chrt }, 
 								 id + '_' + metric + '_legend_div');
@@ -1184,7 +1174,7 @@ function createAlertHistoryTab(id) {
 	    plugins: {
 		nestedSorting: true,
 	    }
-	}, document.createElement('div'));                  
+	}, dojo.create('div'));                  
     tc_1.startup();                
 
     // retrieve first 10 alerts
@@ -1340,7 +1330,7 @@ function createPortMonitorTab(id) {
 		    headerMenu: 'monitorMenu'
 		}
 	    }
-	}, document.createElement('div'));                  
+	}, dojo.create('div'));                  
     tc_1.startup();                
     
     // set color coding for grid rows based on monitor status
@@ -1463,7 +1453,7 @@ function createSNMPTab(id) {
 		    headerMenu: 'monitorMenu',
 		}
 	    }
-	}, document.createElement('div'));                  
+	}, dojo.create('div'));                  
     tc_1.startup();                
     
     // set color coding for grid rows based on monitor status
@@ -1586,7 +1576,7 @@ function createShellTab(id) {
 		    headerMenu: 'monitorMenu',
 		}
 	    }
-	}, document.createElement('div'));                  
+	}, dojo.create('div'));                  
     tc_1.startup();                
     
     // set color coding for grid rows based on monitor status
@@ -1714,7 +1704,7 @@ function createUrlTab(id) {
 		    headerMenu: 'monitorMenu',
 		}
 	    }
-	}, document.createElement('div'));                  
+	}, dojo.create('div'));                  
     tc_1.startup();                
     
     // set color coding for grid rows based on monitor status
@@ -1832,7 +1822,7 @@ function createCertificateTab(id) {
 		    headerMenu: 'monitorMenu',
 		}
 	    }
-	}, document.createElement('div'));                  
+	}, dojo.create('div'));                  
     tc_1.startup();                
     
     // set color coding for grid rows based on monitor status
@@ -2123,8 +2113,7 @@ function _rescheduleMonitor(dataGrid, type, device_id) {
 	    });
     }
 
-    label = document.createElement("label");
-    label.htmlFor = 'resched_date';
+    var label = dojo.create("label", { htmlFor: 'resched_date' });
     label.appendChild(document.createTextNode('New Check Time'));
 
     date = new dijit.form.DateTextBox({
@@ -2189,7 +2178,7 @@ function _rescheduleMonitor(dataGrid, type, device_id) {
         });
 
     items = [ label, date.domNode, time.domNode, 
-	      document.createElement("br"),
+	      dojo.create("br"),
 	      rst.domNode, sub.domNode ];
     
     createOverlayWindow("resched_win", items);
@@ -2200,8 +2189,7 @@ function _addMonitor(dataGrid, type, id) {
 
     var items;
     if (type == "certificate_monitors") {
-	tb_label = document.createElement("label");
-	tb_label.htmlFor = 'add_monitor_url';
+	tb_label = dojo.create("label", { htmlFor: 'add_monitor_url' });
 	tb_label.appendChild(document.createTextNode('URL'));
 
 	tb = new dijit.form.TextBox({
@@ -2240,8 +2228,7 @@ function _addMonitor(dataGrid, type, id) {
 
         items = [ tb_label, tb.domNode, rst.domNode, sub.domNode ];
     } else if (type == "url_monitors") {
-	tb_label = document.createElement("label");
-	tb_label.htmlFor = 'add_monitor_url';
+	tb_label = dojo.create("label", { htmlFor: 'add_monitor_url' });
 	tb_label.appendChild(document.createTextNode('URL'));
 
 	tb = new dijit.form.TextBox({
@@ -2251,8 +2238,7 @@ function _addMonitor(dataGrid, type, id) {
 		placeHolder: 'http://'
 	    });
 
-	tb2_label = document.createElement("label");
-	tb2_label.htmlFor = 'add_monitor_code';
+	tb2_label = dojo.create("label", { htmlFor: 'add_monitor_code'});
 	tb2_label.appendChild(document.createTextNode('Expected HTTP Status Code'));
 
 	tb2 = new dijit.form.TextBox({
@@ -2263,8 +2249,7 @@ function _addMonitor(dataGrid, type, id) {
 		placeHolder: '200'
 	    });
 
-	tb3_label = document.createElement("label");
-	tb3_label.htmlFor = 'add_monitor_content';
+	tb3_label = dojo.create("label", { htmlFor: 'add_monitor_content' });
 	tb3_label.appendChild(document.createTextNode('Expected Content'));
 
 	tb3 = new dijit.form.TextBox({
@@ -2309,12 +2294,11 @@ function _addMonitor(dataGrid, type, id) {
 	    });
 
         items = [ tb_label, tb.domNode, tb2_label, tb2.domNode,
-		  document.createElement("br"),
+		  dojo.create("br"),
 		  tb3_label, tb3.domNode, 
-		  document.createElement("br"), rst.domNode, sub.domNode ];
+		  dojo.create("br"), rst.domNode, sub.domNode ];
     } else if (type == "port_monitors") {
-	tb1_label = document.createElement("label");
-	tb1_label.htmlFor = 'add_monitor_port';
+	tb1_label = dojo.create("label", { htmlFor: 'add_monitor_port' });
 	tb1_label.appendChild(document.createTextNode('Port'));
 
 	tb1 = new dijit.form.NumberSpinner({
@@ -2329,8 +2313,7 @@ function _addMonitor(dataGrid, type, id) {
 		}
 	    });
 
-	tb2_label = document.createElement("label");
-	tb2_label.htmlFor = 'add_monitor_proto';
+	tb2_label = dojo.create("label", { htmlFor: 'add_monitor_proto' });
 	tb2_label.appendChild(document.createTextNode('Protocol'));
 
 	protoStore = new dojo.data.ItemFileReadStore({ 
@@ -2383,10 +2366,9 @@ function _addMonitor(dataGrid, type, id) {
 	    });
 
         items = [ tb1_label, tb1.domNode, tb2_label, tb2.domNode,
-		  document.createElement("br"), rst.domNode, sub.domNode ];
+		  dojo.create("br"), rst.domNode, sub.domNode ];
     } else if (type == "shell_monitors") {
-	sb1_label = document.createElement("label");
-	sb1_label.htmlFor = 'add_monitor_script';
+	sb1_label = dojo.create("label", { htmlFor: 'add_monitor_script' });
 	sb1_label.appendChild(document.createTextNode('Script '));
 
 	sb1 = new dijit.form.FilteringSelect({
@@ -2429,14 +2411,12 @@ function _addMonitor(dataGrid, type, id) {
 		}
 	    });
 
-	param_label = document.createElement("label");
-	param_label.id = 'add_monitor_param_div_label';
-	param_label.htmlFor = 'add_monitor_param_div';
-	param_label.style.display = 'none';
+	param_label = dojo.create("label", { id: 'add_monitor_param_div_label',
+					     htmlFor: 'add_monitor_param_div',
+					     style: { display: 'none' }});
 	param_label.appendChild(document.createTextNode('Parameter '));
 
-	param_div = document.createElement("div");
-	param_div.id = 'add_monitor_param_div';
+	param_div = dojo.create("div", { id: 'add_monitor_param_div' });
 
 	sub = new dijit.form.Button({
 		label: 'Add',
@@ -2481,13 +2461,12 @@ function _addMonitor(dataGrid, type, id) {
 	    });
 
         items = [ sb1_label, sb1.domNode,
-		  document.createElement("br"), 
+		  dojo.create("br"), 
 		  param_label, param_div,
-		  document.createElement("br"), 
+		  dojo.create("br"), 
 		  rst.domNode, sub.domNode ];
     } else if (type == "snmp_monitors") {
-	tb1_label = document.createElement("label");
-	tb1_label.htmlFor = 'add_monitor_community';
+	tb1_label = dojo.create("label", { htmlFor: 'add_monitor_community' });
 	tb1_label.appendChild(document.createTextNode('SNMP Community '));
 
 	tb1 = new dijit.form.TextBox({
@@ -2496,8 +2475,7 @@ function _addMonitor(dataGrid, type, id) {
 		style: 'width: 100px;'
 	    });
 
-	tb2_label = document.createElement("label");
-	tb2_label.htmlFor = 'add_monitor_name';
+	tb2_label = dojo.create("label", { htmlFor: 'add_monitor_name' });
 	tb2_label.appendChild(document.createTextNode('Group Name '));
 
 	tb2 = new dijit.form.TextBox({
@@ -2554,9 +2532,9 @@ function _addMonitor(dataGrid, type, id) {
 	    });
 
         items = [ tb1_label, tb1.domNode,
-		  document.createElement("br"),
+		  dojo.create("br"),
 		  tb2_label, tb2.domNode,
-		  document.createElement("br"),
+		  dojo.create("br"),
 		  rst.domNode, sub.domNode ];
     }
 
@@ -2565,49 +2543,38 @@ function _addMonitor(dataGrid, type, id) {
 
 function snmpMonitorStep2(dataGrid, id, params) {
 
-    dnd_src = document.createElement("div");
-    dnd_src.id = 'add_monitor_dnd_src';
-    dnd_src.style.border = '1px solid black';
-    dnd_src.style.height = '200px';
-    dnd_src.style.width = '350px';
-    dnd_src.style.cssFloat = 'left';
-    dnd_src.style.align = 'left';
-    dnd_src.style.marginRight = '200px';
-    dnd_src.style.overflow = 'scroll';
+    dnd_src = dojo.create("div", { id: 'add_monitor_dnd_src', 
+				   style: { border: ' 1px solid black', align: 'left',
+					    height: '200px', width: '350px', cssFloat: 'left',
+					    marginRight: '200px', overflow: 'scroll' }});
 
     srcMibs = new dojo.dnd.Source(dnd_src, {
 	    accept: ['mib'],
-//	    creator: function(item, hint) {
-//                var type = ['mib'];
-//                var node = document.createElement("div");
-//                node.innerHTML = item.mib_txt;
-//                node.id = dojo.dnd.getUniqueId();
-//                node.title = item.mib;
-//            
-//                return({ node: node, data: item, type: type });
-//            }
+	    creator: function(item, hint) { 
+		var type = ['mib'];
+                var node = dojo.create("div", { id: dojo.dnd.getUniqueId(), 
+						innerHTML: item.mib_txt,
+						title: item.mib });
+            
+                return({ node: node, data: item, type: type });
+            }
 	});
 
-    dnd_tgt = document.createElement("div");
-    dnd_tgt.id = 'add_monitor_dnd_tgt';
-    dnd_tgt.style.border = '1px solid black';
-    dnd_tgt.style.height = '200px';
-    dnd_tgt.style.width = '350px';
-    dnd_tgt.style.cssFloat = 'right';
-    dnd_tgt.style.align = 'right';
-    dnd_tgt.style.overflow = 'scroll';
+    dnd_tgt = dojo.create("div", { id: 'add_monitor_dnd_tgt',
+				   style: { border: '1px solid black', align: 'right',
+					    height: '200px', width: '350px', cssFloat: 'right',
+					    overflow: 'scroll' }});
 
     tgtMibs = new dojo.dnd.Source(dnd_tgt, {
 	    accept: ['mib'],
-//	    creator: function(item, hint) {
-//                var type = ['mib'];
-//                var node = document.createElement("div");
-//                node.innerHTML = item.mib_txt;
-//                node.id = dojo.dnd.getUniqueId();
-//                node.title = item.mib;
-//            
-//                return({ node: node, data: item, type: type });
-//            }
+	    creator: function(item, hint) {
+                var type = ['mib'];
+                var node = dojo.create("div", { id: dojo.dnd.getUniqueId(),
+						innerHTML: item.mib_txt,
+						title: item.mib });
+            
+                return({ node: node, data: item, type: type });
+            }
 	});
 
     // kick off snmp walk to load available mibs
@@ -2657,7 +2624,7 @@ function snmpMonitorStep2(dataGrid, id, params) {
 	});
 
     createOverlayWindow("add_monitor", [ dnd_src, dnd_tgt,
-					 document.createElement("br"),
+					 dojo.create("br"),
 					 rst.domNode, sub.domNode ]);
 }
 
@@ -2678,8 +2645,7 @@ function _ackMonitor(dataGrid, device_id, type) {
 	    });
     }
 
-    tb_label = document.createElement("label");
-    tb_label.htmlFor = 'ack_monitor_msg';
+    tb_label = dojo.create("label", { htmlFor: 'ack_monitor_msg' });
     tb_label.appendChild(document.createTextNode('Comment '));
     
     tb = new dijit.form.TextBox({

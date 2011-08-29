@@ -204,10 +204,8 @@ function _createTemplateObject (e) {
     } else {
 	prnt = dojo.byId("create_template_br" + (i - 1));
     }
-    var b = document.createElement("br");
-    b.id = "create_template_br" + i;
     dojo.place(t.domNode, prnt, "after");
-    dojo.place(b, t.domNode, "after");
+    var b = dojo.create("br", { id: "create_template_br" + i }, t.domNode, "after");
 }
 
 //
@@ -720,14 +718,13 @@ function openTemplateTab() {
 // @return none
 //
 function editTemplate(tpl) {
-    tb = new dijit.form.TextBox({
+    var tb = new dijit.form.TextBox({
 	    id: 'template_name',
 	    name: 'template_name',
             placeHolder: 'Template Name'
 	});
 
-    b = document.createElement("br");
-    b.id = "template_name_br";
+    var b = dojo.create("br", { id: "template_name_br"});
 
     createOverlayWindow("create_template", [ tb.domNode, b ]);
 
@@ -775,10 +772,9 @@ function editTemplate(tpl) {
 		    } else {
 			prnt = dojo.byId("create_template_br" + (i - 1));
 		    }
-		    var b = document.createElement("br");
-		    b.id = "create_template_br" + i;
 		    dojo.place(t.domNode, prnt, "after");
-		    dojo.place(b, t.domNode, "after");
+		    var b = dojo.create("br", { id: "create_template_br" + i }, 
+					t.domNode, "after");
 
 		    _createTemplateParam_internal(tpl_items[i]['type'], i, tpl_val);
 		}
@@ -796,11 +792,8 @@ function editTemplate(tpl) {
 
 		dojo.connect(t, "onChange", dijit.byId('create_template_obj' + i), 
 			     _createTemplateParam);
-		var b = document.createElement("br");
-		b.id = "create_template_br" + i;
 		dojo.place(t.domNode, prnt, "after");
-		dojo.place(b, t.domNode, "after");
-
+		var b = dojo.create("br", { id: "create_template_br" + i }, t.domNode, "after");
 
 		// add buttons at bottom of form when complete
 		rst = new dijit.form.Button({
@@ -888,13 +881,13 @@ function createPrefTab(name, dijits, labels) {
         });
 
     for (i = 0; i < dijits.length; i++) {
-	l = document.createElement("label");
-	l.htmlFor = dijits[i].id;
+	l = dojo.create("label", { htmlFor: dijits[i].id });
+
 	l.appendChild(document.createTextNode(labels[i]));
 	cp.domNode.appendChild(l);
 
 	dijits[i].placeAt(cp.domNode);
-	cp.domNode.appendChild(document.createElement("br"));
+	dojo.create("br", null, cp.domNode, "last");
     }
 
     var sub = new dijit.form.Button({
@@ -1332,9 +1325,7 @@ function xhrUploadFile(type, file) {
 // @return none
 //
 function uploadFile() {
-    file_sel = document.createElement("input");
-    file_sel.type = 'file';
-    file_sel.id = 'upload_file_filename';
+    file_sel = dojo.create("input", { type: 'file', id: 'upload_file_filename' });
 
     sub = new dijit.form.Button({
 	    id: 'upload_file_submit',
@@ -1358,7 +1349,7 @@ function uploadFile() {
         });
 
     var items = [ file_sel, 
-		  document.createElement("br"),
+		  dojo.create("br"),
 		  rst.domNode, sub.domNode ];
 
     createOverlayWindow("upload_file", items);
@@ -1395,8 +1386,7 @@ function createTemplate () {
             }
         });
 
-    b = document.createElement("br");
-    b.id = "template_name_br";
+    var b = dojo.create("br", { id: "template_name_br" });
 
     var items = [ tb.domNode, b,
 		  rst.domNode, sub.domNode ];

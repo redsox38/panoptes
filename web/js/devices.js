@@ -48,8 +48,7 @@ function applyDeviceTemplate() {
 	    labelAttr: 'name'
     	});
 
-    lbl = document.createElement("label");
-    lbl.htmlFor = 'template_selector';
+    lbl = dojo.create("label", { htmlFor: 'template_selector' });
 
     rst = new dijit.form.Button({
 	    label: 'Cancel',
@@ -77,7 +76,7 @@ function applyDeviceTemplate() {
 	});
 
     var items = [ lbl, ts.domNode, 
-		  document.createElement("br"),
+		  dojo.create("br"),
 		  rst.domNode, sub.domNode ];
     
     createOverlayWindow("apply_template_win", items);
@@ -318,7 +317,7 @@ function manageDeviceGroupAccess() {
             }
         });
 
-    op = new dijit.form.FilteringSelect({
+    var op = new dijit.form.FilteringSelect({
             id: 'security_group_op',
             name: 'security_group_op',
             style: 'width: 9em;',
@@ -328,8 +327,7 @@ function manageDeviceGroupAccess() {
 	    placeHolder: 'Access Type'
         });
 
-    lbl = document.createElement("label");
-    lbl.htmlFor = 'security_group_tgt';
+    var lbl = dojo.create("label", { htmlFor: 'security_group_tgt' });
     lbl.appendChild(document.createTextNode(' access to '));
 
     tgt = new dijit.form.FilteringSelect({
@@ -388,7 +386,7 @@ function manageDeviceGroupAccess() {
 
     var items = [ type.domNode, src.domNode, 
 		  lbl, tgt.domNode, 
-		  document.createElement("br"),
+		  dojo.create("br"),
 		  rst.domNode, sub.domNode ];
     
     createOverlayWindow("manage_device_win", items);
@@ -668,11 +666,10 @@ function scheduleOutage() {
     var id = deviceStore.getValues(deviceTreeSelectedItem, 'id').toString();
     id = id.replace("d_", "");
 
-    start_label = document.createElement("label");
-    start_label.htmlFor = 'outage_start_date';
+    var start_label = dojo.create("label", { htmlFor: 'outage_start_date' });
     start_label.appendChild(document.createTextNode('Outage Start'));
 
-    start_date = new dijit.form.DateTextBox({
+    var start_date = new dijit.form.DateTextBox({
             id: 'outage_start_date',
             name: 'outage_start_date',
             closable: true,
@@ -680,7 +677,7 @@ function scheduleOutage() {
             constraints: { datePattern:'MM/dd/yyyy'}
         });
 
-    start_time = new dijit.form.TimeTextBox({
+    var start_time = new dijit.form.TimeTextBox({
             name: 'outage_start_time',
             id: 'outage_start_time',
             value: new Date(),
@@ -691,11 +688,10 @@ function scheduleOutage() {
                 visibleRange: 'T01:00:00'
             }});
 
-    stop_label = document.createElement("label");
-    stop_label.htmlFor = 'outage_stop_date';
+    var stop_label = dojo.create("label", { htmlFor: 'outage_stop_date' });
     stop_label.appendChild(document.createTextNode('Outage Stop'));
 
-    stop_date = new dijit.form.DateTextBox({
+    var stop_date = new dijit.form.DateTextBox({
             id: 'outage_stop_date',
             name: 'outage_stop_date',
             closable: true,
@@ -703,7 +699,7 @@ function scheduleOutage() {
             constraints: { datePattern:'MM/dd/yyyy'}
         });
 
-    stop_time = new dijit.form.TimeTextBox({
+    var stop_time = new dijit.form.TimeTextBox({
             name: 'outage_stop_time',
             id: 'outage_stop_time',
             value: new Date(),
@@ -714,7 +710,7 @@ function scheduleOutage() {
                 visibleRange: 'T01:00:00'
             }});
 
-    rst = new dijit.form.Button({
+    var rst = new dijit.form.Button({
 	    label: 'Cancel',
 	    id: 'schedule_outage_reset',
 	    onClick: function() {
@@ -734,7 +730,7 @@ function scheduleOutage() {
 	    }
 	});
 
-    sub = new dijit.form.Button({
+    var sub = new dijit.form.Button({
 	    label: 'Add',
 	    id: 'schedule_outage_submit',
 	    onClick: function() {
@@ -758,11 +754,11 @@ function scheduleOutage() {
     var items = [ start_label,
 		  start_date.domNode, 
 		  start_time.domNode,
-		  document.createElement("br"),
+		  dojo.create("br"),
 		  stop_label,
 		  stop_date.domNode,
 		  stop_time.domNode,
-		  document.createElement("br"),
+		  dojo.create("br"),
 		  rst.domNode, sub.domNode ];
     
     createOverlayWindow("schedule_outage_win", items);
@@ -884,33 +880,30 @@ function xhrAddParentDevice(child_id, parent_id) {
 function editDeviceInfo() {
     var id = deviceStore.getValues(deviceTreeSelectedItem, 'id').toString();
 
-    tb1_label = document.createElement("label");
-    tb1_label.htmlFor = 'edit_device_name';
+    var tb1_label = dojo.create("label", { htmlFor: 'edit_device_name' });
     tb1_label.appendChild(document.createTextNode('Name'));
     
-    tb1 = new dijit.form.TextBox({
+    var tb1 = new dijit.form.TextBox({
 	    id: 'edit_device_name',
 	    name: 'edit_device_name',
 	    style: 'width: 25em;',
 	    placeHolder: 'device name'
 	});
 
-    tb2_label = document.createElement("label");
-    tb2_label.htmlFor = 'edit_device_os_type';
+    var tb2_label = dojo.create("label", { htmlFor: 'edit_device_os_type' });
     tb2_label.appendChild(document.createTextNode('OS Type'));
     
-    tb2 = new dijit.form.TextBox({
+    var tb2 = new dijit.form.TextBox({
 	    id: 'edit_device_os_type',
 	    name: 'edit_device_os_type',
 	    style: 'width: 25em;',
 	    placeHolder: 'OS Type (ie Linux)'
 	});
 
-    tb3_label = document.createElement("label");
-    tb3_label.htmlFor = 'edit_device_os_detail';
+    var tb3_label = dojo.create("label", { htmlFor: 'edit_device_os_detail' });
     tb3_label.appendChild(document.createTextNode('OS Detail'));
     
-    tb3 = new dijit.form.TextBox({
+    var tb3 = new dijit.form.TextBox({
 	    id: 'edit_device_os_detail',
 	    name: 'edit_device_os_detail',
 	    style: 'width: 25em;',
@@ -957,11 +950,11 @@ function editDeviceInfo() {
 	});
 
     var items = [ tb1_label, tb1.domNode, 
-		  document.createElement("br"),
+		  dojo.create("br"),
 		  tb2_label, tb2.domNode,
-		  document.createElement("br"),
+		  dojo.create("br"),
 		  tb3_label, tb3.domNode,
-		  document.createElement("br"),		  
+		  dojo.create("br"),		  
 		  rst.domNode, sub.domNode ];
     
     createOverlayWindow("edit_device_win", items);

@@ -56,9 +56,8 @@ function renderWidget(params) {
 		    destroyAll(node);
 		}
 
-		node = document.createElement("div");
-		node.className = "dashboardWidget";
-		node.id = "widget_box_" + params.position;
+		node = dojo.create("div", { className: "dashboardWidget", 
+					    id: "widget_box_" + params.position });
 		
 		var x_offset = (params.position % ncols) * widget_width;
 		var y_offset = Math.floor(params.position / ncols) * widget_width;
@@ -132,9 +131,7 @@ function renderWidget(params) {
 //
 function addDashboardWidget() {
     // append selector box to end of dashboard
-    var node = document.createElement("div");
-    node.className = "newDashboardWidget";
-    node.id = "new_widget_box";    
+    var node = dojo.create("div", { className: "newDashboardWidget", id: "new_widget_box" });
 
     var x_offset = (widget_counter % ncols) * widget_width;
     var y_offset = Math.floor(widget_counter / ncols) * widget_width;

@@ -182,9 +182,9 @@ function buildUserForm() {
 	});
     del_sub.placeAt(user_tab.domNode);
 
-    user_tab.domNode.appendChild(document.createElement("br"));
+    dojo.create("br", null, user_tab.domNode, "last");
     user_tab.domNode.appendChild(document.createTextNode("Add User to Group"));
-    user_tab.domNode.appendChild(document.createElement("br"));
+    dojo.create("br", null, user_tab.domNode, "last");
 
     // put up selects for group/user add
     add_src_tb = new dijit.form.FilteringSelect({
@@ -227,9 +227,9 @@ function buildUserForm() {
 
     sub.placeAt(user_tab.domNode);
 
-    user_tab.domNode.appendChild(document.createElement("br"));
+    dojo.create("br", null, user_tab.domNode, "last");
     user_tab.domNode.appendChild(document.createTextNode("Remove User from Group"));
-    user_tab.domNode.appendChild(document.createElement("br"));
+    dojo.create("br", null, user_tab.domNode, "last");
 
     // put up selects for group/user add
    del_src_tb = new dijit.form.FilteringSelect({
@@ -272,6 +272,6 @@ function buildUserForm() {
 
     sub.placeAt(user_tab.domNode);
 
-    user_tab.domNode.appendChild(document.createElement("br"));
+    dojo.create("br", null, user_tab.domNode, "last");
 }
 
