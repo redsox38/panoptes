@@ -78,7 +78,7 @@ int main(int argc, char *argv[]) {
 
   /* set pertinent resource limits as high as we can */
   if (getrlimit(RLIMIT_NOFILE, &lim) < 0) {
-    perror("setrlimit");
+    perror("getrlimit");
   }
   lim.rlim_cur = lim.rlim_max;
 

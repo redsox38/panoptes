@@ -1,5 +1,10 @@
+fix header menus in grids
+fix segfault on http monitor
+support multipage http monitors
+support monitoring http POST requests
 compress dashboards.js
 dashboard layout editing
+make charts update in realtime
 make charts interactive (zoom in, pan left/right, etc)
 network map
 snmp trap/external message receiver
