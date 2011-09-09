@@ -1,5 +1,5 @@
 fix header menus in grids
-fix segfault on http monitor
+fix segfault on snmp monitor
 support multipage http monitors
 support monitoring http POST requests
 compress dashboards.js
@@ -11,3 +11,4 @@ snmp trap/external message receiver
 web service SOAP api (status request/update, etc)
 have twitter updates be more flexible
 agent ?
+fix weird widget thing where the sizes grow after switching to another tab and back

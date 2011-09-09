@@ -70,6 +70,8 @@ monitor_result_t *monitor_url(char *url, char *expect_code, char *expect_content
 
   r->status = MONITOR_RESULT_OK;
 
+  syslog(LOG_DEBUG, "init curl handle for %s", url);
+
   curl_global_init(CURL_GLOBAL_ALL);
 
   curl_handle = curl_easy_init();
@@ -89,18 +91,25 @@ monitor_result_t *monitor_url(char *url, char *expect_code, char *expect_content
       curl_easy_setopt(curl_handle, CURLOPT_WRITEDATA, &web_content);
     }
 
+    syslog(LOG_DEBUG, "starting timer for %s", url);
+
     gettimeofday(&start, NULL);
     res = curl_easy_perform(curl_handle);
     gettimeofday(&stop, NULL);
+
+    syslog(LOG_DEBUG, "stopping timer for %s", url);
 
     /* get elapsed time in milliseconds */
     elapsed = (stop.tv_sec - start.tv_sec) * 1000;
     elapsed += ((stop.tv_usec - start.tv_usec) / 1000);
 
     if (!res) {
+      syslog(LOG_DEBUG, "getting response code: %s", url);
       curl_easy_getinfo(curl_handle, CURLINFO_RESPONSE_CODE, &http_code);
-      r->monitor_msg = (char *)malloc((strlen("Response code: ") + 3) * sizeof(char));
+      r->monitor_msg = (char *)malloc((strlen("Response code: ") + 4) * sizeof(char));
       sprintf(r->monitor_msg, "Response code: %d", http_code);
+
+      syslog(LOG_DEBUG, "got response code: %s %d", url, http_code);
 
       if (http_code == expect_http_code) {
 	/* space for string and a 10 digit number */
