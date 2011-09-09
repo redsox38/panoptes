@@ -1,7 +1,7 @@
 p0f support
 ---------------------------
 support for OS detection duing discovery can be compiled in by adding the --with-p0f flag at build time
-and supplying the path to the p0f socket in panoptes_config.xml.  In order for detection to work correctly,
+and supplying the path to the p0f socket in panoptes_config.xml.  In order for OS detection to work correctly,
 you must pass the -A flag to p0f, ie:
 
 p0f -pdqAQ /var/run/p0f.sock -o /dev/null
