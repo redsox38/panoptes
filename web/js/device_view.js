@@ -2189,17 +2189,17 @@ function _addMonitor(dataGrid, type, id) {
 
     var items;
     if (type == "certificate_monitors") {
-	tb_label = dojo.create("label", { htmlFor: 'add_monitor_url' });
+	var tb_label = dojo.create("label", { htmlFor: 'add_monitor_url' });
 	tb_label.appendChild(document.createTextNode('URL'));
 
-	tb = new dijit.form.TextBox({
+	var tb = new dijit.form.TextBox({
 		id: 'add_monitor_url',
 		name: 'add_monitor_url',
  		style: 'width: 25em;',
 		placeHolder: 'https://'
 	    });
 
-	sub = new dijit.form.Button({
+	var sub = new dijit.form.Button({
 		label: 'Add',
 		id: 'add_monitor_submit',
 		onClick: function() {
@@ -2208,40 +2208,34 @@ function _addMonitor(dataGrid, type, id) {
 			url: dijit.byId('add_monitor_url').getValue() 
 		    };
 		    xhrAddMonitor(dataGrid, id, params);
-		    dijit.byId("add_monitor_url").destroy();
-		    dijit.byId("add_monitor_reset").destroy();
-		    dijit.byId("add_monitor_submit").destroy();
-		    document.body.removeChild(document.getElementById("add_monitor"));
+		    destroyAll("add_monitor");
 	    }
 	});
     
-	rst = new dijit.form.Button({
+	var rst = new dijit.form.Button({
 		label: 'Cancel',
 		id: 'add_monitor_reset',
 		onClick: function() {
-		    dijit.byId("add_monitor_url").destroy();
-		    dijit.byId("add_monitor_reset").destroy();
-		    dijit.byId("add_monitor_submit").destroy();
-		    document.body.removeChild(document.getElementById("add_monitor"));
+		    destroyAll("add_monitor");
 		}
 	    });
 
         items = [ tb_label, tb.domNode, rst.domNode, sub.domNode ];
     } else if (type == "url_monitors") {
-	tb_label = dojo.create("label", { htmlFor: 'add_monitor_url' });
+	var tb_label = dojo.create("label", { htmlFor: 'add_monitor_url' });
 	tb_label.appendChild(document.createTextNode('URL'));
 
-	tb = new dijit.form.TextBox({
+	var tb = new dijit.form.TextBox({
 		id: 'add_monitor_url',
 		name: 'add_monitor_url',
 		style: 'width: 25em;',
 		placeHolder: 'http://'
 	    });
 
-	tb2_label = dojo.create("label", { htmlFor: 'add_monitor_code'});
+	var tb2_label = dojo.create("label", { htmlFor: 'add_monitor_code'});
 	tb2_label.appendChild(document.createTextNode('Expected HTTP Status Code'));
 
-	tb2 = new dijit.form.TextBox({
+	var tb2 = new dijit.form.TextBox({
 		id: 'add_monitor_code',
 		name: 'add_monitor_code',
 		style: 'width: 5em;',
@@ -2249,10 +2243,10 @@ function _addMonitor(dataGrid, type, id) {
 		placeHolder: '200'
 	    });
 
-	tb3_label = dojo.create("label", { htmlFor: 'add_monitor_content' });
+	var tb3_label = dojo.create("label", { htmlFor: 'add_monitor_content' });
 	tb3_label.appendChild(document.createTextNode('Expected Content'));
 
-	tb3 = new dijit.form.TextBox({
+	var tb3 = new dijit.form.TextBox({
 		id: 'add_monitor_content',
 		name: 'add_monitor_contet',
 		style: 'width: 20em;',
@@ -2260,7 +2254,30 @@ function _addMonitor(dataGrid, type, id) {
 		placeHolder: 'optional text in web page'
 	    });
 
-	sub = new dijit.form.Button({
+	var httpMethodStore = new dojo.data.ItemFileReadStore({
+		data: {
+		    identifier: 'value',
+		    label: 'label',
+		    items: [
+	                    { value: 'get', label: 'GET' },
+	                    { value: 'post', label: 'POST' },
+	                    { value: 'head', label: 'HEAD' },
+			    ],
+		} 
+	});		
+
+	var tb4_label = dojo.create("label", { htmlFor: 'add_monitor_method' });
+	tb4_label.appendChild(document.createTextNode('Request Method'));
+
+	var tb4 = new dijit.form.FilteringSelect({
+		id: 'add_monitor_method',
+		name: 'add_monitor_method',	
+		store: httpMethodStore,
+		searchAttr: 'value',
+		value: 'get'
+	    });
+	
+	var sub = new dijit.form.Button({
 		label: 'Add',
 		id: 'add_monitor_submit',
 		onClick: function() {
@@ -2268,40 +2285,33 @@ function _addMonitor(dataGrid, type, id) {
 			type: 'url_monitors',
 			url: dijit.byId('add_monitor_url').getValue(),
 			expect_http_status: dijit.byId('add_monitor_code').getValue(),
-			expect_http_content: dijit.byId('add_monitor_content').getValue()
+			expect_http_content: dijit.byId('add_monitor_content').getValue(),
+			http_method: dijit.byId('add_monitor_method').getValue()
 		    };
 		    xhrAddMonitor(dataGrid, id, params);
-		    dijit.byId("add_monitor_url").destroy();
-		    dijit.byId("add_monitor_code").destroy();
-		    dijit.byId("add_monitor_content").destroy();
-		    dijit.byId("add_monitor_reset").destroy();
-		    dijit.byId("add_monitor_submit").destroy();
-		    document.body.removeChild(document.getElementById("add_monitor"));
+		    destroyAll("add_monitor");
 	    }
 	});
     
-	rst = new dijit.form.Button({
+	var rst = new dijit.form.Button({
 		label: 'Cancel',
 		id: 'add_monitor_reset',
 		onClick: function() {
-		    dijit.byId("add_monitor_url").destroy();
-		    dijit.byId("add_monitor_code").destroy();
-		    dijit.byId("add_monitor_content").destroy();
-		    dijit.byId("add_monitor_reset").destroy();
-		    dijit.byId("add_monitor_submit").destroy();
-		    document.body.removeChild(document.getElementById("add_monitor"));
+		    destroyAll("add_monitor");
 		}
 	    });
 
         items = [ tb_label, tb.domNode, tb2_label, tb2.domNode,
 		  dojo.create("br"),
 		  tb3_label, tb3.domNode, 
+		  dojo.create("br"),
+		  tb4_label, tb4.domNode, 
 		  dojo.create("br"), rst.domNode, sub.domNode ];
     } else if (type == "port_monitors") {
-	tb1_label = dojo.create("label", { htmlFor: 'add_monitor_port' });
+	var tb1_label = dojo.create("label", { htmlFor: 'add_monitor_port' });
 	tb1_label.appendChild(document.createTextNode('Port'));
 
-	tb1 = new dijit.form.NumberSpinner({
+	var tb1 = new dijit.form.NumberSpinner({
 		id: 'add_monitor_port',
 		name: 'add_monitor_port',
 		value: 80,
@@ -2313,10 +2323,10 @@ function _addMonitor(dataGrid, type, id) {
 		}
 	    });
 
-	tb2_label = dojo.create("label", { htmlFor: 'add_monitor_proto' });
+	var tb2_label = dojo.create("label", { htmlFor: 'add_monitor_proto' });
 	tb2_label.appendChild(document.createTextNode('Protocol'));
 
-	protoStore = new dojo.data.ItemFileReadStore({ 
+	var protoStore = new dojo.data.ItemFileReadStore({ 
 		data: {
 		    identifier: 'value',
 		    label: 'label',
@@ -2327,7 +2337,7 @@ function _addMonitor(dataGrid, type, id) {
 		} 
 	});		
 
-	tb2 = new dijit.form.FilteringSelect({
+	var tb2 = new dijit.form.FilteringSelect({
 		id: 'add_monitor_proto',
 		name: 'add_monitor_proto',	
 		store: protoStore,
@@ -2335,7 +2345,7 @@ function _addMonitor(dataGrid, type, id) {
 		value: 'tcp'
 	    });
 
-	sub = new dijit.form.Button({
+	var sub = new dijit.form.Button({
 		label: 'Add',
 		id: 'add_monitor_submit',
 		onClick: function() {
@@ -2345,33 +2355,25 @@ function _addMonitor(dataGrid, type, id) {
 			proto: dijit.byId('add_monitor_proto').getValue() 
 		    };
 		    xhrAddMonitor(dataGrid, id, params);
-		    dijit.byId("add_monitor_proto").destroy();
-		    dijit.byId("add_monitor_port").destroy();
-		    dijit.byId("add_monitor_reset").destroy();
-		    dijit.byId("add_monitor_submit").destroy();
-		    document.body.removeChild(document.getElementById("add_monitor"));
+		    destroyAll("add_monitor");
 	    }
 	});
     
-	rst = new dijit.form.Button({
+	var rst = new dijit.form.Button({
 		label: 'Cancel',
 		id: 'add_monitor_reset',
 		onClick: function() {
-		    dijit.byId("add_monitor_proto").destroy();
-		    dijit.byId("add_monitor_port").destroy();
-		    dijit.byId("add_monitor_reset").destroy();
-		    dijit.byId("add_monitor_submit").destroy();
-		    document.body.removeChild(document.getElementById("add_monitor"));
+		    destroyAll("add_monitor");
 		}
 	    });
 
         items = [ tb1_label, tb1.domNode, tb2_label, tb2.domNode,
 		  dojo.create("br"), rst.domNode, sub.domNode ];
     } else if (type == "shell_monitors") {
-	sb1_label = dojo.create("label", { htmlFor: 'add_monitor_script' });
+	var sb1_label = dojo.create("label", { htmlFor: 'add_monitor_script' });
 	sb1_label.appendChild(document.createTextNode('Script '));
 
-	sb1 = new dijit.form.FilteringSelect({
+	var sb1 = new dijit.form.FilteringSelect({
 		id: 'add_monitor_script',
 		store: availableShellMonitorStore,
 		title: 'Monitor',	    
@@ -2411,14 +2413,14 @@ function _addMonitor(dataGrid, type, id) {
 		}
 	    });
 
-	param_label = dojo.create("label", { id: 'add_monitor_param_div_label',
-					     htmlFor: 'add_monitor_param_div',
-					     style: { display: 'none' }});
+	var param_label = dojo.create("label", { id: 'add_monitor_param_div_label',
+						 htmlFor: 'add_monitor_param_div',
+						 style: { display: 'none' }});
 	param_label.appendChild(document.createTextNode('Parameter '));
 
-	param_div = dojo.create("div", { id: 'add_monitor_param_div' });
+	var param_div = dojo.create("div", { id: 'add_monitor_param_div' });
 
-	sub = new dijit.form.Button({
+	var sub = new dijit.form.Button({
 		label: 'Add',
 		id: 'add_monitor_submit',
 		onClick: function() {
@@ -2438,14 +2440,11 @@ function _addMonitor(dataGrid, type, id) {
 		    if (prms) {
 			prms.destroy();
 		    }
-		    dijit.byId("add_monitor_script").destroy();
-		    dijit.byId("add_monitor_reset").destroy();
-		    dijit.byId("add_monitor_submit").destroy();
-		    document.body.removeChild(document.getElementById("add_monitor"));
+		    destroyAll("add_monitor");
 	    }
 	});
     
-	rst = new dijit.form.Button({
+	var rst = new dijit.form.Button({
 		label: 'Cancel',
 		id: 'add_monitor_reset',
 		onClick: function() {
@@ -2453,10 +2452,7 @@ function _addMonitor(dataGrid, type, id) {
 		    if (prms) {
 			prms.destroy();
 		    }
-		    dijit.byId("add_monitor_script").destroy();
-		    dijit.byId("add_monitor_reset").destroy();
-		    dijit.byId("add_monitor_submit").destroy();
-		    document.body.removeChild(document.getElementById("add_monitor"));
+		    destroyAll("add_monitor");
 		}
 	    });
 
@@ -2466,25 +2462,25 @@ function _addMonitor(dataGrid, type, id) {
 		  dojo.create("br"), 
 		  rst.domNode, sub.domNode ];
     } else if (type == "snmp_monitors") {
-	tb1_label = dojo.create("label", { htmlFor: 'add_monitor_community' });
+	var tb1_label = dojo.create("label", { htmlFor: 'add_monitor_community' });
 	tb1_label.appendChild(document.createTextNode('SNMP Community '));
 
-	tb1 = new dijit.form.TextBox({
+	var tb1 = new dijit.form.TextBox({
 		id: 'add_monitor_community',
 		name: 'add_monitor_community',
 		style: 'width: 100px;'
 	    });
 
-	tb2_label = dojo.create("label", { htmlFor: 'add_monitor_name' });
+	var tb2_label = dojo.create("label", { htmlFor: 'add_monitor_name' });
 	tb2_label.appendChild(document.createTextNode('Group Name '));
 
-	tb2 = new dijit.form.TextBox({
+	var tb2 = new dijit.form.TextBox({
 		id: 'add_monitor_name',
 		name: 'add_monitor_name',
 		style: 'width: 100px;'
 	    });
 
-	sub = new dijit.form.Button({
+	var sub = new dijit.form.Button({
 		label: 'Load MIBs',
 		id: 'add_monitor_submit',
 		onClick: function() {
@@ -2494,40 +2490,18 @@ function _addMonitor(dataGrid, type, id) {
 			name: dijit.byId('add_monitor_name').getValue()
 		    };
 		    // destroy dijits
-		    dijit.byId("add_monitor_community").destroy();
-		    dijit.byId("add_monitor_name").destroy();
-		    dijit.byId("add_monitor_reset").destroy();
-		    dijit.byId("add_monitor_submit").destroy();
-		    
-		    // destroy remaining dom nodes
-		    win = document.getElementById("add_monitor");
-		    while (win.hasChildNodes() >= 1) {
-			win.removeChild(win.firstChild);
-		    }
-
-		    document.body.removeChild(win);
+		    destroyAll("add_monitor");
 
 		    snmpMonitorStep2(dataGrid, id, params);
 		}
 	});
     
-	rst = new dijit.form.Button({
+	var rst = new dijit.form.Button({
 		label: 'Cancel',
 		id: 'add_monitor_reset',
 		onClick: function() {
 		    // destroy dijits
-		    dijit.byId("add_monitor_community").destroy();
-		    dijit.byId("add_monitor_name").destroy();
-		    dijit.byId("add_monitor_reset").destroy();
-		    dijit.byId("add_monitor_submit").destroy();
-		    
-		    // destroy remaining dom nodes
-		    win = document.getElementById("add_monitor");
-		    while (win.hasChildNodes() >= 1) {
-			win.removeChild(win.firstChild);
-		    }
-
-		    document.body.removeChild(win);
+		    destroyAll("add_monitor");
 		}
 	    });
 
