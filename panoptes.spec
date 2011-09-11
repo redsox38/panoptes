@@ -1,10 +1,10 @@
 Summary: Network Monitor tool
 Name: panoptes
-Version: 1.6
+Version: 1.7
 Release: 1
 License: GPL
 Group: Applications/Network
-Source: https://github.com/downloads/redsox38/panoptes/panoptes-1.6.tar.gz
+Source: https://github.com/downloads/redsox38/panoptes/panoptes-1.7.tar.gz
 Packager: Todd Merritt <redsox38@gmail.com>
 Requires: mysql-libs >= 5.0, libxml2, net-snmp-libs, libcurl >= 7.19.1, php >= 5.0, php-pdo, php-gd, php-snmp, php-xml, rrdtool
 BuildRequires: mysql-devel, libxml2-devel, net-snmp-devel, libcurl-devel, rrdtool-devel

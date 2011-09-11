@@ -22,6 +22,7 @@ cat dbinit-3.sql | mysql -u $mysql_user -p$mysql_password panoptes
 cat dbinit-4.sql | mysql -u $mysql_user -p$mysql_password panoptes
 cat dbinit-5.sql | mysql -u $mysql_user -p$mysql_password panoptes
 cat dbinit-6.sql | mysql -u $mysql_user -p$mysql_password panoptes
+cat dbinit-7.sql | mysql -u $mysql_user -p$mysql_password panoptes
 echo "grant all privileges on panoptes.* to \"${panoptes_user}\"@\"localhost\" identified by \"${panoptes_password}\"" | mysql -u $mysql_user -p$mysql_password panoptes
 
 echo "Completed!"

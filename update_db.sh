@@ -11,19 +11,26 @@ stty echo
 echo
 
 case $vers in
+    1.6 )
+        cat dbinit-7.sql | mysql -u $mysql_user -p$mysql_password panoptes
+        echo "Database updated."
+        ;;
     1.5 )
         cat dbinit-6.sql | mysql -u $mysql_user -p$mysql_password panoptes
+        cat dbinit-7.sql | mysql -u $mysql_user -p$mysql_password panoptes
         echo "Database updated."
         ;;
     1.4 )
         cat dbinit-5.sql | mysql -u $mysql_user -p$mysql_password panoptes
         cat dbinit-6.sql | mysql -u $mysql_user -p$mysql_password panoptes
+        cat dbinit-7.sql | mysql -u $mysql_user -p$mysql_password panoptes
         echo "Database updated."
         ;;
     1.3 )
         cat dbinit-4.sql | mysql -u $mysql_user -p$mysql_password panoptes
         cat dbinit-5.sql | mysql -u $mysql_user -p$mysql_password panoptes
         cat dbinit-6.sql | mysql -u $mysql_user -p$mysql_password panoptes
+        cat dbinit-7.sql | mysql -u $mysql_user -p$mysql_password panoptes
         echo "Database updated."
         ;;
     1.2 )
@@ -31,6 +38,7 @@ case $vers in
         cat dbinit-4.sql | mysql -u $mysql_user -p$mysql_password panoptes
         cat dbinit-5.sql | mysql -u $mysql_user -p$mysql_password panoptes
         cat dbinit-6.sql | mysql -u $mysql_user -p$mysql_password panoptes
+        cat dbinit-7.sql | mysql -u $mysql_user -p$mysql_password panoptes
         echo "Database updated."
         ;;
     1.1 )
@@ -38,6 +46,7 @@ case $vers in
         cat dbinit-4.sql | mysql -u $mysql_user -p$mysql_password panoptes
         cat dbinit-5.sql | mysql -u $mysql_user -p$mysql_password panoptes
         cat dbinit-6.sql | mysql -u $mysql_user -p$mysql_password panoptes
+        cat dbinit-7.sql | mysql -u $mysql_user -p$mysql_password panoptes
         echo "Database updated."
         ;;
     1.0 )
@@ -45,6 +54,7 @@ case $vers in
         cat dbinit-4.sql | mysql -u $mysql_user -p$mysql_password panoptes
         cat dbinit-5.sql | mysql -u $mysql_user -p$mysql_password panoptes
         cat dbinit-6.sql | mysql -u $mysql_user -p$mysql_password panoptes
+        cat dbinit-7.sql | mysql -u $mysql_user -p$mysql_password panoptes
         echo "Database updated."
         ;;
     * )
