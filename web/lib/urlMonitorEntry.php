@@ -59,6 +59,8 @@ class urlMonitorEntry extends monitorEntry
 			   'url'                 => $this->url,
 			   'expect_http_status'  => $this->expect_http_status,
 			   'expect_http_content' => $this->expect_http_content,
+			   'request_method'      => $this->request_method,
+			   'http_post_vars'      => $this->http_post_vars,
 			   'check_interval'      => '15',
 			   'last_check'          => 'NOW()',
 			   'next_check'          => 'NOW()',

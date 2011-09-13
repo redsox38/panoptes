@@ -1648,9 +1648,14 @@ function createUrlTab(id) {
 	    width: '190px'
 	},      
 	{
+	    field: 'request_method',
+	    name: 'Method',
+	    width: '60px'
+	},
+	{
 	    field: 'expect_http_status',
 	    name: 'Expect Code',
-	    width: '95px'
+	    width: '70px'
 	},      
 	{
 	    field: 'expect_http_content',
@@ -2259,9 +2264,9 @@ function _addMonitor(dataGrid, type, id) {
 		    identifier: 'value',
 		    label: 'label',
 		    items: [
-	                    { value: 'get', label: 'GET' },
-	                    { value: 'post', label: 'POST' },
-	                    { value: 'head', label: 'HEAD' },
+	                    { value: 'GET', label: 'get' },
+	                    { value: 'POST', label: 'post' },
+	                    { value: 'HEAD', label: 'head' },
 			    ],
 		} 
 	});		
@@ -2274,6 +2279,11 @@ function _addMonitor(dataGrid, type, id) {
 		name: 'add_monitor_method',	
 		store: httpMethodStore,
 		searchAttr: 'value',
+		labelFunc: function(itm, str) {
+		    var label = str.getValue(itm, 'label');
+		    return label;
+		},
+		labelAttr: 'label',
 		value: 'get'
 	    });
 	
@@ -2286,7 +2296,8 @@ function _addMonitor(dataGrid, type, id) {
 			url: dijit.byId('add_monitor_url').getValue(),
 			expect_http_status: dijit.byId('add_monitor_code').getValue(),
 			expect_http_content: dijit.byId('add_monitor_content').getValue(),
-			http_method: dijit.byId('add_monitor_method').getValue()
+			request_method: dijit.byId('add_monitor_method').getValue(),
+			http_post_vars: ''
 		    };
 		    xhrAddMonitor(dataGrid, id, params);
 		    destroyAll("add_monitor");

@@ -96,6 +96,15 @@ function _createTemplateParam_internal(type, idx, param_val) {
 	    });
 	dojo.place(param_b.domNode, "create_template_br" + idx, "before");
 
+	param_c = new dijit.form.TextBox({
+		id: 'create_template_param_c_' + idx,
+		name: 'create_template_param_c_' + idx,
+		style: 'width: 5em;',
+		required: true,
+		placeHolder: 'get'
+	    });
+	dojo.place(param_c.domNode, "create_template_br" + idx, "before");
+
 	param = new dijit.form.TextBox({
 		id: 'create_template_param' + idx,
 		name: 'create_template_param' + idx,
@@ -103,11 +112,13 @@ function _createTemplateParam_internal(type, idx, param_val) {
 		required: false,
 		placeHolder: 'optional text in web page'
 	    });
+
 	if (param_val != null) {
 	    param_a.set('value', param_val[0]);
 	    param_b.set('value', param_val[1]);
-	    if (param_val.length > 2) {
-		param.set('value', param_val[2]);
+	    param_c.set('value', param_val[2]);
+	    if (param_val.length > 3) {
+		param.set('value', param_val[3]);
 	    }
 	}
     } else {
@@ -749,7 +760,8 @@ function editTemplate(tpl) {
 		    } else if (tpl_items[i]['type'] == 'URL') {
 			tpl_val = [ tpl_items[i]['url'], 
 				    tpl_items[i]['code'], 
-				    tpl_items[i]['content'] ];
+				    tpl_items[i]['method'], 
+				    tpl_items[i]['content']];
 		    }
 
 		    t = new dijit.form.FilteringSelect({
@@ -1189,8 +1201,9 @@ function xhrCreateTemplate (tpl_id) {
 	} else if (type == "URL") {
 	    var prm0 = dijit.byId("create_template_param_a_" + i).get('value');
 	    var prm1 = dijit.byId("create_template_param_b_" + i).get('value');
-	    var prm2 = dijit.byId("create_template_param" + i).get('value');
-	    params.push({ 'type': type, 'url' : prm0, 'code' : prm1, 'content' : prm2 });	    
+	    var prm2 = dijit.byId("create_template_param_c_" + i).get('value');
+	    var prm3 = dijit.byId("create_template_param" + i).get('value');
+	    params.push({ 'type': type, 'url' : prm0, 'code' : prm1, 'method' : prm2,'content' : prm3 });
 	}
 
 	i++;

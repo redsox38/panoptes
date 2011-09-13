@@ -980,6 +980,8 @@ class panoptes
 	$ent->url = $r['url'];
 	$ent->expect_http_status = $r['expect_http_status'];
 	$ent->expect_http_content = $r['expect_http_content'];
+	$ent->request_method = $r['request_method'];
+	$ent->http_post_vars = $r['http_post_vars'];
 	$ent->status = $r['status'];
 	$ent->status_string = $r['status_string'];
 	$ent->disabled = $r['disabled'];
@@ -1780,6 +1782,8 @@ class panoptes
 				 'url'                 => $a->url,
 				 'expect_http_status'  => $a->expect_http_status,
 				 'expect_http_content' => $a->expect_http_content,
+				 'request_method'      => $a->request_method,
+				 'http_post_vars'      => $a->http_post_vars,
 				 'last_check'          => $a->last_check,
 				 'next_check'          => $a->next_check,
 				 'ack_by'              => $ack['ack_by'],
@@ -1827,6 +1831,8 @@ class panoptes
 		     'url'                 => $a->url,
 		     'expect_http_status'  => $a->expect_http_status,
 		     'expect_http_content' => $a->expect_http_content,
+		     'request_method'      => $a->request_method,
+		     'http_post_vars'      => $a->http_post_vars,
 		     'last_check'          => $a->last_check,
 		     'next_check'          => $a->next_check,
 		     'ack_by'              => $ack['ack_by'],
@@ -2079,6 +2085,8 @@ class panoptes
 	$ent->url = $args['params']['url'];
 	$ent->expect_http_status = $args['params']['expect_http_status'];
 	$ent->expect_http_content = $args['params']['expect_http_content'];
+	$ent->request_method = $args['params']['request_method'];
+	$ent->http_post_vars = $args['params']['http_post_vars'];
 	$ent->commit();
 
 	array_push($data, array (
@@ -2087,6 +2095,8 @@ class panoptes
 				 'url'                 => $ent->url,
 				 'expect_http_status'  => $ent->expect_http_status,
 				 'expect_http_content' => $ent->expect_http_content,
+				 'request_mathod'      => $ent->request_method,
+				 'http_post_vars'      => $ent->http_post_vars,
 				 'last_check'          => '0000-00-00 00:00:00',
 				 'next_check'          => '0000-00-00 00:00:00',
 				 'status'              => 'new',
@@ -3312,6 +3322,8 @@ class panoptes
 	      $ent->url = $p['url'];
 	      $ent->expect_http_status = $p['code'];
 	      $ent->expect_http_content = $p['content'];
+	      $ent->request_mathod = $p['method'];
+	      $ent->http_post_vars = $p['post_vars'];
 	      $ent->commit();
 	    }
 	  }
