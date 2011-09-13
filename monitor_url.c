@@ -54,7 +54,12 @@ static size_t write_mem_callback(void *ptr, size_t size, size_t nmemb, void *dat
   return(realsize);
 }
  
-monitor_result_t *monitor_url(char *url, char *expect_code, char *expect_content, monitor_result_t *r)
+monitor_result_t *monitor_url(char *url, 
+			      char *expect_code, 
+			      char *expect_content, 
+			      char *request_method,
+			      char *http_post_vars,
+			      monitor_result_t *r)
 {
 
   CURL           *curl_handle;
@@ -82,6 +87,17 @@ monitor_result_t *monitor_url(char *url, char *expect_code, char *expect_content
     curl_easy_setopt(curl_handle, CURLOPT_SSL_VERIFYHOST, 0L);
     curl_easy_setopt(curl_handle, CURLOPT_CERTINFO, 1L);
     curl_easy_setopt(curl_handle, CURLOPT_ERRORBUFFER, errbuf);
+
+    /* set head only if head request */
+    if (!strcmp(request_method, "HEAD")) {
+      curl_easy_setopt(curl_handle, CURLOPT_NOBODY, 1L);
+    } else if (!strcmp(request_method, "POST")) {
+      curl_easy_setopt(curl_handle, CURLOPT_POST, 1L);
+
+      /* add post vars */
+      if (http_post_vars != NULL) {
+      }
+    }
 
     if (expect_content != NULL) {
       syslog(LOG_DEBUG, "looking for url content: %s", expect_content);

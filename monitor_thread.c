@@ -42,7 +42,7 @@ void *monitor_thread(void *arg)
   char             *proto, *port;
   int              portnum;
   /* for certificate/utl monitoring */
-  char             *url, *expect_http_status;
+  char             *url, *expect_http_status, request_method;
   /* for snmp monitoring */
   char             *nm, *oid, *comm;
   /* for shell script monitoring */
@@ -228,9 +228,11 @@ void *monitor_thread(void *arg)
 	  addr = get_attr_val(&m, "address");
 	  url = get_attr_val(&m, "url");
 	  expect_http_status = get_attr_val(&m, "expect_http_status");
-	  if ((url != NULL) && (expect_http_status != NULL)) {
+	  request_method = get_attr_val(&m, "request_method");
+	  if ((url != NULL) && (expect_http_status != NULL) && (request_method != NULL)) {
 	    
-	    monitor_url(url, expect_http_status, get_attr_val(&m, "expect_http_content"), &r);
+	    monitor_url(url, expect_http_status, get_attr_val(&m, "expect_http_content"), 
+			request_method, get_attr_val(&m, "http_post_vars"), &r);
 	    update_monitor_entry(&m, &r);
 	    
 	    if (current_status != r.status) {
@@ -245,7 +247,7 @@ void *monitor_thread(void *arg)
 	    
 	    free_monitor_result(&r, 0);
 	  } else {
-	    syslog(LOG_NOTICE, "Missing data required to monitor: %s %s", 
+	    syslog(LOG_NOTICE, "Missing data (method, url, response code) required to monitor: %s %s", 
 		   m.table_name, m.id);
 	  }
 	} else {
