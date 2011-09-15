@@ -1,7 +1,6 @@
 support range of response codes for http monitor
 fix header menus in grids
 fix segfault on snmp monitor
-support multipage http monitors
 support monitoring http POST requests
 compress dashboards.js
 dashboard layout editing

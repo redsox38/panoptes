@@ -2253,7 +2253,7 @@ function _addMonitor(dataGrid, type, id) {
 
 	var tb3 = new dijit.form.TextBox({
 		id: 'add_monitor_content',
-		name: 'add_monitor_contet',
+		name: 'add_monitor_content',
 		style: 'width: 20em;',
 		required: false,
 		placeHolder: 'optional text in web page'
@@ -2287,6 +2287,19 @@ function _addMonitor(dataGrid, type, id) {
 		value: 'get'
 	    });
 	
+
+	var tb5_label = dojo.create("label", { htmlFor: 'add_monitor_post_vars' });
+	tb5_label.appendChild(document.createTextNode('Post Variables'));
+
+	var tb5 = new dijit.form.TextBox({
+		id: 'add_monitor_post_vars',
+		name: 'add_monitor_post_vars',
+		style: 'width: 20em;',
+		required: false,
+		placeHolder: 'var1=val1,var2=val2...'
+	    });
+
+	
 	var sub = new dijit.form.Button({
 		label: 'Add',
 		id: 'add_monitor_submit',
@@ -2297,7 +2310,7 @@ function _addMonitor(dataGrid, type, id) {
 			expect_http_status: dijit.byId('add_monitor_code').getValue(),
 			expect_http_content: dijit.byId('add_monitor_content').getValue(),
 			request_method: dijit.byId('add_monitor_method').getValue(),
-			http_post_vars: ''
+			http_post_vars: dijit.byId('add_monitor_post_vars').getValue()
 		    };
 		    xhrAddMonitor(dataGrid, id, params);
 		    destroyAll("add_monitor");
@@ -2317,6 +2330,8 @@ function _addMonitor(dataGrid, type, id) {
 		  tb3_label, tb3.domNode, 
 		  dojo.create("br"),
 		  tb4_label, tb4.domNode, 
+		  dojo.create("br"),
+		  tb5_label, tb5.domNode, 
 		  dojo.create("br"), rst.domNode, sub.domNode ];
     } else if (type == "port_monitors") {
 	var tb1_label = dojo.create("label", { htmlFor: 'add_monitor_port' });
