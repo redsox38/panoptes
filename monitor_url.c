@@ -62,14 +62,16 @@ monitor_result_t *monitor_url(char *url,
 			      monitor_result_t *r)
 {
 
-  CURL           *curl_handle;
-  CURLcode       res;
-  char           errbuf[CURL_ERROR_SIZE];
-  long           http_code, expect_http_code;
-  double         elapsed;
-  struct timeval start, stop;
-  int            len;
-  mem_chunk_t    web_content;
+  CURL                 *curl_handle;
+  CURLcode             res;
+  char                 errbuf[CURL_ERROR_SIZE], *p, *a, *tkn;
+  long                 http_code, expect_http_code;
+  double               elapsed;
+  struct timeval       start, stop;
+  int                  len;
+  mem_chunk_t          web_content;
+  struct curl_httppost *form_data = NULL;
+  struct curl_httppost *last_data = NULL;
 
   sscanf(expect_code, "%d", &expect_http_code);
 
@@ -96,6 +98,20 @@ monitor_result_t *monitor_url(char *url,
 
       /* add post vars */
       if (http_post_vars != NULL) {
+	p = strtok_r(http_post_vars, ",", &tkn);
+	
+	while(p != NULL) {
+	  len = strcspn(p, "=") + 1;
+	  a = (char *)malloc((len + 1) * sizeof(char));
+	  snprintf(a, len, "%s", p);
+	  
+	  curl_formadd(&form_data, &last_data, CURLFORM_COPYNAME,
+		       a, CURLFORM_COPYCONTENTS, *(p + len),
+		       CURLFORM_END);
+	  
+	  free(a);
+	  p = strtok_r(NULL, ",", &tkn);
+	}
       }
     }
 
